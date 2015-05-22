@@ -20,7 +20,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -104,10 +106,12 @@ public class DeviceContextImpl implements DeviceContext {
     private final OutboundQueue outboundQueueProvider;
     private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
-    private volatile int outstandingNotificationsAmount = 0;
-    private volatile boolean filteringPacketIn = false;
-    private final Object throttlingLock = new Object();
-    private int filteringHighWaterMark = 0;
+    private final AtomicInteger outstandingNotificationCounter = new AtomicInteger();
+
+    private final Object packetInLock = new Object();
+    @GuardedBy("packetInLock")
+    private boolean packetInSuspended = false;
+    private volatile int resumePacketInWaterMark;
     private OutboundQueueHandlerRegistration outboundQueueHandlerRegistration;
 
     @Override
@@ -267,6 +271,63 @@ public class DeviceContextImpl implements DeviceContext {
         return iiToNodes.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
     }
 
+    /**
+     * Enable packetIn filtering on a connection adapter.
+     *
+     * @param connectionAdapter
+     * @param refCount reference count read before calling in
+     * @return True if the method succeeded, false if the notification publish
+     *         process should be retried.
+     */
+    private boolean enablePacketInFiltering(final ConnectionAdapter connectionAdapter, final int refCount) {
+        synchronized (packetInLock) {
+            final int currentRefcount = outstandingNotificationCounter.get();
+            if (currentRefcount != refCount) {
+                LOG.trace("Raced with notification completion {} -> {}", refCount, currentRefcount);
+                return true;
+            }
+
+            if (packetInSuspended) {
+                LOG.debug("Filtering on {} already enabled", connectionAdapter.getRemoteAddress());
+                return false;
+            }
+
+            // We must not filter packetIns if we do not have anything in the queue,
+            // because we would have no stimulus which would re-enable it.
+            if (currentRefcount != 0) {
+                messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
+                connectionAdapter.setPacketInFiltering(true);
+
+                // TODO: calculate the watermark at which packetIn filtering should be disabled
+                final int newWater = 0;
+                LOG.debug("Enabled filterin with {} outstanding requests, new resume watermark is {}", currentRefcount, newWater);
+                resumePacketInWaterMark = newWater;
+                packetInSuspended = true;
+            } else {
+                LOG.debug("No outstanding notifications from {}, cannot enable PacketIn filtering", connectionAdapter.getRemoteAddress());
+            }
+        }
+
+        return false;
+    }
+
+    private void disablePacketInFiltering(final ConnectionAdapter connectionAdapter) {
+        // TODO: while still holding the reference, attempt to clear the emergency slot,
+        //       if that succeeds, do not go into the rest of the method
+
+        if (outstandingNotificationCounter.decrementAndGet() == resumePacketInWaterMark) {
+            synchronized (packetInLock) {
+                if (packetInSuspended) {
+                    messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
+                    connectionAdapter.setPacketInFiltering(false);
+                    packetInSuspended = false;
+                } else {
+                    LOG.debug("Filtering on {} already disabled", connectionAdapter.getRemoteAddress());
+                }
+            }
+        }
+    }
+
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
@@ -277,58 +338,45 @@ public class DeviceContextImpl implements DeviceContext {
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
 
         if (packetReceived == null) {
-            LOG.debug("Received a null packet from switch");
+            LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
             return;
         }
-        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
 
-        ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
-        synchronized (throttlingLock) {
-            outstandingNotificationsAmount += 1;
-        }
-        if (NotificationPublishService.REJECTED.equals(offerNotification)) {
-            LOG.debug("notification offer rejected");
-            synchronized (throttlingLock) {
-                if (outstandingNotificationsAmount > 1 && !filteringPacketIn) {
-                    connectionAdapter.setPacketInFiltering(true);
-                    messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
-                    filteringPacketIn = true;
-                    filteringHighWaterMark = outstandingNotificationsAmount;
-                    LOG.debug("PacketIn filtering on: {}, watermark: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
-                }
+        final ListenableFuture<? extends Object> offerNotification;
+        for (;;) {
+            final ListenableFuture<? extends Object> tryOffer = notificationPublishService.offerNotification(packetReceived);
+            if (!NotificationPublishService.REJECTED.equals(tryOffer)) {
+                offerNotification = tryOffer;
+                break;
             }
+
+            LOG.debug("notification offer rejected");
+            final int refCount = outstandingNotificationCounter.get();
+            if (enablePacketInFiltering(connectionAdapter, refCount)) {
+                // TODO: save packet into emergency slot if possible
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+                return;
+            }
+
+            LOG.debug("Notification completion ocurred, retry publishing");
         }
 
-        Futures.addCallback(offerNotification,
-                new FutureCallback<Object>() {
-                    @Override
-                    public void onSuccess(final Object result) {
-                        countdownFiltering();
-                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-                    }
+        outstandingNotificationCounter.incrementAndGet();
+        Futures.addCallback(offerNotification, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(final Object result) {
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                disablePacketInFiltering(connectionAdapter);
+            }
 
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        countdownFiltering();
-                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
-                        LOG.debug("notification offer failed: {}, outstanding: {}", t.getMessage(), outstandingNotificationsAmount);
-                        LOG.trace("notification offer failed..", t);
-                    }
-
-                    private void countdownFiltering() {
-                        synchronized (throttlingLock) {
-                            outstandingNotificationsAmount -= 1;
-                            if (outstandingNotificationsAmount == 0 && filteringPacketIn) {
-                                connectionAdapter.setPacketInFiltering(false);
-                                messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
-
-                                filteringPacketIn = false;
-                                LOG.debug("PacketIn filtering off: {}, outstanding: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
-                            }
-                        }
-                    }
-                }
-        );
+            @Override
+            public void onFailure(final Throwable t) {
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                LOG.debug("notification offer failed: {}, outstanding: {}", t.getMessage(), outstandingNotificationCounter);
+                LOG.trace("notification offer failed..", t);
+                disablePacketInFiltering(connectionAdapter);
+            }
+        });
     }
 
     @Override
