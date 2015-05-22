@@ -12,14 +12,17 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
  */
 public class TranslatorKey {
 
-    private int version;
-    private String messageClass;
+    // FIXME: a session is bound to a particular version, hence each version should have
+    //        its own library.
+    private final int version;
+    // FIXME: change this to Class<?>
+    private final String messageClass;
 
     /**
      * @param version
      * @param messageClass
      */
-    public TranslatorKey(int version, String messageClass) {
+    public TranslatorKey(final int version, final String messageClass) {
         this.version = version;
         this.messageClass = messageClass;
     }
@@ -35,7 +38,7 @@ public class TranslatorKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
