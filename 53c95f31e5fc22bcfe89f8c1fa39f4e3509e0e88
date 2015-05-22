@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_e2d644c5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-05-22T14:23:32Z",
+      "side": 1,
+      "message": "This is always REJECTED as soon as device disconnects and prevent the blocking queue in drop-test from being flushed.",
+      "range": {
+        "startLine": 347,
+        "startChar": 53,
+        "endLine": 347,
+        "endChar": 61
+      },
+      "revId": "53c95f31e5fc22bcfe89f8c1fa39f4e3509e0e88",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
