@@ -84,7 +84,6 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImpl implements DeviceContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
-    public static final String DEVICE_DISCONNECTED = "Device disconnected.";
 
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
