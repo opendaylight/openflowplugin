@@ -1,7 +1,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.Matchers.any;
-
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
@@ -79,6 +79,8 @@ public class DeviceContextImplTest {
     MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
     OutboundQueueProvider outboundQueueProvider;
+    @Mock
+    ConnectionAdapter connectionAdapter;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -110,6 +112,7 @@ public class DeviceContextImplTest {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
+        Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency);
 
         xid = new Xid(atomicLong.incrementAndGet());
