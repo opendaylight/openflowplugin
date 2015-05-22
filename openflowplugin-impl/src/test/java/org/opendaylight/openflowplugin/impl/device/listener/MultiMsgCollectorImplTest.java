@@ -20,9 +20,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
@@ -49,7 +49,7 @@ public class MultiMsgCollectorImplTest {
     @Mock
     DeviceReplyProcessor deviceProcessor;
     @Captor
-    ArgumentCaptor<DeviceDataException> ddeCaptor;
+    ArgumentCaptor<DeviceRequestFailedException> ddeCaptor;
     @Captor
     ArgumentCaptor<Xid> xidCaptor;
     @Captor
