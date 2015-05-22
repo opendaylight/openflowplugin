@@ -93,21 +93,20 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 mprInput.setMultipartRequestBody(caseBuilder.build());
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-                final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
-                multiMsgCollector.registerMultipartRequestContext(requestContext);
-
+                final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector(requestContext);
                 final MultipartRequestInput multipartRequestInput = mprInput.build();
                 outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         if (ofHeader instanceof MultipartReply) {
-                            MultipartReply multipartReply = (MultipartReply) ofHeader;
+                            final MultipartReply multipartReply = (MultipartReply) ofHeader;
                             multiMsgCollector.addMultipartMsg(multipartReply);
                         } else {
                             if (null != ofHeader) {
                                 LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                             } else {
                                 LOG.info("Response received is null.");
+                                multiMsgCollector.endCollecting();
                             }
                         }
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
@@ -115,9 +114,8 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
-                        multiMsgCollector.registerMultipartRequestContext(requestContext);
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                     }
                 });
@@ -175,9 +173,9 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
                 final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-                for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeatureData : salTableFeatures) {
+                for (final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeatureData : salTableFeatures) {
                     final Short tableId = tableFeatureData.getTableId();
-                    KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures, TableFeaturesKey> tableFeaturesII = flowCapableNodeII
+                    final KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures, TableFeaturesKey> tableFeaturesII = flowCapableNodeII
                             .child(Table.class, new TableKey(tableId))
                             .child(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures.class,
                                     new TableFeaturesKey(tableId));
@@ -190,14 +188,14 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             private List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
                     final List<MultipartReply> multipartReplies) {
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesAll = new ArrayList<>();
-                for (MultipartReply multipartReply : multipartReplies) {
+                for (final MultipartReply multipartReply : multipartReplies) {
                     if (multipartReply.getType().equals(MultipartType.OFPMPTABLEFEATURES)) {
-                        MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
+                        final MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
                         if (multipartReplyBody instanceof MultipartReplyTableFeaturesCase) {
-                            MultipartReplyTableFeaturesCase tableFeaturesCase = ((MultipartReplyTableFeaturesCase) multipartReplyBody);
-                            MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
+                            final MultipartReplyTableFeaturesCase tableFeaturesCase = ((MultipartReplyTableFeaturesCase) multipartReplyBody);
+                            final MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
                                     .getMultipartReplyTableFeatures();
-                            List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesPartial = TableFeaturesReplyConvertor
+                            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesPartial = TableFeaturesReplyConvertor
                                     .toTableFeaturesReply(salTableFeatures);
                             salTableFeaturesAll.addAll(salTableFeaturesPartial);
                             LOGGER.debug("TableFeature {} for xid {}.", salTableFeatures, multipartReply.getXid());

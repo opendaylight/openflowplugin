@@ -27,7 +27,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -103,18 +102,12 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private OutboundQueue outboundQueueProvider;
-    private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
     private volatile int outstandingNotificationsAmount = 0;
     private volatile boolean filteringPacketIn = false;
     private final Object throttlingLock = new Object();
     private int filteringHighWaterMark = 0;
     private OutboundQueueHandlerRegistration outboundQueueHandlerRegistration;
-
-    @Override
-    public MultiMsgCollector getMultiMsgCollector() {
-        return multiMsgCollector;
-    }
 
     @Override
     public Long getReservedXid() {
@@ -137,7 +130,7 @@ public class DeviceContextImpl implements DeviceContext {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
-        multiMsgCollector.setDeviceReplyProcessor(this);
+        outboundQueueProvider = Preconditions.checkNotNull(primaryConnectionContext.getOutboundQueueProvider());
     }
 
     /**
@@ -232,11 +225,6 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void processException(final Xid xid, final DeviceRequestFailedException deviceRequestFailedException) {
-        messageSpy.spyMessage(deviceRequestFailedException.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-    }
-
-    @Override
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
         //TODO: will be defined later
     }
@@ -282,7 +270,7 @@ public class DeviceContextImpl implements DeviceContext {
         }
         messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
 
-        ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
         synchronized (throttlingLock) {
             outstandingNotificationsAmount += 1;
         }
@@ -375,7 +363,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        if (this.getPrimaryConnectionContext().equals(connectionContext)) {
+        if (getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 close();
             } catch (final Exception e) {
@@ -422,7 +410,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
-        this.closeHandlers.add(deviceContextClosedHandler);
+        closeHandlers.add(deviceContextClosedHandler);
     }
 
     @Override
@@ -438,7 +426,7 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void onPublished() {
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
-        for (ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
+        for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         }
     }
@@ -451,4 +439,8 @@ public class DeviceContextImpl implements DeviceContext {
         primaryConnectionContext.setOutboundQueueProvider(outboundQueueProvider);
     }
 
+    @Override
+    public MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext) {
+        return new MultiMsgCollectorImpl(this, requestContext);
+    }
 }
