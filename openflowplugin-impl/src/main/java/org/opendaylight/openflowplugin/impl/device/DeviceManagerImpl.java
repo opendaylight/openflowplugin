@@ -32,6 +32,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -167,10 +168,15 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final Short version = connectionContext.getFeatures().getVersion();
         final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
 
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
-        deviceContext.registerOutboundQueueProvider(outboundQueueProvider, maxQueueDepth, barrierNanos);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
