@@ -104,16 +104,21 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationPublishService notificationPublishService;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private NotificationService notificationService;
-    private TranslatorLibrary translatorLibrary;
     private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
+    private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
+    private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
+    private final TranslatorLibrary translatorLibrary;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
-                      @Nonnull final MessageSpy _messageSpy, final OutboundQueueProvider outboundQueueProvider) {
+                      @Nonnull final MessageSpy _messageSpy,
+                      @Nonnull final OutboundQueueProvider outboundQueueProvider,
+                      @Nonnull final TranslatorLibrary translatorLibrary) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -128,6 +133,12 @@ public class DeviceContextImpl implements DeviceContext {
 
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 PACKETIN_LOW_WATERMARK, PACKETIN_HIGH_WATERMARK, messageSpy, REJECTED_DRAIN_FACTOR);
+
+        this.translatorLibrary = translatorLibrary;
+        portStatusTranslator = translatorLibrary.lookupTranslator(
+                new TranslatorKey(deviceState.getVersion(), PortGrouping.class.getName()));
+        packetInTranslator = translatorLibrary.lookupTranslator(
+                new TranslatorKey(deviceState.getVersion(), PacketIn.class.getName()));
     }
 
     /**
@@ -238,9 +249,7 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
-        final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
-        final FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, this, null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
@@ -266,10 +275,7 @@ public class DeviceContextImpl implements DeviceContext {
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
-
-        final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
-        final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
-        final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
+        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, this, null);
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
@@ -313,11 +319,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public TranslatorLibrary oook() {
         return translatorLibrary;
-    }
-
-    @Override
-    public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
-        this.translatorLibrary = translatorLibrary;
     }
 
     @Override
