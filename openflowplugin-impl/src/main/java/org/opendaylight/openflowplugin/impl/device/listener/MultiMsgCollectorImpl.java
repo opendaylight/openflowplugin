@@ -17,12 +17,14 @@ import com.google.common.cache.RemovalNotification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -33,9 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * openflowplugin-api
- * org.opendaylight.openflowplugin.impl.openflow.device
- *
+ 
  * Implementation for {@link MultiMsgCollector} interface
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
@@ -95,8 +95,9 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         if (cachedRef == null) {
             MultipartType multipartType = reply.getType();
             LOG.trace("Orphaned multipart msg with XID : {} of type {}", xid, multipartType);
+
             deviceReplyProcessor.processException(new Xid(xid),
-                    new DeviceDataException("unknown xid received for multipart of type " + multipartType));
+                    new DeviceRequestFailedException("unknown xid received for multipart of type " + multipartType, getErrorMessageWithXid(xid)));
             return;
         }
 
@@ -108,9 +109,15 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
                 cachedRef.publishCollection(xid); // settable future has now whole collection
                 cache.invalidate(xid);              // we don't need a reference anymore - remove explicitly
             }
-        } catch (DeviceDataException e) {
+        } catch (DeviceRequestFailedException e) {
             deviceReplyProcessor.processException(new Xid(xid), e);
         }
+    }
+
+    private ErrorMessage getErrorMessageWithXid(final long xid) {
+        final ErrorMessageBuilder errorMessageBuilder = new ErrorMessageBuilder();
+        errorMessageBuilder.setXid(xid);
+        return errorMessageBuilder.build();
     }
 
     @Override
@@ -120,8 +127,8 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
     @Override
     public void invalidateRequestContext(final RequestContext<List<MultipartReply>> requestContext) {
-        MultiCollectorObject  multiCollectorObject = cache.getIfPresent(requestContext);
-        if (null != multiCollectorObject){
+        MultiCollectorObject multiCollectorObject = cache.getIfPresent(requestContext);
+        if (null != multiCollectorObject) {
             multiCollectorObject.invalidateFutureByTimeout(requestContext.getXid().getValue());
         }
     }
@@ -135,7 +142,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             this.requestContext = Preconditions.checkNotNull(requestContext);
         }
 
-        void add(final MultipartReply reply) throws DeviceDataException {
+        void add(final MultipartReply reply) throws DeviceRequestFailedException {
             /* Rise possible exception if it possible */
             msgTypeValidation(reply.getType(), reply.getXid());
             replyCollection.add(reply);
@@ -158,7 +165,8 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
         void invalidateFutureByTimeout(final long key) {
             final String msg = "MultiMsgCollector can not wait for last multipart any more";
-            DeviceDataException deviceDataException = new DeviceDataException(msg);
+
+            DeviceRequestFailedException deviceDataException = new DeviceRequestFailedException(msg, getErrorMessageWithXid(key));
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                     .<List<MultipartReply>>failed()
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
@@ -174,7 +182,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         }
 
 
-        private void msgTypeValidation(final MultipartType type, final long key) throws DeviceDataException {
+        private void msgTypeValidation(final MultipartType type, final long key) throws DeviceRequestFailedException {
             if (msgType == null) {
                 msgType = type;
                 return;
@@ -183,7 +191,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
                 final String msg = "MultiMsgCollector get incorrect multipart msg with type {}"
                         + " but expected type is {}";
                 LOG.trace(msg, type, msgType);
-                throw new DeviceDataException("multipart message type mismatch");
+                throw new DeviceRequestFailedException("multipart message type mismatch", getErrorMessageWithXid(key));
             }
         }
     }

@@ -9,26 +9,29 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import java.util.List;
-
+import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
- *
  * @author tkubas
- *
  */
 public interface DeviceReplyProcessor {
 
     /**
      * Method that set future to context in Map
+     *
      * @param ofHeader
      */
     public void processReply(OfHeader ofHeader);
 
     /**
      * Method that set future to context in Map
+     *
      * @param xid,
      * @param ofHeaderList
      */
@@ -36,25 +39,29 @@ public interface DeviceReplyProcessor {
 
     /**
      * Method that set exception to the future
+     *
      * @param xid,
-     * @param deviceDataException
+     * @param deviceRequestFailedException
      */
-    public void processException(Xid xid, DeviceDataException deviceDataException);
+    public void processException(Xid xid, DeviceRequestFailedException deviceRequestFailedException);
 
     /**
      * Method process async flow removed from device
+     *
      * @param flowRemoved
      */
     public void processFlowRemovedMessage(FlowRemoved flowRemoved);
 
     /**
      * Method process async port status from device
+     *
      * @param portStatus
      */
     public void processPortStatusMessage(PortStatusMessage portStatus);
 
     /**
      * Method process async packet in from device
+     *
      * @param packetInMessage
      */
     public void processPacketInMessage(PacketInMessage packetInMessage);
