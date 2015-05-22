@@ -85,34 +85,28 @@ public class DeviceContextImpl implements DeviceContext {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
     public static final String DEVICE_DISCONNECTED = "Device disconnected.";
 
+    private static final int PACKETIN_LOW_WATERMARK = 18000;
+    private static final int PACKETIN_HIGH_WATERMARK = 19000;
+
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
-    private TranslatorLibrary translatorLibrary;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private Timeout barrierTaskTimeout;
-    private NotificationService notificationService;
-    private final MessageSpy messageSpy;
-    private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
-    private NotificationPublishService notificationPublishService;
-    private OutboundQueue outboundQueueProvider;
-
-    private volatile int outstandingNotificationsAmount = 0;
-    private volatile boolean filteringPacketIn = false;
-    private final Object throttlingLock = new Object();
-    private int filteringHighWaterMark = 0;
+    private final PacketInRateLimiter packetInLimiter;
+    private final MessageSpy messageSpy;
     private OutboundQueueHandlerRegistration<?> outboundQueueHandlerRegistration;
-
-    @Override
-    public Long getReservedXid() {
-        return outboundQueueProvider.reserveEntry();
-    }
+    private NotificationPublishService notificationPublishService;
+    private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private NotificationService notificationService;
+    private TranslatorLibrary translatorLibrary;
+    private OutboundQueue outboundQueueProvider;
+    private Timeout barrierTaskTimeout;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -130,6 +124,8 @@ public class DeviceContextImpl implements DeviceContext {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
+
+        this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(), PACKETIN_LOW_WATERMARK, PACKETIN_HIGH_WATERMARK, messageSpy);
     }
 
     /**
@@ -139,6 +135,11 @@ public class DeviceContextImpl implements DeviceContext {
     void submitTransaction() {
         txChainManager.enableSubmit();
         txChainManager.submitTransaction();
+    }
+
+    @Override
+    public Long getReservedXid() {
+        return outboundQueueProvider.reserveEntry();
     }
 
     @Override
@@ -264,58 +265,41 @@ public class DeviceContextImpl implements DeviceContext {
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
 
         if (packetReceived == null) {
-            LOG.debug("Received a null packet from switch");
+            LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
             return;
         }
-        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+
+        if (!packetInLimiter.acquirePermit()) {
+            LOG.debug("Packet limited");
+            // TODO: save packet into emergency slot if possible
+            // FIXME: some other counter
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            return;
+        }
 
         final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
-        synchronized (throttlingLock) {
-            outstandingNotificationsAmount += 1;
-        }
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
-            synchronized (throttlingLock) {
-                if (outstandingNotificationsAmount > 1 && !filteringPacketIn) {
-                    connectionAdapter.setPacketInFiltering(true);
-                    messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
-                    filteringPacketIn = true;
-                    filteringHighWaterMark = outstandingNotificationsAmount;
-                    LOG.debug("PacketIn filtering on: {}, watermark: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
-                }
-            }
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            packetInLimiter.releasePermit();
+            return;
         }
 
-        Futures.addCallback(offerNotification,
-                new FutureCallback<Object>() {
-                    @Override
-                    public void onSuccess(final Object result) {
-                        countdownFiltering();
-                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-                    }
+        Futures.addCallback(offerNotification, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(final Object result) {
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                packetInLimiter.releasePermit();
+            }
 
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        countdownFiltering();
-                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
-                        LOG.debug("notification offer failed: {}, outstanding: {}", t.getMessage(), outstandingNotificationsAmount);
-                        LOG.trace("notification offer failed..", t);
-                    }
-
-                    private void countdownFiltering() {
-                        synchronized (throttlingLock) {
-                            outstandingNotificationsAmount -= 1;
-                            if (outstandingNotificationsAmount == 0 && filteringPacketIn) {
-                                connectionAdapter.setPacketInFiltering(false);
-                                messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
-
-                                filteringPacketIn = false;
-                                LOG.debug("PacketIn filtering off: {}, outstanding: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
-                            }
-                        }
-                    }
-                }
-        );
+            @Override
+            public void onFailure(final Throwable t) {
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                LOG.debug("notification offer failed: {}", t.getMessage());
+                LOG.trace("notification offer failed..", t);
+                packetInLimiter.releasePermit();
+            }
+        });
     }
 
     @Override
