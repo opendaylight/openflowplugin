@@ -112,12 +112,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
         return bitmapNegotiationEnabled ;
     }
 
-    /**
-     * @param bitmapNegotiationEnabled the bitmapNegotiationEnabled to set
-     */
-    public void setBitmapNegotiationEnabled(final boolean bitmapNegotiationEnabled) {
-        this.bitmapNegotiationEnabled = bitmapNegotiationEnabled;
-    }
 
     @Override
     public boolean accept(final InetAddress switchAddress) {

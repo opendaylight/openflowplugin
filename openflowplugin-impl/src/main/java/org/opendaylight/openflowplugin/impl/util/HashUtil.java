@@ -410,12 +410,6 @@ public final class HashUtil {
         return stringTokenizer;
     }
 
-    private static long calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, final long bitsBase) {
-        double maskValue = extractMask(ipv6Prefix);
-        double bitCount = maskValue / bitsBase;
-        return (int) Math.ceil(bitCount);
-    }
-
     private static long extractMask(final Ipv6Prefix ipv6Prefix) {
         StringTokenizer maskTokenizer = new StringTokenizer(ipv6Prefix.getValue(), "/");
         long mask = 0;

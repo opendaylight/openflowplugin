@@ -150,42 +150,5 @@ public class DeviceContextImplTest {
         Assert.assertEquals(rTx, readTx);
     }
 
-    private static GetAsyncOutput createAsyncOutput(final Xid xid) {
-        final GetAsyncOutputBuilder asyncOutputBuilder = new GetAsyncOutputBuilder();
-        asyncOutputBuilder.setFlowRemovedMask(Collections.<FlowRemovedMask>emptyList());
-        asyncOutputBuilder.setPacketInMask(Collections.<PacketInMask>emptyList());
-        asyncOutputBuilder.setPortStatusMask(Collections.<PortStatusMask>emptyList());
-        asyncOutputBuilder.setVersion(OFConstants.OFP_VERSION_1_3);
-        asyncOutputBuilder.setXid(xid.getValue());
-        return asyncOutputBuilder.build();
-    }
-
-
-    private static Error createError(final Xid xid) {
-        final ErrorMessageBuilder errorMessageBuilder = new ErrorMessageBuilder();
-        errorMessageBuilder.setCode(42);
-        errorMessageBuilder.setCodeString("42");
-        errorMessageBuilder.setXid(xid.getValue());
-        return errorMessageBuilder.build();
-    }
-
-    private static List<MultipartReply> createMultipartReplyList(final Xid xid) {
-        final MultipartReplyDesc descValue = new MultipartReplyDescBuilder().setHwDesc("hw-test-value").build();
-        final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
-                .setMultipartReplyDesc(descValue).build();
-        final List<MultipartReply> multipartReplies = new ArrayList<>();
-        multipartReplies.add(new MultipartReplyMessageBuilder()
-                .setMultipartReplyBody(replyBody)
-                .setXid(xid.getValue())
-                .setFlags(new MultipartRequestFlags(false))
-                .build());
-        multipartReplies.add(new MultipartReplyMessageBuilder()
-                .setMultipartReplyBody(replyBody)
-                .setXid(xid.getValue())
-                .setFlags(new MultipartRequestFlags(true))
-                .build());
-        return multipartReplies;
-    }
-
 
 }

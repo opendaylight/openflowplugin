@@ -47,7 +47,6 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
                 outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
 
-                    RpcResultBuilder<Void> rpcResultBuilder;
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
