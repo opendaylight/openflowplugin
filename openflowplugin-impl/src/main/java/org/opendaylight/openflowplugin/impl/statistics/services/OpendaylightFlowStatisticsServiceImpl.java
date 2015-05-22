@@ -61,7 +61,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceImpl.class);
 
-    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
@@ -115,7 +115,6 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                     public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final RequestContext<List<MultipartReply>> requestContext) {
                         final Xid xid = requestContext.getXid();
                         final DeviceContext deviceContext = getDeviceContext();
-                        deviceContext.getMultiMsgCollector().registerMultipartRequestContext(requestContext);
                         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
                         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
                         final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL).shortValue();
@@ -166,7 +165,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
         return Futures.transform(rpcResultListenableFuture, new Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>() {
             @Nullable
             @Override
-            public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(RpcResult<List<MultipartReply>> input) {
+            public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(final RpcResult<List<MultipartReply>> input) {
                 final DeviceContext deviceContext = getDeviceContext();
                 TranslatorLibrary translatorLibrary = deviceContext.oook();
                 RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;

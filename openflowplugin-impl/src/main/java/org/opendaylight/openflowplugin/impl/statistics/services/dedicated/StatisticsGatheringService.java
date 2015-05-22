@@ -51,10 +51,10 @@ public class StatisticsGatheringService extends CommonService {
                                      public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final RequestContext<List<MultipartReply>> requestContext) {
                                          final Xid xid = requestContext.getXid();
                                          final DeviceContext deviceContext = getDeviceContext();
-                                         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
+                                         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector(requestContext);
 
-                                         multiMsgCollector.registerMultipartRequestContext(requestContext);
-                                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
+
+                                         final MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                                  makeMultipartRequestInput(xid.getValue(),
                                                          getVersion(),
                                                          type);
@@ -68,19 +68,18 @@ public class StatisticsGatheringService extends CommonService {
                                                  } else {
                                                      if (null != ofHeader) {
                                                          LOG.info("Unexpected response type received {}.", ofHeader.getClass());
-                                                         RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, String.format("Unexpected response type received %s.", ofHeader.getClass()));
+                                                         final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, String.format("Unexpected response type received %s.", ofHeader.getClass()));
                                                          requestContext.setResult(rpcResultBuilder.build());
                                                      } else {
                                                          LOG.info("Ofheader was null.");
-                                                         RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, "OfHeader was null");
-                                                         requestContext.setResult(rpcResultBuilder.build());
+                                                         multiMsgCollector.endCollecting();
                                                      }
                                                  }
                                              }
 
                                              @Override
                                              public void onFailure(final Throwable throwable) {
-                                                 RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                 final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
                                                  requestContext.setResult(rpcResultBuilder.build());
                                                  RequestContextUtil.closeRequstContext(requestContext);
                                              }

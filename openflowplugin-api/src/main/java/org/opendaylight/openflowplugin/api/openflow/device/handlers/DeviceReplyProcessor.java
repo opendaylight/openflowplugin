@@ -9,10 +9,12 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import java.util.List;
-
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
  *
@@ -34,12 +36,12 @@ public interface DeviceReplyProcessor {
      */
     public void processReply(Xid xid, List<MultipartReply> ofHeaderList);
 
-    /**
-     * Method that set exception to the future
-     * @param xid,
-     * @param deviceDataException
-     */
-    public void processException(Xid xid, DeviceDataException deviceDataException);
+//    /**
+//     * Method that set exception to the future
+//     * @param xid,
+//     * @param deviceDataException
+//     */
+//    public void processException(Xid xid, DeviceDataException deviceDataException);
 
     /**
      * Method process async flow removed from device
