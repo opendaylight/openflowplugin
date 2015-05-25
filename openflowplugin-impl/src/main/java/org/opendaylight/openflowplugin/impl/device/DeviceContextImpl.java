@@ -107,7 +107,7 @@ public class DeviceContextImpl implements DeviceContext {
     private volatile boolean filteringPacketIn = false;
     private final Object throttlingLock = new Object();
     private int filteringHighWaterMark = 0;
-    private OutboundQueueHandlerRegistration outboundQueueHandlerRegistration;
+    private OutboundQueueHandlerRegistration<?> outboundQueueHandlerRegistration;
 
     @Override
     public Long getReservedXid() {
