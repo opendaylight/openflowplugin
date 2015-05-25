@@ -10,23 +10,24 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Longs;
 import java.math.BigInteger;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public class FlowHashFactory {
+public class FlowRegistryKeyFactory {
 
 
-    public static FlowRegistryKey create(Flow flow, short version) {
-        long hash = calculateHash(flow, version);
-        return new FlowRegistryKeyDto(hash, flow);
+    public FlowRegistryKeyFactory() {
+    }
+
+    public static FlowRegistryKey create(Flow flow) {
+        return new FlowRegistryKeyDto(flow);
     }
 
     private static long calculateHash(Flow flow, short version) {
@@ -36,48 +37,38 @@ public class FlowHashFactory {
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
 
-        private final long flowHash;
-        private final int intHashCode;
-
         private final short tableId;
         private final int priority;
         private final BigInteger cookie;
+        private final Match match;
 
-        public FlowRegistryKeyDto(final long flowHash, final Flow flow) {
-            this.flowHash = flowHash;
-            this.intHashCode = Longs.hashCode(flowHash);
+        public FlowRegistryKeyDto(final Flow flow) {
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = Preconditions.checkNotNull(flow.getPriority(), "flow priority must not be null");
+            match = Preconditions.checkNotNull(flow.getMatch(), "Match value must not be null");
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
 
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final FlowRegistryKeyDto that = (FlowRegistryKeyDto) o;
+
+            if (priority != that.priority) return false;
+            if (tableId != that.tableId) return false;
+            if (!match.equals(that.match)) return false;
+
+            return true;
+        }
 
         @Override
         public int hashCode() {
-            return intHashCode;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (null == obj) {
-                return false;
-            }
-            if (!(obj instanceof FlowRegistryKey)) {
-                return false;
-            }
-            FlowRegistryKey that = (FlowRegistryKey) obj;
-            if (this.flowHash == that.getFlowHash()
-                    && this.tableId == that.getTableId()
-                    && this.priority == that.getPriority()
-                    && Objects.equals(this.cookie, that.getCookie())) {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public long getFlowHash() {
-            return flowHash;
+            int result = (int) tableId;
+            result = 31 * result + priority;
+            result = 31 * result + match.hashCode();
+            return result;
         }
 
         @Override

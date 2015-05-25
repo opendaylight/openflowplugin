@@ -16,12 +16,11 @@ import java.math.BigInteger;
  */
 public interface FlowRegistryKey {
 
-    long getFlowHash();
-
     short getTableId();
 
     int getPriority();
 
     BigInteger getCookie();
+
 
 }
