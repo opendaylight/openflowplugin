@@ -34,7 +34,7 @@
         <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
         <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.1.0-SNAPSHOT</openflowplugin.version>
-        <sal.api.version>0.9.0-SNAPSHOT</sal.api.version>
+        <sal.api.version>0.10.0-SNAPSHOT</sal.api.version>
         <build.helper.version>1.8</build.helper.version>
         <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
         <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
