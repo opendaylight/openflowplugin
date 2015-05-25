@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FlowCapableTransactionServiceImpl extends CommonService implements FlowCapableTransactionService {
-
+    private static final RpcResult<Void> SUCCESS = RpcResultBuilder.<Void>success().build();
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTransactionServiceImpl.class);
 
     public FlowCapableTransactionServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
@@ -47,27 +47,23 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         final Xid xid = requestContext.getXid();
         barrierInputOFJavaBuilder.setVersion(getVersion());
         barrierInputOFJavaBuilder.setXid(xid.getValue());
+        final BarrierInput barrierInput = barrierInputOFJavaBuilder.build();
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-        final BarrierInput barrierInput = barrierInputOFJavaBuilder.build();
         outboundQueue.commitEntry(xid.getValue(), barrierInput, new FutureCallback<OfHeader>() {
-
-            RpcResultBuilder<Void> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                rpcResultBuilder = RpcResultBuilder.<Void>success();
-                requestContext.setResult(rpcResultBuilder.build());
+                requestContext.setResult(SUCCESS);
                 RequestContextUtil.closeRequstContext(requestContext);
 
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
 
