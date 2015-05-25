@@ -46,7 +46,6 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
                 outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
-
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
