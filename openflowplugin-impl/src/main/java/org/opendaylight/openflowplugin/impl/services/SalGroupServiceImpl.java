@@ -7,17 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -26,87 +18,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
 
-public class SalGroupServiceImpl extends CommonService implements SalGroupService {
-
+public class SalGroupServiceImpl implements SalGroupService {
+    private final GroupService<AddGroupInput, AddGroupOutput> addGroup;
+    private final GroupService<Group, UpdateGroupOutput> updateGroup;
+    private final GroupService<RemoveGroupInput, RemoveGroupOutput> removeGroup;
 
     public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext);
+        addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
+        updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
+        removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
     }
-
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalGroupServiceImpl.class);
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
-        return handleServiceCall(new Function<RequestContext<AddGroupOutput>,
-                ListenableFuture<RpcResult<AddGroupOutput>>>() {
-            @Override
-            public ListenableFuture<RpcResult<AddGroupOutput>> apply(final RequestContext<AddGroupOutput> requestContext) {
-                return convertAndSend(input, requestContext);
-            }
-        });
+        addGroup.getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
+        return addGroup.handleServiceCall(input);
     }
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return handleServiceCall(new Function<RequestContext<UpdateGroupOutput>,
-                ListenableFuture<RpcResult<UpdateGroupOutput>>>() {
-
-            @Override
-            public ListenableFuture<RpcResult<UpdateGroupOutput>> apply(final RequestContext<UpdateGroupOutput> requestContext) {
-                return convertAndSend(input.getUpdatedGroup(), requestContext);
-            }
-        });
+        return updateGroup.handleServiceCall(input.getUpdatedGroup());
     }
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        getDeviceContext().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
-        return handleServiceCall(new Function<RequestContext<RemoveGroupOutput>,
-                ListenableFuture<RpcResult<RemoveGroupOutput>>>() {
-
-            @Override
-            public ListenableFuture<RpcResult<RemoveGroupOutput>> apply(final RequestContext<RemoveGroupOutput> requestContext) {
-                return convertAndSend(input, requestContext);
-            }
-        });
-    }
-
-    <T> ListenableFuture<RpcResult<T>> convertAndSend(final Group iputGroup, final RequestContext<T> requestContext) {
-        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-        getMessageSpy().spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-        final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, getVersion(), getDatapathId());
-        final Xid xid = requestContext.getXid();
-        ofGroupModInput.setXid(xid.getValue());
-
-        final GroupModInput groupModInput = ofGroupModInput.build();
-        outboundQueue.commitEntry(xid.getValue(), groupModInput, new FutureCallback<OfHeader>() {
-            @Override
-            public void onSuccess(final OfHeader ofHeader) {
-                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.success((T)ofHeader);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
-
-                getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
-
-                getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-            }
-        });
-        return requestContext.getFuture();
+        removeGroup.getDeviceContext().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+        return removeGroup.handleServiceCall(input);
     }
 }
