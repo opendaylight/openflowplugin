@@ -106,9 +106,7 @@ public final class StatisticsGatheringUtils {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    private static KeyedInstanceIdentifier<Node, NodeKey> getInstanceIdentifier(final DeviceContext deviceContext) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
-    }
+
 
     public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                              final DeviceContext deviceContext,
@@ -140,9 +138,9 @@ public final class StatisticsGatheringUtils {
                     }
 
                     if (multipartData instanceof GroupStatisticsUpdated) {
-                        processGroupStatistics((Iterable<GroupStatisticsUpdated>)allMultipartData, deviceContext);
+                        processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof MeterStatisticsUpdated) {
-                        processMetersStatistics((Iterable<MeterStatisticsUpdated>)allMultipartData, deviceContext);
+                        processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
                         processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof FlowTableStatisticsUpdate) {
@@ -150,7 +148,7 @@ public final class StatisticsGatheringUtils {
                     } else if (multipartData instanceof QueueStatisticsUpdate) {
                         processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof FlowsStatisticsUpdate) {
-                        processFlowStatistics((Iterable<FlowsStatisticsUpdate>)allMultipartData, deviceContext);
+                        processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof GroupDescStatsUpdated) {
                         processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof MeterConfigStatsUpdated) {
@@ -214,9 +212,9 @@ public final class StatisticsGatheringUtils {
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
             final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
-            for (short i=0; i<numOfTablesOnDevice; i++) {
+            for (short i = 0; i < numOfTablesOnDevice; i++) {
                 KeyedInstanceIdentifier<Table, TableKey> iiToTable
-                    = nodeIdent.augmentation(FlowCapableNode.class).child( Table.class, new TableKey(i) );
+                        = nodeIdent.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(i));
                 final ReadTransaction readTx = deviceContext.getReadTransaction();
                 CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
                 try {
@@ -227,9 +225,9 @@ public final class StatisticsGatheringUtils {
                         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
                 } catch (InterruptedException e) {
-                    LOG.trace("Reading of table features for table wit ID {} was interrputed.",i);
+                    LOG.trace("Reading of table features for table wit ID {} was interrputed.", i);
                 } catch (ExecutionException e) {
-                    LOG.trace("Reading of table features for table wit ID {} encountered execution exception {}.",i,e);
+                    LOG.trace("Reading of table features for table wit ID {} encountered execution exception {}.", i, e);
                 }
             }
         }
@@ -259,7 +257,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) {
-        for(final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
+        for (final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(flowTableStatisticsUpdate.getId());
 
             for (final FlowTableAndStatisticsMap tableStat : flowTableStatisticsUpdate.getFlowTableAndStatisticsMap()) {
@@ -315,7 +313,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) {
-        for ( GroupDescStatsUpdated groupDescStatsUpdated : data) {
+        for (GroupDescStatsUpdated groupDescStatsUpdated : data) {
             NodeId nodeId = groupDescStatsUpdated.getId();
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
 

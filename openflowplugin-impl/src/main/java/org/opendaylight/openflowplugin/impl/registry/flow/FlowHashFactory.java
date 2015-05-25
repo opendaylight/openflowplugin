@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 public class FlowHashFactory {
 
 
-    public FlowHashFactory() {
-    }
-
     public static FlowRegistryKey create(Flow flow, short version) {
         long hash = calculateHash(flow, version);
         return new FlowRegistryKeyDto(hash, flow);
