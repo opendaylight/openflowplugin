@@ -9,13 +9,15 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -41,6 +43,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
+    private final List<MultipartType> collectingStatType;
 
     private final StatisticsGatheringService statisticsGatheringService;
 
@@ -49,37 +52,40 @@ public class StatisticsContextImpl implements StatisticsContext {
         devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
+        final List<MultipartType> statListForCollecting = new ArrayList<>();
+        if (devState.isTableStatisticsAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPTABLE);
+        }
+        if (devState.isFlowStatisticsAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPFLOW);
+        }
+        if (devState.isGroupAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
+            statListForCollecting.add(MultipartType.OFPMPGROUP);
+        }
+        if (devState.isMetersAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
+            statListForCollecting.add(MultipartType.OFPMPMETER);
+        }
+        if (devState.isPortStatisticsAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPPORTSTATS);
+        }
+        if (devState.isQueueStatisticsAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPQUEUE);
+        }
+        collectingStatType = ImmutableList.<MultipartType>copyOf(statListForCollecting);
     }
 
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
-        final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
-        final ListenableFuture<Boolean> flowStatistics = gatherDynamicData(MultipartType.OFPMPFLOW);
-        final ListenableFuture<Boolean> tableStatistics = gatherDynamicData(MultipartType.OFPMPTABLE);
-        final ListenableFuture<Boolean> portStatistics = gatherDynamicData(MultipartType.OFPMPPORTSTATS);
-        final ListenableFuture<Boolean> queueStatistics = gatherDynamicData(MultipartType.OFPMPQUEUE);
-        final ListenableFuture<Boolean> groupDescStatistics = gatherDynamicData(MultipartType.OFPMPGROUPDESC);
-        final ListenableFuture<Boolean> groupStatistics = gatherDynamicData(MultipartType.OFPMPGROUP);
-        final ListenableFuture<Boolean> meterConfigStatistics = gatherDynamicData(MultipartType.OFPMPMETERCONFIG);
-        final ListenableFuture<Boolean> meterStatistics = gatherDynamicData(MultipartType.OFPMPMETER);
-
-        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
-        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
-            @Override
-            public void onSuccess(final List<Boolean> booleans) {
-                boolean atLeastOneSuccess = false;
-                for (final Boolean bool : booleans) {
-                    atLeastOneSuccess |= bool.booleanValue();
-                }
-                settableResultingFuture.set(new Boolean(atLeastOneSuccess));
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                settableResultingFuture.setException(throwable);
-            }
-        });
-        return settableResultingFuture;
+        final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
+        if (errorResultFuture != null) {
+            return errorResultFuture;
+        }
+        final Iterator<MultipartType> statIterator = collectingStatType.iterator();
+        final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
+        statChainFuture(statIterator, settableStatResultFuture);
+        return settableStatResultFuture;
     }
 
     @Override
@@ -89,6 +95,10 @@ public class StatisticsContextImpl implements StatisticsContext {
         if (resultingFuture != null) {
             return resultingFuture;
         }
+        return choiseStat(multipartType);
+    }
+
+    private ListenableFuture<Boolean> choiseStat(final MultipartType multipartType) {
         switch (multipartType) {
         case OFPMPFLOW:
             return collectFlowStatistics(multipartType);
@@ -129,6 +139,24 @@ public class StatisticsContextImpl implements StatisticsContext {
         for (final RequestContext<?> requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
+    }
+
+    void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
+        if ( ! iterator.hasNext()) {
+            resultFuture.set(Boolean.TRUE);
+            return;
+        }
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = choiseStat(iterator.next());
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                statChainFuture(iterator, resultFuture);
+            }
+            @Override
+            public void onFailure(final Throwable t) {
+                resultFuture.setException(t);
+            }
+        });
     }
 
     /**
