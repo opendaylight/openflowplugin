@@ -8,18 +8,24 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StatisticsManagerImpl implements StatisticsManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
+    static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
@@ -36,11 +42,20 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
+    private final List<MultipartType> collectingStatType;
+
     private final TimeCounter timeCounter = new TimeCounter();
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
     private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
+
+    public StatisticsManagerImpl () {
+        final MultipartType[] allCollectingStatType = {MultipartType.OFPMPFLOW, MultipartType.OFPMPTABLE,
+                MultipartType.OFPMPPORTSTATS, MultipartType.OFPMPQUEUE, MultipartType.OFPMPGROUPDESC,
+                MultipartType.OFPMPGROUP,MultipartType.OFPMPMETERCONFIG, MultipartType.OFPMPMETER};
+        collectingStatType = ImmutableList.<MultipartType>copyOf(allCollectingStatType);
+    }
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -58,7 +73,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
-        final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
+        final ListenableFuture<Boolean> weHaveDynamicData = poolStatPerDevice(statisticsContext);
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean statisticsGathered) {
@@ -76,9 +91,59 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
                 try {
                     deviceContext.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Error closing device context.", e);
                 }
+            }
+        });
+    }
+
+    private ListenableFuture<Boolean> poolStatPerDevice(final StatisticsContext statisticsContext) {
+        final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
+        final Iterator<MultipartType> statCollIterator = collectingStatType.iterator();
+        statFutureMaker(statisticsContext, statCollIterator, settableResultingFuture);
+        return settableResultingFuture;
+    }
+
+    void statFutureMaker(final StatisticsContext statisticsContext, final Iterator<MultipartType> iterator,
+            final SettableFuture<Boolean> resultFuture) {
+        Preconditions.checkArgument(statisticsContext != null);
+        Preconditions.checkArgument(resultFuture != null);
+        Preconditions.checkArgument(iterator != null);
+        if ( ! iterator.hasNext()) {
+            resultFuture.set(Boolean.TRUE);
+            return;
+        }
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData(iterator.next());
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                statFutureMaker(statisticsContext, iterator, resultFuture);
+            }
+            @Override
+            public void onFailure(final Throwable t) {
+                resultFuture.setException(t);
+            }
+
+        });
+    }
+
+    void pollStatistics(final Iterator<StatisticsContext> deviceIterator, final SettableFuture<Boolean> resultFuture) {
+        Preconditions.checkArgument(resultFuture != null);
+        Preconditions.checkArgument(deviceIterator != null);
+        if ( ! deviceIterator.hasNext()) {
+            resultFuture.set(Boolean.TRUE);
+            return;
+        }
+        final ListenableFuture<Boolean> deviceStatResult = poolStatPerDevice(deviceIterator.next());
+        Futures.addCallback(deviceStatResult, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                pollStatistics(deviceIterator, resultFuture);
+            }
+            @Override
+            public void onFailure(final Throwable t) {
+                resultFuture.setException(t);
             }
         });
     }
@@ -86,22 +151,24 @@ public class StatisticsManagerImpl implements StatisticsManager {
     private void pollStatistics() {
         try {
             timeCounter.markStart();
-            for (final StatisticsContext statisticsContext : contexts.values()) {
-                ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(final Boolean o) {
-                        timeCounter.addTimeMark();
-                    }
+            final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
+            final Iterator<StatisticsContext> deviceIterator = contexts.values().iterator();
+            pollStatistics(deviceIterator, settableResultingFuture);
+            Futures.addCallback(settableResultingFuture, new FutureCallback<Boolean>() {
 
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        timeCounter.addTimeMark();
-                        LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                        LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                    }
-                });
-            }
+                @Override
+                public void onSuccess(final Boolean result) {
+                    timeCounter.addTimeMark();
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    timeCounter.addTimeMark();
+                    LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
+                    LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
+                }
+
+            });
         } finally {
             calculateTimerDelay();
             if (null != hashedWheelTimer) {
@@ -116,8 +183,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
     }
 
     private void calculateTimerDelay() {
-        long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
-        int numberOfDevices = contexts.size();
+        final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
+        final int numberOfDevices = contexts.size();
         if ((averageStatisticsGatheringTime * numberOfDevices) > currentTimerDelay) {
             currentTimerDelay *= 2;
             if (currentTimerDelay > maximumTimerDelay) {
@@ -132,12 +199,12 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        StatisticsContext statisticsContext = contexts.remove(deviceContext);
+        final StatisticsContext statisticsContext = contexts.remove(deviceContext);
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             try {
                 statisticsContext.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
             }
         }
