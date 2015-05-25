@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
@@ -23,7 +22,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
-public abstract class CommonService {
+public abstract class CommonService<I, O> {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
@@ -95,10 +94,12 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    public final <T> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> function) {
+    protected abstract void sendRequest(RequestContext<O> context, I input);
+
+    public final ListenableFuture<RpcResult<O>> handleServiceCall(final I input) {
 
         LOG.trace("Handling general service call");
-        final RequestContext<T> requestContext = createRequestContext();
+        final RequestContext<O> requestContext = createRequestContext();
         if (requestContext == null) {
             LOG.trace("Request context refused.");
             deviceContext.getMessageSpy().spyMessage(CommonService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
@@ -111,7 +112,7 @@ public abstract class CommonService {
         }
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
-        function.apply(requestContext);
+        sendRequest(requestContext, input);
 
         return requestContext.getFuture();
 

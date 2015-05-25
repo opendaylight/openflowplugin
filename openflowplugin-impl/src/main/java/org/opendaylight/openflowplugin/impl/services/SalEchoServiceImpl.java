@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalEchoServiceImpl extends CommonService implements SalEchoService {
+public class SalEchoServiceImpl extends CommonService<SendEchoInput, SendEchoOutput> implements SalEchoService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalEchoServiceImpl.class);
 
@@ -36,19 +36,13 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
     }
 
     @Override
-    public Future<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
-        final RequestContext<SendEchoOutput> requestContext = getRequestContextStack().createRequestContext();
-        if (requestContext == null) {
-            getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-            return failedFuture();
-        }
-
-        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        final Xid xid = requestContext.getXid();
+    protected void sendRequest(final RequestContext<SendEchoOutput> context, final SendEchoInput input) {
+        LOG.trace("Hooking xid {} to device context - precaution.", context.getXid().getValue());
+        final Xid xid = context.getXid();
         final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
         echoInputOFJavaBuilder.setVersion(getVersion());
-        echoInputOFJavaBuilder.setXid(requestContext.getXid().getValue());
-        echoInputOFJavaBuilder.setData(sendEchoInput.getData());
+        echoInputOFJavaBuilder.setXid(context.getXid().getValue());
+        echoInputOFJavaBuilder.setData(input.getData());
         final EchoInput echoInputOFJava = echoInputOFJavaBuilder.build();
 
         LOG.debug("Echo with xid {} was sent from controller", xid);
@@ -59,8 +53,8 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RpcResultBuilder<SendEchoOutput> rpcResultBuilder = RpcResultBuilder.success((SendEchoOutput)ofHeader);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
@@ -68,12 +62,16 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<SendEchoOutput> rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
-        return requestContext.getFuture();
+    }
+
+    @Override
+    public Future<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
+        return handleServiceCall(sendEchoInput);
     }
 }

@@ -26,7 +26,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowCapableTransactionServiceImpl extends CommonService implements FlowCapableTransactionService {
+public class FlowCapableTransactionServiceImpl extends CommonService<SendBarrierInput, Void> implements FlowCapableTransactionService {
     private static final RpcResult<Void> SUCCESS = RpcResultBuilder.<Void>success().build();
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTransactionServiceImpl.class);
 
@@ -35,28 +35,21 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
     }
 
     @Override
-    public Future<RpcResult<Void>> sendBarrier(final SendBarrierInput input) {
-        final RequestContext<Void> requestContext = getRequestContextStack().createRequestContext();
-        if (requestContext == null) {
-            getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-            return failedFuture();
-        }
-
-
+    protected void sendRequest(final RequestContext<Void> context, final SendBarrierInput input) {
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
-        final Xid xid = requestContext.getXid();
+        final Xid xid = context.getXid();
         barrierInputOFJavaBuilder.setVersion(getVersion());
         barrierInputOFJavaBuilder.setXid(xid.getValue());
         final BarrierInput barrierInput = barrierInputOFJavaBuilder.build();
 
-        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+        LOG.trace("Hooking xid {} to device context - precaution.", context.getXid().getValue());
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         outboundQueue.commitEntry(xid.getValue(), barrierInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                requestContext.setResult(SUCCESS);
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(SUCCESS);
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
@@ -64,12 +57,16 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
-        return requestContext.getFuture();
+    }
+
+    @Override
+    public Future<RpcResult<Void>> sendBarrier(final SendBarrierInput input) {
+        return handleServiceCall(input);
     }
 }
