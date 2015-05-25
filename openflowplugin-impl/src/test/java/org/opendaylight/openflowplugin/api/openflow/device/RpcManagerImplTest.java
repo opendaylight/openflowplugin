@@ -46,7 +46,7 @@ public class RpcManagerImplTest {
 
 
     final ProviderContext mockedProviderContext = mock(ProviderContext.class);
-    final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext, 500l);
+    final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext, 500);
     final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
     @Mock
     private MessageSpy messageSpy;
