@@ -9,7 +9,9 @@
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
@@ -17,4 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 public interface StatisticsContext extends RequestContextStack, AutoCloseable {
 
     public ListenableFuture<Boolean> gatherDynamicData();
+
+    ListenableFuture<Boolean> gatherDynamicData(@CheckForNull MultipartType multipartType);
+
 }
