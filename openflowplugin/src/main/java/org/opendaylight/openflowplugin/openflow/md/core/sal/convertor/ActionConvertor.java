@@ -290,7 +290,6 @@ public final class ActionConvertor {
             } else if (action instanceof SetNwTosActionCase) {
                 ofAction = salToOFSetNwTos(action, actionBuilder, version);
             } else if (action instanceof GeneralExtensionGrouping) {
-
                 /**
                  * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)
                  * - we might need sessionContext as converter input
@@ -990,7 +989,7 @@ public final class ActionConvertor {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder setNwDstActionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder();
                 bucketActions.add(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
 
-            } else if (action.getActionChoice() instanceof ExperimenterIdCase) {
+            } else {
                 /**
                  * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
                  * - we might also need a way on how to identify exact type of augmentation to be
