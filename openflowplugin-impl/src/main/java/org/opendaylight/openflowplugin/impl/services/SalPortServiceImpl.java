@@ -53,10 +53,9 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                 mdInput.setXid(xid.getValue());
                 final PortModInput portModInput = mdInput.build();
                 outboundQueue.commitEntry(xid.getValue(), portModInput, new FutureCallback<OfHeader>() {
-                    RpcResultBuilder<UpdatePortOutput> rpcResultBuilder;
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
-                        rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>success();
+                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.success((UpdatePortOutput)ofHeader);
                         requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
 
@@ -65,7 +64,7 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
 
