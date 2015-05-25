@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 @RunWith(MockitoJUnitRunner.class)
 public class FlowRegistryKeyFactoryTest {
 
@@ -91,8 +93,8 @@ public class FlowRegistryKeyFactoryTest {
 
         HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            flowRegistryKeys.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
-            flowRegistryKeys.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
+            flowRegistryKeys.add(FlowRegistryKeyFactory.create(item));
+            flowRegistryKeys.add(FlowRegistryKeyFactory.create(item));
         }
         assertEquals(3, flowRegistryKeys.size());
     }
@@ -107,7 +109,7 @@ public class FlowRegistryKeyFactoryTest {
                 .setPriority(2)
                 .setTableId((short) 0);
 
-        FlowRegistryKey flow1Hash = FlowHashFactory.create(flow1Builder.build(), OFConstants.OFP_VERSION_1_3);
+        FlowRegistryKey flow1Hash = FlowRegistryKeyFactory.create(flow1Builder.build());
         LOG.info("flowHash1: {}", flow1Hash.hashCode());
 
 
@@ -117,7 +119,7 @@ public class FlowRegistryKeyFactoryTest {
                 .setCookie(new FlowCookie(BigInteger.valueOf(148)))
                 .setMatch(match2Builder.build());
 
-        FlowRegistryKey flow2Hash = FlowHashFactory.create(flow2Builder.build(), OFConstants.OFP_VERSION_1_3);
+        FlowRegistryKey flow2Hash = FlowRegistryKeyFactory.create(flow2Builder.build());
         LOG.info("flowHash2: {}", flow2Hash.hashCode());
 
         Assert.assertNotSame(flow1Hash, flow2Hash);
@@ -136,7 +138,7 @@ public class FlowRegistryKeyFactoryTest {
         FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
         fb1.setTableId(null);
         try {
-            FlowHashFactory.create(fb1.build(), OFConstants.OFP_VERSION_1_3);
+            FlowRegistryKeyFactory.create(fb1.build());
             Assert.fail("hash creation should have failed because of NPE");
         } catch (Exception e) {
             // expected
@@ -146,7 +148,7 @@ public class FlowRegistryKeyFactoryTest {
         FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
         fb2.setPriority(null);
         try {
-            FlowHashFactory.create(fb2.build(), OFConstants.OFP_VERSION_1_3);
+            FlowRegistryKeyFactory.create(fb2.build());
             Assert.fail("hash creation should have failed because of NPE");
         } catch (Exception e) {
             // expected
@@ -155,7 +157,7 @@ public class FlowRegistryKeyFactoryTest {
 
         FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
         fb3.setCookie(null);
-        FlowRegistryKey flowRegistryKey = FlowHashFactory.create(fb3.build(), OFConstants.OFP_VERSION_1_3);
+        FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(fb3.build());
         Assert.assertNotNull(flowRegistryKey.getCookie());
         Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowRegistryKey.getCookie());
     }
@@ -165,7 +167,7 @@ public class FlowRegistryKeyFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowRegistryKey flowRegistryKey = FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3);
+            FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(item);
             FlowRegistryKey lastHash = null;
             if (null != lastHash) {
                 assertNotEquals(lastHash, flowRegistryKey);

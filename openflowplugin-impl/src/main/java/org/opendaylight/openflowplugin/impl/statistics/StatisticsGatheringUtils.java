@@ -24,7 +24,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
+import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -194,9 +194,8 @@ public final class StatisticsGatheringUtils {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                 short tableId = flowStat.getTableId();
-                final Short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
 
-                final FlowRegistryKey flowRegistryKey = FlowHashFactory.create(flowBuilder.build(), version);
+                final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
                 final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
 
                 final FlowKey flowKey = new FlowKey(flowId);
