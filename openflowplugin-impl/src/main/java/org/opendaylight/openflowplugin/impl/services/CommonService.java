@@ -35,7 +35,6 @@ public abstract class CommonService {
     private final ConnectionAdapter primaryConnectionAdapter;
     private final MessageSpy messageSpy;
 
-
     public CommonService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
