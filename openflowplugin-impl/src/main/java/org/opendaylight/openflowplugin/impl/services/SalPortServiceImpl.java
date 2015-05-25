@@ -7,9 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -30,7 +28,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
-public class SalPortServiceImpl extends CommonService implements SalPortService {
+public class SalPortServiceImpl extends CommonService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalPortServiceImpl.class);
 
     public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
@@ -38,42 +36,40 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
     }
 
     @Override
-    public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return handleServiceCall(new Function<RequestContext<UpdatePortOutput>, ListenableFuture<RpcResult<UpdatePortOutput>>>() {
+    protected void sendRequest(final RequestContext<UpdatePortOutput> context, final UpdatePortInput input) {
+        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+
+        final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
+        final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, getVersion());
+        final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
+        final Xid xid = context.getXid();
+        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
+
+        mdInput.setXid(xid.getValue());
+        final PortModInput portModInput = mdInput.build();
+        outboundQueue.commitEntry(xid.getValue(), portModInput, new FutureCallback<OfHeader>() {
             @Override
-            public ListenableFuture<RpcResult<UpdatePortOutput>> apply(final RequestContext<UpdatePortOutput> requestContext) {
-                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+            public void onSuccess(final OfHeader ofHeader) {
+                RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.success((UpdatePortOutput)ofHeader);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
-                final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-                final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, getVersion());
-                final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
-                final Xid xid = requestContext.getXid();
-                final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
+                getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+            }
 
-                mdInput.setXid(xid.getValue());
-                final PortModInput portModInput = mdInput.build();
-                outboundQueue.commitEntry(xid.getValue(), portModInput, new FutureCallback<OfHeader>() {
-                    @Override
-                    public void onSuccess(final OfHeader ofHeader) {
-                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.success((UpdatePortOutput)ofHeader);
-                        requestContext.setResult(rpcResultBuilder.build());
-                        RequestContextUtil.closeRequstContext(requestContext);
+            @Override
+            public void onFailure(final Throwable throwable) {
+                RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
-                        getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                        requestContext.setResult(rpcResultBuilder.build());
-                        RequestContextUtil.closeRequstContext(requestContext);
-
-                        getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                    }
-                });
-                return requestContext.getFuture();
+                getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
     }
 
+    @Override
+    public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
+        return handleServiceCall(input);
+    }
 }

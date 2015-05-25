@@ -25,35 +25,35 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
+public class NodeConfigServiceImpl extends CommonService<SetConfigInput, SetConfigOutput> implements NodeConfigService {
     public NodeConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
-        final RequestContext<SetConfigOutput> requestContext = createRequestContext();
-        if (requestContext == null) {
-            return failedFuture();
-        }
+        return handleServiceCall(input);
+    }
 
+    @Override
+    protected void sendRequest(final RequestContext<SetConfigOutput> context, final SetConfigInput input) {
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
 
-        final Xid xid = requestContext.getXid();
+        final Xid xid = context.getXid();
         builder.setXid(xid.getValue());
         builder.setFlags(flag);
         builder.setMissSendLen(input.getMissSearchLength());
         builder.setVersion(getVersion());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput = builder.build();
-        
+
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         outboundQueue.commitEntry(xid.getValue(), setConfigInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RpcResultBuilder<SetConfigOutput> rpcResultBuilder =  RpcResultBuilder.success((SetConfigOutput)ofHeader);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
@@ -61,13 +61,11 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<SetConfigOutput> rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                requestContext.setResult(rpcResultBuilder.build());
-                RequestContextUtil.closeRequstContext(requestContext);
+                context.setResult(rpcResultBuilder.build());
+                RequestContextUtil.closeRequstContext(context);
 
                 getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
-        return requestContext.getFuture();
-
     }
 }
