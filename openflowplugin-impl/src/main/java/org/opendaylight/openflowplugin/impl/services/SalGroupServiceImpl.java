@@ -89,11 +89,9 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
         final GroupModInput groupModInput = ofGroupModInput.build();
         outboundQueue.commitEntry(xid.getValue(), groupModInput, new FutureCallback<OfHeader>() {
-
-            RpcResultBuilder<T> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                rpcResultBuilder = RpcResultBuilder.<T>success();
+                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.success((T)ofHeader);
                 requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
 
@@ -102,7 +100,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
             @Override
             public void onFailure(final Throwable throwable) {
-                rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
 

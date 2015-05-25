@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -27,8 +26,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
-
-
     public NodeConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
@@ -48,16 +45,13 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         builder.setFlags(flag);
         builder.setMissSendLen(input.getMissSearchLength());
         builder.setVersion(getVersion());
-        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-
-        final SettableFuture<RpcResult<SetConfigOutput>> settableFuture = SettableFuture.create();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput = builder.build();
+        
+        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         outboundQueue.commitEntry(xid.getValue(), setConfigInput, new FutureCallback<OfHeader>() {
-
-            RpcResultBuilder<SetConfigOutput> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                rpcResultBuilder =  RpcResultBuilder.<SetConfigOutput>success();
+                RpcResultBuilder<SetConfigOutput> rpcResultBuilder =  RpcResultBuilder.success((SetConfigOutput)ofHeader);
                 requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
 
@@ -66,7 +60,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
 
             @Override
             public void onFailure(final Throwable throwable) {
-                rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<SetConfigOutput> rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
 
