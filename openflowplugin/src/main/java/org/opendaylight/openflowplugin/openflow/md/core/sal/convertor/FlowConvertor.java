@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
@@ -72,7 +72,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Ordering;
@@ -146,14 +145,11 @@ public class FlowConvertor {
      * If yes its handled separately
      */
     public static List<FlowModInputBuilder> toFlowModInputs(Flow srcFlow, short version, BigInteger datapathId) {
-        List<FlowModInputBuilder> list = new ArrayList<>();
-
         if (version >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(srcFlow)) {
-            list.addAll(handleSetVlanIdForOF13(srcFlow, version, datapathId));
+            return handleSetVlanIdForOF13(srcFlow, version, datapathId);
         } else {
-            list.add(toFlowModInput(srcFlow, version, datapathId));
+            return Collections.singletonList(toFlowModInput(srcFlow, version, datapathId));
         }
-        return list;
     }
 
     public static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
@@ -369,7 +365,6 @@ public class FlowConvertor {
 
     // check if set vlanid action is present in the flow
     private static boolean isSetVlanIdActionCasePresent(Flow flow) {
-        boolean isPresent = false;
         // we are trying to find if there is a set-vlan-id action (OF1.0) action present in the flow.
         // If yes,then we would need to two flows
         if (flow.getInstructions() != null) {
@@ -384,14 +379,13 @@ public class FlowConvertor {
                     for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action :
                             applyActions.getAction()) {
                         if (action.getAction() instanceof SetVlanIdActionCase) {
-                            isPresent = true;
-                            break;
+                            return true;
                         }
                     }
                 }
             }
         }
-        return isPresent;
+        return false;
     }
 
 
@@ -405,7 +399,7 @@ public class FlowConvertor {
      *     2) Match on (OFPVID_PRESENT) with mask (OFPVID_PRESENT ) + action [ set_field]
      */
     private static List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, short version, BigInteger datapathId) {
-        List<FlowModInputBuilder> list = new ArrayList<>();
+        List<FlowModInputBuilder> list = new ArrayList<>(2);
 
         VlanMatch srcVlanMatch = srcFlow.getMatch().getVlanMatch();
         boolean hasVlanMatch = (srcFlow.getMatch() != null && srcVlanMatch != null);
