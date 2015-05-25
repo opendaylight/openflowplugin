@@ -7,24 +7,32 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class CommonService {
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
+abstract class AbstractService<I, O> {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
     private static final long WAIT_TIME = 2000;
     private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
 
@@ -35,7 +43,7 @@ public abstract class CommonService {
     private final ConnectionAdapter primaryConnectionAdapter;
     private final MessageSpy messageSpy;
 
-    public CommonService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
         final FeaturesReply features = this.deviceContext.getPrimaryConnectionContext().getFeatures();
@@ -65,14 +73,25 @@ public abstract class CommonService {
         return messageSpy;
     }
 
+    protected abstract OfHeader buildRequest(Xid xid, I input);
+    protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
-   public final <T> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> function) {
+    public final ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
+        Preconditions.checkNotNull(input);
+
+        final Class<?> requestType;
+        if (input instanceof DataContainer) {
+            requestType = ((DataContainer) input).getImplementedInterface();
+        } else {
+            requestType = input.getClass();
+        }
+        getMessageSpy().spyMessage(requestType, MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
 
         LOG.trace("Handling general service call");
-        final RequestContext<T> requestContext = createRequestContext();
+        final RequestContext<O> requestContext = requestContextStack.createRequestContext();
         if (requestContext == null) {
             LOG.trace("Request context refused.");
-            deviceContext.getMessageSpy().spyMessage(CommonService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            deviceContext.getMessageSpy().spyMessage(AbstractService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
             return failedFuture();
         }
 
@@ -82,14 +101,21 @@ public abstract class CommonService {
         }
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
-        function.apply(requestContext);
+
+        final Xid xid = requestContext.getXid();
+        OfHeader request = null;
+        try {
+            request = buildRequest(xid, input);
+            Verify.verify(xid.getValue().equals(request.getXid()), "Expected XID %s got %s", xid.getValue(), request.getXid());
+        } catch (Exception e) {
+            LOG.error("Failed to build request for {}, forfeiting request {}", input, xid.getValue(), e);
+            // FIXME: complete the requestContext
+        } finally {
+            final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
+            outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
+        }
 
         return requestContext.getFuture();
-
-    }
-
-    protected final <T> RequestContext<T> createRequestContext() {
-        return requestContextStack.createRequestContext();
     }
 
     protected static <T> ListenableFuture<RpcResult<T>> failedFuture() {

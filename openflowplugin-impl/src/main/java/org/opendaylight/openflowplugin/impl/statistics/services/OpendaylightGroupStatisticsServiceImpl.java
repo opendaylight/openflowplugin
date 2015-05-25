@@ -7,17 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.impl.services.CommonService;
-import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.util.StatisticsServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
@@ -27,127 +19,41 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * @author joe
  */
-public class OpendaylightGroupStatisticsServiceImpl extends CommonService implements OpendaylightGroupStatisticsService {
+public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroupStatisticsService {
+    private final AllGroupsStatsService allGroups;
+    private final GroupDescriptionService groupDesc;
+    private final GroupFeaturesService groupFeat;
+    private final GroupStatsService groupStats;
 
-
-    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext);
+    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        allGroups = new AllGroupsStatsService(requestContextStack, deviceContext);
+        groupDesc = new GroupDescriptionService(requestContextStack, deviceContext);
+        groupFeat = new GroupFeaturesService(requestContextStack, deviceContext);
+        groupStats = new GroupStatsService(requestContextStack, deviceContext);
     }
 
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
-
-
-        return handleServiceCall(new Function<RequestContext<GetAllGroupStatisticsOutput>,
-                ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>>>() {
-
-            @Override
-            public ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> apply(final RequestContext<GetAllGroupStatisticsOutput> requestContext) {
-
-                final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-                final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-                mprGroupBuild.setGroupId(new GroupId(
-                        BinContent
-                                .intToUnsignedLong(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group.OFPGALL
-                                        .getIntValue())));
-                caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-                // Create multipart request header
-                final Xid xid = requestContext.getXid();
-                final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                        MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
-
-                // Set request body to main multipart request
-                mprInput.setMultipartRequestBody(caseBuilder.build());
-
-                // Send the request, no cookies associated, use any connection
-
-                MultipartRequestInput multipartRequestInput = mprInput.build();
-
-                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
-            }
-        });
-
+        return allGroups.handleServiceCall(input);
     }
-
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
-        return handleServiceCall(
-                new Function<RequestContext<GetGroupDescriptionOutput>,
-                ListenableFuture<RpcResult<GetGroupDescriptionOutput>>>() {
-
-                    @Override
-                    public ListenableFuture<RpcResult<GetGroupDescriptionOutput>> apply(final RequestContext<GetGroupDescriptionOutput> requestContext) {
-                        final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
-
-                        final Xid xid = requestContext.getXid();
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUPDESC, xid.getValue(), getVersion());
-                        mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
-                        MultipartRequestInput multipartRequestInput = mprInput.build();
-                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
-                    }
-                });
-
+        return groupDesc.handleServiceCall(input);
     }
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
-        return handleServiceCall(
-                new Function<RequestContext<GetGroupFeaturesOutput>,
-                ListenableFuture<RpcResult<GetGroupFeaturesOutput>>>() {
-
-                    @Override
-                    public ListenableFuture<RpcResult<GetGroupFeaturesOutput>> apply(final RequestContext<GetGroupFeaturesOutput> requestContext) {
-                        final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
-
-                        final Xid xid = requestContext.getXid();
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
-                        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-                        MultipartRequestInput multipartRequestInput = mprInput.build();
-                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
-                    }
-                });
-
+        return groupFeat.handleServiceCall(input);
     }
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
-        return handleServiceCall(
-                new Function<RequestContext<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<GetGroupStatisticsOutput>>>() {
-
-                    @Override
-                    public ListenableFuture<RpcResult<GetGroupStatisticsOutput>> apply(final RequestContext<GetGroupStatisticsOutput> requestContext) {
-
-                        final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-                        final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-                        mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
-                        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-                        final Xid xid = requestContext.getXid();
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
-
-                        mprInput.setMultipartRequestBody(caseBuilder.build());
-                        MultipartRequestInput multipartRequestInput = mprInput.build();
-                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
-                    }
-                });
+        return groupStats.handleServiceCall(input);
     }
-
 }
