@@ -56,7 +56,9 @@ import org.slf4j.LoggerFactory;
 public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
+    private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
+    private final int rpcRequestsQuota;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private RpcProviderRegistry rpcProviderRegistry;
@@ -70,12 +72,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private DataBroker dataBroker;
     private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
-    private final Long rpcRequestsQuota;
-    private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
-
-    public OpenFlowPluginProviderImpl(final Long rpcRequestsQuota) {
-        this.rpcRequestsQuota = rpcRequestsQuota;
+    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota) {
+        Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
+        this.rpcRequestsQuota = (int) rpcRequestsQuota;
     }
 
 
