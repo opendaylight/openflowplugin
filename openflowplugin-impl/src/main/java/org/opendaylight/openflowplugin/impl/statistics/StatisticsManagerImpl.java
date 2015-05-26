@@ -14,8 +14,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -84,32 +86,43 @@ public class StatisticsManagerImpl implements StatisticsManager {
     }
 
     private void pollStatistics(final StatisticsContext statisticsContext) {
-        try {
-            timeCounter.markStart();
-            ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-            Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-                @Override
-                public void onSuccess(final Boolean o) {
-                    timeCounter.addTimeMark();
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    timeCounter.addTimeMark();
-                    LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                    LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                }
-            });
-        } finally {
-            calculateTimerDelay();
-            if (null != hashedWheelTimer) {
-                hashedWheelTimer.newTimeout(new TimerTask() {
-                    @Override
-                    public void run(final Timeout timeout) throws Exception {
-                        pollStatistics(statisticsContext);
-                    }
-                }, currentTimerDelay, TimeUnit.MILLISECONDS);
+        timeCounter.markStart();
+        ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean o) {
+                timeCounter.addTimeMark();
+                calculateTimerDelay();
+                scheduleNextPolling(statisticsContext);
             }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                timeCounter.addTimeMark();
+                LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
+                LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
+                for (Map.Entry<DeviceContext, StatisticsContext> entry : contexts.entrySet()) {
+                    if (entry.getValue().equals(statisticsContext)) {
+                        final DeviceContext deviceContext = entry.getKey();
+                        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+                            calculateTimerDelay();
+                            scheduleNextPolling(statisticsContext);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void scheduleNextPolling(final StatisticsContext statisticsContext) {
+        if (null != hashedWheelTimer) {
+            hashedWheelTimer.newTimeout(new TimerTask() {
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    pollStatistics(statisticsContext);
+                }
+            }, currentTimerDelay, TimeUnit.MILLISECONDS);
         }
     }
 
