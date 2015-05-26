@@ -356,7 +356,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
                 VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
                 boolean setCfiBit = false;
-                Integer vidEntryValue = new Integer(0);
+                Integer vidEntryValue = 0;
                 boolean hasmask = false;
                 if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
                     setCfiBit = true;
@@ -940,7 +940,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                 ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
             }
-            if (!ipv4PrefixStr.equals(noIp)) {
+            if (!noIp.equals(ipv4PrefixStr)) {
                 ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
@@ -957,7 +957,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                 ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
             }
-            if (!ipv4PrefixStr.equals(noIp)) {
+            if (!noIp.equals(ipv4PrefixStr)) {
                 ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
