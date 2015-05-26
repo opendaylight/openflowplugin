@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
  */
 public class MatchReactor extends ConvertReactor<Match> {
 
-    private static MatchReactor INSTANCE = new MatchReactor();
+    private static final MatchReactor INSTANCE = new MatchReactor();
 
     private MatchReactor() {
         //NOOP
