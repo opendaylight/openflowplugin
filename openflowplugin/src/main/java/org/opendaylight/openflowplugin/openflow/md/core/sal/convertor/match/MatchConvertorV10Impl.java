@@ -46,7 +46,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
      * that no VLAN ID is set for OF Flow.
      */
-    private static final int OFP_VLAN_NONE = 0xffff;
+    private static final Integer OFP_VLAN_NONE = 0xffff;
 
     /**
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
