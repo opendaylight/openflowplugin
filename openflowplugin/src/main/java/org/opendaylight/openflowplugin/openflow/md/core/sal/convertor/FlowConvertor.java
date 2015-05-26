@@ -72,8 +72,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Ordering;
 
 /**
@@ -257,13 +258,13 @@ public class FlowConvertor {
         if (flow instanceof AddFlowInput) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
-            if (Objects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
+            if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETESTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
             }
         } else if (flow instanceof UpdatedFlow) {
-            if (Objects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
+            if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFYSTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
@@ -424,9 +425,9 @@ public class FlowConvertor {
     private static List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, short version, BigInteger datapathId) {
         List<FlowModInputBuilder> list = new ArrayList<>(2);
 
-        VlanMatch srcVlanMatch = srcFlow.getMatch().getVlanMatch();
-        boolean hasVlanMatch = (srcFlow.getMatch() != null && srcVlanMatch != null);
-        if (hasVlanMatch) {
+        final Match srcMatch = Preconditions.checkNotNull(srcFlow.getMatch());
+        final VlanMatch srcVlanMatch = srcMatch.getVlanMatch();
+        if (srcVlanMatch != null) {
             //create flow with setfield and match
             // match on vlan tag or vlanid with no mask
             VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder(srcVlanMatch);
@@ -434,7 +435,7 @@ public class FlowConvertor {
             vlanIdBuilder.setVlanIdPresent(srcVlanMatch.getVlanId().isVlanIdPresent());
             vlanIdBuilder.setVlanId(srcVlanMatch.getVlanId().getVlanId());
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-            Match match = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder.build()).build();
+            Match match = new MatchBuilder(srcMatch).setVlanMatch(vlanMatchBuilder.build()).build();
 
             Optional<? extends Flow> optional = injectMatchToFlow(srcFlow, match);
             if (optional.isPresent()) {
@@ -444,7 +445,7 @@ public class FlowConvertor {
             // create 2 flows
             //flow 1
             // match on no vlan tag with no mask
-            Match match1 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(VLAN_MATCH_FALSE).build();
+            Match match1 = new MatchBuilder(srcMatch).setVlanMatch(VLAN_MATCH_FALSE).build();
 
             Optional<? extends Flow> optional1 = injectMatchAndAction(srcFlow, match1);
             if (optional1.isPresent()) {
@@ -453,7 +454,7 @@ public class FlowConvertor {
 
             //flow2
             // match on vlan tag with mask
-            Match match2 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(VLAN_MATCH_TRUE).build();
+            Match match2 = new MatchBuilder(srcMatch).setVlanMatch(VLAN_MATCH_TRUE).build();
             Optional<? extends Flow> optional2 = injectMatchToFlow(srcFlow, match2);
             if (optional2.isPresent()) {
                 list.add(toFlowModInput(optional2.get(), version, datapathId));
