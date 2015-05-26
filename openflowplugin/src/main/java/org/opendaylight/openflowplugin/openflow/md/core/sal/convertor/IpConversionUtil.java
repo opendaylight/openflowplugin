@@ -10,7 +10,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.base.Splitter;
-import io.netty.buffer.ByteBufUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -19,10 +18,10 @@ import java.util.Iterator;
 import com.google.common.collect.Iterators;
 import java.util.Arrays;
 import java.net.UnknownHostException;
-import java.net.Inet6Address;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import com.google.common.net.InetAddresses;
+import com.google.common.primitives.UnsignedBytes;
 import com.google.common.base.Preconditions;
 
 
@@ -34,12 +33,12 @@ public final class IpConversionUtil {
 
     public static final String PREFIX_SEPARATOR = "/";
     public static final Splitter PREFIX_SPLITTER = Splitter.on('/');
-    final private static int INADDR4SZ = 4;
-    final private static int INADDR6SZ = 16;
-    final private static int INT16SZ = 2;
+    private static final int INADDR4SZ = 4;
+    private static final int INADDR6SZ = 16;
+    private static final int INT16SZ = 2;
 
     private IpConversionUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        throw new UnsupportedOperationException("This class should not be instantiated.");
     }
 
     public static Iterator<String> splitToParts(final Ipv4Prefix ipv4Prefix) {
@@ -79,13 +78,13 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(Ipv4Address ipv4Address, String mask){
-        /* 
+        /*
          * Ipv4Address has already validated the address part of the prefix,
          * It is mandated to comply to the same regexp as the address
          * There is absolutely no point rerunning additional checks vs this
          * Note - there is no canonical form check here!!!
          */
-        if (null != mask && !mask.equals("")) {
+        if (null != mask && !mask.isEmpty()) {
             return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + mask);
         } else {
             return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + "32");
@@ -93,11 +92,11 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(Ipv4Address ipv4Address, int intmask){
-        return createPrefix(ipv4Address, "" + intmask); 
+        return createPrefix(ipv4Address, String.valueOf(intmask));
     }
 
     public static Ipv4Prefix createPrefix(Ipv4Address ipv4Address, byte [] bytemask){
-        return createPrefix(ipv4Address, "" + countBits(bytemask)); 
+        return createPrefix(ipv4Address, String.valueOf(countBits(bytemask)));
     }
 
     public static Ipv6Prefix createPrefix(Ipv6Address ipv6Address){
@@ -105,13 +104,13 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(Ipv6Address ipv6Address, String mask){
-        /* 
+        /*
          * Ipv6Address has already validated the address part of the prefix,
          * It is mandated to comply to the same regexp as the address
          * There is absolutely no point rerunning additional checks vs this
          * Note - there is no canonical form check here!!!
          */
-        if (null != mask && !mask.equals("")) {
+        if (null != mask && !mask.isEmpty()) {
             return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
         } else {
             return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + "128");
@@ -119,18 +118,19 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(Ipv6Address ipv6Address, int intmask){
-        return createPrefix(ipv6Address, "" + intmask); 
+        return createPrefix(ipv6Address, String.valueOf(intmask));
     }
 
     public static Ipv6Prefix createPrefix(Ipv6Address ipv6Address, byte [] bytemask){
-        /* 
+        /*
          * Ipv4Address has already validated the address part of the prefix,
          * It is mandated to comply to the same regexp as the address
          * There is absolutely no point rerunning additional checks vs this
          * Note - there is no canonical form check here!!!
          */
-         return createPrefix(ipv6Address, "" + countBits(bytemask)); 
+         return createPrefix(ipv6Address, String.valueOf(countBits(bytemask)));
     }
+
     public static Integer extractPrefix(Ipv4Prefix ipv4Prefix) {
         Iterator<String> addressParts = splitToParts(ipv4Prefix);
         addressParts.next();
@@ -192,7 +192,7 @@ public final class IpConversionUtil {
 
 
     public static byte[] canonicalBinaryV6Address(Ipv6Address ipv6Address) {
-        /* 
+        /*
          * Do not modify this routine to take direct strings input!!!
          * Key checks have been removed based on the assumption that
          * the input is validated via regexps in Ipv6Prefix()
@@ -317,15 +317,14 @@ public final class IpConversionUtil {
         return dst;
     }
 
-    static public String byteArrayV6AddressToString (byte [] _binary_form) throws UnknownHostException{
+    public static String byteArrayV6AddressToString (byte [] _binary_form) throws UnknownHostException{
         /* DO NOT DIY!!! - InetAddresses will actually print correct canonical
-         * zero compressed form. 
+         * zero compressed form.
          */
         return InetAddresses.toAddrString(InetAddress.getByAddress(_binary_form));
     }
-    
 
-    static private int nextNibble(int mask) {
+    private static int nextNibble(int mask) {
         if (mask <= 0) {
             return 0;
         }
@@ -335,16 +334,14 @@ public final class IpConversionUtil {
         return 0xff << (8 - mask);
     }
 
-     /**
+    /**
      * Convert Ipv6Prefix object to a valid Canonical v6 prefix in byte format
      *
      * @param ipv6Prefix - v6 prefix object
      * @return - byte array of size 16 + 1. Last byte contains netmask
      */
-
-
     public static byte[] canonicalBinaryV6Prefix(Ipv6Prefix ipv6Prefix) {
-        /* 
+        /*
          * Do not modify this routine to take direct strings input!!!
          * Key checks have been removed based on the assumption that
          * the input is validated via regexps in Ipv6Prefix()
@@ -352,7 +349,7 @@ public final class IpConversionUtil {
 
         int mask = 128;
 
-        String [] address = null; 
+        String [] address = null;
 
         boolean valid = true;
 
@@ -368,7 +365,7 @@ public final class IpConversionUtil {
 
         Preconditions.checkArgument(valid, "Supplied netmask in %s is invalid", ipv6Prefix.getValue());
 
-    
+
         int colonp;
         char ch;
         boolean saw_xdigit;
@@ -509,18 +506,16 @@ public final class IpConversionUtil {
         return dst;
     }
 
-     /**
+    /**
      * Print a v6 prefix in byte array + 1 notation
      *
      * @param _binary_form - prefix, in byte [] form, last byte is netmask
      */
-
-
-    static public String byteArrayV6PrefixToString(byte [] _binary_form) throws UnknownHostException {
+    public static String byteArrayV6PrefixToString(byte [] _binary_form) throws UnknownHostException {
         /* NO DIY!!! - InetAddresses will actually print correct canonical
          * zero compressed form
          */
-        StringBuilder sb = new java.lang.StringBuilder();
+        StringBuilder sb = new StringBuilder();
         /* Yang RFC specifies that the normalized form is RFC 5952, note - java
          * core type is not RFC compliant, guava is.
          */
@@ -531,7 +526,7 @@ public final class IpConversionUtil {
                 )
             )
         );
-        sb.append("/");
+        sb.append('/');
         sb.append(_binary_form[INADDR6SZ] & 0xff);
         return sb.toString();
     }
@@ -543,8 +538,7 @@ public final class IpConversionUtil {
      * @param _prefix - prefix, in byte [] form
      * @param mask - mask - number of bits
      */
-
-    static public void canonicalizeIpv6Prefix(byte [] _prefix, int mask) {
+    public static void canonicalizeIpv6Prefix(byte [] _prefix, int mask) {
 
         for (int i=0; i < INADDR6SZ; i++) {
             _prefix[i] = (byte) (_prefix[i] & nextNibble(mask));
@@ -577,18 +571,11 @@ public final class IpConversionUtil {
         return prefix;
     }
 
-    private static int toInt(byte b) {
-        return b < 0 ? b + 256 : b;
-    }
-
     public static int countBits(byte[] mask) {
         int netmask = 0;
         for (byte b : mask) {
-            netmask += Integer.bitCount(toInt(b));
+            netmask += Integer.bitCount(UnsignedBytes.toInt(b));
         }
         return netmask;
     }
-
-
-
 }
