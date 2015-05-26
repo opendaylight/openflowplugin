@@ -149,6 +149,8 @@ import java.util.Map;
  */
 public class TableFeaturesConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesConvertor.class);
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
+            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>build());
 
     private TableFeaturesConvertor() {
         //hiding implicit construcotr
@@ -182,9 +184,7 @@ public class TableFeaturesConvertor {
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>
-                sortedTableProperties =
-                Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>build())
-                        .sortedCopy(tableProperties.getTableFeatureProperties());
+                sortedTableProperties = TABLE_FEATURE_PROPS_ORDERING.sortedCopy(tableProperties.getTableFeatureProperties());
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties
                 property : sortedTableProperties) {
