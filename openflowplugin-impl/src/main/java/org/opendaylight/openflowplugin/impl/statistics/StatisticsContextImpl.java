@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -37,68 +39,77 @@ public class StatisticsContextImpl implements StatisticsContext {
     private static final String CONNECTION_CLOSED = "Connection closed.";
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
+    private final DeviceState devState;
+    private final ListenableFuture<Boolean> emptyFuture;
 
     private final StatisticsGatheringService statisticsGatheringService;
 
-    public StatisticsContextImpl(final DeviceContext deviceContext) {
-        this.deviceContext = deviceContext;
+    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
+        this.deviceContext = Preconditions.checkNotNull(deviceContext);
+        devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
     }
 
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
-
         final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
-        ListenableFuture<Boolean> resultingFuture = settableResultingFuture;
+        final ListenableFuture<Boolean> flowStatistics = gatherDynamicData(MultipartType.OFPMPFLOW);
+        final ListenableFuture<Boolean> tableStatistics = gatherDynamicData(MultipartType.OFPMPTABLE);
+        final ListenableFuture<Boolean> portStatistics = gatherDynamicData(MultipartType.OFPMPPORTSTATS);
+        final ListenableFuture<Boolean> queueStatistics = gatherDynamicData(MultipartType.OFPMPQUEUE);
+        final ListenableFuture<Boolean> groupDescStatistics = gatherDynamicData(MultipartType.OFPMPGROUPDESC);
+        final ListenableFuture<Boolean> groupStatistics = gatherDynamicData(MultipartType.OFPMPGROUP);
+        final ListenableFuture<Boolean> meterConfigStatistics = gatherDynamicData(MultipartType.OFPMPMETERCONFIG);
+        final ListenableFuture<Boolean> meterStatistics = gatherDynamicData(MultipartType.OFPMPMETER);
 
-
-        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-            final DeviceState devState = deviceContext.getDeviceState();
-            final ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
-            final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPFLOW) : emptyFuture;
-
-            final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPTABLE) : emptyFuture;
-
-            final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPPORTSTATS) : emptyFuture;
-
-            final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPQUEUE) : emptyFuture;
-
-            final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPGROUPDESC) : emptyFuture;
-            final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPGROUP) : emptyFuture;
-
-            final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPMETERCONFIG) : emptyFuture;
-            final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPMETER) : emptyFuture;
-
-
-            final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
-            Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
-                @Override
-                public void onSuccess(final List<Boolean> booleans) {
-                    boolean atLeastOneSuccess = false;
-                    for (final Boolean bool : booleans) {
-                        atLeastOneSuccess |= bool.booleanValue();
-                    }
-                    settableResultingFuture.set(new Boolean(atLeastOneSuccess));
+        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
+        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
+            @Override
+            public void onSuccess(final List<Boolean> booleans) {
+                boolean atLeastOneSuccess = false;
+                for (final Boolean bool : booleans) {
+                    atLeastOneSuccess |= bool.booleanValue();
                 }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    settableResultingFuture.setException(throwable);
-                }
-            });
-        } else {
-            switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
-                case RIP:
-                    resultingFuture = Futures.immediateFailedFuture(new Throwable(String.format("Device connection doesn't exist anymore. Primary connection status : %s", deviceContext.getPrimaryConnectionContext().getConnectionState())));
-                    break;
-                default:
-                    resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
-                    break;
+                settableResultingFuture.set(new Boolean(atLeastOneSuccess));
             }
 
+            @Override
+            public void onFailure(final Throwable throwable) {
+                settableResultingFuture.setException(throwable);
+            }
+        });
+        return settableResultingFuture;
+    }
 
+    @Override
+    public ListenableFuture<Boolean> gatherDynamicData(final MultipartType multipartType) {
+        Preconditions.checkArgument(multipartType != null);
+        final ListenableFuture<Boolean> resultingFuture = deviceConnectionCheck();
+        if (resultingFuture != null) {
+            return resultingFuture;
         }
-        return resultingFuture;
+        switch (multipartType) {
+        case OFPMPFLOW:
+            return collectFlowStatistics(multipartType);
+        case OFPMPTABLE:
+            return collectTableStatistics(multipartType);
+        case OFPMPPORTSTATS:
+            return collectPortStatistics(multipartType);
+        case OFPMPQUEUE:
+            return collectQueueStatistics(multipartType);
+        case OFPMPGROUPDESC:
+            return collectGroupDescStatistics(multipartType);
+        case OFPMPGROUP:
+            return collectGroupStatistics(multipartType);
+        case OFPMPMETERCONFIG:
+            return collectMeterConfigStatistics(multipartType);
+        case OFPMPMETER:
+            return collectMeterStatistics(multipartType);
+        default:
+            LOG.warn("Unsuported Statistics type {}", multipartType);
+            return Futures.immediateCheckedFuture(Boolean.TRUE);
+        }
     }
 
     @Override
@@ -118,5 +129,69 @@ public class StatisticsContextImpl implements StatisticsContext {
         for (final RequestContext<?> requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
+    }
+
+    /**
+     * Method checks a device state. It returns null for be able continue. Otherwise it returns immediateFuture
+     * which has to be returned from caller too
+     *
+     * @return
+     */
+    private ListenableFuture<Boolean> deviceConnectionCheck() {
+        if ( ! ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            ListenableFuture<Boolean> resultingFuture = SettableFuture.create();
+            switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
+            case RIP:
+                final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
+                        deviceContext.getPrimaryConnectionContext().getConnectionState());
+                resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
+                break;
+            default:
+                resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
+                break;
+            }
+            return resultingFuture;
+        }
+        return null;
+    }
+
+    private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
+        return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
+        return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPTABLE*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
+        return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPPORTSTATS*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
+        return devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPQUEUE*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
+        return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUPDESC*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
+        return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUP*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
+        return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETERCONFIG*/ multipartType) : emptyFuture;
+    }
+
+    private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
+        return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
     }
 }
