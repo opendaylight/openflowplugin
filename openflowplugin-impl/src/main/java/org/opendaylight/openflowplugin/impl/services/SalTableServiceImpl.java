@@ -124,6 +124,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII,
                     tableFeatureData);
         }
+        deviceContext.submitTransaction();
     }
 
     protected static List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(

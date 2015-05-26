@@ -123,7 +123,7 @@ public class DeviceContextImpl implements DeviceContext {
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
-        txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -135,9 +135,8 @@ public class DeviceContextImpl implements DeviceContext {
      * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
-    void submitTransaction() {
-        txChainManager.enableSubmit();
-        txChainManager.submitTransaction();
+    void initialSubmitTransaction() {
+        txChainManager.initialSubmitWriteTransaction();
     }
 
     @Override
@@ -179,6 +178,11 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         txChainManager.addDeleteOperationTotTxChain(store, path);
+    }
+
+    @Override
+    public boolean submitTransaction() {
+        return txChainManager.submitWriteTransaction();
     }
 
     @Override
@@ -244,6 +248,7 @@ public class DeviceContextImpl implements DeviceContext {
         } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
+        submitTransaction();
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
@@ -333,17 +338,14 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         deviceState.setValid(false);
-
-        outboundQueueHandlerRegistration.close();
-
-        LOG.trace("Removing node {} from operational DS.", getDeviceState().getNodeId());
-        addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, getDeviceState().getNodeInstanceIdentifier());
 
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
+
+        outboundQueueHandlerRegistration.close();
 
         if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
@@ -354,9 +356,12 @@ public class DeviceContextImpl implements DeviceContext {
                 connectionContext.getConnectionAdapter().disconnect();
             }
         }
+
         for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
+
+        txChainManager.close();
     }
 
     @Override
@@ -409,16 +414,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
         closeHandlers.add(deviceContextClosedHandler);
-    }
-
-    @Override
-    public void startGatheringOperationsToOneTransaction() {
-        txChainManager.startGatheringOperationsToOneTransaction();
-    }
-
-    @Override
-    public void commitOperationsGatheredInOneTransaction() {
-        txChainManager.commitOperationsGatheredInOneTransaction();
     }
 
     @Override
