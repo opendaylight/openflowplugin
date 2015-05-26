@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -29,6 +30,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
     private OutboundQueueProvider outboundQueueProvider;
+    private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
 
     /**
      * @param connectionAdapter
@@ -93,5 +95,22 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setFeatures(final FeaturesReply featuresReply) {
         this.featuresReply = featuresReply;
+    }
+
+    @Override
+    public void close() {
+        if (getConnectionAdapter().isAlive()) {
+            setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
+            getConnectionAdapter().disconnect();
+        }
+        if (outboundQueueHandlerRegistration != null) {
+            outboundQueueHandlerRegistration.close();
+            outboundQueueHandlerRegistration = null;
+        }
+    }
+
+    @Override
+    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration) {
+        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
     }
 }
