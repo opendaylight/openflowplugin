@@ -197,6 +197,8 @@ import com.google.common.collect.Ordering;
 public final class ActionConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(ActionConvertor.class);
     private static final String UNKNOWN_ACTION_TYPE_VERSION = "Unknown Action Type for the Version";
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> ACTION_ORDERING =
+            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build());
 
     private ActionConvertor() {
         // NOOP
@@ -218,8 +220,7 @@ public final class ActionConvertor {
         Action ofAction;
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> sortedActions =
-                Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build())
-                        .sortedCopy(actions);
+                ACTION_ORDERING.sortedCopy(actions);
 
         for (int actionItem = 0; actionItem < sortedActions.size(); actionItem++) {
             ofAction = null;

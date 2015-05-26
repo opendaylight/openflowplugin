@@ -134,6 +134,9 @@ public class FlowConvertor {
      */
     public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntry>();
 
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> INSTRUCTION_ORDERING =
+            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>build());
+
     private static final VlanMatch VLAN_MATCH_FALSE;
     private static final VlanMatch VLAN_MATCH_TRUE;
 
@@ -368,8 +371,7 @@ public class FlowConvertor {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> sortedInstructions =
-                Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>build())
-                        .sortedCopy(instructions.getInstruction());
+                INSTRUCTION_ORDERING.sortedCopy(instructions.getInstruction());
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : sortedInstructions) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
