@@ -1,7 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Ordered;
-
 import java.util.Comparator;
 
 /**
@@ -11,9 +10,12 @@ import java.util.Comparator;
  */
 public class OrderComparator<T extends Ordered> implements Comparator<T> {
 
-    private static OrderComparator instance = new OrderComparator();
-    public static OrderComparator build() {
-        return instance;
+    @SuppressWarnings("rawtypes")
+    private static final OrderComparator INSTANCE = new OrderComparator();
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Ordered> OrderComparator<T> build() {
+        return INSTANCE;
     }
 
     @Override
