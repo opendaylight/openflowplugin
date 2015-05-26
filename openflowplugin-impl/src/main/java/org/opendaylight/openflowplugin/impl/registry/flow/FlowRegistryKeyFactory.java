@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
@@ -29,11 +28,6 @@ public class FlowRegistryKeyFactory {
     public static FlowRegistryKey create(Flow flow) {
         return new FlowRegistryKeyDto(flow);
     }
-
-    private static long calculateHash(Flow flow, short version) {
-        return HashUtil.calculateMatchHash(flow.getMatch(), version);
-    }
-
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
 
