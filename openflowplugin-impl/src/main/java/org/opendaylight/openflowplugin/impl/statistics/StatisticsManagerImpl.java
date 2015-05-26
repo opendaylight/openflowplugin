@@ -53,7 +53,6 @@ public class StatisticsManagerImpl implements StatisticsManager {
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
-            pollStatistics();
         }
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
@@ -65,6 +64,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 if (statisticsGathered.booleanValue()) {
                     //there are some statistics on device worth gathering
                     contexts.put(deviceContext, statisticsContext);
+                    pollStatistics(statisticsContext);
                 }
                 LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
@@ -83,32 +83,30 @@ public class StatisticsManagerImpl implements StatisticsManager {
         });
     }
 
-    private void pollStatistics() {
+    private void pollStatistics(final StatisticsContext statisticsContext) {
         try {
             timeCounter.markStart();
-            for (final StatisticsContext statisticsContext : contexts.values()) {
-                ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(final Boolean o) {
-                        timeCounter.addTimeMark();
-                    }
+            ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+            Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+                @Override
+                public void onSuccess(final Boolean o) {
+                    timeCounter.addTimeMark();
+                }
 
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        timeCounter.addTimeMark();
-                        LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                        LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                    }
-                });
-            }
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    timeCounter.addTimeMark();
+                    LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
+                    LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
+                }
+            });
         } finally {
             calculateTimerDelay();
             if (null != hashedWheelTimer) {
                 hashedWheelTimer.newTimeout(new TimerTask() {
                     @Override
                     public void run(final Timeout timeout) throws Exception {
-                        pollStatistics();
+                        pollStatistics(statisticsContext);
                     }
                 }, currentTimerDelay, TimeUnit.MILLISECONDS);
             }
