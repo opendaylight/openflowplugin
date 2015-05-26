@@ -9,14 +9,11 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -49,37 +46,6 @@ public class StatisticsContextImpl implements StatisticsContext {
         devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
-    }
-
-    @Override
-    public ListenableFuture<Boolean> gatherDynamicData() {
-        final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
-        final ListenableFuture<Boolean> flowStatistics = gatherDynamicData(MultipartType.OFPMPFLOW);
-        final ListenableFuture<Boolean> tableStatistics = gatherDynamicData(MultipartType.OFPMPTABLE);
-        final ListenableFuture<Boolean> portStatistics = gatherDynamicData(MultipartType.OFPMPPORTSTATS);
-        final ListenableFuture<Boolean> queueStatistics = gatherDynamicData(MultipartType.OFPMPQUEUE);
-        final ListenableFuture<Boolean> groupDescStatistics = gatherDynamicData(MultipartType.OFPMPGROUPDESC);
-        final ListenableFuture<Boolean> groupStatistics = gatherDynamicData(MultipartType.OFPMPGROUP);
-        final ListenableFuture<Boolean> meterConfigStatistics = gatherDynamicData(MultipartType.OFPMPMETERCONFIG);
-        final ListenableFuture<Boolean> meterStatistics = gatherDynamicData(MultipartType.OFPMPMETER);
-
-        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
-        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
-            @Override
-            public void onSuccess(final List<Boolean> booleans) {
-                boolean atLeastOneSuccess = false;
-                for (final Boolean bool : booleans) {
-                    atLeastOneSuccess |= bool.booleanValue();
-                }
-                settableResultingFuture.set(new Boolean(atLeastOneSuccess));
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                settableResultingFuture.setException(throwable);
-            }
-        });
-        return settableResultingFuture;
     }
 
     @Override

@@ -18,8 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  */
 public interface StatisticsContext extends RequestContextStack, AutoCloseable {
 
-    public ListenableFuture<Boolean> gatherDynamicData();
-
     ListenableFuture<Boolean> gatherDynamicData(@CheckForNull MultipartType multipartType);
 
 }
