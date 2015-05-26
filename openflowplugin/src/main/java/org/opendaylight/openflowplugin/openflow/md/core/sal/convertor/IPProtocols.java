@@ -7,14 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.HashMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 
 /**
  * @author tkubas
  *
  */
-
 //TODO make a model in YANG for protocols 
 public enum IPProtocols {
     ICMP((short) 1), 
@@ -24,12 +24,13 @@ public enum IPProtocols {
 
     private short protocol;
     
-    private static Map<Short, IPProtocols> valueMap;
+    private static final Map<Short, IPProtocols> VALUE_MAP;
     static {
-        valueMap = new HashMap<>();
+        Builder<Short, IPProtocols> builder = ImmutableMap.builder();
         for(IPProtocols protocols : IPProtocols.values()) {
-            valueMap.put(protocols.protocol, protocols);
+            builder.put(protocols.protocol, protocols);
         }
+        VALUE_MAP = builder.build();
     }
     
     private IPProtocols(short value) {
@@ -37,6 +38,6 @@ public enum IPProtocols {
     }
 
     public static IPProtocols fromProtocolNum(Short protocolNum) {
-        return valueMap.get(protocolNum);
+        return VALUE_MAP.get(protocolNum);
     }
 }
