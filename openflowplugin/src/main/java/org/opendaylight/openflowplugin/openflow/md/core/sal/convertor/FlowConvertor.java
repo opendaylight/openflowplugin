@@ -134,6 +134,27 @@ public class FlowConvertor {
      */
     public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntry>();
 
+    private static final VlanMatch VLAN_MATCH_FALSE;
+    private static final VlanMatch VLAN_MATCH_TRUE;
+
+    static {
+        final VlanId zeroVlan = new VlanId(0);
+        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
+        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+        vlanIdBuilder.setVlanIdPresent(false);
+        vlanIdBuilder.setVlanId(zeroVlan);
+        vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
+
+        VLAN_MATCH_FALSE = vlanMatchBuilder.build();
+
+        VlanMatchBuilder vlanMatchBuilder2 = new VlanMatchBuilder();
+        VlanIdBuilder vlanIdBuilder2 = new VlanIdBuilder();
+        vlanIdBuilder2.setVlanIdPresent(true);
+        vlanIdBuilder2.setVlanId(zeroVlan);
+        vlanMatchBuilder2.setVlanId(vlanIdBuilder2.build());
+
+        VLAN_MATCH_TRUE = vlanMatchBuilder2.build();
+    }
 
     private FlowConvertor() {
         //hiding implicit constructor
@@ -294,7 +315,7 @@ public class FlowConvertor {
             } else if (curInstruction instanceof WriteMetadataCase) {
                 WriteMetadataCase writeMetadatacase = (WriteMetadataCase) curInstruction;
                 WriteMetadata writeMetadata = writeMetadatacase.getWriteMetadata();
-                
+
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
                 writeMetadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(),
@@ -316,16 +337,16 @@ public class FlowConvertor {
             } else if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder applyActionsCaseBuilder = 
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder applyActionsCaseBuilder =
                         new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder applyActionsBuilder = 
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder applyActionsBuilder =
                         new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder();
                 applyActionsBuilder.setAction(ActionConvertor.getActions(applyActions.getAction(), version, datapathid, flow));
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 instructionBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             } else if (curInstruction instanceof ClearActionsCase) {
-                ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();  
+                ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
                 instructionBuilder.setInstructionChoice(clearActionsCaseBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             } else if (curInstruction instanceof MeterCase) {
@@ -421,12 +442,7 @@ public class FlowConvertor {
             // create 2 flows
             //flow 1
             // match on no vlan tag with no mask
-            VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
-            VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            vlanIdBuilder.setVlanIdPresent(false);
-            vlanIdBuilder.setVlanId(new VlanId(0));
-            vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-            Match match1 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder.build()).build();
+            Match match1 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(VLAN_MATCH_FALSE).build();
 
             Optional<? extends Flow> optional1 = injectMatchAndAction(srcFlow, match1);
             if (optional1.isPresent()) {
@@ -435,12 +451,7 @@ public class FlowConvertor {
 
             //flow2
             // match on vlan tag with mask
-            VlanMatchBuilder vlanMatchBuilder2 = new VlanMatchBuilder();
-            VlanIdBuilder vlanIdBuilder2 = new VlanIdBuilder();
-            vlanIdBuilder2.setVlanIdPresent(true);
-            vlanIdBuilder2.setVlanId(new VlanId(0));
-            vlanMatchBuilder2.setVlanId(vlanIdBuilder2.build());
-            Match match2 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder2.build()).build();
+            Match match2 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(VLAN_MATCH_TRUE).build();
             Optional<? extends Flow> optional2 = injectMatchToFlow(srcFlow, match2);
             if (optional2.isPresent()) {
                 list.add(toFlowModInput(optional2.get(), version, datapathId));
