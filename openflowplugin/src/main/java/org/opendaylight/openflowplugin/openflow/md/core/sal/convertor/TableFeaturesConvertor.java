@@ -549,7 +549,7 @@ public class TableFeaturesConvertor {
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.class, TcpSrc.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelId.class, TunnelId.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class, UdpDst.class);
-        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class, UdpSrc.class);
+        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.class, UdpSrc.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class, VlanPcp.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class, VlanVid.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class, Ipv4Dst.class);
