@@ -37,7 +37,6 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private final TimeCounter timeCounter = new TimeCounter();
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
@@ -65,7 +64,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 if (statisticsGathered.booleanValue()) {
                     //there are some statistics on device worth gathering
                     contexts.put(deviceContext, statisticsContext);
-                    pollStatistics(deviceContext, statisticsContext);
+                    final TimeCounter timeCounter = new TimeCounter();
+                    pollStatistics(deviceContext, statisticsContext, timeCounter);
                 }
                 LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
@@ -84,15 +84,17 @@ public class StatisticsManagerImpl implements StatisticsManager {
         });
     }
 
-    private void pollStatistics(final DeviceContext deviceContext, final StatisticsContext statisticsContext) {
+    private void pollStatistics(final DeviceContext deviceContext,
+                                final StatisticsContext statisticsContext,
+                                final TimeCounter timeCounter) {
         timeCounter.markStart();
         ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean o) {
                 timeCounter.addTimeMark();
-                calculateTimerDelay();
-                scheduleNextPolling(deviceContext, statisticsContext);
+                calculateTimerDelay(timeCounter);
+                scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             }
 
             @Override
@@ -101,28 +103,29 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
                 LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
                 if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-                    calculateTimerDelay();
-                    scheduleNextPolling(deviceContext, statisticsContext);
+                    calculateTimerDelay(timeCounter);
+                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
                 }
             }
         });
     }
 
-    private void scheduleNextPolling(final DeviceContext deviceContext, final StatisticsContext statisticsContext) {
+    private void scheduleNextPolling(final DeviceContext deviceContext,
+                                     final StatisticsContext statisticsContext,
+                                     final TimeCounter timeCounter) {
         if (null != hashedWheelTimer) {
             hashedWheelTimer.newTimeout(new TimerTask() {
                 @Override
                 public void run(final Timeout timeout) throws Exception {
-                    pollStatistics(deviceContext, statisticsContext);
+                    pollStatistics(deviceContext, statisticsContext, timeCounter);
                 }
             }, currentTimerDelay, TimeUnit.MILLISECONDS);
         }
     }
 
-    private void calculateTimerDelay() {
+    private void calculateTimerDelay(final TimeCounter timeCounter) {
         long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
-        int numberOfDevices = contexts.size();
-        if ((averageStatisticsGatheringTime * numberOfDevices) > currentTimerDelay) {
+        if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;
             if (currentTimerDelay > maximumTimerDelay) {
                 currentTimerDelay = maximumTimerDelay;
@@ -130,6 +133,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
         } else {
             if (currentTimerDelay > basicTimerDelay) {
                 currentTimerDelay /= 2;
+            } else {
+                currentTimerDelay = basicTimerDelay;
             }
         }
     }
