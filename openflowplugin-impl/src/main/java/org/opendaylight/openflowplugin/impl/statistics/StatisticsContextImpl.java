@@ -53,6 +53,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
+        LOG.debug("Gathering statistics for device {}", deviceContext.getDeviceState().getNodeId().toString());
         final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
         final ListenableFuture<Boolean> flowStatistics = gatherDynamicData(MultipartType.OFPMPFLOW);
         final ListenableFuture<Boolean> tableStatistics = gatherDynamicData(MultipartType.OFPMPTABLE);
@@ -90,25 +91,25 @@ public class StatisticsContextImpl implements StatisticsContext {
             return resultingFuture;
         }
         switch (multipartType) {
-        case OFPMPFLOW:
-            return collectFlowStatistics(multipartType);
-        case OFPMPTABLE:
-            return collectTableStatistics(multipartType);
-        case OFPMPPORTSTATS:
-            return collectPortStatistics(multipartType);
-        case OFPMPQUEUE:
-            return collectQueueStatistics(multipartType);
-        case OFPMPGROUPDESC:
-            return collectGroupDescStatistics(multipartType);
-        case OFPMPGROUP:
-            return collectGroupStatistics(multipartType);
-        case OFPMPMETERCONFIG:
-            return collectMeterConfigStatistics(multipartType);
-        case OFPMPMETER:
-            return collectMeterStatistics(multipartType);
-        default:
-            LOG.warn("Unsuported Statistics type {}", multipartType);
-            return Futures.immediateCheckedFuture(Boolean.TRUE);
+            case OFPMPFLOW:
+                return collectFlowStatistics(multipartType);
+            case OFPMPTABLE:
+                return collectTableStatistics(multipartType);
+            case OFPMPPORTSTATS:
+                return collectPortStatistics(multipartType);
+            case OFPMPQUEUE:
+                return collectQueueStatistics(multipartType);
+            case OFPMPGROUPDESC:
+                return collectGroupDescStatistics(multipartType);
+            case OFPMPGROUP:
+                return collectGroupStatistics(multipartType);
+            case OFPMPMETERCONFIG:
+                return collectMeterConfigStatistics(multipartType);
+            case OFPMPMETER:
+                return collectMeterStatistics(multipartType);
+            default:
+                LOG.warn("Unsuported Statistics type {}", multipartType);
+                return Futures.immediateCheckedFuture(Boolean.TRUE);
         }
     }
 
@@ -138,17 +139,17 @@ public class StatisticsContextImpl implements StatisticsContext {
      * @return
      */
     private ListenableFuture<Boolean> deviceConnectionCheck() {
-        if ( ! ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+        if (!ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             ListenableFuture<Boolean> resultingFuture = SettableFuture.create();
             switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
-            case RIP:
-                final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
-                        deviceContext.getPrimaryConnectionContext().getConnectionState());
-                resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
-                break;
-            default:
-                resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
-                break;
+                case RIP:
+                    final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
+                            deviceContext.getPrimaryConnectionContext().getConnectionState());
+                    resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
+                    break;
+                default:
+                    resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
+                    break;
             }
             return resultingFuture;
         }
