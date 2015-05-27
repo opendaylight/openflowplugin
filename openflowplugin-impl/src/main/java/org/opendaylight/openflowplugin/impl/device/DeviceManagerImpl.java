@@ -150,9 +150,19 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
-        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-
-        deviceContext.onPublished();
+        try {
+            ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
+            deviceContext.onPublished();
+        }
+        catch (final Exception e) {
+            LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
+            LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
+            try {
+                deviceContext.close();
+            } catch (final Exception ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
     }
 
     @Override

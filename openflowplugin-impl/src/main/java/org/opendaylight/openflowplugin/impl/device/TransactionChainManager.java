@@ -9,7 +9,9 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -19,6 +21,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -56,7 +59,17 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         LOG.debug("created txChainManager");
     }
 
-    void initialSubmitWriteTransaction() {
+    void initialSubmitWriteTransaction() throws Exception {
+        Optional<Node> node = Optional.<Node> absent();
+        try {
+            node = dataBroker.newReadOnlyTransaction()
+                    .read(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier()).get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Not able to read node {} in Operation DataStore", deviceState.getNodeId());
+            throw e;
+        }
+        Preconditions.checkArgument((!node.isPresent()), "Node {} is exist, can not add same now!", deviceState.getNodeId());
         enableSubmit();
         submitWriteTransaction();
     }
@@ -66,15 +79,19 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             LOG.trace("transaction not committed - submit block issued");
             return false;
         }
-        if (wTx == null) {
-            LOG.trace("nothing to commit - submit returns true");
-            return true;
-        }
         if ( ! deviceState.isValid()) {
             LOG.info("DeviceState is not valid will not submit transaction");
             return false;
         }
+        if (wTx == null) {
+            LOG.trace("nothing to commit - submit returns true");
+            return true;
+        }
         synchronized (txLock) {
+            if (wTx == null) {
+                LOG.trace("nothing to commit - submit returns true");
+                return true;
+            }
             wTx.submit();
             wTx = null;
         }
@@ -140,7 +157,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Removing node {} from operational DS.", deviceState.getNodeId());
         synchronized (txLock) {
             final WriteTransaction writeTx = getTransactionSafely();
