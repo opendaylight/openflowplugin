@@ -26,9 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -40,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestCommiter extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
-
+    private static final TableKey ZERO_TABLE = new TableKey((short) 0);
     private DataBroker dataService;
 
     private static final AtomicLong ID_COUNTER = new AtomicLong();
@@ -96,7 +94,7 @@ public class DropTestCommiter extends AbstractDropTest {
     }
 
     @Override
-    protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
+    protected void processPacket(final InstanceIdentifier<Node> node, final Match match, final Instructions instructions) {
 
         // Finally build our flow
         final FlowBuilder fb = BUILDER.get();
@@ -105,18 +103,14 @@ public class DropTestCommiter extends AbstractDropTest {
         fb.setId(new FlowId(String.valueOf(fb.hashCode()) + "." + ID_COUNTER.getAndIncrement()));
 
         // Construct the flow instance id
-        final InstanceIdentifier<Flow> flowInstanceId =
-                // File under nodes
-                InstanceIdentifier.builder(Nodes.class)
-                        // A particular node identified by nodeKey
-                        .child(Node.class, node)
-                                // That is flow capable, only FlowCapableNodes have tables
-                        .augmentation(FlowCapableNode.class)
-                                // In the table identified by TableKey
-                        .child(Table.class, new TableKey((short) 0))
-                                // A flow identified by flowKey
-                        .child(Flow.class, new FlowKey(fb.getId()))
-                        .build();
+        final InstanceIdentifier<Flow> flowInstanceId = node.builder()
+                // That is flow capable, only FlowCapableNodes have tables
+                .augmentation(FlowCapableNode.class)
+                // In the table identified by TableKey
+                .child(Table.class, ZERO_TABLE)
+                // A flow identified by flowKey
+                .child(Flow.class, new FlowKey(fb.getId()))
+                .build();
 
         final Flow flow = fb.build();
         final ReadWriteTransaction transaction = dataService.newReadWriteTransaction();
