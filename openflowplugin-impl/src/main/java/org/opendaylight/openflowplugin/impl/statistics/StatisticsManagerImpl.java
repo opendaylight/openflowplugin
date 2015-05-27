@@ -65,7 +65,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
                     //there are some statistics on device worth gathering
                     contexts.put(deviceContext, statisticsContext);
                     final TimeCounter timeCounter = new TimeCounter();
-                    pollStatistics(deviceContext, statisticsContext, timeCounter);
+                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
                 }
                 LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
