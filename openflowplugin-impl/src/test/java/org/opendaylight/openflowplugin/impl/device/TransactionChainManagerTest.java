@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
@@ -21,9 +23,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -34,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * Created by mirehak on 4/5/15.
@@ -53,6 +58,8 @@ public class TransactionChainManagerTest {
     private TransactionChain<?, ?> transactionChain;
     @Mock
     HashedWheelTimer timer;
+    @Mock
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
 
     private TransactionChainManager txChainManager;
     private InstanceIdentifier<Node> path;
@@ -60,9 +67,14 @@ public class TransactionChainManagerTest {
 
     @Before
     public void setUp() throws Exception {
+        final ReadOnlyTransaction readOnlyTx = Mockito.mock(ReadOnlyTransaction.class);
+        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node> absent());
+        Mockito.when(readOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
+        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
         Mockito.when(deviceState.isValid()).thenReturn(Boolean.TRUE);
+        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         txChainManager = new TransactionChainManager(dataBroker, deviceState);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
