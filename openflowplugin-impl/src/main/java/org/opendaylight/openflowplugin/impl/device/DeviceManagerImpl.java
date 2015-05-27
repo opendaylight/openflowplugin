@@ -152,12 +152,18 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         Preconditions.checkNotNull(deviceContext);
         try {
             ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-        } catch (Exception e) {
-            LOG.info("Failed to submit tx for node's initial data collection for node {}", deviceContext.getDeviceState().getNodeId().toString());
-            LOG.debug("Initial node data collection for node {} not collected due :", deviceContext.getDeviceState().getNodeId().toString(), e);
+            deviceContext.onPublished();
         }
-
-        deviceContext.onPublished();
+        catch (final Exception e) {
+            LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
+            LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
+            try {
+                deviceContext.close();
+            }
+            catch (final Exception e1) {
+                LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
+            }
+        }
     }
 
     @Override
@@ -187,7 +193,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), nodeBuilder.build());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.debug("Failed to write node to DS ", e);
         }
 
@@ -225,7 +231,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 final InstanceIdentifier<NodeConnector> connectorII = deviceState.getNodeInstanceIdentifier().child(NodeConnector.class, connector.getKey());
                 try {
                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(), e);
                 }
 
@@ -447,7 +453,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
             try {
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBuilder.build());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.debug("Failed to write node {} to DS ", dContext.getDeviceState().getNodeId().toString(), e);
             }
 
@@ -527,7 +533,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                         throw new IllegalArgumentException("Unnexpected MultipartType " + type);
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.debug("Failed to write node {} to DS ", dContext.getDeviceState().getNodeId().toString(), e);
         }
     }
@@ -554,7 +560,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(), e);
         }
     }
