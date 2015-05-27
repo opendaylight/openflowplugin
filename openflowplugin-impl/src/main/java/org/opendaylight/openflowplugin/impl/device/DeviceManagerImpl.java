@@ -152,12 +152,17 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         Preconditions.checkNotNull(deviceContext);
         try {
             ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-        } catch (Exception e) {
-            LOG.info("Failed to submit tx for node's initial data collection for node {}", deviceContext.getDeviceState().getNodeId().toString());
-            LOG.debug("Initial node data collection for node {} not collected due :", deviceContext.getDeviceState().getNodeId().toString(), e);
+            deviceContext.onPublished();
         }
-
-        deviceContext.onPublished();
+        catch (final Exception e) {
+            LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
+            LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
+            try {
+                deviceContext.close();
+            } catch (final Exception ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
     }
 
     @Override
