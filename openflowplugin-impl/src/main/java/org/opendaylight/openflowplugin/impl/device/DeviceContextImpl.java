@@ -105,7 +105,7 @@ public class DeviceContextImpl implements DeviceContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private NotificationService notificationService;
     private TranslatorLibrary translatorLibrary;
-    private OutboundQueue outboundQueueProvider;
+    private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
 
     @VisibleForTesting
@@ -113,7 +113,7 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
-                      @Nonnull final MessageSpy _messageSpy, OutboundQueueProvider outboundQueueProvider) {
+                      @Nonnull final MessageSpy _messageSpy, final OutboundQueueProvider outboundQueueProvider) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -126,15 +126,16 @@ public class DeviceContextImpl implements DeviceContext {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
 
-        this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
+        packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 PACKETIN_LOW_WATERMARK, PACKETIN_HIGH_WATERMARK, messageSpy, REJECTED_DRAIN_FACTOR);
     }
 
     /**
      * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
+     * @throws Exception - new Node can not be add to Operation DS
      */
-    void initialSubmitTransaction() {
+    void initialSubmitTransaction() throws Exception {
         txChainManager.initialSubmitWriteTransaction();
     }
 
@@ -326,7 +327,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         deviceState.setValid(false);
 
         deviceGroupRegistry.close();
