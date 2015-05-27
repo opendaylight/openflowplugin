@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
@@ -95,7 +93,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
         threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
                 try {
                     workQueue.put(r);
                 } catch (InterruptedException e) {
@@ -190,10 +188,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             // Get the instance identifier for the nodeConnectorRef
             final InstanceIdentifier<?> ncri = ncr.getValue();
 
-            // Get the instanceID for the Node in the tree above us
-            final NodeKey node = ncri.firstKeyOf(Node.class, NodeKey.class);
-
-            processPacket(node, match.build(), isb.build());
+            processPacket(ncri.firstIdentifierOf(Node.class), match.build(), isb.build());
 
             SENT_UPDATER.incrementAndGet(this);
         } catch (final Exception e) {
@@ -204,7 +199,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         }
     }
 
-    protected abstract void processPacket(NodeKey node, Match match, Instructions instructions);
+    protected abstract void processPacket(InstanceIdentifier<Node> node, Match match, Instructions instructions);
 
 
     @Override
