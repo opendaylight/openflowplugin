@@ -24,9 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
-    private static final InstanceIdentifier<Nodes> NODES_IDENTIFIER = InstanceIdentifier.create(Nodes.class);
 
     private SalFlowService flowService;
 
@@ -95,7 +92,7 @@ public class DropTestRpcSender extends AbstractDropTest {
     }
 
     @Override
-    protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
+    protected void processPacket(final InstanceIdentifier<Node> node, final Match match, final Instructions instructions) {
         final AddFlowInputBuilder fb = BUILDER.get();
 
         // Finally build our flow
@@ -103,8 +100,8 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setInstructions(instructions);
 
         // Construct the flow instance id
-        final InstanceIdentifier<Node> flowInstanceId = NODES_IDENTIFIER.child(Node.class, node);
-        fb.setNode(new NodeRef(flowInstanceId));
+
+        fb.setNode(new NodeRef(node));
 
         // Add flow
         final AddFlowInput flow = fb.build();
