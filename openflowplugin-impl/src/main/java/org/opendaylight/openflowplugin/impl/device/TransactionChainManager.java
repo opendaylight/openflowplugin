@@ -62,7 +62,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     boolean submitWriteTransaction() {
-        if ( ! submitIsEnabled) {
+        if (!submitIsEnabled) {
             LOG.trace("transaction not committed - submit block issued");
             return false;
         }
@@ -70,7 +70,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             LOG.trace("nothing to commit - submit returns true");
             return true;
         }
-        if ( ! deviceState.isValid()) {
+        if (!deviceState.isValid()) {
             LOG.info("DeviceState is not valid will not submit transaction");
             return false;
         }
@@ -82,25 +82,15 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-            final InstanceIdentifier<T> path) {
-        try {
-            final WriteTransaction writeTx = getTransactionSafely();
-            writeTx.delete(store, path);
-        } catch (final Exception e) {
-            LOG.warn("failed to put into writeOnlyTransaction : {}", e.getMessage());
-            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
-        }
+                                                             final InstanceIdentifier<T> path) {
+        final WriteTransaction writeTx = getTransactionSafely();
+        writeTx.delete(store, path);
     }
 
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-            final InstanceIdentifier<T> path, final T data) {
-        try {
-            final WriteTransaction writeTx = getTransactionSafely();
-            writeTx.put(store, path, data);
-        } catch (final Exception e) {
-            LOG.warn("failed to put into writeOnlyTransaction: {}", e.getMessage());
-            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
-        }
+                                                   final InstanceIdentifier<T> path, final T data) {
+        final WriteTransaction writeTx = getTransactionSafely();
+        writeTx.put(store, path, data);
     }
 
     @Override
