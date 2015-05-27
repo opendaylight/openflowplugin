@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
@@ -28,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,10 +111,10 @@ public class DropTestRpcSender extends AbstractDropTest {
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
         }
-        ListenableFuture result = JdkFutureAdapters.listenInPoolThread(flowService.addFlow(flow));
-        Futures.addCallback(result, new FutureCallback() {
+        ListenableFuture<RpcResult<AddFlowOutput>> result = JdkFutureAdapters.listenInPoolThread(flowService.addFlow(flow));
+        Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
-            public void onSuccess(final Object o) {
+            public void onSuccess(final RpcResult<AddFlowOutput> o) {
                 countFutureSuccess();
             }
 
