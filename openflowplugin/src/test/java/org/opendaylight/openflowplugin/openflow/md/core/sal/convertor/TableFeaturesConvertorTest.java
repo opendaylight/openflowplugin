@@ -9,17 +9,17 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -85,24 +85,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesConvertorTest extends TestCase {
 
-    @MockitoAnnotations.Mock
+    @Mock
     private TableFeatures tableFeatures;
     private static final TablePropertiesBuilder tablePropertiesBuilder = new TablePropertiesBuilder();
-    private static final Map<Class<? extends TableFeaturePropType>, Object> augmentationsMap = new HashMap<>();
+    private static final Map<Class<? extends TableFeaturePropType>, TableFeaturePropType> augmentationsMap = new HashMap<>();
     private static final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction> instructionsList = new ArrayList<>();
     private static final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions = new ArrayList<>();
     private static final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> fieldTableFeatures = new ArrayList<>();
 
-    private void setupInstructionsList() {
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new GoToTableCaseBuilder().build());
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new WriteMetadataCaseBuilder().build());
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new WriteActionsCaseBuilder().build());
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new ApplyActionsCaseBuilder().build());
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new ClearActionsCaseBuilder().build());
-        instructionsList.add((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction) new MeterCaseBuilder().build());
+    private static void setupInstructionsList() {
+        instructionsList.add(new GoToTableCaseBuilder().build());
+        instructionsList.add(new WriteMetadataCaseBuilder().build());
+        instructionsList.add(new WriteActionsCaseBuilder().build());
+        instructionsList.add(new ApplyActionsCaseBuilder().build());
+        instructionsList.add(new ClearActionsCaseBuilder().build());
+        instructionsList.add(new MeterCaseBuilder().build());
     }
 
-    private void setupFieldTableFeatures() {
+    private static void setupFieldTableFeatures() {
         SetFieldMatchBuilder setFieldMatchBuilder = new SetFieldMatchBuilder();
         setFieldMatchBuilder.setHasMask(true);
         setFieldMatchBuilder.setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class);
@@ -193,7 +193,7 @@ public class TableFeaturesConvertorTest extends TestCase {
         fieldTableFeatures.add(setFieldMatchBuilder.build());
     }
 
-    private void setupActions() {
+    private static void setupActions() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder _actionBuilder = new ActionBuilder();
 
         OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
@@ -350,13 +350,13 @@ public class TableFeaturesConvertorTest extends TestCase {
 
     }
 
-    private TableProperties getTableProperties() {
+    private static TableProperties getTableProperties() {
         TableFeaturePropertiesBuilder tableFeaturePropertiesBuilder = new TableFeaturePropertiesBuilder();
         List<TableFeatureProperties> tableFeaturePropertieses = new ArrayList<>();
         int counter = 0;
-        for (Map.Entry entry : augmentationsMap.entrySet()) {
+        for (Entry<Class<? extends TableFeaturePropType>, TableFeaturePropType> entry : augmentationsMap.entrySet()) {
             counter++;
-            tableFeaturePropertiesBuilder.setTableFeaturePropType((TableFeaturePropType) entry.getValue());
+            tableFeaturePropertiesBuilder.setTableFeaturePropType(entry.getValue());
             tableFeaturePropertiesBuilder.setOrder(counter);
             tableFeaturePropertieses.add(tableFeaturePropertiesBuilder.build());
         }
