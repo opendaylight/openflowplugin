@@ -12,10 +12,12 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -49,6 +51,32 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
+    public void processingMultipartMsg(final MultipartReply reply, final DeviceContext deviceContext) {
+        Preconditions.checkArgument(reply != null);
+        Preconditions.checkArgument(deviceContext != null);
+        LOG.trace("Try to apply Multipart reply msg with XID {} to Transaction", reply.getXid());
+
+        if (msgType == null) {
+            LOG.trace("Initialize Multipart msgType and remove oldStat {}", reply.getType());
+            msgType = reply.getType();
+            StatisticsGatheringUtils.deleteAllOldStatisticsByType(msgType, deviceContext);
+        }
+
+        if (!msgType.equals(reply.getType())) {
+            LOG.warn("MultiMsgCollector get incorrect multipart msg with type {} but expected type is {} - XID {}", reply.getType(), msgType, reply.getXid());
+        }
+
+        LOG.trace("Try to store response to Tx - XID {}", reply.getXid());
+        StatisticsGatheringUtils.stroreStatisticsDataResponse(reply, deviceContext);
+
+        if (!reply.getFlags().isOFPMPFREQMORE()) {
+            LOG.trace("Try to store last MultipartRequest {} - XID {}", reply.getType(), reply.getXid());
+            deviceContext.submitTransaction();
+            endCollecting();
+        }
+    }
+
+    @Override
     public void addMultipartMsg(final MultipartReply reply) {
         addMultipartMsg(reply, null);
     }
@@ -73,10 +101,12 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         }
     }
 
+    @Override
     public void endCollecting() {
         endCollecting(null);
     }
 
+    @Override
     public void endCollecting(final EventIdentifier eventIdentifier) {
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(replyCollection).build();
         if (null != eventIdentifier) {

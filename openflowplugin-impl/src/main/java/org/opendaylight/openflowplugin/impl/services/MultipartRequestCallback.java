@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -22,9 +23,11 @@ import org.slf4j.LoggerFactory;
 final class MultipartRequestCallback extends AbstractRequestCallback<List<MultipartReply>> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartRequestCallback.class);
     private final MultiMsgCollector collector;
+    private final DeviceContext deviceContext;
 
     public MultipartRequestCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType, final DeviceContext deviceContext) {
         super(context, requestType, deviceContext.getMessageSpy());
+        this.deviceContext = Preconditions.checkNotNull(deviceContext);
         collector = deviceContext.getMultiMsgCollector(context);
     }
 
@@ -33,6 +36,7 @@ final class MultipartRequestCallback extends AbstractRequestCallback<List<Multip
                                     final DeviceContext deviceContext,
                                     final EventIdentifier eventIdentifier) {
         super(context, requestType, deviceContext.getMessageSpy(), eventIdentifier);
+        this.deviceContext = Preconditions.checkNotNull(deviceContext);
         collector = deviceContext.getMultiMsgCollector(context);
     }
 
@@ -51,8 +55,7 @@ final class MultipartRequestCallback extends AbstractRequestCallback<List<Multip
                             String.format("Unexpected response type received %s.", result.getClass()));
             setResult(rpcResultBuilder.build());
         } else {
-            collector.addMultipartMsg((MultipartReply) result, getEventIdentifier());
+            collector.processingMultipartMsg((MultipartReply) result, deviceContext);
         }
     }
-
 }
