@@ -11,12 +11,13 @@ package org.opendaylight.openflowplugin.impl.device.listener;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- 
  * Implementation for {@link MultiMsgCollector} interface
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
@@ -50,6 +50,11 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
     @Override
     public void addMultipartMsg(final MultipartReply reply) {
+        addMultipartMsg(reply, null);
+    }
+
+    @Override
+    public void addMultipartMsg(@Nonnull final MultipartReply reply, @Nonnull final EventIdentifier eventIdentifier) {
         Preconditions.checkNotNull(reply);
         Preconditions.checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
         LOG.trace("Try to add Multipart reply msg with XID {}", reply.getXid());
@@ -64,12 +69,19 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
         replyCollection.add(reply);
         if (!reply.getFlags().isOFPMPFREQMORE()) {
-            endCollecting();
+            endCollecting(eventIdentifier);
         }
     }
 
     public void endCollecting() {
+        endCollecting(null);
+    }
+
+    public void endCollecting(final EventIdentifier eventIdentifier) {
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(replyCollection).build();
+        if (null != eventIdentifier) {
+            EventsTimeCounter.markEnd(eventIdentifier);
+        }
         requestContext.setResult(rpcResult);
         requestContext.close();
         deviceReplyProcessor.processReply(requestContext.getXid(), replyCollection);

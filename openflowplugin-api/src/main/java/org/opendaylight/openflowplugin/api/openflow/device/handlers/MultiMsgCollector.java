@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
 /**
@@ -32,10 +33,15 @@ public interface MultiMsgCollector {
      */
     void addMultipartMsg(@Nonnull MultipartReply reply);
 
+    void addMultipartMsg(@Nonnull MultipartReply reply, @Nonnull EventIdentifier eventIdentifier);
+
     /**
      * Null response could be a valid end multipart collecting event for barrier response scenario.
      * We are not able to resolve an issue (it is or it isn't barrier scenario) so we have to finish
      * collecting multipart messages successfully.
      */
     void endCollecting();
+
+    void endCollecting(EventIdentifier eventIdentifier);
+
 }

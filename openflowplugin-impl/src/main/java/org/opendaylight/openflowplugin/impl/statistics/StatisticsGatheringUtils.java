@@ -24,7 +24,9 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -101,24 +103,32 @@ public final class StatisticsGatheringUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
+    public static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
 
     private StatisticsGatheringUtils() {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
 
-
     public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                              final DeviceContext deviceContext,
                                                              final MultipartType type) {
         //FIXME : anytype listener must not be send as parameter, it has to be extracted from device context inside service
+        final String deviceId = deviceContext.getPrimaryConnectionContext().getNodeId().toString();
+        EventIdentifier wholeProcessEventIdentifier = null;
+        if (MultipartType.OFPMPFLOW.equals(type)) {
+            wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceId);
+            EventsTimeCounter.markStart(wholeProcessEventIdentifier);
+        }
+        EventIdentifier ofpQueuToRequestContextEventIdentifier = new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceId);
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
+                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(ofpQueuToRequestContextEventIdentifier, type));
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
-                                                                             final DeviceContext deviceContext) {
+                                                                             final DeviceContext deviceContext,
+                                                                             final EventIdentifier eventIdentifier) {
         return Futures.transform(statisticsDataInFuture, new Function<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -145,6 +155,7 @@ public final class StatisticsGatheringUtils {
                         processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof FlowsStatisticsUpdate) {
                         processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
+                        EventsTimeCounter.markEnd(eventIdentifier);
                     } else if (multipartData instanceof GroupDescStatsUpdated) {
                         processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof MeterConfigStatsUpdated) {
@@ -205,9 +216,9 @@ public final class StatisticsGatheringUtils {
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
             final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
-            for (short i=0; i<numOfTablesOnDevice; i++) {
+            for (short i = 0; i < numOfTablesOnDevice; i++) {
                 final KeyedInstanceIdentifier<Table, TableKey> iiToTable
-                    = nodeIdent.augmentation(FlowCapableNode.class).child( Table.class, new TableKey(i));
+                        = nodeIdent.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(i));
                 final ReadTransaction readTx = deviceContext.getReadTransaction();
                 final CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
                 try {
