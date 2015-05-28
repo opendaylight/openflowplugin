@@ -37,11 +37,53 @@ public class MsgGeneratorTestUtils {
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
                                                         .setMultipartReplyDesc(descValue).build();
 
-        MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
+        final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(replyBody)
                 .setXid(xid)
                 .setFlags(new MultipartRequestFlags(hasNext))
                 .setType(MultipartType.OFPMPDESC);
         return messageBuilder;
     }
+
+//    public static MultipartReplyMessageBuilder makeMultipartFlowReply(final long xid, final int nrOfFlows, final boolean hasNext) {
+//        final List<FlowStats> flowStatsList = generateFlows(nrOfFlows);
+//        final MultipartReplyFlow replyFlows = new MultipartReplyFlowBuilder().setFlowStats(flowStatsList).build();
+//        final MultipartReplyFlowCase replyBody = new MultipartReplyFlowCaseBuilder()
+//                                                        .setMultipartReplyFlow(replyFlows).build();
+//
+//        final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
+//                .setMultipartReplyBody(replyBody)
+//                .setXid(xid)
+//                .setFlags(new MultipartRequestFlags(hasNext))
+//                .setType(MultipartType.OFPMPFLOW);
+//        return messageBuilder;
+//    }
+//
+//    private static List<FlowStats> generateFlows(final int nrOfFlows) {
+//        final List<FlowStats> flowStatsList = new ArrayList<>();
+//        for (int i = 0; i < nrOfFlows; i++) {
+//            final FlowStatsBuilder flowStatBuilder = new FlowStatsBuilder();
+//            flowStatBuilder.setDurationSec(1L);
+//            flowStatBuilder.setDurationNsec(1000000000L);
+//            flowStatBuilder.setPacketCount(BigInteger.ONE);
+//            flowStatBuilder.setTableId((short) 0);
+//            flowStatBuilder.setPriority(i);
+//            flowStatBuilder.setCookie(BigInteger.valueOf(i));
+//            flowStatBuilder.setMatch(makeMatch());
+//            flowStatBuilder.setByteCount(BigInteger.valueOf(i));
+//            flowStatsList.add(flowStatBuilder.build());
+//        }
+//        return flowStatsList;
+//    }
+//
+//    private static Match makeMatch() {
+//        final MatchEntryBuilder builder = new MatchEntryBuilder().set;
+//        MatchEntryValue value;
+//        builder.setMatchEntryValue(value);
+//        builder.build();
+//        final MatchBuilder matchBuilder = new MatchBuilder();
+//        final List<MatchEntry> matchEntries = Collections.singletonList(new MatchEntryBuilder().build());
+//        matchBuilder.setMatchEntry(matchEntries);
+//        return matchBuilder.build();
+//    }
 }

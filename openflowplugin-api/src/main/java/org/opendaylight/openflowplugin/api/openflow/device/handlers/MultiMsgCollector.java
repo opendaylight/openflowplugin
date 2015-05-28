@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
 /**
@@ -34,6 +35,14 @@ public interface MultiMsgCollector {
     void addMultipartMsg(@Nonnull MultipartReply reply);
 
     void addMultipartMsg(@Nonnull MultipartReply reply, @Nonnull EventIdentifier eventIdentifier);
+
+    /**
+     * Method uses Transaction as a collector for all reply msg and calls Tx.submit() for the last
+     * one.
+     * @param reply
+     * @param deviceContext
+     */
+    void processingMultipartMsg(@Nonnull MultipartReply reply, @Nonnull DeviceContext deviceContext);
 
     /**
      * Null response could be a valid end multipart collecting event for barrier response scenario.
