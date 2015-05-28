@@ -11,6 +11,7 @@ import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -27,11 +28,19 @@ final class MultipartRequestCallback extends AbstractRequestCallback<List<Multip
         collector = deviceContext.getMultiMsgCollector(context);
     }
 
+    public MultipartRequestCallback(final RequestContext<List<MultipartReply>> context,
+                                    final Class<?> requestType,
+                                    final DeviceContext deviceContext,
+                                    final EventIdentifier eventIdentifier) {
+        super(context, requestType, deviceContext.getMessageSpy(), eventIdentifier);
+        collector = deviceContext.getMultiMsgCollector(context);
+    }
+
     @Override
     public void onSuccess(final OfHeader result) {
         if (result == null) {
             LOG.info("Ofheader was null.");
-            collector.endCollecting();
+            collector.endCollecting(getEventIdentifier());
             return;
         }
 
@@ -39,10 +48,10 @@ final class MultipartRequestCallback extends AbstractRequestCallback<List<Multip
             LOG.info("Unexpected response type received {}.", result.getClass());
             final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder =
                     RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION,
-                        String.format("Unexpected response type received %s.", result.getClass()));
+                            String.format("Unexpected response type received %s.", result.getClass()));
             setResult(rpcResultBuilder.build());
         } else {
-            collector.addMultipartMsg((MultipartReply) result);
+            collector.addMultipartMsg((MultipartReply) result, getEventIdentifier());
         }
     }
 

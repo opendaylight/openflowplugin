@@ -22,6 +22,8 @@ public abstract class AbstractMultipartService<I> extends AbstractService<I, Lis
 
     @Override
     protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType) {
-        return new MultipartRequestCallback(context, requestType, getDeviceContext());
+        return new MultipartRequestCallback(context, requestType, getDeviceContext(), getEventIdentifier());
     }
+
+
 }
