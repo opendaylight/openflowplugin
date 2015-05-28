@@ -21,6 +21,6 @@ public abstract class AbstractVoidService<T extends DataObject> extends Abstract
 
     @Override
     protected final FutureCallback<OfHeader> createCallback(final RequestContext<Void> context, final Class<?> requestType) {
-        return new VoidRequestCallback(context, requestType, getMessageSpy());
+        return new VoidRequestCallback(context, requestType, getMessageSpy(), getEventIdentifier());
     }
 }

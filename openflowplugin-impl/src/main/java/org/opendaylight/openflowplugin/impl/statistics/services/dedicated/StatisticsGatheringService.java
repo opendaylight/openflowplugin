@@ -13,8 +13,10 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -24,11 +26,14 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
  */
 public class StatisticsGatheringService extends AbstractMultipartService<MultipartType> {
+
     public StatisticsGatheringService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
-    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
+    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
+        EventsTimeCounter.markStart(eventIdentifier);
+        setEventIdentifier(eventIdentifier);
         return handleServiceCall(type);
     }
 
