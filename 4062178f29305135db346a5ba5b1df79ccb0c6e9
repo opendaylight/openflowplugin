@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_45de1013",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-28T18:27:56Z",
+      "side": 1,
+      "message": "Actually, this change to how you init vidEntryValue makes me see a better way to do this. With the present code, you\u0027re doing a boxing conversion on lines 359 and 366. Note that on line 366, you\u0027re doing a boxing conversion, and then you\u0027re asserting that two Integer objects are the same object. Fortunately, this works because Integer \"interns\" the first 128 integer values.\n\nAlso, I would guess that \"vlanId.getVlanId()\" on line 364 is returning an Integer object, which makes it even sillier to call \"getValue()\" on that, returning an \"int\", which immediately reboxes it to Integer.\n\nThis code would be better if you changed \"vidEntryValue\" to \"int\", which would leave the only boxing conversion on line 373 (I assume the formal param of \"setVlanVid\" is Integer), along with a normal int comparison on line 366 instead of the dicy Integer comparison.",
+      "revId": "4062178f29305135db346a5ba5b1df79ccb0c6e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
