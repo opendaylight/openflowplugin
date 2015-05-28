@@ -88,16 +88,6 @@ public class StatisticsContextImpl implements StatisticsContext {
         return settableStatResultFuture;
     }
 
-    @Override
-    public ListenableFuture<Boolean> gatherDynamicData(final MultipartType multipartType) {
-        Preconditions.checkArgument(multipartType != null);
-        final ListenableFuture<Boolean> resultingFuture = deviceConnectionCheck();
-        if (resultingFuture != null) {
-            return resultingFuture;
-        }
-        return choiseStat(multipartType);
-    }
-
     private ListenableFuture<Boolean> choiseStat(final MultipartType multipartType) {
         switch (multipartType) {
             case OFPMPFLOW:
