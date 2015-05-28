@@ -16,11 +16,11 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -42,6 +42,7 @@ abstract class AbstractService<I, O> {
     private final DeviceContext deviceContext;
     private final ConnectionAdapter primaryConnectionAdapter;
     private final MessageSpy messageSpy;
+    private EventIdentifier eventIdentifier;
 
     public AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         this.requestContextStack = requestContextStack;
@@ -51,6 +52,14 @@ abstract class AbstractService<I, O> {
         this.version = features.getVersion();
         this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
         this.messageSpy = deviceContext.getMessageSpy();
+    }
+
+    public EventIdentifier getEventIdentifier() {
+        return eventIdentifier;
+    }
+
+    public void setEventIdentifier(final EventIdentifier eventIdentifier) {
+        this.eventIdentifier = eventIdentifier;
     }
 
     public short getVersion() {
@@ -74,6 +83,7 @@ abstract class AbstractService<I, O> {
     }
 
     protected abstract OfHeader buildRequest(Xid xid, I input);
+
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
     public final ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {

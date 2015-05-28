@@ -16,6 +16,12 @@
         <command name="ofp/clearStats">
             <action class="org.opendaylight.openflowplugin.impl.karaf.ClearStatsCommandProvider"/>
         </command>
+        <command name="ofp/show-time-counters">
+            <action class="org.opendaylight.openflowplugin.impl.karaf.ShowEventTimesComandProvider"/>
+        </command>
+        <command name="ofp/reset-time-counters">
+            <action class="org.opendaylight.openflowplugin.impl.karaf.ResetEventTimesComandProvider"/>
+        </command>
     </command-bundle>
 
 
