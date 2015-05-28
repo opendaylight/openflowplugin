@@ -34,6 +34,24 @@
       "revId": "4062178f29305135db346a5ba5b1df79ccb0c6e9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_20473221",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-28T22:26:57Z",
+      "side": 1,
+      "message": "I was mistaken about what happens on line 366.  The var gets unboxed to int, not the reverse of boxing the int, so the resulting comparison is ok.  However, what you refer to as \"replacing with Integer.intValue()\" is exactly what unboxing is.\n\nI suppose this version results in one boxing followed by an unboxing, and my version is one unboxing followed by a boxing, and your boxing op is for \"0\", which will always be in the boxing cache, and the value mine might box might not be cached (I don\u0027t know the range of values that \"getVlanId().getValue()\" might produce), so I suppose there\u0027s not much value in changing it.\n\nNote that the \"ByteCode Outline\" Eclipse plugin is very handy for seeing what bytecode is produced.  Hard to say what the JIT might eventually produce for any particular sample code.",
+      "parentUuid": "1a9dcd25_a0e4a23b",
+      "revId": "4062178f29305135db346a5ba5b1df79ccb0c6e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
