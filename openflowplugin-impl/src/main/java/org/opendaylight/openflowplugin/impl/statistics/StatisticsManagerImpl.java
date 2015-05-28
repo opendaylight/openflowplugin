@@ -66,10 +66,17 @@ public class StatisticsManagerImpl implements StatisticsManager {
                     contexts.put(deviceContext, statisticsContext);
                     final TimeCounter timeCounter = new TimeCounter();
                     scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+                    LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
+                    deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+                    deviceContext.getDeviceState().setDeviceSynchronized(true);
+                } else {
+                    final String deviceAdress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
+                    try {
+                        deviceContext.close();
+                    } catch (Exception e) {
+                        LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAdress);
+                    }
                 }
-                LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
-                deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-                deviceContext.getDeviceState().setDeviceSynchronized(true);
             }
 
             @Override
