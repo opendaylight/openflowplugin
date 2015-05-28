@@ -16,6 +16,24 @@
       "revId": "4062178f29305135db346a5ba5b1df79ccb0c6e9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_a0e4a23b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-05-28T22:00:57Z",
+      "side": 1,
+      "message": "Well.. that depends largely on what the JVM actually does. I would assume comparing an Integer to an int would result in the former being replaced with Integer.intValue(), which is just an access into the Integer\u0027s field, which will get inlined readily, hence no unboxing would be done -- but that\u0027s a conjecture which would have to be proven by looking at the generated assembly code. Even if it is not smart enough, we can explictly call intValue() on line 366.\n\ngetVlanId/setVlanId work with VlanId, which is a generated DTO encapsulating an Integer -- hence the call to getValue(), which results in an Integer being returned, which we then pass around verbatim.",
+      "parentUuid": "1a9dcd25_45de1013",
+      "revId": "4062178f29305135db346a5ba5b1df79ccb0c6e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
