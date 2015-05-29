@@ -260,6 +260,16 @@
             <artifactId>inventory-manager</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>liblldp</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowplugin.applications</groupId>
+          <artifactId>topology-lldp-discovery</artifactId>
+          <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>
