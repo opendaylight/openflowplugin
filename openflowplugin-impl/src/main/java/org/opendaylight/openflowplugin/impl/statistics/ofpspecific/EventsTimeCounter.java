@@ -99,13 +99,18 @@ public final class EventsTimeCounter {
             }
             counter++;
             delta = System.nanoTime() - delta;
+
             if (delta < minimum || minimum == 0) {
                 minimum = delta;
             }
             if (delta > maximum) {
                 maximum = delta;
             }
-            summary += delta;
+            if (average > 0 && delta > (average * 1.8)) {
+                summary += average;
+            } else {
+                summary += delta;
+            }
             average = summary / counter;
         }
 
