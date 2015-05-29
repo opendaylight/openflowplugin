@@ -187,7 +187,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
@@ -198,7 +198,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
-        deviceContext.setTranslatorLibrary(translatorLibrary);
         deviceContext.addDeviceContextClosedHandler(this);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
