@@ -301,26 +301,31 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
         flowListeningCommiter.cleanForDisconnect(nodeIdent);
 
         Pair<StatPermCollector, UUID> collectorUUIDPair = nodeCollectorMap.get(nodeIdent);
-        StatPermCollector collector = collectorUUIDPair.getLeft();
-        if (collector != null) {
-            nodeCollectorMap.remove(nodeIdent);
-            LOG.debug("NodeRemoved: Num Nodes Registered with StatisticsManager:{}", numNodesBeingCollected.decrementAndGet());
+        if (collectorUUIDPair != null) {
+            StatPermCollector collector = collectorUUIDPair.getLeft();
+            if (collector != null) {
+                nodeCollectorMap.remove(nodeIdent);
+                LOG.debug("NodeRemoved: Num Nodes Registered with StatisticsManager:{}", numNodesBeingCollected.decrementAndGet());
 
-            if (collector.disconnectedNodeUnregistration(nodeIdent)) {
-                if (!collector.hasActiveNodes()) {
-                    synchronized (statCollectorLock) {
-                        if (collector.hasActiveNodes()) {
-                            return;
+                if (collector.disconnectedNodeUnregistration(nodeIdent)) {
+                    if (!collector.hasActiveNodes()) {
+                        synchronized (statCollectorLock) {
+                            if (collector.hasActiveNodes()) {
+                                return;
+                            }
+                            final List<StatPermCollector> newStatColl = new ArrayList<>(statCollectors);
+                            newStatColl.remove(collector);
+                            statCollectors = Collections.unmodifiableList(newStatColl);
                         }
-                        final List<StatPermCollector> newStatColl = new ArrayList<>(statCollectors);
-                        newStatColl.remove(collector);
-                        statCollectors = Collections.unmodifiableList(newStatColl);
                     }
+                    LOG.info("Node:{} successfully removed by StatisticsManager ", nodeIdent);
+                } else {
+                    LOG.error("Collector not disconnecting for node, no operations will be committed for this node:{}", nodeIdent);
                 }
-                LOG.info("Node:{} successfully removed by StatisticsManager ", nodeIdent);
             } else {
-                LOG.error("Collector not disconnecting for node, no operations will be committed for this node:{}", nodeIdent);
+                LOG.error("Unexpected error, collector not found in collectorUUIDPair for node:{}, UUID:{}", nodeIdent, collectorUUIDPair.getRight());
             }
+
         } else {
             LOG.error("Received node removed for {}, but unable to find it in nodeCollectorMap", nodeIdent);
         }
