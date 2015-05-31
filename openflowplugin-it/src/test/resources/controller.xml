@@ -293,6 +293,14 @@
                             <name>binding-osgi-broker</name>
                           </broker>
                         </module>
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:topology-manager:impl">prefix:topology-manager-impl</type>
+                          <name>topology-manager-default</name>
+                          <broker>
+                            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                            <name>binding-osgi-broker</name>
+                          </broker>
+                        </module>
                     </modules>
 
                     <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
