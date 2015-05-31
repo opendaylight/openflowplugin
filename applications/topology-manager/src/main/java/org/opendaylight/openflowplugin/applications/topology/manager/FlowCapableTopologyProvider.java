@@ -8,11 +8,12 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -26,7 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider implements AutoCloseable {
+public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private Thread thread;
@@ -98,21 +99,6 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
                 LOG.warn("Failed to close listener registration: {}", e.getMessage());
                 LOG.debug("Failed to close listener registration.. ", e);
             }
-        }
-    }
-
-    /**
-     * Gets called during stop bundle
-     *
-     * @param context The execution context of the bundle being stopped.
-     */
-    @Override
-    public void stopImpl(final BundleContext context) {
-        try {
-            this.close();
-        } catch (InterruptedException e) {
-            LOG.warn("Failed to stop provider: {}", e.getMessage());
-            LOG.debug("Failed to stop provider.. ", e);
         }
     }
 }
