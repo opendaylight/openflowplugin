@@ -8,14 +8,13 @@
 package org.opendaylight.openflowplugin.applications.inventory.manager;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InventoryActivator extends AbstractBindingAwareProvider {
+public class InventoryActivator implements BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(InventoryActivator.class);
     private FlowCapableInventoryProvider provider;
 
@@ -30,7 +29,7 @@ public class InventoryActivator extends AbstractBindingAwareProvider {
     }
 
     @Override
-    protected void stopImpl(final BundleContext context) {
+    public void close() throws Exception {
         if (provider != null) {
             try {
                 provider.close();
