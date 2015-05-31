@@ -285,6 +285,14 @@
                             <name>binding-osgi-broker</name>
                           </broker>
                         </module>
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:topology-lldp-discovery:impl">prefix:topology-lldp-discovery-impl</type>
+                          <name>topology-lldp-discovery-default</name>
+                          <broker>
+                            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                            <name>binding-osgi-broker</name>
+                          </broker>
+                        </module>
                     </modules>
 
                     <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
