@@ -7,13 +7,15 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
-import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
-import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class LLDPActivator extends AbstractBindingAwareProvider {
+public class LLDPActivator implements BindingAwareProvider, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPActivator.class);
     private static LLDPDiscoveryProvider provider = new LLDPDiscoveryProvider();
 
     public void onSessionInitiated(final ProviderContext session) {
@@ -24,7 +26,14 @@ public class LLDPActivator extends AbstractBindingAwareProvider {
         provider.start();
     }
 
-    protected void stopImpl(final BundleContext context) {
-        provider.close();
+    @Override
+    public void close() throws Exception {
+        if(provider != null) {
+            try {
+                provider.close();
+            } catch (Exception e) {
+                LOG.warn("Exception when closing down topology-lldp-discovery",e);
+            }
+        }
     }
 }
