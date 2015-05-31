@@ -277,6 +277,14 @@
                                 <name>binding-rpc-broker</name>
                             </rpc-registry>
                         </module>
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:inventory-manager:impl">prefix:inventory-manager-impl</type>
+                          <name>inventory-manager-default</name>
+                          <broker>
+                            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                            <name>binding-osgi-broker</name>
+                          </broker>
+                        </module>
                     </modules>
 
                     <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
