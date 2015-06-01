@@ -7,11 +7,18 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -168,7 +175,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -298,13 +304,16 @@ public abstract class OFRpcTaskFactory {
      */
     public static OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> createUpdateFlowTask(
             final OFRpcTaskContext taskContext, UpdateFlowInput input,
-            SwitchConnectionDistinguisher cookie) {
+            SwitchConnectionDistinguisher cookie, final WriteTransaction wTx) {
 
         class OFRpcTaskImpl extends OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> {
-
+            final WriteTransaction wTx;
+            InstanceIdentifier reference = null;
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                    UpdateFlowInput input) {
-                super(taskContext, cookie, input);
+                    final UpdateFlowInput in, final WriteTransaction wTx) {
+                super(taskContext, cookie, in);
+                InstanceIdentifier<?> reference = in.getFlowRef().getValue();
+                this.wTx = wTx;
             }
 
             @Override
@@ -344,15 +353,34 @@ public abstract class OFRpcTaskFactory {
                 OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
                         createFlowUpdatedNotification(in));
+
+                String hashKey = buildFlowIdOperKey(original);
+                deleteHashCache(wTx, new FlowHashIdMapKey(hashKey));
                 return result;
             }
+
+            String buildFlowIdOperKey(final Flow flow) {
+                return new StringBuilder().append(flow.getMatch())
+                        .append(flow.getPriority()).append(flow.getCookie().getValue()).toString();
+            }
+
+            void deleteHashCache(final WriteTransaction trans, final FlowHashIdMapKey hashingKey) {
+                InstanceIdentifier tableII = reference.firstIdentifierOf(Table.class);
+
+                final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> flHashIdent = tableII
+                        .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, hashingKey);
+                trans.delete(LogicalDatastoreType.OPERATIONAL, flHashIdent);
+            }
+
+
+
 
             @Override
             public Boolean isBarrier() {
                 return getInput().getUpdatedFlow().isBarrier();
             }
         }
-        return new OFRpcTaskImpl(taskContext, cookie, input);
+        return new OFRpcTaskImpl(taskContext, cookie, input, wTx);
     }
 
 

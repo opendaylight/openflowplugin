@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
@@ -224,9 +226,10 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
+        final WriteTransaction wTx = OFSessionUtil.getSessionManager().getDataBroker().newWriteOnlyTransaction();
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task =
-                OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie, wTx);
+        wTx.submit();
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
         return result;
