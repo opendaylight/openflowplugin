@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -53,6 +54,7 @@ import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryIm
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -109,6 +111,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
+    private Map<Long, NodeConnectorRef> nodeConnectorCache;
 
 
     @VisibleForTesting
@@ -139,6 +142,7 @@ public class DeviceContextImpl implements DeviceContext {
                 new TranslatorKey(deviceState.getVersion(), PortGrouping.class.getName()));
         packetInTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceState.getVersion(), PacketIn.class.getName()));
+        nodeConnectorCache = new ConcurrentHashMap<>();
     }
 
     /**
@@ -409,5 +413,17 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext) {
         return new MultiMsgCollectorImpl(this, requestContext);
+    }
+
+    @Override
+    public NodeConnectorRef lookupNodeConnectorRef(Long portNumber) {
+        return nodeConnectorCache.get(portNumber);
+    }
+
+    @Override
+    public void storeNodeConnectorRef(final Long portNumber, final NodeConnectorRef nodeConnectorRef) {
+        nodeConnectorCache.put(
+                Preconditions.checkNotNull(portNumber),
+                Preconditions.checkNotNull(nodeConnectorRef));
     }
 }

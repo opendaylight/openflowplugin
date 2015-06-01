@@ -51,7 +51,8 @@ public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         MessageHandler,
         DeviceReplyProcessor,
-        DeviceDisconnectedHandler {
+        DeviceDisconnectedHandler,
+        PortNumberCache {
 
 
     /**
