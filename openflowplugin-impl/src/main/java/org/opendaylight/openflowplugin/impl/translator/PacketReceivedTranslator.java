@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Matc
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCase;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
 /**
  * Created by tkubas on 4/1/15.
@@ -56,13 +58,19 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
             packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
         }
         if (port != null) {
-            packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(
-                    datapathId, port, OpenflowVersion.get(input.getVersion()), deviceContext.getDeviceState().getNodeInstanceIdentifier()));
+            NodeConnectorRef nodeConnectorRef = deviceContext.lookupNodeConnectorRef(port);
+            if (nodeConnectorRef == null) {
+                nodeConnectorRef = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(
+                        datapathId, port, OpenflowVersion.get(input.getVersion()), deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                deviceContext.storeNodeConnectorRef(port, nodeConnectorRef);
+            }
+            packetReceivedBuilder.setIngress(nodeConnectorRef);
         }
+
         packetReceivedBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(input.getReason()));
 
         if (input.getTableId() != null) {
-            packetReceivedBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(input.getTableId().getValue().shortValue()));
+            packetReceivedBuilder.setTableId(new TableId(input.getTableId().getValue().shortValue()));
         }
 
         if (input.getMatch() != null) {
