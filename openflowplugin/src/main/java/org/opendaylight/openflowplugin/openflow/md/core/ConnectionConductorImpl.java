@@ -446,6 +446,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void onConnectionReady() {
         LOG.debug("connection is ready-to-use");
         if (!firstHelloProcessed) {
+            checkState(CONDUCTOR_STATE.HANDSHAKING);
             HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                     null, handshakeManager, connectionAdapter);
             hsPool.execute(handshakeStepWrapper);
