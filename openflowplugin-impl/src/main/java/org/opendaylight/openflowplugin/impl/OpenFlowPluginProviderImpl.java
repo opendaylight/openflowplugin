@@ -72,6 +72,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private DataBroker dataBroker;
     private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
+    private boolean switchFeaturesMandatory = false;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -100,6 +101,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 LOG.warn("Some switchConnectionProviders failed to start.", t);
             }
         });
+    }
+
+    public boolean isSwitchFeaturesMandatory() {
+        return switchFeaturesMandatory;
+    }
+
+    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
@@ -143,7 +152,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory);
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
