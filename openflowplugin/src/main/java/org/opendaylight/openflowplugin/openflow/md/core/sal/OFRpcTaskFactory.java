@@ -7,11 +7,23 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+
+import com.google.common.base.Optional;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -168,7 +180,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -298,13 +309,23 @@ public abstract class OFRpcTaskFactory {
      */
     public static OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> createUpdateFlowTask(
             final OFRpcTaskContext taskContext, UpdateFlowInput input,
-            SwitchConnectionDistinguisher cookie) {
+            SwitchConnectionDistinguisher cookie, final ReadWriteTransaction rwTx) {
 
         class OFRpcTaskImpl extends OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> {
-
+            final ReadWriteTransaction rwTx;
+            InstanceIdentifier<Table> iiToTable = null;
+            String flowId = null;
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                    UpdateFlowInput input) {
-                super(taskContext, cookie, input);
+                    final UpdateFlowInput in, final ReadWriteTransaction rwTx) {
+                super(taskContext, cookie, in);
+                InstanceIdentifier<Flow> iiToFlow = (InstanceIdentifier<Flow>)(in.getFlowRef().getValue());
+                iiToTable = in.getFlowRef().getValue().firstIdentifierOf(Table.class);
+                FlowKey flowKey = iiToFlow.firstKeyOf(
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow.class, FlowKey.class);
+                if (flowKey != null) {
+                    flowId = flowKey.getId().getValue();
+                }
+                this.rwTx = rwTx;
             }
 
             @Override
@@ -336,6 +357,8 @@ public abstract class OFRpcTaskFactory {
                             version, getSession().getFeatures().getDatapathId());
                 }
 
+                deleteFlowHashIdFromOperationalDS(rwTx);
+
                 allFlowMods.addAll(ofFlowModInputs);
                 LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
                 result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
@@ -344,15 +367,49 @@ public abstract class OFRpcTaskFactory {
                 OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
                         createFlowUpdatedNotification(in));
+
                 return result;
             }
+
+
+            void deleteFlowHashIdFromOperationalDS(final ReadWriteTransaction rwTx) {
+                InstanceIdentifier<FlowHashIdMapping> iiToFlowHashIdMapping = iiToTable
+                        .augmentation(FlowHashIdMapping.class);
+                CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> flowHashIdMappingFut
+                    = rwTx.read(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdMapping);
+
+                Optional<FlowHashIdMapping> optFlowHashIdMapping = Optional.absent();
+                try {
+                    optFlowHashIdMapping = flowHashIdMappingFut.checkedGet();
+                } catch (ReadFailedException e) {
+                    e.printStackTrace();
+                }
+
+                FlowHashIdMapKey flowHashIdMapKeyToDelete = null;
+                if (optFlowHashIdMapping.isPresent()) {
+                    FlowHashIdMapping flowHashIdMapping = optFlowHashIdMapping.get();
+                    for (FlowHashIdMap flowHashId : flowHashIdMapping.getFlowHashIdMap()) {
+                        if (flowHashId.getFlowId().getValue().equals(flowId)) {
+                            flowHashIdMapKeyToDelete = flowHashId.getKey();
+                            break;
+                        }
+                    }
+                }
+                if (flowHashIdMapKeyToDelete != null) {
+                    final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
+                          .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
+                    rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
+                    rwTx.submit();
+                }
+            }
+
 
             @Override
             public Boolean isBarrier() {
                 return getInput().getUpdatedFlow().isBarrier();
             }
         }
-        return new OFRpcTaskImpl(taskContext, cookie, input);
+        return new OFRpcTaskImpl(taskContext, cookie, input, rwTx);
     }
 
 
