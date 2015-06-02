@@ -8,6 +8,27 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+
+import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +36,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -136,7 +156,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -159,6 +178,10 @@ public class ModelDrivenSwitchImplTest {
     private GetFeaturesOutput features;
     @Mock
     private MessageSpy<DataContainer> messageSpy;
+    @Mock
+    private DataBroker dataBroker;
+    @Mock
+    private ReadWriteTransaction rwTx;
 
     /**
      * @throws java.lang.Exception
@@ -171,9 +194,18 @@ public class ModelDrivenSwitchImplTest {
                 .thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(context.getFeatures()).thenReturn(features);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
-        
+
+
         OFSessionUtil.getSessionManager().setRpcPool(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10)));
         OFSessionUtil.getSessionManager().setMessageSpy(messageSpy);
+        OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
+
+        CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> dummyReadFuture
+            = Futures.<Optional<FlowHashIdMapping>,ReadFailedException>immediateCheckedFuture(Optional.<FlowHashIdMapping>absent());
+        Mockito.when(rwTx.read(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<FlowHashIdMapping>>any())).thenReturn(dummyReadFuture);
+        Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(rwTx);
+
+
         OpenflowPortsUtil.init();
 
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
@@ -184,8 +216,8 @@ public class ModelDrivenSwitchImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#addFlow(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testAddFlow() throws InterruptedException, ExecutionException {
@@ -213,8 +245,8 @@ public class ModelDrivenSwitchImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#removeFlow(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testRemoveFlow() throws InterruptedException, ExecutionException {
@@ -236,15 +268,15 @@ public class ModelDrivenSwitchImplTest {
         Mockito.verify(messageDispatchService, Mockito.times(2)).flowMod(
                 Matchers.any(FlowModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
-        
+
     }
 
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#updateFlow(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testUpdateFlow() throws InterruptedException, ExecutionException {
@@ -268,7 +300,13 @@ public class ModelDrivenSwitchImplTest {
         originalFlowBuilder.setPriority(65);
         originalFlowBuilder.setFlags(new FlowModFlags(true, false, true, false, true));
         input.setOriginalFlow(originalFlowBuilder.build());
-        
+        KeyedInstanceIdentifier<Flow, FlowKey> dummyIdentifier = InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey((short)0))
+            .child(Flow.class, new FlowKey(new FlowId("1")));
+        input.setFlowRef(new FlowRef(dummyIdentifier));
+
         Mockito.when(features.getVersion()).thenReturn((short)1);
         mdSwitchOF10.updateFlow(input.build()).get();
         Mockito.when(features.getVersion()).thenReturn((short)4);
@@ -277,15 +315,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(FlowModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * addGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.
      * AddGroupInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testAddGroup() throws InterruptedException, ExecutionException {
@@ -307,15 +345,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(GroupModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * updateGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.
      * UpdateGroupInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testUpdateGroup() throws InterruptedException, ExecutionException {
@@ -339,15 +377,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(GroupModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * removeGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.
      * RemoveGroupInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testRemoveGroup() throws InterruptedException, ExecutionException {
@@ -369,15 +407,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(GroupModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * addMeter(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.
      * AddMeterInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testAddMeter() throws InterruptedException, ExecutionException {
@@ -398,15 +436,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MeterModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * updateMeter(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.
      * UpdateMeterInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testUpdtateMeter() throws InterruptedException, ExecutionException {
@@ -430,15 +468,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MeterModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * removeMeter(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.
      * RemoveMeterInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testRemoveMeter() throws InterruptedException, ExecutionException {
@@ -452,22 +490,22 @@ public class ModelDrivenSwitchImplTest {
 
         RemoveMeterInputBuilder input = new RemoveMeterInputBuilder();
         input.setMeterId(new MeterId(89L));
-        
+
         mdSwitchOF10.removeMeter(input.build()).get();
         mdSwitchOF13.removeMeter(input.build()).get();
         Mockito.verify(messageDispatchService, Mockito.times(2)).meterMod(
                 Matchers.any(MeterModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllGroupStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
      * GetAllGroupStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllGroupStatistics() throws InterruptedException, ExecutionException {
@@ -487,15 +525,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getGroupDescription(org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
      * GetGroupDescriptionInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetGroupDescription() throws InterruptedException, ExecutionException {
@@ -515,15 +553,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getGroupFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
      * GetGroupFeaturesInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetGroupFeatures() throws InterruptedException, ExecutionException {
@@ -543,15 +581,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getGroupStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
      * GetGroupStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     //TODO GetGroupStatistics why NPE?
     @Test
@@ -573,19 +611,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllMeterConfigStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
      * GetAllMeterConfigStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllMeterConfigStatistics() throws InterruptedException, ExecutionException {
-        GetAllMeterConfigStatisticsOutputBuilder getAllMeterConfigStatsOutput = 
+        GetAllMeterConfigStatisticsOutputBuilder getAllMeterConfigStatsOutput =
                 new GetAllMeterConfigStatisticsOutputBuilder();
         getAllMeterConfigStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -602,19 +640,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllMeterStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
      * GetAllMeterStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllMeterStatistics() throws InterruptedException, ExecutionException {
-        GetAllMeterStatisticsOutputBuilder getAllMeterStatisticsOutput = 
+        GetAllMeterStatisticsOutputBuilder getAllMeterStatisticsOutput =
                 new GetAllMeterStatisticsOutputBuilder();
         getAllMeterStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -631,19 +669,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getMeterFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
      * GetMeterFeaturesInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetMeterFeatures() throws InterruptedException, ExecutionException {
-        GetMeterFeaturesOutputBuilder getMeterFeaturesOutput = 
+        GetMeterFeaturesOutputBuilder getMeterFeaturesOutput =
                 new GetMeterFeaturesOutputBuilder();
         getMeterFeaturesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -660,15 +698,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getMeterStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
      * GetMeterStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetMeterStatistics() throws InterruptedException, ExecutionException {
@@ -689,19 +727,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllNodeConnectorsStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.
      * GetAllNodeConnectorsStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllNodeConnectorsStatistics() throws InterruptedException, ExecutionException {
-        GetAllNodeConnectorsStatisticsOutputBuilder getAllNodeConnectorsStatsOutput = 
+        GetAllNodeConnectorsStatisticsOutputBuilder getAllNodeConnectorsStatsOutput =
                 new GetAllNodeConnectorsStatisticsOutputBuilder();
         getAllNodeConnectorsStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -718,19 +756,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getNodeConnectorStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.
      * GetNodeConnectorStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetNodeConnectorStatistics() throws InterruptedException, ExecutionException {
-        GetNodeConnectorStatisticsOutputBuilder getNodeConnectorStatsOutput = 
+        GetNodeConnectorStatisticsOutputBuilder getNodeConnectorStatsOutput =
                 new GetNodeConnectorStatisticsOutputBuilder();
         getNodeConnectorStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -741,7 +779,7 @@ public class ModelDrivenSwitchImplTest {
 
         GetNodeConnectorStatisticsInputBuilder input = new GetNodeConnectorStatisticsInputBuilder();
         input.setNodeConnectorId(new NodeConnectorId("openflow:12:8"));
-        
+
         Mockito.when(features.getVersion()).thenReturn((short)1);
         mdSwitchOF10.getNodeConnectorStatistics(input.build()).get();
         Mockito.when(features.getVersion()).thenReturn((short)4);
@@ -750,15 +788,15 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * updatePort(org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.
      * UpdatePortInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testUpdatePort() throws InterruptedException, ExecutionException {
@@ -771,10 +809,10 @@ public class ModelDrivenSwitchImplTest {
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
         UpdatePortInputBuilder input = new UpdatePortInputBuilder();
-        
+
         PortBuilder portBuilder = new PortBuilder();
         List<Port> ports = new ArrayList<Port>();
-        ports.add(createPort()); 
+        ports.add(createPort());
         portBuilder.setPort(ports);
         UpdatedPortBuilder updatedPortBuilder = new UpdatedPortBuilder();
         updatedPortBuilder.setPort(portBuilder.build());
@@ -786,16 +824,16 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(PortModInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     private static Port createPort() {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder port = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder port =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder();
-        
+
         port.setPortName("TestingPort01");
         port.setMask(new PortConfig(true, true, true, true));
         port.setConfiguration(new PortConfig(true, true, true, true));
-        port.setAdvertisedFeatures(new PortFeatures(true, true, true, true, 
-                                                    false, false, false, false, 
+        port.setAdvertisedFeatures(new PortFeatures(true, true, true, true,
+                                                    false, false, false, false,
                                                     true, true, true, true,
                                                     false, false, false, false));
         port.setPortNumber(new PortNumberUni(42L));
@@ -806,15 +844,15 @@ public class ModelDrivenSwitchImplTest {
         port.setKey(new PortKey(25L));
         return port.build();
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * updateTable(org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.
      * UpdateTableInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testUpdateTable() throws InterruptedException, ExecutionException {
@@ -835,7 +873,7 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     private static UpdatedTable createUpdateTable() {
         UpdatedTableBuilder updatedTableBuilder = new UpdatedTableBuilder();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
@@ -846,7 +884,7 @@ public class ModelDrivenSwitchImplTest {
         tableFeaturesBuilder.setMetadataWrite(new BigInteger("42424242"));
         tableFeaturesBuilder.setName("testTableFeatures");
         tableFeaturesBuilder.setTableId((short) 41);
-        
+
         TablePropertiesBuilder tablePropertiesBuilder = new TablePropertiesBuilder();
         TableFeaturePropertiesBuilder tableFeaturePropertiesBuilder = new TableFeaturePropertiesBuilder();
         tableFeaturePropertiesBuilder.setKey(new TableFeaturePropertiesKey(45));
@@ -855,26 +893,26 @@ public class ModelDrivenSwitchImplTest {
         List<TableFeatureProperties> tableFeatureProperties = new ArrayList<TableFeatureProperties>();
         tableFeatureProperties.add(tableFeaturePropertiesBuilder.build());
         tablePropertiesBuilder.setTableFeatureProperties(tableFeatureProperties);
-        
+
         tableFeaturesBuilder.setTableProperties(tablePropertiesBuilder.build());
         List<TableFeatures> tableFeatures = new ArrayList<TableFeatures>();
         tableFeatures.add(tableFeaturesBuilder.build());
         updatedTableBuilder.setTableFeatures(tableFeatures);
         return updatedTableBuilder.build();
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllFlowStatisticsFromFlowTable(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.
      * GetAllFlowStatisticsFromFlowTableInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllFlowStatisticsFromFlowTable() throws InterruptedException, ExecutionException {
-        GetAllFlowStatisticsFromFlowTableOutputBuilder allFlowStatisticsFromFlowTableOutput = 
+        GetAllFlowStatisticsFromFlowTableOutputBuilder allFlowStatisticsFromFlowTableOutput =
                 new GetAllFlowStatisticsFromFlowTableOutputBuilder();
         allFlowStatisticsFromFlowTableOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -892,19 +930,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllFlowStatisticsFromFlowTable(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.
      * GetAllFlowStatisticsFromFlowTableInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllFlowsStatisticsFromAllFlowTables() throws InterruptedException, ExecutionException {
-        GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder allFlowStatisticsFromAllFlowTablesOutput = 
+        GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder allFlowStatisticsFromAllFlowTablesOutput =
                 new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder();
         allFlowStatisticsFromAllFlowTablesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -913,7 +951,7 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input = 
+        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input =
                                     new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder();
 
         mdSwitchOF10.getAllFlowsStatisticsFromAllFlowTables(input.build()).get();
@@ -922,19 +960,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllFlowStatisticsFromFlowTable(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.
      * GetAllFlowStatisticsFromFlowTableInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetFlowStatisticsFromFlowTables() throws InterruptedException, ExecutionException {
-        GetFlowStatisticsFromFlowTableOutputBuilder flowStatisticsFromFlowTablesOutput = 
+        GetFlowStatisticsFromFlowTableOutputBuilder flowStatisticsFromFlowTablesOutput =
                 new GetFlowStatisticsFromFlowTableOutputBuilder();
         flowStatisticsFromFlowTablesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -943,9 +981,9 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetFlowStatisticsFromFlowTableInputBuilder input = 
+        GetFlowStatisticsFromFlowTableInputBuilder input =
                                     new GetFlowStatisticsFromFlowTableInputBuilder();
-        input.setMatch(createMatch()); 
+        input.setMatch(createMatch());
 
         mdSwitchOF10.getFlowStatisticsFromFlowTable(input.build()).get();
         mdSwitchOF13.getFlowStatisticsFromFlowTable(input.build()).get();
@@ -953,36 +991,36 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     private static Match createMatch() {
-        MatchBuilder matchBuilder = new MatchBuilder(); 
+        MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
         EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
         ethernetDestinationBuilder.setAddress(new MacAddress("01:23:45:67:89:ab"));
         ethernetDestinationBuilder.setMask(new MacAddress("01:23:45:67:89:ab"));
-        ethernetMatchBuilder.setEthernetDestination(ethernetDestinationBuilder.build()); 
+        ethernetMatchBuilder.setEthernetDestination(ethernetDestinationBuilder.build());
         EthernetSourceBuilder ethernetSourceBuilder = new EthernetSourceBuilder();
         ethernetSourceBuilder.setAddress(new MacAddress("01:23:45:67:89:ab"));
         ethernetSourceBuilder.setMask(new MacAddress("01:23:45:67:89:ab"));
-        ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build()); 
-        ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType(42L)).build()); 
+        ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build());
+        ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType(42L)).build());
         matchBuilder.setEthernetMatch(ethernetMatchBuilder.build());
         return matchBuilder.build();
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAggregateFlowStatisticsFromFlowTableForAllFlows(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.
      * GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
-    public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws InterruptedException, 
+    public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws InterruptedException,
                                                                                 ExecutionException {
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder aggregateFlowStatisticsOutput = 
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder aggregateFlowStatisticsOutput =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder();
         aggregateFlowStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -991,7 +1029,7 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input = 
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input =
                            new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder();
         input.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId((short) 42));
 
@@ -1001,20 +1039,20 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAggregateFlowStatisticsFromFlowTableForGivenMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.
      * GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
-    public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws InterruptedException, 
+    public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws InterruptedException,
                                                                                 ExecutionException {
-        GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder aggregateFlowStatisticsForMatchOutput = 
+        GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder aggregateFlowStatisticsForMatchOutput =
                 new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder();
         aggregateFlowStatisticsForMatchOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -1023,7 +1061,7 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input = 
+        GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =
                            new GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder();
         input.setMatch(createMatch());
         input.setCookie(new FlowCookie(new BigInteger("123456")));
@@ -1037,19 +1075,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getFlowTablesStatistics(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.
      * GetFlowTablesStatisticsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetFlowTablesStatistics() throws InterruptedException, ExecutionException {
-        GetFlowTablesStatisticsOutputBuilder flowTableStatisticsOutput = 
+        GetFlowTablesStatisticsOutputBuilder flowTableStatisticsOutput =
                 new GetFlowTablesStatisticsOutputBuilder();
         flowTableStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -1066,19 +1104,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllQueuesStatisticsFromAllPorts(org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
      * GetAllQueuesStatisticsFromAllPortsInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllQueuesStatisticsFromAllPorts() throws InterruptedException, ExecutionException {
-        GetAllQueuesStatisticsFromAllPortsOutputBuilder allQueuesStatisticsAllPortsOutput = 
+        GetAllQueuesStatisticsFromAllPortsOutputBuilder allQueuesStatisticsAllPortsOutput =
                 new GetAllQueuesStatisticsFromAllPortsOutputBuilder();
         allQueuesStatisticsAllPortsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -1087,7 +1125,7 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetAllQueuesStatisticsFromAllPortsInputBuilder input = 
+        GetAllQueuesStatisticsFromAllPortsInputBuilder input =
                 new GetAllQueuesStatisticsFromAllPortsInputBuilder();
 
         mdSwitchOF10.getAllQueuesStatisticsFromAllPorts(input.build()).get();
@@ -1096,19 +1134,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getAllQueuesStatisticsFromGivenPort(org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
      * GetAllQueuesStatisticsFromGivenPortInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetAllQueuesStatisticsFromGivenPort() throws InterruptedException, ExecutionException {
-        GetAllQueuesStatisticsFromGivenPortOutputBuilder allQueuesStatisticsGivenPortsOutput = 
+        GetAllQueuesStatisticsFromGivenPortOutputBuilder allQueuesStatisticsGivenPortsOutput =
                 new GetAllQueuesStatisticsFromGivenPortOutputBuilder();
         allQueuesStatisticsGivenPortsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -1117,10 +1155,10 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetAllQueuesStatisticsFromGivenPortInputBuilder input = 
+        GetAllQueuesStatisticsFromGivenPortInputBuilder input =
                 new GetAllQueuesStatisticsFromGivenPortInputBuilder();
         input.setNodeConnectorId(new NodeConnectorId("openflow:12:8"));
-        
+
         Mockito.when(features.getVersion()).thenReturn((short)1);
         mdSwitchOF10.getAllQueuesStatisticsFromGivenPort(input.build()).get();
         Mockito.when(features.getVersion()).thenReturn((short)4);
@@ -1129,19 +1167,19 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
      * getQueueStatisticsFromGivenPort(org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
      * GetQueueStatisticsFromGivenPortInput)}
      * .
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @Test
     public void testGetQueueStatisticsFromGivenPort() throws InterruptedException, ExecutionException {
-        GetQueueStatisticsFromGivenPortOutputBuilder queuesStatisticsGivenPortOutput = 
+        GetQueueStatisticsFromGivenPortOutputBuilder queuesStatisticsGivenPortOutput =
                 new GetQueueStatisticsFromGivenPortOutputBuilder();
         queuesStatisticsGivenPortOutput.setTransactionId(new TransactionId(new BigInteger("42")));
         Set<RpcError> errorSet = Collections.emptySet();
@@ -1150,11 +1188,11 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        GetQueueStatisticsFromGivenPortInputBuilder input = 
+        GetQueueStatisticsFromGivenPortInputBuilder input =
                 new GetQueueStatisticsFromGivenPortInputBuilder();
         input.setNodeConnectorId(new NodeConnectorId("openflow:12:8"));
         input.setQueueId(new QueueId(55L));
-        
+
         Mockito.when(features.getVersion()).thenReturn((short)1);
         mdSwitchOF10.getQueueStatisticsFromGivenPort(input.build()).get();
         Mockito.when(features.getVersion()).thenReturn((short)4);
