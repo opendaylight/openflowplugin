@@ -94,6 +94,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,9 +121,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
+    private final boolean switchFeaturesMandatory;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
-                             @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {
+                             @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
+                             final boolean switchFeaturesMandatory) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
@@ -139,7 +142,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
+
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -153,14 +158,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         try {
             ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
             deviceContext.onPublished();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
             LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
             try {
                 deviceContext.close();
-            }
-            catch (final Exception e1) {
+            } catch (final Exception e1) {
                 LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
             }
         }
@@ -247,9 +250,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                deviceContext.getDeviceState().setValid(true);
-                deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-                LOG.trace("Device context level up called.");
+                deviceCtxLevelUp(deviceContext);
             }
 
             @Override
@@ -259,6 +260,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 LOG.trace("more info in exploration failure..", t);
             }
         });
+    }
+
+    private void deviceCtxLevelUp(final DeviceContext deviceContext) {
+        deviceContext.getDeviceState().setValid(true);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        LOG.trace("Device context level up called.");
     }
 
     private static void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
@@ -294,8 +301,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         return Futures.allAsList(Arrays.asList(replyDesc));
     }
 
-    private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
-                                                                                                       final DeviceState deviceState) {
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
+                                                                                                final DeviceState deviceState) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext,
@@ -345,13 +352,19 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                         deviceContext,
                         deviceState.getNodeInstanceIdentifier(),
                         replyPortDescription);
-
-
-                return Futures.allAsList(Arrays.asList(
-                        replyMeterFeature,
-                        replyGroupFeatures,
-//                        replyTableFeatures,
-                        replyPortDescription));
+                if (switchFeaturesMandatory) {
+                    return Futures.allAsList(Arrays.asList(
+                            replyMeterFeature,
+                            replyGroupFeatures,
+                            replyTableFeatures,
+                            replyPortDescription));
+                } else {
+                    return Futures.successfulAsList(Arrays.asList(
+                            replyMeterFeature,
+                            replyGroupFeatures,
+                            replyTableFeatures,
+                            replyPortDescription));
+                }
             }
         });
 
@@ -402,10 +415,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             @Override
             public void onFailure(final Throwable t) {
                 LOG.info("Fail response from OutboundQueue for multipart type {}.", type);
-                requestContext.close();
+                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().build();
+                requestContext.setResult(rpcResult);
                 if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
                     makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
                 }
+                requestContext.close();
             }
         });
 

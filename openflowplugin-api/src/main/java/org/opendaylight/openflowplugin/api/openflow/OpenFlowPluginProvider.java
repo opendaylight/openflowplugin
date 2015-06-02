@@ -50,4 +50,15 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
      */
     void initialize();
 
-}
+    /**
+     * This parameter indicates whether it is mandatory for switch to support OF1.3 features : table, flow, meter,group.
+     * If this is set to true and switch doesn't support these features its connection will be denied.
+     * @param switchFeaturesMandatory
+     */
+    void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory);
+
+    boolean isSwitchFeaturesMandatory();
+
+
+
+    }

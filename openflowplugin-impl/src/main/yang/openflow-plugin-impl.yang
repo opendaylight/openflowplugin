@@ -79,6 +79,10 @@ module openflow-plugin-provider-impl {
                 type uint32;
                 default 500;
             }
+            leaf switch-features-mandatory {
+                type boolean;
+                default false;
+            }
         }
 
     }

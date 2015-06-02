@@ -83,6 +83,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                         <name>binding-notification-publish-adapter</name>
                     </notification-publish-adapter>
                     <rpc-requests-quota>20000</rpc-requests-quota>
+                    <switch-features-mandatory>false</switch-features-mandatory>
                 </module>
             </modules>
 
