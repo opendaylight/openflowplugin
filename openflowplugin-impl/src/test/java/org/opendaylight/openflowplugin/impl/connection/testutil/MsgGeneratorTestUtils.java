@@ -37,7 +37,7 @@ public class MsgGeneratorTestUtils {
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
                                                         .setMultipartReplyDesc(descValue).build();
 
-        final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
+        MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(replyBody)
                 .setXid(xid)
                 .setFlags(new MultipartRequestFlags(hasNext))
