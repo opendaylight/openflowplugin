@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
@@ -114,7 +113,7 @@ public class SinglePurposeMultipartReplyTranslator {
 
     public List<DataObject> translate(final DeviceContext deviceContext, final OfHeader msg) {
 
-        List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
+        List<DataObject> listDataObject = new ArrayList<>();
 
         OpenflowVersion ofVersion = OpenflowVersion.get(deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
 
