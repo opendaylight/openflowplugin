@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
-import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
+import org.opendaylight.openflowplugin.impl.services.AbstractMultipartOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -24,11 +24,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
+ * collects statistics and processes them on the fly
  */
-public class StatisticsGatheringService extends AbstractMultipartService<MultipartType> implements StatisticsGatherer {
+public class StatisticsGatheringOnTheFlyService extends AbstractMultipartOnTheFlyService<MultipartType> implements StatisticsGatherer {
 
-    public StatisticsGatheringService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public StatisticsGatheringOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 

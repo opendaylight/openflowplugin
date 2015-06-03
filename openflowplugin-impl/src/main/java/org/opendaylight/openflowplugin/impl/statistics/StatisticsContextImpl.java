@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
@@ -46,12 +47,15 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final List<MultipartType> collectingStatType;
 
     private final StatisticsGatheringService statisticsGatheringService;
+    private final StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
 
     public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
+
         final List<MultipartType> statListForCollecting = new ArrayList<>();
         if (devState.isTableStatisticsAvailable()) {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
@@ -88,7 +92,7 @@ public class StatisticsContextImpl implements StatisticsContext {
         return settableStatResultFuture;
     }
 
-    private ListenableFuture<Boolean> choiseStat(final MultipartType multipartType) {
+    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType) {
         switch (multipartType) {
             case OFPMPFLOW:
                 return collectFlowStatistics(multipartType);
@@ -136,7 +140,7 @@ public class StatisticsContextImpl implements StatisticsContext {
             resultFuture.set(Boolean.TRUE);
             return;
         }
-        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = choiseStat(iterator.next());
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(iterator.next());
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean result) {
@@ -175,7 +179,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
+                statisticsGatheringOnTheFlyService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {

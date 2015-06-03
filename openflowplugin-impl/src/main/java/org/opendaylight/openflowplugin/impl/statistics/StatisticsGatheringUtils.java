@@ -25,9 +25,9 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -110,7 +110,7 @@ public final class StatisticsGatheringUtils {
     }
 
 
-    public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatheringService statisticsGatheringService,
+    public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer statisticsGatheringService,
                                                              final DeviceContext deviceContext,
                                                              final MultipartType type) {
         //FIXME : anytype listener must not be send as parameter, it has to be extracted from device context inside service
@@ -122,7 +122,8 @@ public final class StatisticsGatheringUtils {
         }
         EventIdentifier ofpQueuToRequestContextEventIdentifier = new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceId);
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(ofpQueuToRequestContextEventIdentifier, type));
+                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
+                        ofpQueuToRequestContextEventIdentifier, type));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier);
     }
 
@@ -135,35 +136,40 @@ public final class StatisticsGatheringUtils {
             public Boolean apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 if (rpcResult.isSuccessful()) {
                     boolean isMultipartProcessed = Boolean.TRUE;
-                    Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
-                    DataObject multipartData = null;
-                    for (final MultipartReply singleReply : rpcResult.getResult()) {
-                        final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
-                        multipartData = multipartDataList.get(0);
-                        allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
-                    }
 
-                    if (multipartData instanceof GroupStatisticsUpdated) {
-                        processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof MeterStatisticsUpdated) {
-                        processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
-                        processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof FlowTableStatisticsUpdate) {
-                        processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof QueueStatisticsUpdate) {
-                        processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof FlowsStatisticsUpdate) {
-                        processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
-                        EventsTimeCounter.markEnd(eventIdentifier);
-                    } else if (multipartData instanceof GroupDescStatsUpdated) {
-                        processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
-                    } else if (multipartData instanceof MeterConfigStatsUpdated) {
-                        processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
-                    } else {
-                        isMultipartProcessed = Boolean.FALSE;
+                    // TODO: in case the result value is null then multipart data probably got processed on the fly -
+                    // TODO: this contract should by clearly stated and enforced - now simple true value is returned
+                    if (null != rpcResult.getResult()) {
+                        Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
+                        DataObject multipartData = null;
+                        for (final MultipartReply singleReply : rpcResult.getResult()) {
+                            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
+                            multipartData = multipartDataList.get(0);
+                            allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+                        }
+
+                        if (multipartData instanceof GroupStatisticsUpdated) {
+                            processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof MeterStatisticsUpdated) {
+                            processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
+                            processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof FlowTableStatisticsUpdate) {
+                            processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof QueueStatisticsUpdate) {
+                            processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof FlowsStatisticsUpdate) {
+                            processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
+                            EventsTimeCounter.markEnd(eventIdentifier);
+                        } else if (multipartData instanceof GroupDescStatsUpdated) {
+                            processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
+                        } else if (multipartData instanceof MeterConfigStatsUpdated) {
+                            processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
+                        } else {
+                            isMultipartProcessed = Boolean.FALSE;
+                        }
+                        //TODO : implement experimenter
                     }
-                    //TODO : implement experimenter
 
                     return isMultipartProcessed;
                 }
@@ -191,10 +197,12 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data, final DeviceContext deviceContext) {
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId));
-        deleteAllKnownFlows(deviceContext, nodeIdent);
+        deleteAllKnownFlows(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+        writeFlowStatistics(data, deviceContext);
+        deviceContext.submitTransaction();
+    }
+
+    public static void writeFlowStatistics(Iterable<FlowsStatisticsUpdate> data, DeviceContext deviceContext) {
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
@@ -210,10 +218,9 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
             }
         }
-        deviceContext.submitTransaction();
     }
 
-    private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
+    public static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
             final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
             for (short i = 0; i < numOfTablesOnDevice; i++) {
