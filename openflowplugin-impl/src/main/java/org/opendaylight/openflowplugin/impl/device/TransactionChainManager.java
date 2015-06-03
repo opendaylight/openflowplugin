@@ -56,6 +56,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private WriteTransaction wTx;
     private BindingTransactionChain txChainFactory;
     private boolean submitIsEnabled;
+
+    public TransactionChainManagerStatus getTransactionChainManagerStatus() {
+        return transactionChainManagerStatus;
+    }
+
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
@@ -203,7 +208,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         txChainFactory.close();
     }
 
-    private enum TransactionChainManagerStatus {
+    public enum TransactionChainManagerStatus {
         WORKING, SHUTTING_DOWN;
     }
 
