@@ -87,6 +87,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
+                <artifactId>inventory-manager</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>lldp-speaker</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -107,8 +114,22 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
+                <artifactId>topology-lldp-discovery</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>topology-manager</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>topology-manager</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
@@ -225,4 +246,3 @@
         </dependencies>
     </dependencyManagement>
 </project>
-

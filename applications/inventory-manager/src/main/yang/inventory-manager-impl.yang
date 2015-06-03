@@ -20,7 +20,7 @@ module inventory-manager-impl {
     }
 
     augment "/config:modules/config:module/config:configuration" {
-        case southbound-impl {
+        case inventory-manager-impl {
             when "/config:modules/config:module/config:type = 'inventory-manager-impl'";
             container broker {
                 uses config:service-ref {
