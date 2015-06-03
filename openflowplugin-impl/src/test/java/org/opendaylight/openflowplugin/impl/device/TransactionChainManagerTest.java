@@ -31,12 +31,13 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -49,7 +50,7 @@ public class TransactionChainManagerTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private DeviceState deviceState;
+    private ConnectionContext connectionContext;
     @Mock
     private BindingTransactionChain txChain;
     @Mock
@@ -58,6 +59,9 @@ public class TransactionChainManagerTest {
     private TransactionChain<?, ?> transactionChain;
     @Mock
     HashedWheelTimer timer;
+    @Mock
+    Registration registration;
+
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
 
@@ -68,14 +72,12 @@ public class TransactionChainManagerTest {
     @Before
     public void setUp() throws Exception {
         final ReadOnlyTransaction readOnlyTx = Mockito.mock(ReadOnlyTransaction.class);
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node> absent());
+        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
         Mockito.when(readOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
-        Mockito.when(deviceState.isValid()).thenReturn(Boolean.TRUE);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, deviceState);
+        txChainManager = new TransactionChainManager(dataBroker, connectionContext, registration);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         nodeId = new NodeId("h2g2:42");
@@ -112,6 +114,7 @@ public class TransactionChainManagerTest {
 
     /**
      * test of {@link TransactionChainManager#enableSubmit()}: no submit - counter is not active
+     *
      * @throws Exception
      */
     @Test
@@ -126,6 +129,7 @@ public class TransactionChainManagerTest {
 
     /**
      * test of {@link TransactionChainManager#enableSubmit()}: submit - after counter activated
+     *
      * @throws Exception
      */
     @Test

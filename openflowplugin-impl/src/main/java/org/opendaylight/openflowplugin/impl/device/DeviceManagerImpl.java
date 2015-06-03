@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -101,7 +102,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
+public class DeviceManagerImpl implements DeviceManager, AutoCloseable, ReadyForNewTransactionChainHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
@@ -122,6 +123,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
     private final boolean switchFeaturesMandatory;
+    private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
@@ -143,6 +145,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
+        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider();
     }
 
 
@@ -173,6 +176,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
 
+        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext, dataBroker, this);
+        initializeDeviceContextSafely(connectionContext, transactionChainManager);
+    }
+
+    private void initializeDeviceContext(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
+
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
 
@@ -187,10 +196,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+        final NodeId nodeId = connectionContext.getNodeId();
+        final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), nodeId);
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
@@ -588,5 +598,17 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void initialize() {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void onReadyForNewTransactionChain(final ConnectionContext connectionContext) {
+        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext, dataBroker, this);
+        initializeDeviceContextSafely(connectionContext, transactionChainManager);
+    }
+
+    private void initializeDeviceContextSafely(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
+        if (null != transactionChainManager) {
+            initializeDeviceContext(connectionContext, transactionChainManager);
+        }
     }
 }

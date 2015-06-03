@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -78,17 +79,19 @@ public class DeviceContextImplTest {
     KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
     @Mock
     TranslatorLibrary translatorLibrary;
+    @Mock
+    Registration registration;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
     @Before
     public void setUp() {
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node> absent());
+        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
         Mockito.when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, deviceState);
+        txChainManager = new TransactionChainManager(dataBroker, connectionContext, registration);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -114,30 +117,25 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, txChainManager);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullConnectionContext() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary).close();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, txChainManager).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, txChainManager).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, txChainManager).close();
     }
 
     @Test
