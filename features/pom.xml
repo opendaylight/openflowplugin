@@ -89,6 +89,12 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>inventory-manager</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>lldp-speaker</artifactId>
         </dependency>
         <dependency>
@@ -151,7 +157,19 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>topology-lldp-discovery</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>topology-manager</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
         </dependency>
 
         <dependency>
