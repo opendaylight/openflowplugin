@@ -31,6 +31,7 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -49,7 +50,7 @@ public class TransactionChainManagerTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private DeviceState deviceState;
+    private ConnectionContext connectionContext;
     @Mock
     private BindingTransactionChain txChain;
     @Mock
@@ -73,9 +74,7 @@ public class TransactionChainManagerTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
-        Mockito.when(deviceState.isValid()).thenReturn(Boolean.TRUE);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, deviceState);
+        txChainManager = new TransactionChainManager(dataBroker, connectionContext);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         nodeId = new NodeId("h2g2:42");
