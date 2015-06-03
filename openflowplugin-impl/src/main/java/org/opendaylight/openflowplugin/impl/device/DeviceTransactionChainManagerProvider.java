@@ -44,11 +44,17 @@ public class DeviceTransactionChainManagerProvider {
                 txChManagers.put(nodeId, transactionChainManager);
                 return transactionChainManager;
             } else {
-                LOG.info("Device {} waits for previous connection's transaction chain to be closed.", nodeId.toString());
                 try {
                     if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-                        LOG.info("There already exists one handler for connection described as {}. Will try again.", nodeId);
-                        readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
+                        if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
+                            LOG.info("There already exists one handler for connection described as {}. Connection is working will not try again.", nodeId);
+                            connectionContext.close();
+                        } else {
+                            LOG.info("There already exists one handler for connection described as {}. Transaction chain manager is in state {}. Will try again.",
+                                    nodeId,
+                                    transactionChainManager.getTransactionChainManagerStatus());
+                            readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
+                        }
                     }
                 } catch (Exception e) {
                     LOG.info("Transaction closed handler registration for node {} failed because we most probably hit previous transaction chain  manager's close process. Will try again.", nodeId);
