@@ -96,7 +96,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private final TransactionChainManager txChainManager;
+    private final TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -121,13 +121,14 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary) {
+                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      @Nonnull final TransactionChainManager transactionChainManager) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        txChainManager = new TransactionChainManager(dataBroker, deviceState);
+        this.transactionChainManager = Preconditions.checkNotNull(transactionChainManager);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -150,7 +151,7 @@ public class DeviceContextImpl implements DeviceContext {
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
     void initialSubmitTransaction() {
-        txChainManager.initialSubmitWriteTransaction();
+        transactionChainManager.initialSubmitWriteTransaction();
     }
 
     @Override
@@ -191,17 +192,17 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path, final T data) {
-        txChainManager.writeToTransaction(store, path, data);
+        transactionChainManager.writeToTransaction(store, path, data);
     }
 
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
-        txChainManager.addDeleteOperationTotTxChain(store, path);
+        transactionChainManager.addDeleteOperationTotTxChain(store, path);
     }
 
     @Override
     public boolean submitTransaction() {
-        return txChainManager.submitWriteTransaction();
+        return transactionChainManager.submitWriteTransaction();
     }
 
     @Override
@@ -347,7 +348,7 @@ public class DeviceContextImpl implements DeviceContext {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
 
-        txChainManager.close();
+        transactionChainManager.close();
     }
 
     @Override

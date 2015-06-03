@@ -9,9 +9,10 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import java.util.concurrent.ExecutionException;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -20,10 +21,15 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,37 +52,30 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private final Object txLock = new Object();
 
-    private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private WriteTransaction wTx;
     private BindingTransactionChain txChainFactory;
     private boolean submitIsEnabled;
+    private TransactionChainManagerStatus transactionChainManagerStatus;
+    private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
+    private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+    private final ConnectionContext connectionContext;
+    private Registration managerRegistration;
 
-    TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final DeviceState deviceState) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker,
+                            @Nonnull final ConnectionContext connectionContext,
+                            @Nonnull final Registration managerRegistration) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.deviceState = Preconditions.checkNotNull(deviceState);
-        checkExistingNode();
-        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+        this.nodeII = Preconditions.checkNotNull(DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()));
+        this.connectionContext = Preconditions.checkNotNull(connectionContext);
+        this.managerRegistration = Preconditions.checkNotNull(managerRegistration);
+        createTxChain(dataBroker);
         LOG.debug("created txChainManager");
     }
 
-    /**
-     * Creating new TransactionChainManager means we have new Node (HandShake process was successful), but
-     * the node existence in OPERATIONAL DataStore indicates some not finished NODE disconnection or some
-     * unexpected problem with DataStore.
-     * We should not continue with a PostHandShake NODE information collecting in this state.
-     */
-    private void checkExistingNode() {
-        Optional<Node> node = Optional.<Node> absent();
-        try {
-            node = dataBroker.newReadOnlyTransaction()
-                    .read(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier()).get();
-        }
-        catch (InterruptedException | ExecutionException e) {
-            LOG.warn("Not able to read node {} in Operation DataStore", deviceState.getNodeId());
-            throw new IllegalStateException(e);
-        }
-        Preconditions.checkArgument((!node.isPresent()), "Node {} is exist, can not add same now!", deviceState.getNodeId());
+    private void createTxChain(final DataBroker dataBroker) {
+        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+        this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
     }
 
     void initialSubmitWriteTransaction() {
@@ -84,15 +83,24 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitWriteTransaction();
     }
 
+    public boolean attemptToRegisterHandler(final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
+        if (null == this.readyForNewTransactionChainHandler) {
+            synchronized (this) {
+                Preconditions.checkState(null != this.managerRegistration);
+                this.readyForNewTransactionChainHandler = readyForNewTransactionChainHandler;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     boolean submitWriteTransaction() {
         if (!submitIsEnabled) {
             LOG.trace("transaction not committed - submit block issued");
             return false;
         }
-        if ( ! deviceState.isValid()) {
-            LOG.info("DeviceState is not valid will not submit transaction");
-            return false;
-        }
+
         if (wTx == null) {
             LOG.trace("nothing to commit - submit returns true");
             return true;
@@ -134,14 +142,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private void recreateTxChain() {
         txChainFactory.close();
-        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+        createTxChain(dataBroker);
         synchronized (txLock) {
             wTx = null;
         }
     }
 
     private WriteTransaction getTransactionSafely() {
-        if (wTx == null) {
+        if (wTx == null && !TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
             synchronized (txLock) {
                 if (wTx == null) {
                     wTx = txChainFactory.newWriteOnlyTransaction();
@@ -158,13 +166,45 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @Override
     public void close() {
-        LOG.debug("Removing node {} from operational DS.", deviceState.getNodeId());
+        LOG.debug("Removing node {} from operational DS.", nodeII);
         synchronized (txLock) {
             final WriteTransaction writeTx = getTransactionSafely();
-            writeTx.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
-            writeTx.submit();
+            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
+            writeTx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
+            CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
+            Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(final Void aVoid) {
+                    notifyReadyForNewTransactionChainAndCloseFactory();
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    LOG.info("Attempt to close transaction chain factory failed.", throwable);
+                    notifyReadyForNewTransactionChainAndCloseFactory();
+                }
+            });
             wTx = null;
-            txChainFactory.close();
         }
     }
+
+    private void notifyReadyForNewTransactionChainAndCloseFactory() {
+        synchronized (this) {
+            if (null != readyForNewTransactionChainHandler) {
+                readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
+            }
+            try {
+                managerRegistration.close();
+            } catch (Exception e) {
+                LOG.warn("Failed to close transaction chain manager's registration.", e);
+            }
+            managerRegistration = null;
+        }
+        txChainFactory.close();
+    }
+
+    private enum TransactionChainManagerStatus {
+        WORKING, SHUTTING_DOWN;
+    }
+
 }
