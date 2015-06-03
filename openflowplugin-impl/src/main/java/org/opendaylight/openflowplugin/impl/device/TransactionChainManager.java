@@ -56,6 +56,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private WriteTransaction wTx;
     private BindingTransactionChain txChainFactory;
     private boolean submitIsEnabled;
+
+    public TransactionChainManagerStatus getTransactionChainManagerStatus() {
+        return transactionChainManagerStatus;
+    }
+
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
@@ -171,10 +176,13 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             final WriteTransaction writeTx = getTransactionSafely();
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             writeTx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
+            LOG.debug("Delete node {} from operational DS put to write transaction.", nodeII);
             CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
+            LOG.debug("Delete node {} from operational DS write transaction submitted.", nodeII);
             Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void aVoid) {
+                    LOG.debug("Removing node {} from operational DS successful .", nodeII);
                     notifyReadyForNewTransactionChainAndCloseFactory();
                 }
 
@@ -194,6 +202,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
             }
             try {
+                LOG.debug("Closing registration in manager.");
                 managerRegistration.close();
             } catch (Exception e) {
                 LOG.warn("Failed to close transaction chain manager's registration.", e);
@@ -201,9 +210,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             managerRegistration = null;
         }
         txChainFactory.close();
+        LOG.debug("Transaction chain factory closed.");
     }
 
-    private enum TransactionChainManagerStatus {
+    public enum TransactionChainManagerStatus {
         WORKING, SHUTTING_DOWN;
     }
 
