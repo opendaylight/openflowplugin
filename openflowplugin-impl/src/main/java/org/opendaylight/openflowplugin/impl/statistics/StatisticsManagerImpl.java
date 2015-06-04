@@ -37,7 +37,6 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
     private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
@@ -61,7 +60,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean statisticsGathered) {
-                if (statisticsGathered.booleanValue()) {
+                if (statisticsGathered) {
                     //there are some statistics on device worth gathering
                     contexts.put(deviceContext, statisticsContext);
                     final TimeCounter timeCounter = new TimeCounter();
@@ -121,12 +120,13 @@ public class StatisticsManagerImpl implements StatisticsManager {
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
         if (null != hashedWheelTimer) {
-            hashedWheelTimer.newTimeout(new TimerTask() {
+            Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     pollStatistics(deviceContext, statisticsContext, timeCounter);
                 }
             }, currentTimerDelay, TimeUnit.MILLISECONDS);
+            statisticsContext.setPollTimeout(pollTimeout);
         }
     }
 
