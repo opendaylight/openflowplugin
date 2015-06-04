@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -38,7 +38,9 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version) {
-        connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
+        LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+        closeHandshakeContext();
+        connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
         deviceConnectedHandler.deviceConnected(connectionContext);
@@ -46,8 +48,12 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
     @Override
     public void onHandshakeFailure() {
-        LOG.info("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
-        connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
+        LOG.debug("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+        closeHandshakeContext();
+        connectionContext.closeConnection();
+    }
+
+    private void closeHandshakeContext() {
         try {
             handshakeContext.close();
         } catch (Exception e) {

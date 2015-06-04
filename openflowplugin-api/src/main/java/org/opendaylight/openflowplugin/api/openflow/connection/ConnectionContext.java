@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * </p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface ConnectionContext extends AutoCloseable {
+public interface ConnectionContext {
 
     /**
      * distinguished connection states
@@ -85,13 +85,6 @@ public interface ConnectionContext extends AutoCloseable {
     CONNECTION_STATE getConnectionState();
 
     /**
-     * Method sets connection state of current context.
-     *
-     * @param connectionState
-     */
-    void setConnectionState(CONNECTION_STATE connectionState);
-
-    /**
      * @param featuresReply as received from device during handshake
      */
     void setFeatures(FeaturesReply featuresReply);
@@ -108,13 +101,32 @@ public interface ConnectionContext extends AutoCloseable {
      */
     void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
 
-    /**
-     * Method provides propagates info about closed connection to handler for handling closing connections.
-     */
-    void propagateClosingConnection();
-
     void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration);
 
-    @Override
-    void close();
+    /**
+     * actively drop associated connection
+     *
+     * @see ConnectionAdapter#disconnect()
+     */
+    void closeConnection();
+
+    /**
+     * cleanup context upon connection closed event (by device)
+     */
+    void onConnectionClosed();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#HANDSHAKING}
+     */
+    void changeStateToHandshaking();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#TIMEOUTING}
+     */
+    void changeStateToTimeouting();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#WORKING}
+     */
+    void changeStateToWorking();
 }

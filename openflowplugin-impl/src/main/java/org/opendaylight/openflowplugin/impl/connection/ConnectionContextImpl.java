@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -70,11 +72,6 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setConnectionState(final CONNECTION_STATE connectionState) {
-        this.connectionState = connectionState;
-    }
-
-    @Override
     public FeaturesReply getFeatures() {
         return featuresReply;
     }
@@ -85,24 +82,57 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void propagateClosingConnection() {
-        if (null != deviceDisconnectedHandler) {
-            LOG.trace("Populating connection closed event.");
-            this.deviceDisconnectedHandler.onDeviceDisconnected(this);
-        }
-    }
-
-    @Override
     public void setFeatures(final FeaturesReply featuresReply) {
         this.featuresReply = featuresReply;
     }
 
     @Override
-    public void close() {
+    public void closeConnection() {
+        final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
+        LOG.debug("Actively closing connection: {}, datapathId:{}.",
+                connectionAdapter.getRemoteAddress(), datapathId);
+        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
+
+        unregisterOutboundQueue();
         if (getConnectionAdapter().isAlive()) {
-            setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
             getConnectionAdapter().disconnect();
         }
+    }
+
+    @Override
+    public void onConnectionClosed() {
+        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
+
+        final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
+        final Short auxiliaryId;
+        if (null != getFeatures() && null != getFeatures().getAuxiliaryId()) {
+            auxiliaryId = getFeatures().getAuxiliaryId();
+        } else {
+            auxiliaryId = 0;
+        }
+
+        LOG.debug("disconnecting: node={}|auxId={}|connection state = {}",
+                remoteAddress,
+                auxiliaryId,
+                getConnectionState());
+
+        unregisterOutboundQueue();
+
+        // propagate event
+        if (null != deviceDisconnectedHandler) {
+            final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
+            LOG.debug("Propagating connection closed event: {}, datapathId:{}.",
+                    connectionAdapter.getRemoteAddress(), datapathId);
+            deviceDisconnectedHandler.onDeviceDisconnected(this);
+        }
+    }
+
+    @Override
+    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration) {
+        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
+    }
+
+    private void unregisterOutboundQueue() {
         if (outboundQueueHandlerRegistration != null) {
             outboundQueueHandlerRegistration.close();
             outboundQueueHandlerRegistration = null;
@@ -110,7 +140,17 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration) {
-        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
+    public void changeStateToHandshaking() {
+        connectionState = CONNECTION_STATE.HANDSHAKING;
+    }
+
+    @Override
+    public void changeStateToTimeouting() {
+        connectionState = CONNECTION_STATE.TIMEOUTING;
+    }
+
+    @Override
+    public void changeStateToWorking() {
+        connectionState = CONNECTION_STATE.WORKING;
     }
 }

@@ -8,24 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import static org.junit.Assert.*;
-
-import org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl;
-
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetSocketAddress;
-import java.util.List;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -55,8 +44,6 @@ public class SystemNotificationsListenerImplTest {
     @Mock
     private FeaturesReply features;
     private ConnectionContext connectionContext;
-    @Captor
-    private ArgumentCaptor<ConnectionContext.CONNECTION_STATE> connectionStateArgumentCaptor;
 
     private SystemNotificationsListenerImpl systemNotificationsListener;
     private ConnectionContextImpl connectionContextGolem;
@@ -64,7 +51,7 @@ public class SystemNotificationsListenerImplTest {
     @Before
     public void setUp() {
         connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
-        connectionContextGolem.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
+        connectionContextGolem.changeStateToWorking();
 
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
                 InetSocketAddress.createUnresolved("unit-odl.example.org", 4242));
@@ -74,11 +61,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
-        ThreadPoolLoggingExecutor threadPoolLoggingExecutor = new ThreadPoolLoggingExecutor(2000, 2000, 0L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(20), "OFHandshake-test identifier");
-
-        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext,
-               new HandshakeContextImpl(threadPoolLoggingExecutor, null));
+        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext);
     }
 
     @After
@@ -99,11 +82,8 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocations();
-        Mockito.verify(connectionAdapter).disconnect();
-        Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        Mockito.verify(connectionContext).propagateClosingConnection();
-        assertTrue(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        verifyCommonInvocationsSubSet();
+        Mockito.verify(connectionContext).onConnectionClosed();
     }
 
     /**
@@ -119,11 +99,8 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocations();
-        Mockito.verify(connectionAdapter).disconnect();
-        Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        Mockito.verify(connectionContext).propagateClosingConnection();
-        assertTrue(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        verifyCommonInvocationsSubSet();
+        Mockito.verify(connectionContext).onConnectionClosed();
     }
 
     /**
@@ -133,7 +110,7 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnDisconnectEvent3() throws Exception {
-        connectionContextGolem.setConnectionState(ConnectionContext.CONNECTION_STATE.TIMEOUTING);
+        connectionContextGolem.changeStateToTimeouting();
 
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
         Mockito.when(connectionAdapter.disconnect()).thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
@@ -141,11 +118,8 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocations();
-        Mockito.verify(connectionAdapter).disconnect();
-        Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        Mockito.verify(connectionContext).propagateClosingConnection();
-        assertTrue(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        verifyCommonInvocationsSubSet();
+        Mockito.verify(connectionContext).onConnectionClosed();
     }
 
     /**
@@ -155,18 +129,15 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnDisconnectEvent4() throws Exception {
-        connectionContextGolem.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
+//    TODO: solve    connectionContextGolem.chansetConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
 
         Mockito.when(connectionAdapter.isAlive()).thenReturn(false);
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocations();
-        Mockito.verify(connectionAdapter, Mockito.never()).disconnect();
-        Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        Mockito.verify(connectionContext).propagateClosingConnection();
-        assertTrue(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        verifyCommonInvocationsSubSet();
+        Mockito.verify(connectionContext).onConnectionClosed();
     }
 
     /**
@@ -187,18 +158,11 @@ public class SystemNotificationsListenerImplTest {
         EchoOutput echoReplyVal = new EchoOutputBuilder().build();
         echoReply.set(RpcResultBuilder.success(echoReplyVal).build());
 
-        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).times(2))
-                .setConnectionState(connectionStateArgumentCaptor.capture());
-        List<ConnectionContext.CONNECTION_STATE> allStates = connectionStateArgumentCaptor.getAllValues();
-        Assert.assertEquals(2, allStates.size());
-        Assert.assertEquals(ConnectionContext.CONNECTION_STATE.TIMEOUTING, allStates.get(0));
-        Assert.assertEquals(ConnectionContext.CONNECTION_STATE.WORKING, allStates.get(1));
-
         verifyCommonInvocations();
         Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
-        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT)).setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.verify(connectionAdapter, Mockito.never()).disconnect();
-        assertFalse(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        Mockito.verify(connectionContext).changeStateToTimeouting();
+        Mockito.verify(connectionContext).changeStateToWorking();
     }
 
     /**
@@ -220,21 +184,18 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocations();
         Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
-        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).times(2))
-                .setConnectionState(connectionStateArgumentCaptor.capture());
-        List<ConnectionContext.CONNECTION_STATE> allStates = connectionStateArgumentCaptor.getAllValues();
-        Assert.assertEquals(2, allStates.size());
-        Assert.assertEquals(ConnectionContext.CONNECTION_STATE.TIMEOUTING, allStates.get(0));
-        Assert.assertEquals(ConnectionContext.CONNECTION_STATE.RIP, allStates.get(1));
-
         Mockito.verify(connectionAdapter).disconnect();
-        Mockito.verify(connectionContext).propagateClosingConnection();
-        assertTrue(systemNotificationsListener.handshakeContext.getHandshakePool().isTerminated());
+        Mockito.verify(connectionContext).changeStateToTimeouting();
+        Mockito.verify(connectionContext).closeConnection();
     }
 
     private void verifyCommonInvocations() {
+        verifyCommonInvocationsSubSet();
+        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionAdapter();
+    }
+
+    private void verifyCommonInvocationsSubSet() {
         Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionState();
         Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getFeatures();
-        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionAdapter();
     }
 }

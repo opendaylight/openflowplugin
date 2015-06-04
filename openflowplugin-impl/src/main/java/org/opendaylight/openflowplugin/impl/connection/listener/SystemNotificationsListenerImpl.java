@@ -8,16 +8,12 @@
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
@@ -36,20 +32,17 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private final ConnectionContext connectionContext;
-    HandshakeContext handshakeContext;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
 
-    public SystemNotificationsListenerImpl(final ConnectionContext connectionContext,
-            final HandshakeContext handshakeContext) {
-        this.connectionContext = connectionContext;
-        this.handshakeContext = handshakeContext;
+    public SystemNotificationsListenerImpl(@Nonnull final ConnectionContext connectionContext) {
+        this.connectionContext = Preconditions.checkNotNull(connectionContext);
     }
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
-        disconnect();
+        connectionContext.onConnectionClosed();
     }
 
     @Override
@@ -66,7 +59,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     LOG.debug(
                             "first idle state occured, node={}|auxId={}",
                             remoteAddress, features.getAuxiliaryId());
-                    connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.TIMEOUTING);
+                    connectionContext.changeStateToTimeouting();
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(features.getVersion());
                     Xid xid = new Xid(0L);
@@ -78,7 +71,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     try {
                         RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(MAX_ECHO_REPLY_TIMEOUT, TimeUnit.MILLISECONDS);
                         if (echoReplyValue.isSuccessful()) {
-                            connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
+                            connectionContext.changeStateToWorking();
                             shouldBeDisconnected = false;
                         } else {
                             for (RpcError replyError : echoReplyValue
@@ -96,58 +89,9 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     }
                 }
                 if (shouldBeDisconnected) {
-                    disconnect();
+                    connectionContext.closeConnection();
                 }
             }
         }).start();
-    }
-
-    private void disconnect() {
-        final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
-        short auxId = -1;
-        if (null != connectionContext.getFeatures() && null != connectionContext.getFeatures().getAuxiliaryId()) {
-            auxId = connectionContext.getFeatures().getAuxiliaryId();
-        }
-        final Short auxiliaryId = auxId;
-        final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
-
-        LOG.trace("disconnecting: node={}|auxId={}|connection state = {}",
-                remoteAddress,
-                auxiliaryId,
-                connectionContext.getConnectionState());
-
-        ListenableFuture<Boolean> result = null;
-        if (connectionAdapter.isAlive()) {
-            result = JdkFutureAdapters.listenInPoolThread(connectionAdapter.disconnect());
-        } else {
-            LOG.debug("connection already disconnected");
-            result = Futures.immediateFuture(true);
-        }
-        connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        Futures.addCallback(result, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(final Boolean aBoolean) {
-                LOG.debug("Connection node={}|auxId={}|connection state = {}, closed successfully:{}.",
-                        remoteAddress,
-                        auxiliaryId,
-                        connectionContext.getConnectionState(),
-                        aBoolean);
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.debug("Connection node={}|auxId={}|connection state = {} close failed.",
-                        remoteAddress,
-                        auxiliaryId,
-                        connectionContext.getConnectionState());
-            }
-        });
-
-        connectionContext.propagateClosingConnection();
-        try {
-            handshakeContext.close();
-        } catch (Exception e) {
-            LOG.debug("Closing of handshake context wasn't successfull. {}", e);
-        }
     }
 }
