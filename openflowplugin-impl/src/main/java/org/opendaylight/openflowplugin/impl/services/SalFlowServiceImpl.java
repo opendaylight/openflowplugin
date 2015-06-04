@@ -57,7 +57,6 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        final ListenableFuture<RpcResult<AddFlowOutput>> future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         final FlowId flowId;
         if (null != input.getFlowRef()) {
             flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
@@ -69,6 +68,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
         deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+        final ListenableFuture<RpcResult<AddFlowOutput>> future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
