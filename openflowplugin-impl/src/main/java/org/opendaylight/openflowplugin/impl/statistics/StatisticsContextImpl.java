@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import io.netty.util.Timeout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private final StatisticsGatheringService statisticsGatheringService;
     private final StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
+    private Timeout pollTimeout;
 
     public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
@@ -133,6 +135,14 @@ public class StatisticsContextImpl implements StatisticsContext {
         for (final RequestContext<?> requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
+        if (null != pollTimeout && !pollTimeout.isExpired()) {
+            pollTimeout.cancel();
+        }
+    }
+
+    @Override
+    public void setPollTimeout(Timeout pollTimeout) {
+        this.pollTimeout = pollTimeout;
     }
 
     void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {

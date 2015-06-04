@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.Timeout;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 
 /**
@@ -18,4 +19,8 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable {
 
     ListenableFuture<Boolean> gatherDynamicData();
 
+    /**
+     * @param pollTimeout handle to nearest scheduled statistics poll
+     */
+    void setPollTimeout(Timeout pollTimeout);
 }
