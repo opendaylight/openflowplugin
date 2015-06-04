@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -84,7 +83,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+    public void onDeviceContextClosed(DeviceContext deviceContext) {
         for (RoutedRpcRegistration<?> registration : rpcRegistrations) {
             registration.close();
         }
