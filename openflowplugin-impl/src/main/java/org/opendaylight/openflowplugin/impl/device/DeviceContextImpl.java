@@ -337,14 +337,14 @@ public class DeviceContextImpl implements DeviceContext {
 
         tearDown();
 
-        primaryConnectionContext.closeConnection();
+        primaryConnectionContext.closeConnection(false);
     }
 
     private void tearDown() {
         deviceState.setValid(false);
 
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
-            connectionContext.closeConnection();
+            connectionContext.closeConnection(false);
         }
 
         deviceGroupRegistry.close();

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -87,7 +87,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void closeConnection() {
+    public void closeConnection(boolean propagate) {
         final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
         LOG.debug("Actively closing connection: {}, datapathId:{}.",
                 connectionAdapter.getRemoteAddress(), datapathId);
@@ -96,6 +96,10 @@ public class ConnectionContextImpl implements ConnectionContext {
         unregisterOutboundQueue();
         if (getConnectionAdapter().isAlive()) {
             getConnectionAdapter().disconnect();
+        }
+
+        if (propagate) {
+            propagateDeviceDisconnectedEvent();
         }
     }
 
@@ -118,7 +122,10 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         unregisterOutboundQueue();
 
-        // propagate event
+        propagateDeviceDisconnectedEvent();
+    }
+
+    private void propagateDeviceDisconnectedEvent() {
         if (null != deviceDisconnectedHandler) {
             final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
             LOG.debug("Propagating connection closed event: {}, datapathId:{}.",

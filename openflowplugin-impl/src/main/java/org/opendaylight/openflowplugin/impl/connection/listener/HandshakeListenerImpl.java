@@ -50,7 +50,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
     public void onHandshakeFailure() {
         LOG.debug("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         closeHandshakeContext();
-        connectionContext.closeConnection();
+        connectionContext.closeConnection(false);
     }
 
     private void closeHandshakeContext() {

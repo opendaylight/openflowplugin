@@ -89,7 +89,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     }
                 }
                 if (shouldBeDisconnected) {
-                    connectionContext.closeConnection();
+                    connectionContext.closeConnection(true);
                 }
             }
         }).start();

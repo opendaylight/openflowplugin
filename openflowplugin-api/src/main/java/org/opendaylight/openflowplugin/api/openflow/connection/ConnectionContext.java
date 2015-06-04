@@ -71,11 +71,11 @@ public interface ConnectionContext {
      * @return
      */
     OutboundQueue getOutboundQueueProvider();
+
     /**
      * Method sets reference to OFJava outbound queue provider.
-     *
      */
-    void setOutboundQueueProvider(OutboundQueueProvider  outboundQueueProvider);
+    void setOutboundQueueProvider(OutboundQueueProvider outboundQueueProvider);
 
     /**
      * Method returns current connection state.
@@ -106,9 +106,11 @@ public interface ConnectionContext {
     /**
      * actively drop associated connection
      *
+     * @param propagate true if event need to be propagated to higher contexts (device, stats, rpc..)
+     *                  or false if invoked from higher context
      * @see ConnectionAdapter#disconnect()
      */
-    void closeConnection();
+    void closeConnection(boolean propagate);
 
     /**
      * cleanup context upon connection closed event (by device)

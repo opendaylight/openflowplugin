@@ -48,7 +48,7 @@ public class DeviceTransactionChainManagerProvider {
                     if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
                         if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
                             LOG.info("There already exists one handler for connection described as {}. Connection is working will not try again.", nodeId);
-                            connectionContext.closeConnection();
+                            connectionContext.closeConnection(false);
                         } else {
                             LOG.info("There already exists one handler for connection described as {}. Transaction chain manager is in state {}. Will try again.",
                                     nodeId,

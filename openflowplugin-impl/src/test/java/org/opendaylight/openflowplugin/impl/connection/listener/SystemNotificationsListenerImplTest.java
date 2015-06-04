@@ -186,7 +186,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).changeStateToTimeouting();
-        Mockito.verify(connectionContext).closeConnection();
+        Mockito.verify(connectionContext).closeConnection(false);
     }
 
     private void verifyCommonInvocations() {
