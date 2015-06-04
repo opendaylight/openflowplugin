@@ -75,7 +75,7 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
     public void onHelloMessage(final HelloMessage hello) {
         LOG.debug("processing HELLO.xid: {}", hello.getXid());
         if (connectionContext.getConnectionState() == null) {
-            connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.HANDSHAKING);
+            connectionContext.changeStateToHandshaking();
         }
 
         if (checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING)) {

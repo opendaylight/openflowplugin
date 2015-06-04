@@ -443,7 +443,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable, ReadyFor
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
                 final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
-                    LOG.info("Static node {} info: {} collected", nodeII.toString(), type);
+                    LOG.info("Static node {} info: {} collected", deviceContext.getDeviceState().getNodeId(), type);
                     translateAndWriteReply(type, deviceContext, nodeII, result);
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();

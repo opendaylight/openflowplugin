@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
@@ -18,6 +18,6 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcContext extends RequestContextStack, AutoCloseable, DeviceDisconnectedHandler {
+public interface RpcContext extends RequestContextStack, AutoCloseable, DeviceContextClosedHandler {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 }

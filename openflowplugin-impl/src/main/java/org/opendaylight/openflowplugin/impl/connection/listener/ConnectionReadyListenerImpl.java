@@ -43,7 +43,7 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
             HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                     null, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
             handshakeContext.getHandshakePool().execute(handshakeStepWrapper);
-            connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.HANDSHAKING);
+            connectionContext.changeStateToHandshaking();
         } else {
             LOG.debug("already touched by hello message");
         }

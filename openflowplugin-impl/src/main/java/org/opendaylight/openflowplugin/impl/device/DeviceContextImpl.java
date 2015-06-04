@@ -38,7 +38,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -104,7 +103,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private NotificationPublishService notificationPublishService;
-    private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private NotificationService notificationService;
     private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
@@ -333,16 +331,26 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void close() {
+        LOG.debug("closing deviceContext: {}, nodeId:{}",
+                getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
+                getDeviceState().getNodeId());
+
+        tearDown();
+
+        primaryConnectionContext.closeConnection(false);
+    }
+
+    private void tearDown() {
         deviceState.setValid(false);
+
+        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
+            connectionContext.closeConnection(false);
+        }
 
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
 
-        primaryConnectionContext.close();
-        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
-            connectionContext.close();
-        }
 
         for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
@@ -355,14 +363,14 @@ public class DeviceContextImpl implements DeviceContext {
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         if (getPrimaryConnectionContext().equals(connectionContext)) {
             try {
-                close();
+                tearDown();
             } catch (final Exception e) {
                 LOG.trace("Error closing device context.");
             }
-            if (null != deviceDisconnectedHandler) {
-                deviceDisconnectedHandler.onDeviceDisconnected(connectionContext);
-            }
         } else {
+            LOG.debug("auxiliary connection dropped: {}, nodeId:{}",
+                    connectionContext.getConnectionAdapter().getRemoteAddress(),
+                    getDeviceState().getNodeId());
             final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
             auxiliaryConnectionContexts.remove(connectionDistinguisher);
         }
@@ -391,11 +399,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public MessageSpy getMessageSpy() {
         return messageSpy;
-    }
-
-    @Override
-    public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
-        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 
     @Override

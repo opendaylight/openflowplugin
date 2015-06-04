@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * </p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface ConnectionContext extends AutoCloseable {
+public interface ConnectionContext {
 
     /**
      * distinguished connection states
@@ -71,11 +71,11 @@ public interface ConnectionContext extends AutoCloseable {
      * @return
      */
     OutboundQueue getOutboundQueueProvider();
+
     /**
      * Method sets reference to OFJava outbound queue provider.
-     *
      */
-    void setOutboundQueueProvider(OutboundQueueProvider  outboundQueueProvider);
+    void setOutboundQueueProvider(OutboundQueueProvider outboundQueueProvider);
 
     /**
      * Method returns current connection state.
@@ -83,13 +83,6 @@ public interface ConnectionContext extends AutoCloseable {
      * @return {@link ConnectionContext.CONNECTION_STATE}
      */
     CONNECTION_STATE getConnectionState();
-
-    /**
-     * Method sets connection state of current context.
-     *
-     * @param connectionState
-     */
-    void setConnectionState(CONNECTION_STATE connectionState);
 
     /**
      * @param featuresReply as received from device during handshake
@@ -108,13 +101,34 @@ public interface ConnectionContext extends AutoCloseable {
      */
     void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
 
-    /**
-     * Method provides propagates info about closed connection to handler for handling closing connections.
-     */
-    void propagateClosingConnection();
-
     void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration);
 
-    @Override
-    void close();
+    /**
+     * actively drop associated connection
+     *
+     * @param propagate true if event need to be propagated to higher contexts (device, stats, rpc..)
+     *                  or false if invoked from higher context
+     * @see ConnectionAdapter#disconnect()
+     */
+    void closeConnection(boolean propagate);
+
+    /**
+     * cleanup context upon connection closed event (by device)
+     */
+    void onConnectionClosed();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#HANDSHAKING}
+     */
+    void changeStateToHandshaking();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#TIMEOUTING}
+     */
+    void changeStateToTimeouting();
+
+    /**
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#WORKING}
+     */
+    void changeStateToWorking();
 }
