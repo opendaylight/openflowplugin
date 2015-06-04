@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -70,7 +70,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext, handshakeContext);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");
@@ -94,7 +94,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * @return
      */
     private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
-            final HandshakeListener handshakeListener) {
+                                                    final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0),
                 ConnectionConductor.versionOrder);
@@ -109,7 +109,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * @return parameter dedicated to hello message content
      */
     public boolean isBitmapNegotiationEnabled() {
-        return bitmapNegotiationEnabled ;
+        return bitmapNegotiationEnabled;
     }
 
 
