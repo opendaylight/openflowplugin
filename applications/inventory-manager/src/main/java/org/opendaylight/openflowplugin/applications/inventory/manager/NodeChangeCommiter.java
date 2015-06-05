@@ -9,9 +9,12 @@ package org.opendaylight.openflowplugin.applications.inventory.manager;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -42,13 +45,31 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
 
     private final FlowCapableInventoryProvider manager;
 
+    // cache for nodes which were deleted, we get more than one nodeRemoved notification
+    private Cache<NodeRef, Boolean> deletedNodeCache =
+            CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(10, TimeUnit.SECONDS).build();
+
+    // cache for node-connectors which were deleted, we get more than one nodeConnectorRemoved notification
+    private Cache<NodeConnectorRef, Boolean> deletedNodeConnectorCache =
+            CacheBuilder.newBuilder().maximumSize(1000000).expireAfterWrite(10, TimeUnit.SECONDS).build();
+
     public NodeChangeCommiter(final FlowCapableInventoryProvider manager) {
         this.manager = Preconditions.checkNotNull(manager);
     }
 
     @Override
     public synchronized void onNodeConnectorRemoved(final NodeConnectorRemoved connector) {
-        LOG.debug("Node connector removed notification received.");
+        if(deletedNodeConnectorCache.getIfPresent(connector.getNodeConnectorRef()) == null){
+            deletedNodeConnectorCache.put(connector.getNodeConnectorRef(), Boolean.TRUE);
+        } else {
+            //its been noted that creating an operation for already removed node-connectors, fails
+            // the entire transaction chain, there by failing deserving removals
+            LOG.debug("Already received notification to remove nodeConnector, {} - Ignored",
+                    connector.getNodeConnectorRef().getValue());
+            return;
+        }
+
+        LOG.debug("Node connector removed notification received, {}", connector.getNodeConnectorRef().getValue());
         manager.enqueue(new InventoryOperation() {
             @Override
             public void applyOperation(final ReadWriteTransaction tx) {
@@ -61,6 +82,10 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
 
     @Override
     public synchronized void onNodeConnectorUpdated(final NodeConnectorUpdated connector) {
+        if (deletedNodeConnectorCache.getIfPresent(connector.getNodeConnectorRef()) != null){
+            deletedNodeConnectorCache.invalidate(connector.getNodeConnectorRef());
+        }
+
         LOG.debug("Node connector updated notification received.");
         manager.enqueue(new InventoryOperation() {
             @Override
@@ -85,7 +110,18 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
 
     @Override
     public synchronized void onNodeRemoved(final NodeRemoved node) {
-        LOG.debug("Node removed notification received.");
+
+        if(deletedNodeCache.getIfPresent(node.getNodeRef()) == null){
+            deletedNodeCache.put(node.getNodeRef(), Boolean.TRUE);
+        } else {
+            //its been noted that creating an operation for already removed node, fails
+            // the entire transaction chain, there by failing deserving removals
+            LOG.debug("Already received notification to remove node, {} - Ignored",
+                    node.getNodeRef().getValue());
+            return;
+        }
+
+        LOG.debug("Node removed notification received, {}", node.getNodeRef().getValue());
         manager.enqueue(new InventoryOperation() {
             @Override
             public void applyOperation(final ReadWriteTransaction tx) {
@@ -98,11 +134,15 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
 
     @Override
     public synchronized void onNodeUpdated(final NodeUpdated node) {
+        if (deletedNodeCache.getIfPresent(node.getNodeRef()) != null){
+            deletedNodeCache.invalidate(node.getNodeRef());
+        }
+
         final FlowCapableNodeUpdated flowNode = node.getAugmentation(FlowCapableNodeUpdated.class);
         if (flowNode == null) {
             return;
         }
-        LOG.debug("Node updated notification received.");
+        LOG.debug("Node updated notification received,{}", node.getNodeRef().getValue());
         manager.enqueue(new InventoryOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction tx) {
