@@ -57,6 +57,8 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/30-forwardingrules-manager.xml">mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager-config/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/72-topology-lldp-discovery.xml">mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/73-topology-manager.xml">mvn:org.opendaylight.openflowplugin.applications/topology-manager/${project.version}/xml/config</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-nsf-model-li' version='${project.version}'
@@ -107,6 +109,7 @@
         <feature version="${project.version}">odl-openflowplugin-southbound-li</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/72-topology-lldp-discovery.xml">mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}/xml/config</configfile>
     </feature>
 
 </features>
