@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyL
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
@@ -44,6 +45,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
+
+        SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CREATED);
 
         LOG.trace("preparing handshake: {}", connectionAdapter.getRemoteAddress());
 
