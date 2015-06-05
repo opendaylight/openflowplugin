@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.slf4j.Logger;
@@ -88,6 +89,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void closeConnection(boolean propagate) {
+        SessionStatistics.countEvent(this.getNodeId().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
         final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
         LOG.debug("Actively closing connection: {}, datapathId:{}.",
                 connectionAdapter.getRemoteAddress(), datapathId);
@@ -105,6 +107,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
+        SessionStatistics.countEvent(this.getNodeId().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
