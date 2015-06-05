@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import com.google.common.base.Optional;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
@@ -317,12 +319,15 @@ public abstract class OFRpcTaskFactory {
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
                     final UpdateFlowInput in, final ReadWriteTransaction rwTx) {
                 super(taskContext, cookie, in);
-                InstanceIdentifier<Flow> iiToFlow = (InstanceIdentifier<Flow>)(in.getFlowRef().getValue());
-                iiToTable = in.getFlowRef().getValue().firstIdentifierOf(Table.class);
-                FlowKey flowKey = iiToFlow.firstKeyOf(
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow.class, FlowKey.class);
-                if (flowKey != null) {
-                    flowId = flowKey.getId().getValue();
+                final FlowRef flowRef = in.getFlowRef();
+                if (flowRef != null) {
+                    InstanceIdentifier<Flow> iiToFlow = (InstanceIdentifier<Flow>)(flowRef.getValue());
+                    iiToTable = flowRef.getValue().firstIdentifierOf(Table.class);
+                    FlowKey flowKey = iiToFlow.firstKeyOf(
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow.class, FlowKey.class);
+                    if (flowKey != null) {
+                        flowId = flowKey.getId().getValue();
+                    }
                 }
                 this.rwTx = rwTx;
             }
@@ -356,36 +361,38 @@ public abstract class OFRpcTaskFactory {
                             version, getSession().getFeatures().getDatapathId());
                 }
 
-                CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> hashDeletionFuture = readFlowHashIdMappingFromOperationalDS(rwTx);
-                Futures.addCallback(hashDeletionFuture, new FutureCallback<Optional<FlowHashIdMapping>>() {
-
-                    @Override
-                    public void onSuccess(Optional<FlowHashIdMapping> optFlowHashIdMapping) {
-                      FlowHashIdMapKey flowHashIdMapKeyToDelete = null;
-                      if (optFlowHashIdMapping.isPresent()) {
-                          FlowHashIdMapping flowHashIdMapping = optFlowHashIdMapping.get();
-                          for (FlowHashIdMap flowHashId : flowHashIdMapping.getFlowHashIdMap()) {
-                              if (flowHashId.getFlowId().getValue().equals(flowId)) {
-                                  flowHashIdMapKeyToDelete = flowHashId.getKey();
-                                  break;
+                //deleting flow hash value from operational DS
+                if (flowId != null) {
+                    CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> hashDeletionFuture
+                        = readFlowHashIdMappingFromOperationalDS(rwTx);
+                    Futures.addCallback(hashDeletionFuture, new FutureCallback<Optional<FlowHashIdMapping>>() {
+                        @Override
+                        public void onSuccess(Optional<FlowHashIdMapping> optFlowHashIdMapping) {
+                          FlowHashIdMapKey flowHashIdMapKeyToDelete = null;
+                          if (optFlowHashIdMapping.isPresent()) {
+                              FlowHashIdMapping flowHashIdMapping = optFlowHashIdMapping.get();
+                              for (FlowHashIdMap flowHashId : flowHashIdMapping.getFlowHashIdMap()) {
+                                  if (flowHashId.getFlowId().getValue().equals(flowId)) {
+                                      flowHashIdMapKeyToDelete = flowHashId.getKey();
+                                      break;
+                                  }
                               }
                           }
-                      }
-                      if (flowHashIdMapKeyToDelete != null) {
-                          final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
-                                .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
-                          rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
-                          rwTx.submit();
-                      }
-                    }
+                          if (flowHashIdMapKeyToDelete != null) {
+                              final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
+                                    .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
+                              rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
+                              rwTx.submit();
+                          }
+                        }
 
-                    @Override
-                    public void onFailure(Throwable t) {
-                        LOG.debug("Reading flow-hash-id map from operational DS wasn't successfull");
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable t) {
+                            LOG.debug("Reading flow-hash-id map from operational DS wasn't successfull");
+                        }
+                    });
 
-
+                }
 
                 allFlowMods.addAll(ofFlowModInputs);
                 LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
