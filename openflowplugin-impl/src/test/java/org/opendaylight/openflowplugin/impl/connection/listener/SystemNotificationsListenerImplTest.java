@@ -82,7 +82,7 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocationsSubSet();
+        verifyCommonInvocations();
         Mockito.verify(connectionContext).onConnectionClosed();
     }
 
@@ -99,7 +99,7 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocationsSubSet();
+        verifyCommonInvocations();
         Mockito.verify(connectionContext).onConnectionClosed();
     }
 
@@ -118,7 +118,7 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocationsSubSet();
+        verifyCommonInvocations();
         Mockito.verify(connectionContext).onConnectionClosed();
     }
 
@@ -136,7 +136,7 @@ public class SystemNotificationsListenerImplTest {
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
 
-        verifyCommonInvocationsSubSet();
+        verifyCommonInvocations();
         Mockito.verify(connectionContext).onConnectionClosed();
     }
 
@@ -190,12 +190,8 @@ public class SystemNotificationsListenerImplTest {
     }
 
     private void verifyCommonInvocations() {
-        verifyCommonInvocationsSubSet();
-        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionAdapter();
-    }
-
-    private void verifyCommonInvocationsSubSet() {
         Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionState();
         Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getFeatures();
+        Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT).atLeastOnce()).getConnectionAdapter();
     }
 }
