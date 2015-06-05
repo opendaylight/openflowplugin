@@ -102,7 +102,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceManagerImpl implements DeviceManager, AutoCloseable, ReadyForNewTransactionChainHandler {
+public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
@@ -176,7 +176,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable, ReadyFor
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
 
-        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext, dataBroker, this);
+        ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
+        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext,
+                dataBroker,
+                readyForNewTransactionChainHandler);
         initializeDeviceContextSafely(connectionContext, transactionChainManager);
     }
 
@@ -598,12 +601,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable, ReadyFor
     public void initialize() {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void onReadyForNewTransactionChain(final ConnectionContext connectionContext) {
-        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext, dataBroker, this);
-        initializeDeviceContextSafely(connectionContext, transactionChainManager);
     }
 
     private void initializeDeviceContextSafely(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {

@@ -8,12 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.6.2015.
  */
 public interface ReadyForNewTransactionChainHandler {
 
-    void onReadyForNewTransactionChain(ConnectionContext connectionContext);
+    void onReadyForNewTransactionChain();
 }
