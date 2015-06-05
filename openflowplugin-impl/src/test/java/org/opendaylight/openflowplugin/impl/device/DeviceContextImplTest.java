@@ -32,6 +32,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
@@ -75,8 +77,8 @@ public class DeviceContextImplTest {
     OutboundQueueProvider outboundQueueProvider;
     @Mock
     ConnectionAdapter connectionAdapter;
-    @Mock
-    KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
+    NodeId nodeId = new NodeId("h2g2:42");
+    KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     @Mock
     TranslatorLibrary translatorLibrary;
     @Mock
@@ -91,7 +93,7 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, connectionContext, registration);
+        txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);

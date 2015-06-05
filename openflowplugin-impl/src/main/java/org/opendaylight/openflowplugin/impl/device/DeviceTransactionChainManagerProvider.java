@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
@@ -40,29 +41,34 @@ public class DeviceTransactionChainManagerProvider {
                         txChManagers.remove(nodeId);
                     }
                 };
-                transactionChainManager = new TransactionChainManager(dataBroker, connectionContext, registration);
-                txChManagers.put(nodeId, transactionChainManager);
+                transactionChainManager = new TransactionChainManager(dataBroker,
+                        DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()),
+                        registration);
+                synchronized (txChManagers) {
+                    TransactionChainManager possibleValue = txChManagers.get(nodeId);
+                    //some other thread managed to register its transaction chain manager before this block ended - drop this one
+                    if (null == possibleValue) {
+                        txChManagers.put(nodeId, transactionChainManager);
+                    } else {
+                        dropNewConnection(connectionContext, nodeId, transactionChainManager);
+                    }
+                }
                 return transactionChainManager;
             } else {
-                try {
-                    if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-                        if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
-                            LOG.info("There already exists one handler for connection described as {}. Connection is working will not try again.", nodeId);
-                            connectionContext.closeConnection(false);
-                        } else {
-                            LOG.info("There already exists one handler for connection described as {}. Transaction chain manager is in state {}. Will try again.",
-                                    nodeId,
-                                    transactionChainManager.getTransactionChainManagerStatus());
-                            readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
-                        }
-                    }
-                } catch (Exception e) {
-                    LOG.info("Transaction closed handler registration for node {} failed because we most probably hit previous transaction chain  manager's close process. Will try again.", nodeId);
-                    readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
+                if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
+                    dropNewConnection(connectionContext, nodeId, transactionChainManager);
                 }
             }
         }
+
         return null;
+    }
+
+    private void dropNewConnection(final ConnectionContext connectionContext, final NodeId nodeId, final TransactionChainManager transactionChainManager) {
+        LOG.info("There already exists one handler for connection described as {}. Transaction chain manager is in state {}. Will not try again.",
+                nodeId,
+                transactionChainManager.getTransactionChainManagerStatus());
+        connectionContext.closeConnection(false);
     }
 
 
