@@ -11,6 +11,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
         deviceConnectedHandler.deviceConnected(connectionContext);
+        SessionStatistics.countEvent(connectionContext.getNodeId().toString(), SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
     }
 
     @Override

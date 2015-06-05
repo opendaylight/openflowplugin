@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutputBuilder;
@@ -47,11 +48,13 @@ public class SystemNotificationsListenerImplTest {
 
     private SystemNotificationsListenerImpl systemNotificationsListener;
     private ConnectionContextImpl connectionContextGolem;
+    private static final NodeId nodeId = new NodeId("OFP:TEST");
 
     @Before
     public void setUp() {
         connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
         connectionContextGolem.changeStateToWorking();
+        connectionContextGolem.setNodeId(nodeId);
 
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
                 InetSocketAddress.createUnresolved("unit-odl.example.org", 4242));
@@ -60,6 +63,7 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
+        Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
 
         systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext);
     }
