@@ -91,6 +91,14 @@ public final class FlowComparatorFactory {
         };
     }
 
+    /*
+     * TODO:Cookie is used in flow comparison for the applications using match extensions
+     * in their flow body. As of now openflowplugin don't use match extensions
+     * in flow comparison, that can create a scenario where more then one stored flow
+     * can match to any stats flow, if stored flows differ only by match extension.
+     * Once match extensions are part of flow comparison, we should remove cookie
+     * from flow comparison.
+     */
     public static SimpleComparator<Flow> createCookie() {
         return new SimpleComparator<Flow>() {
             /**
@@ -98,6 +106,16 @@ public final class FlowComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(final Flow statsFlow, final Flow storedFlow) {
+                /*
+                 * Cookie is an optional field, so user might not set it, but if switch
+                 * get flow without cookie value , it will use 0 as a default cookie value
+                 * and return cookie=0 when openflowplugin fetch the flow stats from switch.
+                 * In this scenario flow comparison will fail. Below check make sure that
+                 * if user didn't set cookie value while flow installation, skip the comparison.
+                 */
+                if(storedFlow.getCookie() == null){
+                    return true;
+                }
                 if (statsFlow.getCookie() == null) {
                     if (storedFlow.getCookie() != null) {
                         return false;
