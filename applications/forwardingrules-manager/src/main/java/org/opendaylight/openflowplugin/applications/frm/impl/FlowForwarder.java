@@ -128,6 +128,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // a given flow object is updated.
             builder.setUpdatedFlow((new UpdatedFlowBuilder(update)).setStrict(Boolean.TRUE).build());
             builder.setOriginalFlow((new OriginalFlowBuilder(original)).setStrict(Boolean.TRUE).build());
+            builder.setFlowRef(new FlowRef(identifier));
 
             provider.getSalFlowService().updateFlow(builder.build());
         }
