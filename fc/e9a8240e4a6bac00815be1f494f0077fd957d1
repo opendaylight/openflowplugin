@@ -1,0 +1,9 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Abhijit Kumbhare <abhijit.kumbhare@ericsson.com>
+Code-Review+1: Vaclav Demcak <vaclav.demcak@pantheon.sk>
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Submitted-by: michal rehak <mirehak@cisco.com>
+Submitted-at: Fri, 05 Jun 2015 10:56:01 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/21915
+Project: openflowplugin
+Branch: refs/heads/stable/lithium
