@@ -25,7 +25,7 @@ public class FlowRegistryKeyFactory {
     public FlowRegistryKeyFactory() {
     }
 
-    public static FlowRegistryKey create(Flow flow) {
+    public static FlowRegistryKey create(final Flow flow) {
         return new FlowRegistryKeyDto(flow);
     }
 
@@ -45,21 +45,31 @@ public class FlowRegistryKeyFactory {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             final FlowRegistryKeyDto that = (FlowRegistryKeyDto) o;
 
-            if (priority != that.priority) return false;
-            if (tableId != that.tableId) return false;
-            if (!match.equals(that.match)) return false;
+            if (priority != that.priority) {
+                return false;
+            }
+            if (tableId != that.tableId) {
+                return false;
+            }
+            if (!match.equals(that.match)) {
+                return false;
+            }
 
             return true;
         }
 
         @Override
         public int hashCode() {
-            int result = (int) tableId;
+            int result = tableId;
             result = 31 * result + priority;
             result = 31 * result + match.hashCode();
             return result;

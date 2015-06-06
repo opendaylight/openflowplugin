@@ -13,6 +13,7 @@ package org.opendaylight.openflowplugin.api.openflow.registry.flow;
  */
 @Deprecated
 public class FlowRegistryException extends Exception {
+    private static final long serialVersionUID = 7514092745206029217L;
 
     public FlowRegistryException(final String message) {
         super(message);
