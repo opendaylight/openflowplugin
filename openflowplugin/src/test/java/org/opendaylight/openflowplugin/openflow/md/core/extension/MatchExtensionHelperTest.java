@@ -10,11 +10,12 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -33,8 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/19/14.
@@ -52,9 +51,9 @@ public class MatchExtensionHelperTest {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getConverter(key)).thenReturn(new ConvertorFromOFJava<DataContainer, AugmentationPath>() {
             @Override
-            public ExtensionAugment<? extends Augmentation<Extension>> convert(DataContainer input, AugmentationPath path) {
+            public ExtensionAugment<? extends Augmentation<Extension>> convert(final DataContainer input, final AugmentationPath path) {
                 MockAugmentation mockAugmentation = new MockAugmentation();
-                return new ExtensionAugment(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
+                return new ExtensionAugment<MockAugmentation>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
             }
         });
     }
@@ -67,7 +66,7 @@ public class MatchExtensionHelperTest {
     public void testProcessAllExtensions() {
 
         List<MatchEntry> matchEntries = createMatchEntrieses();
-        AugmentTuple augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        AugmentTuple<?> augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         assertNotNull(augmentTuple);
 
         augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.PACKETRECEIVED_MATCH);
@@ -78,7 +77,7 @@ public class MatchExtensionHelperTest {
     }
 
 
-    private List<MatchEntry> createMatchEntrieses() {
+    private static List<MatchEntry> createMatchEntrieses() {
         List<MatchEntry> matchEntries = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
             MatchEntryBuilder MatchEntryBuilder = new MatchEntryBuilder();
