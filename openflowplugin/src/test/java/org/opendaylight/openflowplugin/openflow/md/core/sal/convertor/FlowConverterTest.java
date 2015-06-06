@@ -9,6 +9,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -40,11 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor}
  */
@@ -69,19 +68,19 @@ public class FlowConverterTest {
 
     }
 
-    private Action createAction(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase,
-        int order) {
+    private static Action createAction(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase,
+        final int order) {
         Action action = new ActionBuilder().setOrder(order).setAction(actionCase).build();
         return action;
     }
 
-    private EthernetMatch createEthernetMatch() {
+    private static EthernetMatch createEthernetMatch() {
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
         ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType(33024L)).build());
         return ethernetMatchBuilder.build();
     }
 
-    private Instructions toApplyInstruction(
+    private static Instructions toApplyInstruction(
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions) {
         return new InstructionsBuilder()
             .setInstruction(
@@ -96,21 +95,21 @@ public class FlowConverterTest {
             ).build();
     }
 
-    private Flow createFlowWithActions(Action...actions) {
+    private static Flow createFlowWithActions(final Action...actions) {
         MockFlow mockFlow = new MockFlow();
         mockFlow.setInstructions(toApplyInstruction(Arrays.asList(actions)));
         return mockFlow;
     }
 
-    private class MockFlow implements AddFlowInput {
+    private static class MockFlow implements AddFlowInput {
         private Instructions instructions;
         private Match match;
 
-        public void setInstructions(Instructions instructions) {
+        public void setInstructions(final Instructions instructions) {
             this.instructions = instructions;
         }
 
-        public void setMatch(Match match) {
+        public void setMatch(final Match match) {
             this.match = match;
         }
 
@@ -121,7 +120,7 @@ public class FlowConverterTest {
         }
 
         @Override
-        public <E extends Augmentation<AddFlowInput>> E getAugmentation(Class<E> augmentationType) {
+        public <E extends Augmentation<AddFlowInput>> E getAugmentation(final Class<E> augmentationType) {
             return null;
         }
 

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,7 +134,7 @@ public class PortTranslatorUtilTest {
         return portState;
     }
 
-    private MacAddress getMacAddress() {
+    private static MacAddress getMacAddress() {
         return new MacAddress(MAC_ADDRESS);
     }
 
@@ -147,7 +146,7 @@ public class PortTranslatorUtilTest {
         return new PortConfig(portCfgBools[0], portCfgBools[1], portCfgBools[2], portCfgBools[3]);
     }
 
-    private void assertEqualsPortFeaturesV10(PortFeaturesV10 apfV10, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
         assertEquals(apfV10.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apfV10.is_100mbHd(), npf.isHundredMbHd());
 
@@ -165,7 +164,7 @@ public class PortTranslatorUtilTest {
         assertEquals(apfV10.isPauseAsym(), npf.isPauseAsym());
     }
 
-    private void assertEqualsPortFeatures(PortFeatures apf, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeatures(final PortFeatures apf, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
         assertEquals(apf.is_100gbFd(), npf.isHundredGbFd());
         assertEquals(apf.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apf.is_100mbHd(), npf.isHundredMbHd());

@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import static org.mockito.Mockito.when;
-
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -23,10 +22,10 @@ public class ErrorHandlerSimpleImplTest extends TestCase {
 
     ErrorHandler errorHandler = new ErrorHandlerSimpleImpl();
 
-    @MockitoAnnotations.Mock
+    @Mock
     SessionContext sessionContext;
 
-    @MockitoAnnotations.Mock
+    @Mock
     SwitchSessionKeyOF switchSessionKeyOF;
 
     @Before

@@ -8,32 +8,13 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-
-import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
 import com.google.common.base.Optional;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import org.junit.Before;
@@ -43,7 +24,10 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.common.util.Rpcs;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -53,6 +37,13 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
@@ -82,6 +73,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.p
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
@@ -100,6 +92,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
@@ -154,10 +150,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.MoreExecutors;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * simple NPE smoke test
@@ -222,9 +218,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testAddFlow() throws InterruptedException, ExecutionException {
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
-        updateFlowOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateFlowOutput> result = Rpcs.getRpcResult(true, updateFlowOutput.build(), errorSet);
+        updateFlowOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateFlowOutput> result = RpcResultBuilder.success(updateFlowOutput.build()).build();
         Mockito.when(
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -251,9 +246,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testRemoveFlow() throws InterruptedException, ExecutionException {
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
-        updateFlowOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateFlowOutput> result = Rpcs.getRpcResult(true, updateFlowOutput.build(), errorSet);
+        updateFlowOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateFlowOutput> result = RpcResultBuilder.success(updateFlowOutput.build()).build();
         Mockito.when(
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -281,9 +275,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testUpdateFlow() throws InterruptedException, ExecutionException {
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
-        updateFlowOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateFlowOutput> result = Rpcs.getRpcResult(true, updateFlowOutput.build(), errorSet);
+        updateFlowOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateFlowOutput> result = RpcResultBuilder.success(updateFlowOutput.build()).build();
         Mockito.when(
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -328,9 +321,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testAddGroup() throws InterruptedException, ExecutionException {
         UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder();
-        updateGroupOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateGroupOutput> result = Rpcs.getRpcResult(true, updateGroupOutput.build(), errorSet);
+        updateGroupOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateGroupOutput> result = RpcResultBuilder.success(updateGroupOutput.build()).build();
         Mockito.when(
                 messageDispatchService.groupMod(Matchers.any(GroupModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -358,9 +350,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testUpdateGroup() throws InterruptedException, ExecutionException {
         UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder();
-        updateGroupOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateGroupOutput> result = Rpcs.getRpcResult(true, updateGroupOutput.build(), errorSet);
+        updateGroupOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateGroupOutput> result = RpcResultBuilder.success(updateGroupOutput.build()).build();
         Mockito.when(
                 messageDispatchService.groupMod(Matchers.any(GroupModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -390,9 +381,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testRemoveGroup() throws InterruptedException, ExecutionException {
         UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder();
-        updateGroupOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateGroupOutput> result = Rpcs.getRpcResult(true, updateGroupOutput.build(), errorSet);
+        updateGroupOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateGroupOutput> result = RpcResultBuilder.success(updateGroupOutput.build()).build();
         Mockito.when(
                 messageDispatchService.groupMod(Matchers.any(GroupModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -420,9 +410,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testAddMeter() throws InterruptedException, ExecutionException {
         UpdateMeterOutputBuilder updateMeterOutput = new UpdateMeterOutputBuilder();
-        updateMeterOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateMeterOutput> result = Rpcs.getRpcResult(true, updateMeterOutput.build(), errorSet);
+        updateMeterOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateMeterOutput> result = RpcResultBuilder.success(updateMeterOutput.build()).build();
         Mockito.when(
                 messageDispatchService.meterMod(Matchers.any(MeterModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -449,9 +438,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testUpdtateMeter() throws InterruptedException, ExecutionException {
         UpdateMeterOutputBuilder updateMeterOutput = new UpdateMeterOutputBuilder();
-        updateMeterOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateMeterOutput> result = Rpcs.getRpcResult(true, updateMeterOutput.build(), errorSet);
+        updateMeterOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateMeterOutput> result = RpcResultBuilder.success(updateMeterOutput.build()).build();
         Mockito.when(
                 messageDispatchService.meterMod(Matchers.any(MeterModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -481,9 +469,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testRemoveMeter() throws InterruptedException, ExecutionException {
         UpdateMeterOutputBuilder updateMeterOutput = new UpdateMeterOutputBuilder();
-        updateMeterOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdateMeterOutput> result = Rpcs.getRpcResult(true, updateMeterOutput.build(), errorSet);
+        updateMeterOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdateMeterOutput> result = RpcResultBuilder.success(updateMeterOutput.build()).build();
         Mockito.when(
                 messageDispatchService.meterMod(Matchers.any(MeterModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -510,9 +497,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testGetAllGroupStatistics() throws InterruptedException, ExecutionException {
         GetAllGroupStatisticsOutputBuilder getAllGroupStatistcsOutput = new GetAllGroupStatisticsOutputBuilder();
-        getAllGroupStatistcsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getAllGroupStatistcsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -538,9 +524,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testGetGroupDescription() throws InterruptedException, ExecutionException {
         GetGroupDescriptionOutputBuilder getGroupDescOutput = new GetGroupDescriptionOutputBuilder();
-        getGroupDescOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getGroupDescOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -566,9 +551,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testGetGroupFeatures() throws InterruptedException, ExecutionException {
         GetGroupFeaturesOutputBuilder getGroupFeaturesOutput = new GetGroupFeaturesOutputBuilder();
-        getGroupFeaturesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getGroupFeaturesOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -595,9 +579,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testGetGroupStatistics() throws InterruptedException, ExecutionException {
         GetGroupStatisticsOutputBuilder getGroupStatsOutput = new GetGroupStatisticsOutputBuilder();
-        getGroupStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getGroupStatsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -625,9 +608,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllMeterConfigStatistics() throws InterruptedException, ExecutionException {
         GetAllMeterConfigStatisticsOutputBuilder getAllMeterConfigStatsOutput =
                 new GetAllMeterConfigStatisticsOutputBuilder();
-        getAllMeterConfigStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getAllMeterConfigStatsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -654,9 +636,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllMeterStatistics() throws InterruptedException, ExecutionException {
         GetAllMeterStatisticsOutputBuilder getAllMeterStatisticsOutput =
                 new GetAllMeterStatisticsOutputBuilder();
-        getAllMeterStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getAllMeterStatisticsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -683,9 +664,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetMeterFeatures() throws InterruptedException, ExecutionException {
         GetMeterFeaturesOutputBuilder getMeterFeaturesOutput =
                 new GetMeterFeaturesOutputBuilder();
-        getMeterFeaturesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getMeterFeaturesOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -711,9 +691,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testGetMeterStatistics() throws InterruptedException, ExecutionException {
         GetMeterStatisticsOutputBuilder getMeterStatsOutput = new GetMeterStatisticsOutputBuilder();
-        getMeterStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getMeterStatsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -741,9 +720,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllNodeConnectorsStatistics() throws InterruptedException, ExecutionException {
         GetAllNodeConnectorsStatisticsOutputBuilder getAllNodeConnectorsStatsOutput =
                 new GetAllNodeConnectorsStatisticsOutputBuilder();
-        getAllNodeConnectorsStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getAllNodeConnectorsStatsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();;
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -770,9 +748,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetNodeConnectorStatistics() throws InterruptedException, ExecutionException {
         GetNodeConnectorStatisticsOutputBuilder getNodeConnectorStatsOutput =
                 new GetNodeConnectorStatisticsOutputBuilder();
-        getNodeConnectorStatsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        getNodeConnectorStatsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -801,9 +778,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testUpdatePort() throws InterruptedException, ExecutionException {
         UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder();
-        updatePortOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<UpdatePortOutput> result = Rpcs.getRpcResult(true, updatePortOutput.build(), errorSet);
+        updatePortOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<UpdatePortOutput> result = RpcResultBuilder.success(updatePortOutput.build()).build();
         Mockito.when(
                 messageDispatchService.portMod(Matchers.any(PortModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -857,9 +833,8 @@ public class ModelDrivenSwitchImplTest {
     @Test
     public void testUpdateTable() throws InterruptedException, ExecutionException {
         UpdateTableOutputBuilder updateTableOutput = new UpdateTableOutputBuilder();
-        updateTableOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        updateTableOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -880,8 +855,8 @@ public class ModelDrivenSwitchImplTest {
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setKey(new TableFeaturesKey((short) 42));
         tableFeaturesBuilder.setMaxEntries(42L);
-        tableFeaturesBuilder.setMetadataMatch(new BigInteger("42424242"));
-        tableFeaturesBuilder.setMetadataWrite(new BigInteger("42424242"));
+        tableFeaturesBuilder.setMetadataMatch(BigInteger.valueOf(42424242));
+        tableFeaturesBuilder.setMetadataWrite(BigInteger.valueOf(42424242));
         tableFeaturesBuilder.setName("testTableFeatures");
         tableFeaturesBuilder.setTableId((short) 41);
 
@@ -914,9 +889,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllFlowStatisticsFromFlowTable() throws InterruptedException, ExecutionException {
         GetAllFlowStatisticsFromFlowTableOutputBuilder allFlowStatisticsFromFlowTableOutput =
                 new GetAllFlowStatisticsFromFlowTableOutputBuilder();
-        allFlowStatisticsFromFlowTableOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        allFlowStatisticsFromFlowTableOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -944,9 +918,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllFlowsStatisticsFromAllFlowTables() throws InterruptedException, ExecutionException {
         GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder allFlowStatisticsFromAllFlowTablesOutput =
                 new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder();
-        allFlowStatisticsFromAllFlowTablesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        allFlowStatisticsFromAllFlowTablesOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -974,9 +947,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetFlowStatisticsFromFlowTables() throws InterruptedException, ExecutionException {
         GetFlowStatisticsFromFlowTableOutputBuilder flowStatisticsFromFlowTablesOutput =
                 new GetFlowStatisticsFromFlowTableOutputBuilder();
-        flowStatisticsFromFlowTablesOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        flowStatisticsFromFlowTablesOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1022,9 +994,8 @@ public class ModelDrivenSwitchImplTest {
                                                                                 ExecutionException {
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder aggregateFlowStatisticsOutput =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder();
-        aggregateFlowStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        aggregateFlowStatisticsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1054,9 +1025,8 @@ public class ModelDrivenSwitchImplTest {
                                                                                 ExecutionException {
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder aggregateFlowStatisticsForMatchOutput =
                 new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder();
-        aggregateFlowStatisticsForMatchOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        aggregateFlowStatisticsForMatchOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1064,10 +1034,10 @@ public class ModelDrivenSwitchImplTest {
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =
                            new GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder();
         input.setMatch(createMatch());
-        input.setCookie(new FlowCookie(new BigInteger("123456")));
-        input.setCookieMask(new FlowCookie(new BigInteger("123456")));
+        input.setCookie(new FlowCookie(BigInteger.valueOf(123456)));
+        input.setCookieMask(new FlowCookie(BigInteger.valueOf(123456)));
         input.setOutGroup(44L);
-        input.setOutPort(new BigInteger("12563"));
+        input.setOutPort(BigInteger.valueOf(12563));
 
         mdSwitchOF10.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build()).get();
         mdSwitchOF13.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build()).get();
@@ -1089,9 +1059,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetFlowTablesStatistics() throws InterruptedException, ExecutionException {
         GetFlowTablesStatisticsOutputBuilder flowTableStatisticsOutput =
                 new GetFlowTablesStatisticsOutputBuilder();
-        flowTableStatisticsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        flowTableStatisticsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1118,9 +1087,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllQueuesStatisticsFromAllPorts() throws InterruptedException, ExecutionException {
         GetAllQueuesStatisticsFromAllPortsOutputBuilder allQueuesStatisticsAllPortsOutput =
                 new GetAllQueuesStatisticsFromAllPortsOutputBuilder();
-        allQueuesStatisticsAllPortsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        allQueuesStatisticsAllPortsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1148,9 +1116,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetAllQueuesStatisticsFromGivenPort() throws InterruptedException, ExecutionException {
         GetAllQueuesStatisticsFromGivenPortOutputBuilder allQueuesStatisticsGivenPortsOutput =
                 new GetAllQueuesStatisticsFromGivenPortOutputBuilder();
-        allQueuesStatisticsGivenPortsOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        allQueuesStatisticsGivenPortsOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
@@ -1181,9 +1148,8 @@ public class ModelDrivenSwitchImplTest {
     public void testGetQueueStatisticsFromGivenPort() throws InterruptedException, ExecutionException {
         GetQueueStatisticsFromGivenPortOutputBuilder queuesStatisticsGivenPortOutput =
                 new GetQueueStatisticsFromGivenPortOutputBuilder();
-        queuesStatisticsGivenPortOutput.setTransactionId(new TransactionId(new BigInteger("42")));
-        Set<RpcError> errorSet = Collections.emptySet();
-        RpcResult<Void> result = Rpcs.getRpcResult(true, null, errorSet);
+        queuesStatisticsGivenPortOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
         Mockito.when(
                 messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));

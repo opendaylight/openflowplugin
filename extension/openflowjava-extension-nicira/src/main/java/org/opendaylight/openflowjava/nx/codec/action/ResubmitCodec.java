@@ -13,12 +13,9 @@ package org.opendaylight.openflowjava.nx.codec.action;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
-import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmitBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmitBuilder;
@@ -41,31 +38,34 @@ public class ResubmitCodec extends AbstractActionCodec {
     private static final short OFP_IN_PORT = (short) 0xfff8;
     private static final int padding = 3; // nx_action_resubmit : uint8_t pad[3];
 
-    public byte getSubType(ActionResubmit action) {
-        if ((action.getNxActionResubmit().getTable() == null) || (action.getNxActionResubmit().getTable().byteValue() == OFP_TABLE_ALL))
+    public byte getSubType(final ActionResubmit action) {
+        if ((action.getNxActionResubmit().getTable() == null) || (action.getNxActionResubmit().getTable().byteValue() == OFP_TABLE_ALL)) {
             return NXAST_RESUBMIT_SUBTYPE;
+        }
         return NXAST_RESUBMIT_TABLE_SUBTYPE;
     }
 
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         byte table = OFP_TABLE_ALL;
         short inPort = OFP_IN_PORT;
 
         ActionResubmit action = ((ActionResubmit) input.getActionChoice());
         serializeHeader(LENGTH, getSubType(action), outBuffer);
 
-        if (action.getNxActionResubmit().getInPort() != null)
+        if (action.getNxActionResubmit().getInPort() != null) {
             inPort = action.getNxActionResubmit().getInPort().shortValue();
-        if (action.getNxActionResubmit().getTable() != null)
+        }
+        if (action.getNxActionResubmit().getTable() != null) {
             table = action.getNxActionResubmit().getTable().byteValue();
+        }
         outBuffer.writeShort(inPort);
         outBuffer.writeByte(table);
         outBuffer.writeZero(padding);
     }
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
 
         ActionResubmitBuilder builder = new ActionResubmitBuilder();

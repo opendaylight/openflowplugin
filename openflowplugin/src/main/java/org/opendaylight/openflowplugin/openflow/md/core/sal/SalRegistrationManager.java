@@ -58,7 +58,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private RpcProviderRegistry rpcProviderRegistry;
 
-    private SwitchFeaturesUtil swFeaturesUtil;
+    private final SwitchFeaturesUtil swFeaturesUtil;
 
     private ListenerRegistration<SessionListener> sessionListenerRegistration;
 
@@ -70,15 +70,15 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         return publishService;
     }
 
-    public void setPublishService(NotificationProviderService publishService) {
+    public void setPublishService(final NotificationProviderService publishService) {
         this.publishService = publishService;
     }
 
-    public void setDataService(DataBroker dataService) {
+    public void setDataService(final DataBroker dataService) {
         this.dataService = dataService;
     }
 
-    public void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry) {
+    public void setRpcProviderRegistry(final RpcProviderRegistry rpcProviderRegistry) {
         this.rpcProviderRegistry = rpcProviderRegistry;
     }
 
@@ -91,7 +91,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     }
 
     @Override
-    public void onSessionAdded(SwitchSessionKeyOF sessionKey, SessionContext context) {
+    public void onSessionAdded(final SwitchSessionKeyOF sessionKey, final SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
@@ -111,7 +111,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     }
 
     @Override
-    public void onSessionRemoved(SessionContext context) {
+    public void onSessionRemoved(final SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
@@ -130,7 +130,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
 
-    private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {
+    private NodeUpdated nodeAdded(final ModelDrivenSwitch sw, final GetFeaturesOutput features, final NodeRef nodeRef) {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
@@ -147,7 +147,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         return builder.build();
     }
 
-    private static IpAddress getIpAddressOf(ModelDrivenSwitch sw) {
+    private static IpAddress getIpAddressOf(final ModelDrivenSwitch sw) {
         SessionContext sessionContext = sw.getSessionContext();
         Preconditions.checkNotNull(sessionContext.getPrimaryConductor(),
                 "primary conductor must not be NULL -> " + sw.getNodeId());
@@ -162,7 +162,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         return resolveIpAddress(remoteAddress.getAddress());
     }
 
-    private static IpAddress resolveIpAddress(InetAddress address) {
+    private static IpAddress resolveIpAddress(final InetAddress address) {
         String hostAddress = address.getHostAddress();
         if (address instanceof Inet4Address) {
             return new IpAddress(new Ipv4Address(hostAddress));
@@ -173,23 +173,23 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         throw new IllegalArgumentException("Unsupported IP address type!");
     }
 
-    private NodeRemoved nodeRemoved(NodeRef nodeRef) {
+    private static NodeRemoved nodeRemoved(final NodeRef nodeRef) {
         NodeRemovedBuilder builder = new NodeRemovedBuilder();
         builder.setNodeRef(nodeRef);
         return builder.build();
     }
 
-    public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
+    public static InstanceIdentifier<Node> identifierFromDatapathId(final BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
         InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey);
         return builder.build();
     }
 
-    public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {
+    public static NodeKey nodeKeyFromDatapathId(final BigInteger datapathId) {
         return new NodeKey(nodeIdFromDatapathId(datapathId));
     }
 
-    public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
+    public static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = String.valueOf(datapathId);
         return new NodeId("openflow:" + current);

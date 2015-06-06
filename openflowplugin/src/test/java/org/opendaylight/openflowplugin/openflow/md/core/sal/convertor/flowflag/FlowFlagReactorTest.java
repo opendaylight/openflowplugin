@@ -8,9 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
 
 import java.math.BigInteger;
-
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -18,12 +16,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
- * match conversion and injection test 
+ * match conversion and injection test
  */
 public class FlowFlagReactorTest {
 
     private FlowModFlags[] flowFlags;
-    
+
     /**
      * prepare input match
      */
@@ -44,12 +42,12 @@ public class FlowFlagReactorTest {
         FlowModInputBuilder target = new FlowModInputBuilder();
         for (FlowModFlags fFlag : flowFlags) {
             target.setFlags(null);
-            FlowFlagReactor.getInstance().convert(fFlag, 
+            FlowFlagReactor.getInstance().convert(fFlag,
                     OFConstants.OFP_VERSION_1_3, target,BigInteger.valueOf(1));
             Assert.assertNotNull(target.getFlags());
         }
     }
-    
+
     /**
      * convert for OF-1.0, inject into {@link FlowModInputBuilder}
      */
@@ -58,7 +56,7 @@ public class FlowFlagReactorTest {
         FlowModInputBuilder target = new FlowModInputBuilder();
         for (FlowModFlags fFlag : flowFlags) {
             target.setFlagsV10(null);
-            FlowFlagReactor.getInstance().convert(fFlag, 
+            FlowFlagReactor.getInstance().convert(fFlag,
                     OFConstants.OFP_VERSION_1_0, target,BigInteger.valueOf(1));
             Assert.assertNotNull(target.getFlagsV10());
         }

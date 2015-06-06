@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.Collection;
@@ -18,8 +17,8 @@ import java.util.concurrent.Callable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -39,27 +38,27 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 @RunWith(MockitoJUnitRunner.class)
 public class OFRpcTaskUtilTest {
 
-    @MockitoAnnotations.Mock
+    @Mock
     private OFRpcTaskContext taskContext;
-    @MockitoAnnotations.Mock
+    @Mock
     private SwitchConnectionDistinguisher connectionDistinguisher;
-    @MockitoAnnotations.Mock
+    @Mock
     private SessionContext sessionContext;
-    @MockitoAnnotations.Mock
+    @Mock
     private IMessageDispatchService messageDispatchService;
-    @MockitoAnnotations.Mock
+    @Mock
     private GetFeaturesOutput featuresOutput;
-    @MockitoAnnotations.Mock
+    @Mock
     private ListenableFuture<RpcResult<BarrierOutput>> resultListenableFuture;
-    @MockitoAnnotations.Mock
+    @Mock
     private ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlowRpcResultListenableFuture;
-    @MockitoAnnotations.Mock
+    @Mock
     private OFRpcTaskContext ofRpcTaskContext;
-    @MockitoAnnotations.Mock
+    @Mock
     private NotificationProviderService notificationProviderService;
-    @MockitoAnnotations.Mock
-    private NotificationComposer notificationComposer;
-    @MockitoAnnotations.Mock
+    @Mock
+    private NotificationComposer<?> notificationComposer;
+    @Mock
     ListeningExecutorService executorService;
 
 

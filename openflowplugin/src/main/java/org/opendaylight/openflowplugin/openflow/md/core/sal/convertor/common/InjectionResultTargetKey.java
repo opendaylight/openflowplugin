@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
-import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Preconditions;
 
 /**

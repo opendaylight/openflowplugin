@@ -113,7 +113,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
 
     @Override
-    public  List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
+    public  List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sc, final OfHeader msg) {
 
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
@@ -121,7 +121,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
         if(msg instanceof MultipartReplyMessage){
             MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
-            NodeId node = this.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
+            NodeId node = MultipartReplyTranslator.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
             switch (mpReply.getType()){
             case OFPMPFLOW: {
                 logger.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
@@ -187,10 +187,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setPackets(packetsBuilder.build());
 
                     DurationBuilder durationBuilder = new DurationBuilder();
-                    if (portStats.getDurationSec() != null)
+                    if (portStats.getDurationSec() != null) {
                         durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
-                    if (portStats.getDurationNsec() != null)
+                    }
+                    if (portStats.getDurationNsec() != null) {
                         durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
+                    }
                     statsBuilder.setDuration(durationBuilder.build());
                     statsBuilder.setCollisionCount(portStats.getCollisions());
                     statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
@@ -445,15 +447,14 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         return listDataObject;
     }
 
-    private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
+    private static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
         String current = datapathId.toString();
         return new NodeId("openflow:" + current);
     }
 
-    private TransactionId generateTransactionId(Long xid){
+    private static TransactionId generateTransactionId(final Long xid){
         BigInteger bigIntXid = BigInteger.valueOf(xid);
         return new TransactionId(bigIntXid);
-
     }
 
     /*
@@ -465,7 +466,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
      * @param actionsSupported
      * @return
      */
-    private List<Long> getGroupActionsSupportBitmap(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType> actionsSupported){
+    private static List<Long> getGroupActionsSupportBitmap(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType> actionsSupported){
         List<Long> supportActionByGroups = new ArrayList<Long>();
         for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions : actionsSupported){
             long supportActionBitmap = 0;

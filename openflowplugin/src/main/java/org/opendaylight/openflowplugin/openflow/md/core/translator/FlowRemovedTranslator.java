@@ -24,14 +24,11 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemovedBuilder;
@@ -156,7 +153,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -164,7 +160,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
     private static final String PREFIX_SEPARATOR = "/";
 
     @Override
-    public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
+    public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sc, final OfHeader msg) {
         if (msg instanceof FlowRemovedMessage) {
             FlowRemovedMessage ofFlow = (FlowRemovedMessage) msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
@@ -217,8 +213,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
     }
 
 
-    public Match fromMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch,
-                           BigInteger datapathid, OpenflowVersion ofVersion) {
+    public Match fromMatch(final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch,
+                           final BigInteger datapathid, final OpenflowVersion ofVersion) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = null;
         VlanMatchBuilder vlanMatch = null;
@@ -455,7 +451,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     } else {
                         prefix = 32;
                     }
-                    
+
                     ipv4Match.setIpv4Source(
                         IpConversionUtil.createPrefix(ipv4SrcCase.getIpv4Src().getIpv4Address(), prefix)
                     );
@@ -467,7 +463,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     } else {
                         prefix = 32;
                     }
-                    
+
                     ipv4Match.setIpv4Destination(
                         IpConversionUtil.createPrefix(ipv4DstCase.getIpv4Dst().getIpv4Address(), prefix)
                     );               }

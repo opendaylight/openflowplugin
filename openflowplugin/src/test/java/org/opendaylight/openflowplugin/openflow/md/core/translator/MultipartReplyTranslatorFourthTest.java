@@ -9,19 +9,17 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
@@ -30,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
@@ -100,7 +97,7 @@ public class MultipartReplyTranslatorFourthTest {
         caseBuilder.setMultipartReplyGroup(groupBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -158,7 +155,7 @@ public class MultipartReplyTranslatorFourthTest {
         caseBuilder.setMultipartReplyGroup(groupBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -211,7 +208,7 @@ public class MultipartReplyTranslatorFourthTest {
         caseBuilder.setMultipartReplyGroupDesc(groupBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -237,7 +234,7 @@ public class MultipartReplyTranslatorFourthTest {
         MultipartReplyGroupDescCaseBuilder caseBuilder = new MultipartReplyGroupDescCaseBuilder();
         MultipartReplyGroupDescBuilder groupBuilder = new MultipartReplyGroupDescBuilder();
         List<GroupDesc> groupStats = new ArrayList<>();
-        
+
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.OFPGTALL);
         builder.setGroupId(new GroupId(1L));
@@ -246,18 +243,18 @@ public class MultipartReplyTranslatorFourthTest {
         bucketBuilder.setWeight(28);
         bucketBuilder.setWatchPort(new PortNumber(56L));
         bucketBuilder.setWatchGroup(112L);
-        
+
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         DecMplsTtlCaseBuilder decMplsTtlCaseBuilder = new DecMplsTtlCaseBuilder();
         actionBuilder.setActionChoice(decMplsTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
-        
+
         actionBuilder = new ActionBuilder();
         PopPbbCaseBuilder popPbbCaseBuilder = new PopPbbCaseBuilder();
         actionBuilder.setActionChoice(popPbbCaseBuilder.build());
         actions.add(actionBuilder.build());
-        
+
         bucketBuilder.setAction(actions);
         buckets.add(bucketBuilder.build());
         bucketBuilder = new BucketsListBuilder();
@@ -273,7 +270,7 @@ public class MultipartReplyTranslatorFourthTest {
         caseBuilder.setMultipartReplyGroupDesc(groupBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());

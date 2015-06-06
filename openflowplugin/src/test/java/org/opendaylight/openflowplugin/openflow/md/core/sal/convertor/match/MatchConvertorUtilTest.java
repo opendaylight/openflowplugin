@@ -7,15 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import java.lang.reflect.Constructor;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.reflect.Constructor;
-import java.math.BigInteger;
-import java.util.Arrays;
 
 /**
  *
@@ -62,7 +59,7 @@ public class MatchConvertorUtilTest {
      * @return
      */
 
-    private static Object[] createIpv6ExthdrFlagsCtorParams(int trueIndex) {
+    private static Object[] createIpv6ExthdrFlagsCtorParams(final int trueIndex) {
         Boolean[] flags = new Boolean[]{false, false, false, false, false, false, false, false, false};
         flags[trueIndex] = true;
         return flags;

@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -43,12 +42,12 @@ public class FeaturesV10ToNodeConnectorUpdatedTranslatorTest extends TestCase {
     private static final FeaturesV10ToNodeConnectorUpdatedTranslator FEATURES_V_10_TO_NODE_CONNECTOR_UPDATED_TRANSLATOR = new FeaturesV10ToNodeConnectorUpdatedTranslator();
     private static final PortFeatures PORT_FEATURES = new PortFeatures(true, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false);
 
-    @MockitoAnnotations.Mock
+    @Mock
     SwitchConnectionDistinguisher switchConnectionDistinguisher;
     private static final PortConfig PORT_CONFIG = new PortConfig(true, false, false, false);
-    @MockitoAnnotations.Mock
+    @Mock
     SessionContext sessionContext;
-    @MockitoAnnotations.Mock
+    @Mock
     GetFeaturesOutput featuresOutput;
 
     @Before
@@ -87,7 +86,7 @@ public class FeaturesV10ToNodeConnectorUpdatedTranslatorTest extends TestCase {
         }
 
         @Override
-        public <E extends Augmentation<GetFeaturesOutput>> E getAugmentation(Class<E> eClass) {
+        public <E extends Augmentation<GetFeaturesOutput>> E getAugmentation(final Class<E> eClass) {
             return null;
         }
 
@@ -133,7 +132,7 @@ public class FeaturesV10ToNodeConnectorUpdatedTranslatorTest extends TestCase {
 
         @Override
         public List<PhyPort> getPhyPort() {
-            List<PhyPort> phyPorts = new ArrayList();
+            List<PhyPort> phyPorts = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 PhyPortBuilder phyPortBuilder = new PhyPortBuilder();
                 phyPortBuilder.setAdvertisedFeatures(PORT_FEATURES);

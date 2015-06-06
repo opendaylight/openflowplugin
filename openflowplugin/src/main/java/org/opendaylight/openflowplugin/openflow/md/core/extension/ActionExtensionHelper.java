@@ -12,7 +12,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSeriali
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
-import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
@@ -39,7 +38,7 @@ public final class ActionExtensionHelper {
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
-    processAlienAction(Action action, OpenflowVersion ofVersion, ActionPath actionPath) {
+    processAlienAction(final Action action, final OpenflowVersion ofVersion, final ActionPath actionPath) {
         ConvertorActionFromOFJava<Action, ActionPath> convertor = null;
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action alienAction = null;
         if(action.getActionChoice() instanceof ExperimenterIdCase) {

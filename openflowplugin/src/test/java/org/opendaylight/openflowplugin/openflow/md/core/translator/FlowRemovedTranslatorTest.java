@@ -10,11 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -158,9 +160,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -173,19 +172,19 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
     private static final Ipv4Address IPV_4_ADDRESS = new Ipv4Address("10.0.0.1");
     private static final byte[] IPV_4_ADDRESS_MASK = ByteUtil.unsignedIntToBytes(new Long(8));
 
-    @MockitoAnnotations.Mock
+    @Mock
     SwitchConnectionDistinguisher switchConnectionDistinguisher;
 
-    @MockitoAnnotations.Mock
+    @Mock
     SessionContext sessionContext;
 
-    @MockitoAnnotations.Mock
+    @Mock
     FlowRemovedMessage msg;
 
-    @MockitoAnnotations.Mock
+    @Mock
     ConnectionConductor connectionConductor;
 
-    @MockitoAnnotations.Mock
+    @Mock
     GetFeaturesOutput featuresOutput;
 
     private static final MacAddress MAC_ADDRESS = new MacAddress("00:01:02:03:04:05");
@@ -194,7 +193,7 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
     private static List<MatchEntry> fieldClassesAndAugmentations = new ArrayList<>();
 
 
-    private void setupClassAndAugmentationMap() {
+    private static void setupClassAndAugmentationMap() {
 
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
@@ -581,40 +580,40 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
         assertVlanMatch(match.getVlanMatch());
     }
 
-    private void assertTunnelMatch(Tunnel tunnel) {
+    private static void assertTunnelMatch(final Tunnel tunnel) {
         assertEquals(0, tunnel.getTunnelId().intValue());
     }
 
-    private void assertVlanMatch(VlanMatch vlanMatch) {
+    private static void assertVlanMatch(final VlanMatch vlanMatch) {
         assertEquals(true, vlanMatch.getVlanId().isVlanIdPresent());
         assertEquals(new Integer(42), vlanMatch.getVlanId().getVlanId().getValue());
 
         assertEquals((short) 7, vlanMatch.getVlanPcp().getValue().shortValue());
     }
 
-    private void assertMetada(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata) {
+    private static void assertMetada(final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata) {
         assertEquals(0, metadata.getMetadata().intValue());
     }
 
-    private void assertProtocolMatchFields(ProtocolMatchFields protocolMatchFields) {
+    private static void assertProtocolMatchFields(final ProtocolMatchFields protocolMatchFields) {
         assertEquals((short) 0, protocolMatchFields.getMplsBos().shortValue());
         assertEquals(42, protocolMatchFields.getMplsLabel().longValue());
         assertEquals((short) 0, protocolMatchFields.getMplsTc().shortValue());
         assertEquals(42, protocolMatchFields.getPbb().getPbbIsid().longValue());
     }
 
-    private void assertIpMatch(IpMatch ipMatch) {
+    private static void assertIpMatch(final IpMatch ipMatch) {
         assertEquals(10, ipMatch.getIpDscp().getValue().longValue());
         assertEquals(10, ipMatch.getIpEcn().shortValue());
         assertEquals(4, ipMatch.getIpProtocol().shortValue());
     }
 
-    private void assertIcmpV4Match(Icmpv4Match icmpv4Match) {
+    private static void assertIcmpV4Match(final Icmpv4Match icmpv4Match) {
         assertEquals(10, icmpv4Match.getIcmpv4Code().longValue());
         assertEquals(10, icmpv4Match.getIcmpv4Type().longValue());
     }
 
-    private void assertEthernetMatch(EthernetMatch ethernetMatch) {
+    private static void assertEthernetMatch(final EthernetMatch ethernetMatch) {
         assertEquals(MAC_ADDRESS, ethernetMatch.getEthernetDestination().getAddress());
         assertEquals(MAC_ADDRESS, ethernetMatch.getEthernetSource().getAddress());
         assertEquals(new Long(6), ethernetMatch.getEthernetType().getType().getValue());

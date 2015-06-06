@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class MeterStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
 
 
-    private List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
+    private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
             .multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats> createMeterStatsLit() {
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
@@ -54,13 +53,13 @@ public class MeterStatsResponseConvertorTest {
             MeterBandStatsBuilder meterBandStatsBuilder = new MeterBandStatsBuilder();
             List<MeterBandStats> meterBandStatses = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
-                meterBandStatsBuilder.setByteBandCount(BigInteger.valueOf((long) j));
-                meterBandStatsBuilder.setPacketBandCount(BigInteger.valueOf((long) j));
+                meterBandStatsBuilder.setByteBandCount(BigInteger.valueOf(j));
+                meterBandStatsBuilder.setPacketBandCount(BigInteger.valueOf(j));
                 meterBandStatses.add(meterBandStatsBuilder.build());
             }
             meterStatsBuilder.setMeterBandStats(meterBandStatses);
             meterStatsBuilder.setMeterId(new MeterId((long) i));
-            meterStatsBuilder.setPacketInCount(BigInteger.valueOf((long) i));
+            meterStatsBuilder.setPacketInCount(BigInteger.valueOf(i));
 
             allMeterStats.add(meterStatsBuilder.build());
         }
@@ -97,7 +96,7 @@ public class MeterStatsResponseConvertorTest {
         int cnt = 0;
         for (MeterStats meterStats : meterStatsList) {
             assertEquals((new MeterStatsKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId((long) cnt))).getMeterId(), meterStats.getKey().getMeterId());
-            assertEquals((BigInteger.valueOf((long) cnt)), meterStats.getByteInCount().getValue());
+            assertEquals((BigInteger.valueOf(cnt)), meterStats.getByteInCount().getValue());
             assertEquals(new Long(1000 * cnt), meterStats.getDuration().getNanosecond().getValue());
             assertEquals(new Long(10 * cnt), meterStats.getDuration().getSecond().getValue());
 

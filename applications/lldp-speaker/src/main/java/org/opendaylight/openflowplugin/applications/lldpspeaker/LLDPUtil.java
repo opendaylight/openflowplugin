@@ -10,12 +10,8 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.opendaylight.controller.liblldp.LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC;
 import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils.getValueForLLDPPacketIntegrityEnsuring;
-
-import java.security.NoSuchAlgorithmException;
-
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.liblldp.EtherTypes;
 import org.opendaylight.controller.liblldp.Ethernet;
@@ -36,9 +32,9 @@ public final class LLDPUtil {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPUtil.class);
     private static final String OF_URI_PREFIX = "openflow:";
 
-    static byte[] buildLldpFrame(NodeId nodeId,
-            NodeConnectorId nodeConnectorId, MacAddress src, Long outPortNo,
-            MacAddress destinationAddress) {
+    static byte[] buildLldpFrame(final NodeId nodeId,
+            final NodeConnectorId nodeConnectorId, final MacAddress src, final Long outPortNo,
+            final MacAddress destinationAddress) {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
 
@@ -122,22 +118,22 @@ public final class LLDPUtil {
         return null;
     }
 
-    private static String colonize(String orig) {
+    private static String colonize(final String orig) {
         return orig.replaceAll("(?<=..)(..)", ":$1");
     }
 
-    private static BigInteger dataPathIdFromNodeId(NodeId nodeId) {
+    private static BigInteger dataPathIdFromNodeId(final NodeId nodeId) {
         String dpids = nodeId.getValue().replace(OF_URI_PREFIX, "");
         return new BigInteger(dpids);
     }
 
-    private static String bigIntegerToPaddedHex(BigInteger dataPathId) {
+    private static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
         return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
     }
 
-    static byte[] buildLldpFrame(NodeId nodeId,
-            NodeConnectorId nodeConnectorId, MacAddress srcMacAddress,
-            Long outputPortNo) {
+    static byte[] buildLldpFrame(final NodeId nodeId,
+            final NodeConnectorId nodeConnectorId, final MacAddress srcMacAddress,
+            final Long outputPortNo) {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress,
                 outputPortNo, null);
     }

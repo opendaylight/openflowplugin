@@ -7,12 +7,18 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -20,7 +26,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComp
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.util.RpcInputOutputTuple;
 import org.opendaylight.openflowplugin.openflow.md.util.TaskUtil;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
@@ -32,14 +37,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  *
@@ -56,10 +53,10 @@ public abstract class OFRpcTaskUtil {
         //hiding implicit constructor
     }
 
-    public static Collection<RpcError> manageBarrier(OFRpcTaskContext taskContext, Boolean isBarrier,
-            SwitchConnectionDistinguisher cookie) {
+    public static Collection<RpcError> manageBarrier(final OFRpcTaskContext taskContext, final Boolean isBarrier,
+            final SwitchConnectionDistinguisher cookie) {
         Collection<RpcError> errors = null;
-        if (Objects.firstNonNull(isBarrier, Boolean.FALSE)) {
+        if (MoreObjects.firstNonNull(isBarrier, Boolean.FALSE)) {
             RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc =
                     TaskUtil.sendBarrier(taskContext.getSession(), cookie, taskContext.getMessageService());
             Future<RpcResult<BarrierOutput>> barrierFuture = sendBarrierRpc.getOutput();
@@ -97,13 +94,13 @@ public abstract class OFRpcTaskUtil {
     public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, I extends DataContainer>
     void hookFutureNotification(
             final OFRpcTask<I, R> task,
-            ListenableFuture<R> originalResult,
+            final ListenableFuture<R> originalResult,
             final NotificationProviderService notificationProviderService,
             final NotificationComposer<N> notificationComposer) {
 
         class FutureCallbackImpl implements FutureCallback<R> {
             @Override
-            public void onSuccess(R result) {
+            public void onSuccess(final R result) {
                 if(null == notificationProviderService) {
                     LOG.warn("onSuccess(): notificationServiceProvider is null, could not publish result {}",result);
                 } else if (notificationComposer == null) {
@@ -122,7 +119,7 @@ public abstract class OFRpcTaskUtil {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 //TODO: good place to notify MD-SAL about errors
                 task.getTaskContext().getMessageSpy().spyMessage(
                         task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
@@ -143,7 +140,7 @@ public abstract class OFRpcTaskUtil {
             final ListenableFuture<RpcResult<T>> originalResult) {
 
         ListenableFuture<RpcResult<T>> chainResult = originalResult;
-        if (Objects.firstNonNull(task.isBarrier(), Boolean.FALSE)) {
+        if (MoreObjects.firstNonNull(task.isBarrier(), Boolean.FALSE)) {
 
             chainResult = Futures.transform(originalResult, new AsyncFunction<RpcResult<T>, RpcResult<T>>() {
 

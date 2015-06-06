@@ -5,26 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import java.util.Arrays;
 import java.math.BigInteger;
-
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import java.util.Arrays;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
-
 
 /**
  * @author Anton Ivanov aivanov@brocade.com

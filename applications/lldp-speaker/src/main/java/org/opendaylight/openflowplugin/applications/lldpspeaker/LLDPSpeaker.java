@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -38,8 +37,6 @@ import org.slf4j.LoggerFactory;
 public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
         Runnable {
 
-    private static OperStatus operationalStatus = OperStatus.RUN;
-
     private static final Logger LOG = LoggerFactory
             .getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
@@ -48,29 +45,30 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
     private final ScheduledExecutorService scheduledExecutorService;
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<>();
     private final ScheduledFuture<?> scheduledSpeakerTask;
-    private MacAddress addressDestionation;
+    private final MacAddress addressDestionation;
+    private OperStatus operationalStatus = OperStatus.RUN;
 
-    public LLDPSpeaker(PacketProcessingService packetProcessingService,
-            MacAddress addressDestionation) {
+    public LLDPSpeaker(final PacketProcessingService packetProcessingService,
+            final MacAddress addressDestionation) {
         this(packetProcessingService, Executors
                 .newSingleThreadScheduledExecutor(), addressDestionation);
     }
 
-    public void setOperationalStatus(OperStatus operationalStatus) {
+    public void setOperationalStatus(final OperStatus operationalStatus) {
         LOG.info("Setting operational status to {}", operationalStatus);
-        LLDPSpeaker.operationalStatus = operationalStatus;
+        this.operationalStatus = operationalStatus;
         if (operationalStatus.equals(OperStatus.STANDBY)) {
             nodeConnectorMap.clear();
         }
     }
 
-    public static OperStatus getOperationalStatus() {
+    public OperStatus getOperationalStatus() {
         return operationalStatus;
     }
 
-    public LLDPSpeaker(PacketProcessingService packetProcessingService,
-            ScheduledExecutorService scheduledExecutorService,
-            MacAddress addressDestionation) {
+    public LLDPSpeaker(final PacketProcessingService packetProcessingService,
+            final ScheduledExecutorService scheduledExecutorService,
+            final MacAddress addressDestionation) {
         this.addressDestionation = addressDestionation;
         this.scheduledExecutorService = scheduledExecutorService;
         scheduledSpeakerTask = this.scheduledExecutorService
@@ -119,8 +117,8 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
      */
     @Override
     public void nodeConnectorAdded(
-            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
-            FlowCapableNodeConnector flowConnector) {
+            final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
+            final FlowCapableNodeConnector flowConnector) {
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(
                 nodeConnectorInstanceId).getId();
 
@@ -172,7 +170,7 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
      */
     @Override
     public void nodeConnectorRemoved(
-            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
+            final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
         nodeConnectorMap.remove(nodeConnectorInstanceId);
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(
                 nodeConnectorInstanceId).getId();
