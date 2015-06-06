@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
-        return flowRegistry;
+        return Collections.unmodifiableMap(flowRegistry);
     }
 
     @Override
