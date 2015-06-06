@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -218,7 +217,7 @@ public class TableFeaturesReplyConvertorTest {
         writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
         insBuilder.setInstructionChoice(writeActionsCaseBuilder.build());
         insIds.add(insBuilder.build());
-        
+
          /* -------------------------------------------------- */
 
         insBuilder = new InstructionBuilder();
@@ -690,7 +689,7 @@ public class TableFeaturesReplyConvertorTest {
                 actionsList.get(2).getAction().getImplementedInterface().getName());
     }
 
-    private final SetNwSrcCase createSetNwSrcAction() {
+    private static SetNwSrcCase createSetNwSrcAction() {
         final SetNwSrcCaseBuilder setNwSrcCaseBuilder;
         final SetNwSrcActionBuilder setNwSrcActionBuilder;
         setNwSrcCaseBuilder = new SetNwSrcCaseBuilder();
@@ -700,7 +699,7 @@ public class TableFeaturesReplyConvertorTest {
         return setNwSrcCaseBuilder.build();
     }
 
-    private final GroupCase createGroupAction() {
+    private static GroupCase createGroupAction() {
         final GroupCaseBuilder groupCaseBuilder = new GroupCaseBuilder();
         final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroupId(42L);
@@ -708,17 +707,17 @@ public class TableFeaturesReplyConvertorTest {
         return groupCaseBuilder.build();
     }
 
-    private final CopyTtlInCase createCopyTtlInCase() {
+    private static CopyTtlInCase createCopyTtlInCase() {
         CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
         return copyTtlInCaseBuilder.build();
     }
 
-    private final CopyTtlOutCase createCopyTtlOutCase() {
+    private static CopyTtlOutCase createCopyTtlOutCase() {
         CopyTtlOutCaseBuilder copyTtlInCaseBuilder = new CopyTtlOutCaseBuilder();
         return copyTtlInCaseBuilder.build();
     }
 
-    private final SetMplsTtlCase createSetMplsTtlCase() {
+    private static SetMplsTtlCase createSetMplsTtlCase() {
         SetMplsTtlCaseBuilder setMplsTtlCaseBuilder = new SetMplsTtlCaseBuilder();
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 42);
@@ -726,12 +725,12 @@ public class TableFeaturesReplyConvertorTest {
         return setMplsTtlCaseBuilder.build();
     }
 
-    private final DecMplsTtlCase createDecMplsTtlCase() {
+    private static DecMplsTtlCase createDecMplsTtlCase() {
         DecMplsTtlCaseBuilder decMplsTtlCaseBuilder = new DecMplsTtlCaseBuilder();
         return decMplsTtlCaseBuilder.build();
     }
 
-    private final PushVlanCase pushVlanCase() {
+    private static PushVlanCase pushVlanCase() {
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
         pushVlanActionBuilder.setEthertype(new EtherType(1));
@@ -739,12 +738,12 @@ public class TableFeaturesReplyConvertorTest {
         return pushVlanCaseBuilder.build();
     }
 
-    private final PopVlanCase createPopVlanCase() {
+    private static PopVlanCase createPopVlanCase() {
         PopVlanCaseBuilder popVlanCaseBuilder = new PopVlanCaseBuilder();
         return popVlanCaseBuilder.build();
     }
 
-    private final PushPbbCase createPushPbbCase() {
+    private static PushPbbCase createPushPbbCase() {
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbActionBuilder = new PushPbbActionBuilder();
         pushPbbActionBuilder.setEthertype(new EtherType(1));
@@ -752,10 +751,10 @@ public class TableFeaturesReplyConvertorTest {
         return pushPbbCaseBuilder.build();
     }
 
-    private final SetFieldCase createEmptySetFieldCase() {
+    private static SetFieldCase createEmptySetFieldCase() {
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         SetFieldActionBuilder setFieldActionBuilder = new SetFieldActionBuilder();
-        List<MatchEntry> matchEntries = new ArrayList();
+        List<MatchEntry> matchEntries = new ArrayList<>();
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
 
         matchEntries.add(matchEntryBuilder.build());

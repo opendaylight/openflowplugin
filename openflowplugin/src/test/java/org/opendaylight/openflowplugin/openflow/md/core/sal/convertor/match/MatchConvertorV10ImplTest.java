@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
-
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -47,7 +45,7 @@ public class MatchConvertorV10ImplTest {
 
     private static final MatchConvertorV10Impl matchConvertorV10 = new MatchConvertorV10Impl();
     private static final BigInteger dataPathId = BigInteger.TEN;
-    private static final long ETH_TYPE_802_3 = (long) 0x0000;
+    private static final long ETH_TYPE_802_3 = 0x0000;
     private static final MacAddress ZERO_MAC = MacAddress.getDefaultInstance("00:00:00:00:00:00");
     private static final MacAddress FF_MAC = MacAddress.getDefaultInstance("ff:ff:ff:ff:ff:ff");
     private static final String NODE_CONNECTOR_ID = "1234";
@@ -203,7 +201,7 @@ public class MatchConvertorV10ImplTest {
         assertEquals(wc, matchV10.getWildcards());
     }
 
-    private MatchBuilder createL4UdpMatch() {
+    private static MatchBuilder createL4UdpMatch() {
         MatchBuilder matchBuilder = createMatchBuilderWithDefaults();
 
         UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
@@ -215,7 +213,7 @@ public class MatchConvertorV10ImplTest {
         return matchBuilder;
     }
 
-    private MatchBuilder createVlanTcpMatch() {
+    private static MatchBuilder createVlanTcpMatch() {
         MatchBuilder matchBuilder = createL4TcpMatch();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
@@ -226,7 +224,7 @@ public class MatchConvertorV10ImplTest {
         return matchBuilder;
     }
 
-    private MatchBuilder createL4TcpMatch() {
+    private static MatchBuilder createL4TcpMatch() {
         MatchBuilder matchBuilder = createMatchBuilderWithDefaults();
 
         TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
@@ -237,7 +235,7 @@ public class MatchConvertorV10ImplTest {
         return matchBuilder;
     }
 
-    private MatchBuilder createMatchBuilderWithDefaults() {
+    private static MatchBuilder createMatchBuilderWithDefaults() {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
         EthernetTypeBuilder ethernetTypeBuilder = new EthernetTypeBuilder();

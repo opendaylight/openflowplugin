@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
-
 import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -280,7 +279,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     public List<MatchEntry> convert(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, final BigInteger datapathid) {
         List<MatchEntry> matchEntryList = new ArrayList<>();
-        if (match == null) return matchEntryList;
+        if (match == null) {
+            return matchEntryList;
+        }
         if (match.getInPort() != null) {
             //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
             matchEntryList.add(toOfPort(InPort.class,
@@ -858,7 +859,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private byte[] extractIpv4Mask(boolean hasMask, final Iterator<String> addressParts) {
+    private static byte[] extractIpv4Mask(boolean hasMask, final Iterator<String> addressParts) {
         final int prefix;
         if (addressParts.hasNext()) {
             int potentionalPrefix = Integer.parseInt(addressParts.next());
@@ -917,7 +918,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
         if (!swMatch.getWildcards().isDLVLAN().booleanValue() && swMatch.getDlVlan() != null) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            int vlanId = (swMatch.getDlVlan() == ((int) 0xffff)) ? 0 : swMatch.getDlVlan();
+            int vlanId = (swMatch.getDlVlan() == (0xffff)) ? 0 : swMatch.getDlVlan();
             vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
             vlanIdBuilder.setVlanIdPresent(vlanId == 0 ? false : true);
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
@@ -1055,8 +1056,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         return OfMatchToSALMatchConvertor(swMatch.getMatchEntry(), datapathid, ofVersion);
     }
 
-    private static MatchBuilder OfMatchToSALMatchConvertor(List<MatchEntry> swMatchList, final BigInteger datapathid,
-                                                           OpenflowVersion ofVersion) {
+    private static MatchBuilder OfMatchToSALMatchConvertor(final List<MatchEntry> swMatchList, final BigInteger datapathid,
+                                                           final OpenflowVersion ofVersion) {
 
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
@@ -1444,7 +1445,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         return matchBuilder;
     }
 
-    private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder ipv6MatchBuilder, final MatchEntry ofMatch, String ipv6PrefixStr, final byte[] mask) {
+    private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder ipv6MatchBuilder, final MatchEntry ofMatch, final String ipv6PrefixStr, final byte[] mask) {
         Ipv6Prefix ipv6Prefix;
 
         if (mask != null) {
@@ -1461,7 +1462,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
     }
 
-    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final MatchEntry ofMatch, final byte[] mask, String ipv4PrefixStr) {
+    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final MatchEntry ofMatch, final byte[] mask, final String ipv4PrefixStr) {
         Ipv4Prefix ipv4Prefix;
         if (mask != null) {
             ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
@@ -1841,7 +1842,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
      * @return
      */
     public static SetField fromOFSetFieldToSALSetFieldAction(
-            final Action action, OpenflowVersion ofVersion) {
+            final Action action, final OpenflowVersion ofVersion) {
         logger.debug("Converting OF SetField action to SAL SetField action");
         SetFieldCase setFieldCase = (SetFieldCase) action.getActionChoice();
         SetFieldAction setFieldAction = setFieldCase.getSetFieldAction();

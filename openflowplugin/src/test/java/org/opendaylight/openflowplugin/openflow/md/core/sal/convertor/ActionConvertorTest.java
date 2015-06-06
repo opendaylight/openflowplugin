@@ -9,6 +9,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,9 +96,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCase;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * test for {@link ActionConvertor}
@@ -206,7 +206,7 @@ public class ActionConvertorTest {
 
     // TODO - check if this method is needed (private and never used locally) - see line 94
 
-    private void outputActions(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> oFActionsList) {
+    private static void outputActions(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> oFActionsList) {
 
         for (int item = 0; item < oFActionsList.size(); item++) {
 
@@ -608,7 +608,7 @@ public class ActionConvertorTest {
         Assert.assertEquals(34888, ActionConvertor.ofToSALPopMplsAction(action).getPopMplsAction().getEthernetType().intValue());
     }
 
-    private static SetNwDstActionCase provisionNwDstActionBuilder(Address address) {
+    private static SetNwDstActionCase provisionNwDstActionBuilder(final Address address) {
         SetNwDstAction nwDstAction = new SetNwDstActionBuilder().setAddress(address).build();
         SetNwDstActionCase action = new SetNwDstActionCaseBuilder()
                 .setSetNwDstAction(nwDstAction)
@@ -616,7 +616,7 @@ public class ActionConvertorTest {
         return action;
     }
 
-    private static SetNwSrcActionCase provisionNwSrcActionBuilder(Address address) {
+    private static SetNwSrcActionCase provisionNwSrcActionBuilder(final Address address) {
         SetNwSrcAction nwSrcAction = new SetNwSrcActionBuilder().setAddress(address).build();
         SetNwSrcActionCase action = new SetNwSrcActionCaseBuilder()
                 .setSetNwSrcAction(nwSrcAction)

@@ -8,10 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import java.math.BigInteger;
-
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -29,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 public abstract class PortTranslatorUtil {
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(final PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
             napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
@@ -56,7 +53,7 @@ public abstract class PortTranslatorUtil {
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(
-            PortFeaturesV10 apf) {
+            final PortFeaturesV10 apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
             napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
@@ -81,7 +78,7 @@ public abstract class PortTranslatorUtil {
         return napf;
     }
 
-    public static State translatePortState(PortState state) {
+    public static State translatePortState(final PortState state) {
         StateBuilder nstate = new StateBuilder();
         if (state != null) {
             nstate.setBlocked(state.isBlocked());
@@ -91,7 +88,7 @@ public abstract class PortTranslatorUtil {
         return nstate.build();
     }
 
-    public static State translatePortState(PortStateV10 state) {
+    public static State translatePortState(final PortStateV10 state) {
         StateBuilder nstate = new StateBuilder();
         if (state != null) {
             nstate.setBlocked(state.isBlocked());
@@ -101,7 +98,7 @@ public abstract class PortTranslatorUtil {
         return nstate.build();
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(PortConfig pc) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(final PortConfig pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
         if (pc != null) {
             npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
@@ -111,7 +108,7 @@ public abstract class PortTranslatorUtil {
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(
-            PortConfigV10 pc) {
+            final PortConfigV10 pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
         if (pc != null) {
             npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
@@ -120,7 +117,7 @@ public abstract class PortTranslatorUtil {
         return npc;
     }
 
-    public static NodeConnectorUpdated translatePort(Short version, BigInteger datapathId, Long portNumber, PortGrouping port) {
+    public static NodeConnectorUpdated translatePort(final Short version, final BigInteger datapathId, final Long portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
                 .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId, port.getPortNo(), ofVersion);
@@ -150,7 +147,7 @@ public abstract class PortTranslatorUtil {
         return builder.build();
     }
 
-    public static NodeConnectorRemoved translatePortRemoved(Short version, BigInteger datapathId, Long portNumber, PortGrouping port) {
+    public static NodeConnectorRemoved translatePortRemoved(final Short version, final BigInteger datapathId, final Long portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorRemovedBuilder builder = new NodeConnectorRemovedBuilder();
         builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, portNumber, ofVersion));

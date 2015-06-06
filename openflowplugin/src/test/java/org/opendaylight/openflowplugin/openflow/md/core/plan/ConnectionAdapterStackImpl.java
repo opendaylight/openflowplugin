@@ -119,35 +119,35 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<BarrierOutput>> barrier(
-            BarrierInput arg0) {
+            final BarrierInput arg0) {
         checkRpcAndNext(arg0, "barrier");
         SettableFuture<RpcResult<BarrierOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
     }
 
     @Override
-    public synchronized Future<RpcResult<EchoOutput>> echo(EchoInput arg0) {
+    public synchronized Future<RpcResult<EchoOutput>> echo(final EchoInput arg0) {
         checkRpcAndNext(arg0, "echo");
         Future<RpcResult<EchoOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> echoReply(EchoReplyInput arg0) {
+    public Future<RpcResult<Void>> echoReply(final EchoReplyInput arg0) {
         checkRpcAndNext(arg0, "echoReply");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> experimenter(ExperimenterInput arg0) {
+    public Future<RpcResult<Void>> experimenter(final ExperimenterInput arg0) {
         checkRpcAndNext(arg0, "experimenter");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> flowMod(FlowModInput arg0) {
+    public Future<RpcResult<Void>> flowMod(final FlowModInput arg0) {
         checkRpcAndNext(arg0, "flowMod");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
@@ -155,7 +155,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<GetAsyncOutput>> getAsync(
-            GetAsyncInput arg0) {
+            final GetAsyncInput arg0) {
         checkRpcAndNext(arg0, "echo");
         Future<RpcResult<GetAsyncOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
@@ -163,7 +163,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<GetConfigOutput>> getConfig(
-            GetConfigInput arg0) {
+            final GetConfigInput arg0) {
         checkRpcAndNext(arg0, "echo");
         Future<RpcResult<GetConfigOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
@@ -171,7 +171,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<GetFeaturesOutput>> getFeatures(
-            GetFeaturesInput arg0) {
+            final GetFeaturesInput arg0) {
         checkRpcAndNext(arg0, "getFeatures");
         Future<RpcResult<GetFeaturesOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
@@ -179,42 +179,42 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<GetQueueConfigOutput>> getQueueConfig(
-            GetQueueConfigInput arg0) {
+            final GetQueueConfigInput arg0) {
         checkRpcAndNext(arg0, "echo");
         Future<RpcResult<GetQueueConfigOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> groupMod(GroupModInput arg0) {
+    public Future<RpcResult<Void>> groupMod(final GroupModInput arg0) {
         checkRpcAndNext(arg0, "groupMod");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> hello(HelloInput arg0) {
+    public Future<RpcResult<Void>> hello(final HelloInput arg0) {
         checkRpcAndNext(arg0, "helloReply");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> meterMod(MeterModInput arg0) {
+    public Future<RpcResult<Void>> meterMod(final MeterModInput arg0) {
         checkRpcAndNext(arg0, "meterMod");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> packetOut(PacketOutInput arg0) {
+    public Future<RpcResult<Void>> packetOut(final PacketOutInput arg0) {
         checkRpcAndNext(arg0, "packetOut");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> portMod(PortModInput arg0) {
+    public Future<RpcResult<Void>> portMod(final PortModInput arg0) {
         checkRpcAndNext(arg0, "portMod");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
@@ -222,28 +222,28 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public synchronized Future<RpcResult<RoleRequestOutput>> roleRequest(
-            RoleRequestInput arg0) {
+            final RoleRequestInput arg0) {
         checkRpcAndNext(arg0, "echo");
         Future<RpcResult<RoleRequestOutput>> result = createAndRegisterRpcResult(arg0);
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> setAsync(SetAsyncInput arg0) {
+    public Future<RpcResult<Void>> setAsync(final SetAsyncInput arg0) {
         checkRpcAndNext(arg0, "setAsync");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> setConfig(SetConfigInput arg0) {
+    public Future<RpcResult<Void>> setConfig(final SetConfigInput arg0) {
         checkRpcAndNext(arg0, "setConfig");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
 
     @Override
-    public Future<RpcResult<Void>> tableMod(TableModInput arg0) {
+    public Future<RpcResult<Void>> tableMod(final TableModInput arg0) {
         checkRpcAndNext(arg0, "tableMod");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
@@ -265,7 +265,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     }
 
     @Override
-    public void setMessageListener(OpenflowProtocolListener ofListener) {
+    public void setMessageListener(final OpenflowProtocolListener ofListener) {
         this.ofListener = ofListener;
     }
 
@@ -279,7 +279,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     }
 
     @Override
-    public void setSystemListener(SystemNotificationsListener systemListener) {
+    public void setSystemListener(final SystemNotificationsListener systemListener) {
         this.systemListener = systemListener;
     }
 
@@ -289,7 +289,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param rpcName
      *            rpc yang name
      */
-    private boolean checkRpc(OfHeader rpcInput, String rpcName) {
+    private boolean checkRpc(final OfHeader rpcInput, final String rpcName) {
         String msg = null;
         boolean finished = true;
 
@@ -371,8 +371,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param switchTestWaitForRpc
      * @return
      */
-    private static String checkSingleRpcContent(OfHeader rpcInput,
-            String rpcName, SwitchTestWaitForRpcEvent switchTestWaitForRpc) {
+    private static String checkSingleRpcContent(final OfHeader rpcInput,
+            final String rpcName, final SwitchTestWaitForRpcEvent switchTestWaitForRpc) {
         String failureMsg = null;
         if (!rpcName.equals(switchTestWaitForRpc.getRpcName())) {
             failureMsg = "expected rpc name ["
@@ -393,7 +393,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param rpcName
      *            rpc yang name
      */
-    private synchronized void checkRpcAndNext(OfHeader rpcInput, String rpcName) {
+    private synchronized void checkRpcAndNext(final OfHeader rpcInput, final String rpcName) {
         boolean finished = checkRpc(rpcInput, rpcName);
         if (finished) {
             next();
@@ -583,7 +583,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @return rpc future result
      */
     private <IN extends OfHeader, OUT extends OfHeader> SettableFuture<RpcResult<OUT>> createAndRegisterRpcResult(
-            IN arg0) {
+            final IN arg0) {
         SettableFuture<RpcResult<OUT>> result = SettableFuture.create();
         rpcResults.put(arg0.getXid(), result);
         return result;
@@ -592,7 +592,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     /**
      * @return rpc future result
      */
-    private synchronized ListenableFuture<RpcResult<Void>> createOneWayRpcResult() {
+    private static ListenableFuture<RpcResult<Void>> createOneWayRpcResult() {
         return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
     }
 
@@ -600,7 +600,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param eventPlan
      *            the eventPlan to set
      */
-    public void setEventPlan(Stack<? extends SwitchTestEvent> eventPlan) {
+    public void setEventPlan(final Stack<? extends SwitchTestEvent> eventPlan) {
         this.eventPlan = eventPlan;
     }
 
@@ -608,7 +608,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param proceedTimeout
      *            max timeout for processing one planned event (in [ms])
      */
-    public void setProceedTimeout(long proceedTimeout) {
+    public void setProceedTimeout(final long proceedTimeout) {
         this.proceedTimeout = proceedTimeout;
     }
 
@@ -626,12 +626,12 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public void setConnectionReadyListener(
-            ConnectionReadyListener connectionReadyListener) {
+            final ConnectionReadyListener connectionReadyListener) {
         this.connectionReadyListener = connectionReadyListener;
     }
 
     @Override
-    public Future<RpcResult<Void>> multipartRequest(MultipartRequestInput arg0) {
+    public Future<RpcResult<Void>> multipartRequest(final MultipartRequestInput arg0) {
         checkRpcAndNext(arg0, "multipartRequestInput");
         ListenableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
@@ -653,12 +653,12 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     }
 
     @Override
-    public void setAutoRead(boolean autoRead) {
+    public void setAutoRead(final boolean autoRead) {
         this.autoRead = autoRead;
     }
 
     @Override
-    public void setPacketInFiltering(boolean packetInFiltering) {
+    public void setPacketInFiltering(final boolean packetInFiltering) {
         this.packetInFiltering = packetInFiltering;
     }
 }
