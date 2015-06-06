@@ -1,14 +1,19 @@
+/**
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
@@ -68,14 +73,14 @@ public class OpenflowPortsUtilTest {
     }
 
     //helper
-    private static void matchGetLogicalName(OpenflowVersion version, String logicalName) {
+    private static void matchGetLogicalName(final OpenflowVersion version, final String logicalName) {
         Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
                 logicalName,
                 OpenflowPortsUtil.getPortLogicalName(version, mapVersionToPorts.get(version).get(logicalName)));
     }
 
     //helper
-    private static void matchGetPortfromLogicalName(OpenflowVersion version, String logicalName) {
+    private static void matchGetPortfromLogicalName(final OpenflowVersion version, final String logicalName) {
         Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
                 mapVersionToPorts.get(version).get(logicalName), OpenflowPortsUtil.getPortFromLogicalName(version, logicalName));
     }
@@ -182,13 +187,13 @@ public class OpenflowPortsUtilTest {
     @Test
     public void testPortNumberToString() {
         PortNumberUni portNumber;
-        
+
         portNumber = new PortNumberUni(42L);
         Assert.assertEquals("42", OpenflowPortsUtil.portNumberToString(portNumber));
-        
+
         portNumber = new PortNumberUni(OutputPortValues.FLOOD.toString());
         Assert.assertEquals("FLOOD", OpenflowPortsUtil.portNumberToString(portNumber));
-        
+
         try {
             portNumber = new PortNumberUni((String) null);
             Assert.fail("NPE was expected - due to value type");

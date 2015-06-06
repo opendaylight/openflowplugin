@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -55,12 +55,12 @@ public class OFRoleManager implements AutoCloseable {
     /**
      * @param sessionManager
      */
-    public OFRoleManager(SessionManager sessionManager) {
+    public OFRoleManager(final SessionManager sessionManager) {
         Preconditions.checkNotNull("Session manager can not be empty.", sessionManager);
         this.sessionManager = sessionManager;
         workQueue = new PriorityBlockingQueue<>(500, new Comparator<RolePushTask>() {
             @Override
-            public int compare(RolePushTask o1, RolePushTask o2) {
+            public int compare(final RolePushTask o1, final RolePushTask o2) {
                 return Integer.compare(o1.getPriority(), o2.getPriority());
             }
         });
@@ -91,7 +91,7 @@ public class OFRoleManager implements AutoCloseable {
                     RoleUtil.makeCheckedRuleRequestFxResult(rolePushResult);
             try {
                 Boolean succeeded = rolePushResultChecked.checkedGet(TIMEOUT, TIMEOUT_UNIT);
-                if (!Objects.firstNonNull(succeeded, Boolean.FALSE)) {
+                if (!MoreObjects.firstNonNull(succeeded, Boolean.FALSE)) {
                     if (task.getRetryCounter() < RETRY_LIMIT) {
                         workQueue.offer(task);
                     }

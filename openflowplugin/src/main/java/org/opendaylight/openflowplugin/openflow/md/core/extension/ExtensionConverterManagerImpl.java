@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
@@ -32,18 +33,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * simple map-based registration engine implementation
  */
 public class ExtensionConverterManagerImpl implements ExtensionConverterManager {
 
-    private Map<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> registryFromOFJAva;
-    private Map<ConverterExtensionKey<?>, ConvertorToOFJava<?>> registryToOFJAva;
-    private Map<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<? extends Action, ? extends DataContainer>> registryActionToOFJAva;
-    private Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
+    private final Map<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> registryFromOFJAva;
+    private final Map<ConverterExtensionKey<?>, ConvertorToOFJava<?>> registryToOFJAva;
+    private final Map<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<? extends Action, ? extends DataContainer>> registryActionToOFJAva;
+    private final Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
 
     /**
      * default ctor
@@ -62,7 +60,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      */
     private <FROM extends DataContainer, PATH extends AugmentationPath, KEY extends MessageTypeKey<?>>
     RegistrationCloserFromOFJava<FROM, PATH> hireJanitor(
-            KEY key, ConvertorFromOFJava<FROM, PATH> extConvertor) {
+            final KEY key, final ConvertorFromOFJava<FROM, PATH> extConvertor) {
         RegistrationCloserFromOFJava<FROM, PATH> janitor = new RegistrationCloser.RegistrationCloserFromOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
@@ -77,7 +75,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      */
     private <FROM extends DataContainer, PATH extends AugmentationPath, KEY extends MessageTypeKey<?>>
     RegistrationCloserActionFromOFJava<FROM, PATH> hireJanitor(
-            KEY key, ConvertorActionFromOFJava<FROM, PATH> extConvertor) {
+            final KEY key, final ConvertorActionFromOFJava<FROM, PATH> extConvertor) {
         RegistrationCloserActionFromOFJava<FROM, PATH> janitor = new RegistrationCloser.RegistrationCloserActionFromOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
@@ -91,7 +89,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @return
      */
     private <TO extends DataContainer> RegistrationCloserToOFJava<TO> hireJanitor(
-            ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<TO> extConvertor) {
+            final ConverterExtensionKey<? extends ExtensionKey> key, final ConvertorToOFJava<TO> extConvertor) {
         RegistrationCloserToOFJava<TO> janitor = new RegistrationCloser.RegistrationCloserToOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
@@ -105,7 +103,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @return
      */
     private <TO extends DataContainer> RegistrationCloserActionToOFJava<TO> hireJanitor(
-            TypeVersionKey<? extends Action> key, ConvertorActionToOFJava<Action, TO> extConvertor) {
+            final TypeVersionKey<? extends Action> key, final ConvertorActionToOFJava<Action, TO> extConvertor) {
         RegistrationCloserActionToOFJava<TO> janitor = new RegistrationCloser.RegistrationCloserActionToOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
@@ -119,7 +117,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param key
      * @param converter
      */
-    public void unregister(ConverterExtensionKey<?> key, ConvertorToOFJava<?> converter) {
+    public void unregister(final ConverterExtensionKey<?> key, final ConvertorToOFJava<?> converter) {
         ConvertorToOFJava<?> registeredConverter = registryToOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryToOFJAva.remove(key);
@@ -132,7 +130,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param key
      * @param converter
      */
-    public void unregister(TypeVersionKey<? extends Action> key, ConvertorActionToOFJava<?, ?> converter) {
+    public void unregister(final TypeVersionKey<? extends Action> key, final ConvertorActionToOFJava<?, ?> converter) {
         ConvertorActionToOFJava<?, ?> registeredConverter = registryActionToOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryActionToOFJAva.remove(key);
@@ -145,7 +143,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param key
      * @param converter
      */
-    public void unregister(MessageTypeKey<?> key, ConvertorFromOFJava<?, ?> converter) {
+    public void unregister(final MessageTypeKey<?> key, final ConvertorFromOFJava<?, ?> converter) {
         ConvertorFromOFJava<?, ?> registeredConverter = registryFromOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryFromOFJAva.remove(key);
@@ -158,7 +156,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param key
      * @param converter
      */
-    public void unregister(MessageTypeKey<?> key, ConvertorActionFromOFJava<?, ?> converter) {
+    public void unregister(final MessageTypeKey<?> key, final ConvertorActionFromOFJava<?, ?> converter) {
         ConvertorActionFromOFJava<?, ?> registeredConverter = registryActionFromOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryActionFromOFJAva.remove(key);
@@ -168,36 +166,36 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer> ConvertorToOFJava<FROM> getConverter(
-            ConverterExtensionKey<?> key) {
+            final ConverterExtensionKey<?> key) {
         return (ConvertorToOFJava<FROM>) registryToOFJAva.get(key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends Action, TO extends DataContainer> ConvertorActionToOFJava<FROM, TO> getConverter(
-            TypeVersionKey<FROM> key) {
+            final TypeVersionKey<FROM> key) {
         return (ConvertorActionToOFJava<FROM, TO>) registryActionToOFJAva.get(key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer, PATH extends AugmentationPath> ConvertorFromOFJava<FROM, PATH> getConverter(
-            MessageTypeKey<?> key) {
+            final MessageTypeKey<?> key) {
         return (ConvertorFromOFJava<FROM, PATH>) registryFromOFJAva.get(key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer, PATH extends AugmentationPath> ConvertorActionFromOFJava<FROM, PATH> getActionConverter(
-            MessageTypeKey<?> key) {
+            final MessageTypeKey<?> key) {
         return (ConvertorActionFromOFJava<FROM, PATH>) registryActionFromOFJAva.get(key);
     }
 
     @Override
     public ObjectRegistration<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>>
     registerActionConvertor(
-            TypeVersionKey<? extends Action> key,
-            ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> convertor) {
+            final TypeVersionKey<? extends Action> key,
+            final ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> convertor) {
         registryActionToOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }
@@ -205,23 +203,23 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     @Override
     public ObjectRegistration<ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action, ActionPath>>
     registerActionConvertor(
-            ActionSerializerKey<?> key,
-            ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action, ActionPath> convertor) {
+            final ActionSerializerKey<?> key,
+            final ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action, ActionPath> convertor) {
         registryActionFromOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }
 
     @Override
-    public ObjectRegistration<ConvertorToOFJava<MatchEntry>> registerMatchConvertor(ConverterExtensionKey<? extends ExtensionKey> key,
-                                                                                      ConvertorToOFJava<MatchEntry> convertor) {
+    public ObjectRegistration<ConvertorToOFJava<MatchEntry>> registerMatchConvertor(final ConverterExtensionKey<? extends ExtensionKey> key,
+                                                                                      final ConvertorToOFJava<MatchEntry> convertor) {
         registryToOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }
 
     @Override
     public ObjectRegistration<ConvertorFromOFJava<MatchEntry, MatchPath>> registerMatchConvertor(
-            MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
-            ConvertorFromOFJava<MatchEntry, MatchPath> convertor) {
+            final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
+            final ConvertorFromOFJava<MatchEntry, MatchPath> convertor) {
         registryFromOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }

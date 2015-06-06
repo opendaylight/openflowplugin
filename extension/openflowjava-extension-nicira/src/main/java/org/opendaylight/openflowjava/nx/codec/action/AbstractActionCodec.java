@@ -12,7 +12,6 @@ import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -22,18 +21,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  */
 public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDeserializer<Action> {
 
-    protected final static void serializeHeader(int msgLength, int subtype, ByteBuf outBuffer) {
+    protected final static void serializeHeader(final int msgLength, final int subtype, final ByteBuf outBuffer) {
         outBuffer.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         writeMsgLengthVendorIdSubtypeToBuffer(msgLength, subtype, outBuffer);
     }
 
-    private final static void writeMsgLengthVendorIdSubtypeToBuffer(int msgLength, int subtype, ByteBuf outBuffer) {
+    private final static void writeMsgLengthVendorIdSubtypeToBuffer(final int msgLength, final int subtype, final ByteBuf outBuffer) {
         outBuffer.writeShort(msgLength);
         outBuffer.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         outBuffer.writeShort(subtype);
     }
 
-    protected final static ActionBuilder deserializeHeader(ByteBuf message) {
+    protected final static ActionBuilder deserializeHeader(final ByteBuf message) {
         // size of experimenter type
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         // size of length

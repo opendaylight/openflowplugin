@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.collect.Iterables;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -25,9 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class PacketOutConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
@@ -43,20 +44,20 @@ public final class PacketOutConvertor {
      * @param inputPacket
      * @return PacketOutInput required by OF Library
      */
-    public static PacketOutInput toPacketOutInput(TransmitPacketInput inputPacket, short version, Long xid,
-                                                  BigInteger datapathid) {
+    public static PacketOutInput toPacketOutInput(final TransmitPacketInput inputPacket, final short version, final Long xid,
+                                                  final BigInteger datapathid) {
 
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr = null;
         Long bufferId = OFConstants.OFP_NO_BUFFER;
         List<Action> actions = new ArrayList<>();
-        List<PathArgument> inArgs = null;
+        Iterable<PathArgument> inArgs = null;
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         if (inputPacket.getIngress() != null) {
-            inArgs = inputPacket.getIngress().getValue().getPath();
+            inArgs = inputPacket.getIngress().getValue().getPathArguments();
         }
-        if (inArgs != null && inArgs.size() >= 3) {
-            inPortNr = getPortNumber(inArgs.get(2), version);
+        if (inArgs != null && Iterables.size(inArgs) >= 3) {
+            inPortNr = getPortNumber(Iterables.get(inArgs, 2), version);
         } else {
             // The packetOut originated from the controller
             inPortNr = new PortNumber(0xfffffffdL);
@@ -69,9 +70,9 @@ public final class PacketOutConvertor {
 
         PortNumber outPort = null;
         NodeConnectorRef outRef = inputPacket.getEgress();
-        List<PathArgument> outArgs = outRef.getValue().getPath();
-        if (outArgs.size() >= 3) {
-            outPort = getPortNumber(outArgs.get(2), version);
+        Iterable<PathArgument> outArgs = outRef.getValue().getPathArguments();
+        if (Iterables.size(outArgs) >= 3) {
+            outPort = getPortNumber(Iterables.get(outArgs, 2), version);
         } else {
             // TODO : P4 search for some normal exception
             new Exception("PORT NR not exist in Egress");
@@ -105,9 +106,9 @@ public final class PacketOutConvertor {
         return builder.build();
     }
 
-    private static PortNumber getPortNumber(PathArgument pathArgument, Short ofVersion) {
+    private static PortNumber getPortNumber(final PathArgument pathArgument, final Short ofVersion) {
         // FIXME VD P! find InstanceIdentifier helper
-        InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(pathArgument,
+        InstanceIdentifier.IdentifiableItem<?, ?> item = Arguments.checkInstanceOf(pathArgument,
                 InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
         String[] split = key.getId().getValue().split(":");

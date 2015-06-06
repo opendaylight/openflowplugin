@@ -8,25 +8,23 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
-
 /**
  * @author jsebin
  */
 public class PortFeaturesUtilTest {
 
-    private PortStatusMessageBuilder portStatusMessageBuilder;    
-    private PortFeaturesUtil portUtil; 
-    
-    
+    private PortStatusMessageBuilder portStatusMessageBuilder;
+    private PortFeaturesUtil portUtil;
+
+
     /**
      * initialization of {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder.PortStatusMessageBuilder}
      * and {@link PortFeaturesUtil}
@@ -55,12 +53,12 @@ public class PortFeaturesUtilTest {
      */
     @Test
     public void testFeaturesV10() {
-        PortFeaturesV10 features = new PortFeaturesV10(true, true, true, false, true, false, true, true, true, false, true, false);        
+        PortFeaturesV10 features = new PortFeaturesV10(true, true, true, false, true, false, true, true, true, false, true, false);
         portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY).setVersion((short) 1).setCurrentFeaturesV10(features);
-        
+
         Assert.assertNotNull(portUtil.getPortBandwidth(portStatusMessageBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link PortFeaturesUtil#getPortBandwidth()} for OF 1.3 version
@@ -69,12 +67,12 @@ public class PortFeaturesUtilTest {
      */
     @Test
     public void testFeaturesV13() {
-        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);        
+        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);
         portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY).setVersion((short) 4).setCurrentFeatures(features);
-        
+
         Assert.assertNotNull(portUtil.getPortBandwidth(portStatusMessageBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link PortFeaturesUtil#getPortBandwidth()} for malformed features
@@ -83,12 +81,12 @@ public class PortFeaturesUtilTest {
      */
     @Test
     public void testFeaturesMalformed() {
-        PortFeaturesV10 features = new PortFeaturesV10(true, true, true, true, true, true, false, false, false, false, true, null);        
+        PortFeaturesV10 features = new PortFeaturesV10(true, true, true, true, true, true, false, false, false, false, true, null);
         portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY).setVersion((short) 1).setCurrentFeaturesV10(features);
-        
+
         Assert.assertNull(portUtil.getPortBandwidth(portStatusMessageBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link PortFeaturesUtil#getPortBandwidth()} for mismatch between
@@ -97,12 +95,12 @@ public class PortFeaturesUtilTest {
      */
     @Test
     public void testFeaturesVersionMismatch() {
-        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);        
+        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);
         portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY).setVersion((short) 1).setCurrentFeatures(features);
-        
+
         Assert.assertNull(portUtil.getPortBandwidth(portStatusMessageBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link PortFeaturesUtil#getPortBandwidth()} for nonexisting port version
@@ -110,9 +108,9 @@ public class PortFeaturesUtilTest {
      */
     @Test
     public void testFeaturesNonexistingVersion() {
-        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);        
+        PortFeatures features = new PortFeatures(true, true, true, false, true, false, true, true, true, false, true, false, false, true, false, false);
         portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY).setVersion((short) 0).setCurrentFeatures(features);
-        
+
         Assert.assertNull(portUtil.getPortBandwidth(portStatusMessageBuilder.build()));
     }
 

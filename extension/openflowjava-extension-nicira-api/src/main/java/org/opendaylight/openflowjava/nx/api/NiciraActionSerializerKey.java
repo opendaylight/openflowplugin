@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowjava.nx.api;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 
 /**
@@ -15,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  */
 public class NiciraActionSerializerKey {
-    
+
     private final short version;
     private final Class<? extends ActionChoice> subtype;
 
@@ -23,7 +22,7 @@ public class NiciraActionSerializerKey {
      * @param version protocol wire version
      * @param subtype nx_action_subtype
      */
-    public NiciraActionSerializerKey(short version, Class<? extends ActionChoice> subtype) {
+    public NiciraActionSerializerKey(final short version, final Class<? extends ActionChoice> subtype) {
         this.version = version;
         this.subtype = subtype;
     }
@@ -46,21 +45,27 @@ public class NiciraActionSerializerKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         NiciraActionSerializerKey other = (NiciraActionSerializerKey) obj;
         if (subtype == null) {
-            if (other.subtype != null)
+            if (other.subtype != null) {
                 return false;
-        } else if (!subtype.equals(other.subtype))
+            }
+        } else if (!subtype.equals(other.subtype)) {
             return false;
-        if (version != other.version)
+        }
+        if (version != other.version) {
             return false;
+        }
         return true;
     }
 
