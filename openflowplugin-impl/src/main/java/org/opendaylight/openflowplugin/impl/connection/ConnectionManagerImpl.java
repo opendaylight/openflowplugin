@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyL
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
@@ -40,7 +39,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private static final int HELLO_LIMIT = 20;
-    private boolean bitmapNegotiationEnabled = true;
+    private final boolean bitmapNegotiationEnabled = true;
     private DeviceConnectedHandler deviceConnectedHandler;
 
     @Override
