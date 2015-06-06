@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * match related tools
@@ -22,7 +20,7 @@ public abstract class MatchConvertorUtil {
      * @param pField
      * @return integer containing lower 9 bits filled with corresponding flags
      */
-    public static Integer ipv6ExthdrFlagsToInt(Ipv6ExthdrFlags pField) {
+    public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags pField) {
         Integer bitmap = 0;
         bitmap |= pField.isNonext() ? (1 << 0) : 0;
         bitmap |= pField.isEsp() ? (1 << 1) : 0;

@@ -9,7 +9,9 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
-
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -48,9 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Unit test for {@link MatchConvertorImpl}.
@@ -171,7 +170,7 @@ public class MatchConvertorImplTest {
         }
     }
 
-    private void checkDefault(MatchBuilder builder) {
+    private static void checkDefault(final MatchBuilder builder) {
         EthernetMatch ethMatch = builder.getEthernetMatch();
         assertEquals(MAC_SRC, ethMatch.getEthernetSource().getAddress());
         assertEquals(null, ethMatch.getEthernetSource().getMask());
@@ -184,15 +183,15 @@ public class MatchConvertorImplTest {
         assertEquals(URI_IN_PORT, inPort.getValue());
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match createOFMatch(List<MatchEntry> entries) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match createOFMatch(final List<MatchEntry> entries) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder builder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder();
         return builder.setType(OxmMatchType.class).setMatchEntry(entries).
                 build();
     }
 
-    private List<MatchEntry> createDefaultMatchEntry() {
-        List<MatchEntry> entries = new ArrayList<MatchEntry>();
+    private static List<MatchEntry> createDefaultMatchEntry() {
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(toOfPort(InPort.class, IN_PORT));
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
@@ -218,7 +217,7 @@ public class MatchConvertorImplTest {
         return entries;
     }
 
-    private MatchEntry toOfEthernetType(int ethType) {
+    private static MatchEntry toOfEthernetType(final int ethType) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setHasMask(false);
@@ -232,8 +231,8 @@ public class MatchConvertorImplTest {
         return builder.build();
     }
 
-    private MatchEntry toOfPort(Class<? extends MatchField> field,
-                                Long portNumber) {
+    private static MatchEntry toOfPort(final Class<? extends MatchField> field,
+                                final Long portNumber) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setHasMask(false);
@@ -246,7 +245,7 @@ public class MatchConvertorImplTest {
         return builder.build();
     }
 
-    private MatchEntry toOfVlanVid(int vid) {
+    private static MatchEntry toOfVlanVid(final int vid) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         boolean cfi = true;
         Integer vidValue = Integer.valueOf(vid);
@@ -276,7 +275,7 @@ public class MatchConvertorImplTest {
         return builder.build();
     }
 
-    private void checkDefaultV10(Match match, FlowWildcardsV10 wc, int vid) {
+    private static void checkDefaultV10(final Match match, final FlowWildcardsV10 wc, final int vid) {
         EthernetMatch ethMatch = match.getEthernetMatch();
         if (wc.isDLSRC().booleanValue()) {
             if (ethMatch != null) {

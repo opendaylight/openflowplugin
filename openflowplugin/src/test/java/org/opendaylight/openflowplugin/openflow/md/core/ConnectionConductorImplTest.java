@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import static org.junit.Assert.assertNotNull;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +80,7 @@ public class ConnectionConductorImplTest {
     private Stack<SwitchTestEvent> eventPlan;
 
     private Thread libSimulation;
-    private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
+    private final ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
     protected QueueProcessorLightImpl queueProcessor;
@@ -99,7 +98,7 @@ public class ConnectionConductorImplTest {
     @Mock
     private ErrorHandlerSimpleImpl errorHandler;
 
-    private int expectedErrors = 0;
+    private final int expectedErrors = 0;
     @Mock
     private MessageSpy<DataContainer> messageSpy;
     @Mock
@@ -507,7 +506,7 @@ public class ConnectionConductorImplTest {
     /**
      * @throws InterruptedException
      */
-    private void execute(boolean join) throws InterruptedException {
+    private void execute(final boolean join) throws InterruptedException {
         libSimulation = new Thread(adapter, "junit-adapter");
         libSimulation.start();
         if (join) {
@@ -530,7 +529,7 @@ public class ConnectionConductorImplTest {
     /**
      * @return
      */
-    private static Capabilities createCapabilities(long input) {
+    private static Capabilities createCapabilities(final long input) {
         final Boolean FLOW_STATS = (input & (1 << 0)) != 0;
         final Boolean TABLE_STATS = (input & (1 << 1)) != 0;
         final Boolean PORT_STATS = (input & (1 << 2)) != 0;
@@ -545,7 +544,7 @@ public class ConnectionConductorImplTest {
 
     public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrExperimenterMessageCounter();
             return null;
@@ -554,7 +553,7 @@ public class ConnectionConductorImplTest {
 
     public class PacketInMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in PacketIn Service");
             ConnectionConductorImplTest.this.incrPacketinMessageCounter();
             return null;
@@ -563,7 +562,7 @@ public class ConnectionConductorImplTest {
 
     public class FlowRemovedMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
             ConnectionConductorImplTest.this.incrFlowremovedMessageCounter();
             return null;
@@ -572,7 +571,7 @@ public class ConnectionConductorImplTest {
 
     public class PortStatusMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in PortStatus Service");
             if ((((PortStatusMessage) msg).getReason().equals(PortReason.OFPPRADD))) {
                 ConnectionConductorImplTest.this.incrPortstatusAddMessageCounter();
@@ -587,7 +586,7 @@ public class ConnectionConductorImplTest {
 
     public class ErrorMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrErrorMessageCounter();
             return null;
@@ -710,7 +709,7 @@ public class ConnectionConductorImplTest {
         connectionConductor.onHandshakeFailure();
         connectionConductor.checkState(ConnectionConductor.CONDUCTOR_STATE.RIP);
     }
-    private void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
+    private static void simulateV13PostHandshakeState(final ConnectionConductorImpl conductor) {
         GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
         conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);
     }

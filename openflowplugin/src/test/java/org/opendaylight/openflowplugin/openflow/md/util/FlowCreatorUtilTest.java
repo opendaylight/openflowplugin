@@ -7,12 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.math.BigInteger;
-
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -240,7 +238,6 @@ public class FlowCreatorUtilTest {
      * Test method for
      * {@link FlowCreatorUtil#equalsFlowModFlags(FlowModFlags, FlowModFlags)}.
      */
-    @SuppressWarnings("deprecation")
     @Test
     public void testEqualsFlowModFlags() {
         final FlowModFlags[] defaults = {
@@ -369,11 +366,11 @@ public class FlowCreatorUtilTest {
         }
     }
 
-    private void assertMatch (final Match match) {
+    private static void assertMatch (final Match match) {
         assertTrue(match.getType().getClass().isInstance(OxmMatchType.class));
     }
 
-    private void assertMatch (final MatchV10 matchV10) {
+    private static void assertMatch (final MatchV10 matchV10) {
         assertEquals(matchV10.getDlDst(), macAddress);
         assertEquals(matchV10.getDlSrc(), macAddress);
 
@@ -408,7 +405,7 @@ public class FlowCreatorUtilTest {
      * @param version
      *     OpenFlow protocol version.
      */
-    private void canModifyFlowTest (final boolean expected, final OriginalFlowBuilder org,
+    private static void canModifyFlowTest (final boolean expected, final OriginalFlowBuilder org,
                                    final UpdatedFlowBuilder upd, final Short version) {
         final boolean result = FlowCreatorUtil.
             canModifyFlow(org.build(), upd.build(), version);
@@ -421,7 +418,7 @@ public class FlowCreatorUtilTest {
      * @param etherType  An ethernet type value.
      * @return  A flow match that specifies the given ethernet type.
      */
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match createMatch (final long etherType) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match createMatch (final long etherType) {
         final EthernetTypeBuilder ethType = new EthernetTypeBuilder().
             setType(new EtherType(etherType));
         final EthernetMatchBuilder ether = new EthernetMatchBuilder().

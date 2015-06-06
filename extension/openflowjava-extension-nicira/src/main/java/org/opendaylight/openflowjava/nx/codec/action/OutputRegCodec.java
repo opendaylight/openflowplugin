@@ -12,10 +12,8 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputRegBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
@@ -35,7 +33,7 @@ public class OutputRegCodec extends AbstractActionCodec {
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, SUBTYPE);
 
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         ActionOutputReg action = ((ActionOutputReg) input.getActionChoice());
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(action.getNxActionOutputReg().getNBits().shortValue());
@@ -45,7 +43,7 @@ public class OutputRegCodec extends AbstractActionCodec {
     }
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();

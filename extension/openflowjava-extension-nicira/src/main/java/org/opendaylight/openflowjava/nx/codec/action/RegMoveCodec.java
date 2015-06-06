@@ -6,7 +6,6 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
@@ -21,7 +20,7 @@ public class RegMoveCodec extends AbstractActionCodec {
             EncodeConstants.OF13_VERSION_ID, SUBTYPE);
 
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         ActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice());
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits());
@@ -32,7 +31,7 @@ public class RegMoveCodec extends AbstractActionCodec {
     }
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
