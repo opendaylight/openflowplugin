@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.romix.scala.collection.concurrent.TrieMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
-    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>();
+    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
 
