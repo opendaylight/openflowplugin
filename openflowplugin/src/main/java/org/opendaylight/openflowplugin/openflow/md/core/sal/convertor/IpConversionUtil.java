@@ -37,6 +37,23 @@ public final class IpConversionUtil {
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
 
+    private static final byte[][] PREFIX_BYTEARRAYS;
+    static {
+        final byte[][] a = new byte[129][];
+
+        for (int prefix = 0; prefix <= 128; ++prefix) {
+            byte[] mask = new byte[16];
+            for (int count = 0; count < 16; count++) {
+                mask[count] = (byte) nextNibble(prefix);
+                prefix = prefix - 8;
+            }
+
+            a[prefix] = mask;
+        }
+
+        PREFIX_BYTEARRAYS = a;
+    }
+
     private IpConversionUtil() {
         throw new UnsupportedOperationException("This class should not be instantiated.");
     }
@@ -540,13 +557,15 @@ public final class IpConversionUtil {
         }
     }
 
-    public static byte[] convertIpv6PrefixToByteArray(int prefix) {
-        byte[] mask = new byte[16];
-        for (int count = 0; count < 16; count++) {
-            mask[count] = (byte) nextNibble(prefix);
-            prefix = prefix - 8;
+    public static byte[] convertIpv6PrefixToByteArray(final int prefix) {
+        if (prefix < 0) {
+            return PREFIX_BYTEARRAYS[0];
         }
-        return mask;
+        try {
+            return PREFIX_BYTEARRAYS[prefix];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return PREFIX_BYTEARRAYS[PREFIX_BYTEARRAYS.length - 1];
+        }
     }
 
     public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
