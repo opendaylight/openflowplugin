@@ -58,8 +58,7 @@ public final class IpConversionUtil {
 
     public static Iterator<String> splitToParts(final Ipv4Address ipv4Address) {
         /* Invalid (Ab)use of ip address as prefix!!! */
-        String [] tempPrefix = {ipv4Address.getValue(), "32"};
-        return Iterators.forArray(tempPrefix);
+        return Iterators.forArray(ipv4Address.getValue(), "32");
     }
 
     public static Iterator<String> splitToParts(final Ipv6Prefix ipv6Prefix) {
@@ -68,10 +67,8 @@ public final class IpConversionUtil {
 
     public static Iterator<String> splitToParts(final Ipv6Address ipv6Address) {
         /* Invalid (Ab)use of ip address as prefix!!! */
-        String [] tempPrefix = {ipv6Address.getValue(), "128"};
-        return Iterators.forArray(tempPrefix);
+        return Iterators.forArray(ipv6Address.getValue(), "128");
     }
-
 
     /* This forest of functions has a purpose:
      *
