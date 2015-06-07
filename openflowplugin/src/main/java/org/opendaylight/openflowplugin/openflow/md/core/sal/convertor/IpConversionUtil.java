@@ -37,6 +37,23 @@ public final class IpConversionUtil {
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
 
+    private static final byte[][] PREFIX_BYTEARRAYS;
+    static {
+        final byte[][] a = new byte[INADDR6SZ * Byte.SIZE + 1][];
+
+        for (int prefix = 0; prefix <= INADDR6SZ * Byte.SIZE; ++prefix) {
+            final byte[] mask = new byte[INADDR6SZ];
+            for (int count = 0; count < INADDR6SZ; count++) {
+                mask[count] = (byte) nextNibble(prefix);
+                prefix -= 8;
+            }
+
+            a[prefix] = mask;
+        }
+
+        PREFIX_BYTEARRAYS = a;
+    }
+
     private IpConversionUtil() {
         throw new UnsupportedOperationException("This class should not be instantiated.");
     }
@@ -529,24 +546,31 @@ public final class IpConversionUtil {
      /**
      * Canonicalize a v6 prefix while in binary form
      *
-     * @param _prefix - prefix, in byte [] form
+     * @param prefix - prefix, in byte [] form
      * @param mask - mask - number of bits
      */
-    public static void canonicalizeIpv6Prefix(final byte [] _prefix, int mask) {
+    public static void canonicalizeIpv6Prefix(final byte [] prefix, final int mask) {
+        final byte[] maskBytes = lookupIpv6PrefixByteArray(mask);
 
         for (int i=0; i < INADDR6SZ; i++) {
-            _prefix[i] = (byte) (_prefix[i] & nextNibble(mask));
-            mask = mask - 8;
+            prefix[i] &= maskBytes[i];
         }
     }
 
-    public static byte[] convertIpv6PrefixToByteArray(int prefix) {
-        byte[] mask = new byte[16];
-        for (int count = 0; count < 16; count++) {
-            mask[count] = (byte) nextNibble(prefix);
-            prefix = prefix - 8;
+    private static byte[] lookupIpv6PrefixByteArray(final int mask) {
+        if (mask < 0) {
+            return PREFIX_BYTEARRAYS[0];
         }
-        return mask;
+        try {
+            return PREFIX_BYTEARRAYS[mask];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return PREFIX_BYTEARRAYS[PREFIX_BYTEARRAYS.length - 1];
+        }
+    }
+
+    public static byte[] convertIpv6PrefixToByteArray(final int prefix) {
+        // Make sure we don't leak access to the global constant
+        return lookupIpv6PrefixByteArray(prefix).clone();
     }
 
     public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
