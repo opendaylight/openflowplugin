@@ -203,7 +203,7 @@ public class OFPluginFlowTest {
         ScenarioFactory.appendPostHandshakeScenario(handshakeScenario, true);
         WaitForMessageEvent flowModEvent = new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes(
-                        "04 0e 00 58 00 00 00 05 00 00 00 00 00 00 00 0a "
+                        "04 0e 00 58 00 00 00 03 00 00 00 00 00 00 00 0a "
                         + "00 00 00 00 00 00 00 0a 00 00 00 00 00 00 80 00 "
                         + "ff ff ff ff ff ff ff ff ff ff ff ff 00 01 00 00 "
                         + "00 01 00 16 80 00 0a 02 08 00 80 00 19 08 0a 00 "

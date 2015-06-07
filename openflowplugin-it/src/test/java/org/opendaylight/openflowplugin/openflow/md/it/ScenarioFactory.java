@@ -39,7 +39,7 @@ public abstract class ScenarioFactory {
      * @param switchVersionBitmap
      * @param auxId
      * @param pluginVersionBitmap
-     * @param addSleep if true - then add final sleep {@link #DEFAULT_SCENARIO_SLEEP} 
+     * @param addSleep if true - then add final sleep {@link #DEFAULT_SCENARIO_SLEEP}
      * @return stack filled with Handshake messages
      */
     public static Deque<ClientEvent> createHandshakeScenarioVBM(
@@ -59,14 +59,14 @@ public abstract class ScenarioFactory {
                         + "00 01 02 03 04 05 06 07 " + "00 01 02 03 01 "
                         + Integer.toHexString(auxId)
                         + " 00 00 00 01 02 03 00 01 02 03")));
-        
+
         if (addSleep) {
             addSleep(stack);
         }
-        
+
         return stack;
     }
-    
+
     /**
      * @param stack
      * @param addSleep if true - then add final sleep {@link #DEFAULT_SCENARIO_SLEEP}
@@ -78,21 +78,15 @@ public abstract class ScenarioFactory {
                                   "00 0d 00 00 00 00 00 00"  )));
         stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 12 00 10 00 00 00 02 "+
-                                  "00 08 00 00 00 00 00 00"  )));
-        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
-                .hexStringToBytes("04 12 00 10 00 00 00 03 "+
-                                  "00 0b 00 00 00 00 00 00"  )));
-        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
-                .hexStringToBytes("04 12 00 10 00 00 00 04 "+
                                   "00 00 00 00 00 00 00 00"  )));
-        
+
         if (addSleep) {
             addSleep(stack);
         }
-        
+
         return stack;
     }
-    
+
     /**
      * @param stack
      */
