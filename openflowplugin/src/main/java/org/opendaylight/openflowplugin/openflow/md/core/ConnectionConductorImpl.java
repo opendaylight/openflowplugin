@@ -432,8 +432,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         setDefaultConfig();
         if(version == OFConstants.OFP_VERSION_1_3){
             requestPorts();
-            requestGroupFeatures();
-            requestMeterFeatures();
         }
 
         requestDesc();

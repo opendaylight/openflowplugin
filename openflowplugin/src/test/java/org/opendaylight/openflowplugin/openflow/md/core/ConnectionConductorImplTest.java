@@ -257,8 +257,6 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -669,13 +667,13 @@ public class ConnectionConductorImplTest {
         PortFeatures featuresMal = new PortFeatures(true, false, false, false, null, false, false, false, false, false, false, false, false, false, false, false);
         PortFeaturesV10 featuresV10 = new PortFeaturesV10(true, false, false, false, false, false, false, false, false, false, false, false);
 
-        //Malformed features	        
+        //Malformed features
         builder.setVersion((short) 1).setPortNo(portNumber).setReason(PortReason.OFPPRADD).setCurrentFeatures(featuresMal);
         connectionConductor.processPortStatusMsg(builder.build());
         Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
         Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
 
-        //Version-features mismatch	        
+        //Version-features mismatch
         builder.setCurrentFeatures(features);
         connectionConductor.processPortStatusMsg(builder.build());
         Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
