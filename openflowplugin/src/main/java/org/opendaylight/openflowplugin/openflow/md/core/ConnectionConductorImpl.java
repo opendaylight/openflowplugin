@@ -464,8 +464,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         // post-handshake actions
         if (version == OFConstants.OFP_VERSION_1_3) {
             requestPorts();
-            requestGroupFeatures();
-            requestMeterFeatures();
         }
 
         requestDesc();
