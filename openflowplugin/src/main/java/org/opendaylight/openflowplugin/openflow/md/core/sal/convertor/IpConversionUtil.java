@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
@@ -128,10 +129,10 @@ public final class IpConversionUtil {
          * There is absolutely no point rerunning additional checks vs this
          * Note - there is no canonical form check here!!!
          */
-        if (null != mask && !mask.isEmpty()) {
-            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
-        } else {
+        if (Strings.isNullOrEmpty(mask)) {
             return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + "128");
+        } else {
+            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
         }
     }
 
