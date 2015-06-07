@@ -37,6 +37,27 @@ public final class IpConversionUtil {
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
 
+    /*
+     * Prefix bytearray lookup table. We concatenate the prefixes
+     * to a single byte array and perform offset lookups to ensure
+     * the table is contiguous and save some space.
+     */
+    private static final byte[] PREFIX_BYTEARRAYS;
+    static {
+        final byte[] a = new byte[(INADDR6SZ * Byte.SIZE + 1) * INADDR6SZ];
+
+        int offset = 0;
+        for (int p = 0; p <= INADDR6SZ * Byte.SIZE; ++p) {
+            int prefix = p;
+            for (int i = 0; i < INADDR6SZ; ++i) {
+                a[offset++] = (byte) nextNibble(prefix);
+                prefix -= Byte.SIZE;
+            }
+        }
+
+        PREFIX_BYTEARRAYS = a;
+    }
+
     private IpConversionUtil() {
         throw new UnsupportedOperationException("This class should not be instantiated.");
     }
@@ -525,28 +546,37 @@ public final class IpConversionUtil {
         return sb.toString();
     }
 
+    private static int ipv6PrefixByteArrayOffset(final int mask) {
+        if (mask < 0) {
+            return 0;
+        }
+
+        final int ret = mask * INADDR6SZ;
+        if (ret < PREFIX_BYTEARRAYS.length) {
+            return ret;
+        } else {
+            return PREFIX_BYTEARRAYS.length - INADDR6SZ;
+        }
+    }
 
      /**
      * Canonicalize a v6 prefix while in binary form
      *
-     * @param _prefix - prefix, in byte [] form
+     * @param prefix - prefix, in byte [] form
      * @param mask - mask - number of bits
      */
-    public static void canonicalizeIpv6Prefix(final byte [] _prefix, int mask) {
+    public static void canonicalizeIpv6Prefix(final byte [] prefix, final int mask) {
+        final int offset = ipv6PrefixByteArrayOffset(mask);
 
-        for (int i=0; i < INADDR6SZ; i++) {
-            _prefix[i] = (byte) (_prefix[i] & nextNibble(mask));
-            mask = mask - 8;
+        for (int i = 0; i < INADDR6SZ; i++) {
+            prefix[i] &= PREFIX_BYTEARRAYS[offset + i];
         }
     }
 
-    public static byte[] convertIpv6PrefixToByteArray(int prefix) {
-        byte[] mask = new byte[16];
-        for (int count = 0; count < 16; count++) {
-            mask[count] = (byte) nextNibble(prefix);
-            prefix = prefix - 8;
-        }
-        return mask;
+    public static byte[] convertIpv6PrefixToByteArray(final int prefix) {
+        final int offset = ipv6PrefixByteArrayOffset(prefix);
+
+        return Arrays.copyOfRange(PREFIX_BYTEARRAYS, offset, offset + INADDR6SZ);
     }
 
     public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
