@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -154,11 +156,15 @@ public class SalFlowServiceImpl implements SalFlowService {
                 FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(original);
 
                 FlowRegistryKey updatedflowRegistryKey = FlowRegistryKeyFactory.create(updated);
-                FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
+                final FlowRef flowRef = input.getFlowRef();
                 final DeviceFlowRegistry deviceFlowRegistry = flowUpdate.getDeviceContext().getDeviceFlowRegistry();
                 deviceFlowRegistry.markToBeremoved(flowRegistryKey);
-                deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
+                //if provided, store flow id to flow registry
+                if (flowRef != null) {
+                    final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                    final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
+                    deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
+                }
             }
 
             @Override
