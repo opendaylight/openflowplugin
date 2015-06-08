@@ -38,7 +38,7 @@ public class FlowRegistryKeyFactory {
 
         public FlowRegistryKeyDto(final Flow flow) {
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
-            priority = Preconditions.checkNotNull(flow.getPriority(), "flow priority must not be null");
+            priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
             match = Preconditions.checkNotNull(flow.getMatch(), "Match value must not be null");
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
