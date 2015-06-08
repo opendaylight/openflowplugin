@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -27,7 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
+    @GuardedBy("flowRegistry")
     private final Map<FlowRegistryKey, FlowDescriptor> flowRegistry = new HashMap<>();
+    @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
@@ -75,17 +78,17 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void removeMarked() {
-        synchronized (flowRegistry) {
+        synchronized (marks) {
             for (FlowRegistryKey flowRegistryKey : marks) {
                 LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
-                flowRegistry.remove(flowRegistryKey);
+                synchronized (flowRegistry) {
+                    flowRegistry.remove(flowRegistryKey);
+                }
             }
-        }
-        synchronized (marks) {
+
             marks.clear();
         }
     }
-
 
     @Override
     public Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
