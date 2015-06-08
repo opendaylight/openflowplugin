@@ -95,6 +95,8 @@
         <module>forwardingrules-manager</module>
         <module>forwardingrules-manager-config</module>
         <module>topology-lldp-discovery</module>
+        <!-- experimental apps -->
+        <module>bulk-o-matic</module>
     </modules>
 
 </project>
