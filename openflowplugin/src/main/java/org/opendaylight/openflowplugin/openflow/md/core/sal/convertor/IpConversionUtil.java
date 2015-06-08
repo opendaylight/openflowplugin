@@ -516,7 +516,7 @@ public final class IpConversionUtil {
         sb.append(
             InetAddresses.toAddrString(
                 InetAddress.getByAddress(
-                    Arrays.copyOfRange(_binary_form, 0, INADDR6SZ)
+                    Arrays.copyOf(_binary_form, INADDR6SZ)
                 )
             )
         );
