@@ -145,7 +145,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
-        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider();
+        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
 
@@ -177,10 +177,22 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         Preconditions.checkArgument(connectionContext != null);
 
         ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
-        TransactionChainManager transactionChainManager = deviceTransactionChainManagerProvider.provideTransactionChainManagerOrWaitForNotification(connectionContext,
-                dataBroker,
-                readyForNewTransactionChainHandler);
-        initializeDeviceContextSafely(connectionContext, transactionChainManager);
+        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
+        TransactionChainManager transactionChainManager = transactionChainManagerRegistration.getTransactionChainManager();
+
+        //this actually is new registration for currently processed connection context
+        if (transactionChainManagerRegistration.ownedByInvokingConnectionContext()) {
+            initializeDeviceContext(connectionContext, transactionChainManager);
+        }
+        //this means there already exists connection described by same NodeId and it is not current connection contexts' registration
+        else if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
+            connectionContext.closeConnection(false);
+        }
+        //previous connection is shutting down, we will try to register handler listening on new transaction chain ready
+        else if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
+            // new connection wil be closed if handler registration fails
+            connectionContext.closeConnection(false);
+        }
     }
 
     private void initializeDeviceContext(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
@@ -603,9 +615,4 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
     }
 
-    private void initializeDeviceContextSafely(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
-        if (null != transactionChainManager) {
-            initializeDeviceContext(connectionContext, transactionChainManager);
-        }
-    }
 }

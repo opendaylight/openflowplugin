@@ -25,14 +25,19 @@ public class DeviceTransactionChainManagerProvider {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceTransactionChainManagerProvider.class);
-    private static final Map<NodeId, TransactionChainManager> txChManagers = new HashMap<>();
+    private final Map<NodeId, TransactionChainManager> txChManagers = new HashMap<>();
+    private final DataBroker dataBroker;
 
-    public TransactionChainManager provideTransactionChainManagerOrWaitForNotification(final ConnectionContext connectionContext,
-                                                                                       final DataBroker dataBroker,
-                                                                                       final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
+    public DeviceTransactionChainManagerProvider(final DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
+
+    public TransactionChainManagerRegistration provideTransactionChainManager(final ConnectionContext connectionContext) {
         final NodeId nodeId = connectionContext.getNodeId();
+        TransactionChainManager transactionChainManager;
+        boolean ownedByCurrentContext = false;
         synchronized (this) {
-            TransactionChainManager transactionChainManager = txChManagers.get(nodeId);
+            transactionChainManager = txChManagers.get(nodeId);
             if (null == transactionChainManager) {
                 LOG.info("Creating new transaction chain for device {}", nodeId.toString());
                 Registration registration = new Registration() {
@@ -44,32 +49,29 @@ public class DeviceTransactionChainManagerProvider {
                 transactionChainManager = new TransactionChainManager(dataBroker,
                         DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()),
                         registration);
-                synchronized (txChManagers) {
-                    TransactionChainManager possibleValue = txChManagers.get(nodeId);
-                    //some other thread managed to register its transaction chain manager before this block ended - drop this one
-                    if (null == possibleValue) {
-                        txChManagers.put(nodeId, transactionChainManager);
-                    } else {
-                        dropNewConnection(connectionContext, nodeId, transactionChainManager);
-                    }
-                }
-                return transactionChainManager;
-            } else {
-                if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-                    dropNewConnection(connectionContext, nodeId, transactionChainManager);
-                }
+                txChManagers.put(nodeId, transactionChainManager);
+                ownedByCurrentContext = true;
             }
         }
-
-        return null;
+        TransactionChainManagerRegistration transactionChainManagerRegistration = new TransactionChainManagerRegistration(ownedByCurrentContext, transactionChainManager);
+        return transactionChainManagerRegistration;
     }
 
-    private void dropNewConnection(final ConnectionContext connectionContext, final NodeId nodeId, final TransactionChainManager transactionChainManager) {
-        LOG.info("There already exists one handler for connection described as {}. Transaction chain manager is in state {}. Will not try again.",
-                nodeId,
-                transactionChainManager.getTransactionChainManagerStatus());
-        connectionContext.closeConnection(false);
+    public final class TransactionChainManagerRegistration {
+        private final TransactionChainManager transactionChainManager;
+        private final boolean ownedByConnectionContext;
+
+        private TransactionChainManagerRegistration(final boolean ownedByConnectionContext, final TransactionChainManager transactionChainManager) {
+            this.transactionChainManager = transactionChainManager;
+            this.ownedByConnectionContext = ownedByConnectionContext;
+        }
+
+        public boolean ownedByInvokingConnectionContext() {
+            return ownedByConnectionContext;
+        }
+
+        public TransactionChainManager getTransactionChainManager() {
+            return transactionChainManager;
+        }
     }
-
-
 }
