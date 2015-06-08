@@ -22,8 +22,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.Registration;
@@ -36,14 +34,14 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p/>
+ * <p>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#submit()})
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p/>
+ *         </p>
  *         Created: Apr 2, 2015
  */
 class TransactionChainManager implements TransactionChainListener, AutoCloseable {
@@ -64,15 +62,13 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-    private final ConnectionContext connectionContext;
     private Registration managerRegistration;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final ConnectionContext connectionContext,
+                            @Nonnull final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
                             @Nonnull final Registration managerRegistration) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.nodeII = Preconditions.checkNotNull(DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()));
-        this.connectionContext = Preconditions.checkNotNull(connectionContext);
+        this.nodeII = Preconditions.checkNotNull(nodeII);
         this.managerRegistration = Preconditions.checkNotNull(managerRegistration);
         createTxChain(dataBroker);
         LOG.debug("created txChainManager");
@@ -88,11 +84,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitWriteTransaction();
     }
 
-    public boolean attemptToRegisterHandler(final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
-        if (null == this.readyForNewTransactionChainHandler) {
-            synchronized (this) {
-                Preconditions.checkState(null != this.managerRegistration);
-                this.readyForNewTransactionChainHandler = readyForNewTransactionChainHandler;
+    public synchronized boolean attemptToRegisterHandler(final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
+        if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(this.transactionChainManagerStatus)
+                && null == this.readyForNewTransactionChainHandler) {
+            this.readyForNewTransactionChainHandler = readyForNewTransactionChainHandler;
+            if (managerRegistration == null) {
+                this.readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
             }
             return true;
         } else {
@@ -199,7 +196,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private void notifyReadyForNewTransactionChainAndCloseFactory() {
         synchronized (this) {
             if (null != readyForNewTransactionChainHandler) {
-                readyForNewTransactionChainHandler.onReadyForNewTransactionChain(connectionContext);
+                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
             }
             try {
                 LOG.debug("Closing registration in manager.");
