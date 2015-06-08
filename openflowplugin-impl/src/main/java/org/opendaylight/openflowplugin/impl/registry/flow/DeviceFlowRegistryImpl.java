@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -22,17 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
-    @GuardedBy("flowRegistry")
-    private final Map<FlowRegistryKey, FlowDescriptor> flowRegistry = new HashMap<>();
+    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>();
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
@@ -40,30 +38,23 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         return flowDescriptor;
     }
 
-
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-        synchronized (flowRegistry) {
-            flowRegistry.put(flowRegistryKey, flowDescriptor);
-        }
+        flowRegistry.put(flowRegistryKey, flowDescriptor);
     }
 
     @Override
     public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey, final short tableId) {
+        final FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
+        final FlowDescriptor alienFlowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
 
-
-        FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
-        FlowDescriptor alienFlowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
-        synchronized (flowRegistry) {
-            FlowDescriptor flowDescriptorFromRegistry = flowRegistry.get(flowRegistryKey);
-            if (flowDescriptorFromRegistry != null) {
-                return flowDescriptorFromRegistry.getFlowId();
-            } else {
-                LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowRegistryKey.hashCode());
-                flowRegistry.put(flowRegistryKey, alienFlowDescriptor);
-                return alienFlowId;
-            }
+        final FlowDescriptor previous = flowRegistry.putIfAbsent(flowRegistryKey, alienFlowDescriptor);
+        if (previous == null) {
+            LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowRegistryKey.hashCode());
+            return alienFlowId;
+        } else {
+            return previous.getFlowId();
         }
     }
 
@@ -73,7 +64,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             marks.add(flowRegistryKey);
         }
         LOG.trace("Flow hash {} was marked for removal.", flowRegistryKey.hashCode());
-
     }
 
     @Override
@@ -81,9 +71,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         synchronized (marks) {
             for (FlowRegistryKey flowRegistryKey : marks) {
                 LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
-                synchronized (flowRegistry) {
-                    flowRegistry.remove(flowRegistryKey);
-                }
+                flowRegistry.remove(flowRegistryKey);
             }
 
             marks.clear();
