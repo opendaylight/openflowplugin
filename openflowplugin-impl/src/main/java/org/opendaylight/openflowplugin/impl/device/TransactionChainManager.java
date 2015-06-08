@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p>
+ * <p/>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
@@ -70,13 +70,13 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.nodeII = Preconditions.checkNotNull(nodeII);
         this.managerRegistration = Preconditions.checkNotNull(managerRegistration);
+        this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
         createTxChain(dataBroker);
         LOG.debug("created txChainManager");
     }
 
     private void createTxChain(final DataBroker dataBroker) {
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-        this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
     }
 
     void initialSubmitWriteTransaction() {
@@ -101,11 +101,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         if (!submitIsEnabled) {
             LOG.trace("transaction not committed - submit block issued");
             return false;
-        }
-
-        if (wTx == null) {
-            LOG.trace("nothing to commit - submit returns true");
-            return true;
         }
         synchronized (txLock) {
             if (wTx == null) {
@@ -195,9 +190,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private void notifyReadyForNewTransactionChainAndCloseFactory() {
         synchronized (this) {
-            if (null != readyForNewTransactionChainHandler) {
-                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
             try {
                 LOG.debug("Closing registration in manager.");
                 managerRegistration.close();
@@ -205,6 +197,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 LOG.warn("Failed to close transaction chain manager's registration.", e);
             }
             managerRegistration = null;
+            if (null != readyForNewTransactionChainHandler) {
+                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
+            }
         }
         txChainFactory.close();
         LOG.debug("Transaction chain factory closed.");
