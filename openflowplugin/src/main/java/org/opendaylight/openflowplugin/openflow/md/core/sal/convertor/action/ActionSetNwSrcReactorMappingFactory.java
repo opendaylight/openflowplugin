@@ -8,6 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -31,10 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.src._case.Ipv4SrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.src._case.Ipv6SrcBuilder;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * add prepared convertors and injectors into given mappings
@@ -134,7 +134,7 @@ public class ActionSetNwSrcReactorMappingFactory {
                 });
     }
 
-    private byte[] extractIpv4Mask(boolean hasMask, final Iterator<String> addressParts) {
+    private static byte[] extractIpv4Mask(boolean hasMask, final Iterator<String> addressParts) {
         final int prefix;
         if (addressParts.hasNext()) {
             int potentionalPrefix = Integer.parseInt(addressParts.next());

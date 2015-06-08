@@ -11,12 +11,10 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +27,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -47,10 +44,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/26/14.
@@ -101,13 +99,11 @@ public class SalRegistrationManagerTest {
         context.setNotificationEnqueuer(notificationEnqueuer);
 
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
-        registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.EMPTY_LIST);
+        registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.<Registration>emptyList());
         context.setProviderRegistration(registration);
 
-
-        Set<RpcError> errorSet = Collections.emptySet();
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
-        RpcResult<UpdateFlowOutput> result = Rpcs.getRpcResult(true, updateFlowOutput.build(), errorSet);
+        RpcResult<UpdateFlowOutput> result = RpcResultBuilder.success(updateFlowOutput.build()).build();
 
         Mockito.when(
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
@@ -135,9 +131,9 @@ public class SalRegistrationManagerTest {
      */
     @Test
     public void testIdentifierFromDatapathId() {
-        InstanceIdentifier<Node> node = salRegistrationManager.identifierFromDatapathId(dataPathId);
+        InstanceIdentifier<Node> node = SalRegistrationManager.identifierFromDatapathId(dataPathId);
         assertNotNull(node);
-        assertEquals("NodeKey [_id=Uri [_value=openflow:1]]", ((KeyedInstanceIdentifier) node).getKey().toString());
+        assertEquals("NodeKey [_id=Uri [_value=openflow:1]]", ((KeyedInstanceIdentifier<?, ?>) node).getKey().toString());
     }
 
     /**
@@ -145,7 +141,7 @@ public class SalRegistrationManagerTest {
      */
     @Test
     public void testNodeKeyFromDatapathId() {
-        NodeKey nodeKey = salRegistrationManager.nodeKeyFromDatapathId(dataPathId);
+        NodeKey nodeKey = SalRegistrationManager.nodeKeyFromDatapathId(dataPathId);
         assertNotNull(nodeKey);
         assertEquals("openflow:1", nodeKey.getId().getValue());
     }
@@ -155,7 +151,7 @@ public class SalRegistrationManagerTest {
      */
     @Test
     public void testNodeIdFromDatapathId() {
-        NodeId nodeId = salRegistrationManager.nodeIdFromDatapathId(dataPathId);
+        NodeId nodeId = SalRegistrationManager.nodeIdFromDatapathId(dataPathId);
         assertNotNull(nodeId);
         assertEquals("openflow:1", nodeId.getValue());
     }

@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Co
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jakub Toth jatoth@cisco.com on 9/23/14.
@@ -66,7 +66,7 @@ public class PacketOutConvertorTest {
         String port = "0";
 
         NodeRef ref = createNodeRef(NODE_ID);
-        NodeConnectorKey nodeConnKey = this.createNodeConnKey(NODE_ID, port);
+        NodeConnectorKey nodeConnKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, port);
         NodeConnectorRef nEgressConfRef = new NodeConnectorRef(
                 createNodeConnRef(NODE_ID, nodeConnKey));
 
@@ -87,7 +87,7 @@ public class PacketOutConvertorTest {
 
         //FIXME : this has to be fixed along with actions changed in openflowjava
 
-        Assert.assertEquals(this.buildActionForNullTransmitPacketInputAction(nodeConnKey,
+        Assert.assertEquals(PacketOutConvertorTest.buildActionForNullTransmitPacketInputAction(nodeConnKey,
                 version), message.getAction());
 
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
@@ -127,12 +127,12 @@ public class PacketOutConvertorTest {
         NodeRef ref = createNodeRef(NODE_ID);
 
         String portO = "0xfffffffd";
-        NodeConnectorKey nEgrConKey = this.createNodeConnKey(NODE_ID, portO);
+        NodeConnectorKey nEgrConKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, portO);
         NodeConnectorRef nEgressConfRef = new NodeConnectorRef(
                 createNodeConnRef(NODE_ID, nEgrConKey));
 
         String inPort = "2";
-        NodeConnectorKey nIngrConKey = this.createNodeConnKey(NODE_ID, inPort);
+        NodeConnectorKey nIngrConKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, inPort);
         NodeConnectorRef nIngressConRef = new NodeConnectorRef(
                 createNodeConnRef(NODE_ID, nIngrConKey));
 
@@ -185,7 +185,7 @@ public class PacketOutConvertorTest {
      * @param version
      * @return
      */
-    private List<Action> buildActionForNullTransmitPacketInputAction(
+    private static List<Action> buildActionForNullTransmitPacketInputAction(
             final NodeConnectorKey nConKey, final short version) {
 
         PortNumber outPort = getPortNumber(nConKey, version);
@@ -248,8 +248,8 @@ public class PacketOutConvertorTest {
      * @param port
      * @return
      */
-    private NodeConnectorKey createNodeConnKey(final String nodeId,
-                                               final String port) {
+    private static NodeConnectorKey createNodeConnKey(final String nodeId,
+                                                      final String port) {
         StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(
                 port);
 

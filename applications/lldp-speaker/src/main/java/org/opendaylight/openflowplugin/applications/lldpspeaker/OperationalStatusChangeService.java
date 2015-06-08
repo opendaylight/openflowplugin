@@ -14,14 +14,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  */
 public class OperationalStatusChangeService implements LldpSpeakerService {
 
-    private LLDPSpeaker speakerInstance;
+    private final LLDPSpeaker speakerInstance;
 
-    public OperationalStatusChangeService(LLDPSpeaker speakerInstance) {
+    public OperationalStatusChangeService(final LLDPSpeaker speakerInstance) {
         this.speakerInstance = speakerInstance;
     }
 
     @Override
-    public Future<RpcResult<Void>> changeOperationalStatus(ChangeOperationalStatusInput input) {
+    public Future<RpcResult<Void>> changeOperationalStatus(final ChangeOperationalStatusInput input) {
         speakerInstance.setOperationalStatus(input.getOperationalStatus());
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
