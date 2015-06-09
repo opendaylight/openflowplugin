@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira;
 
+import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4DstConvertor;
 import com.google.common.base.Preconditions;
 import java.util.HashSet;
 import java.util.Set;
@@ -257,6 +261,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private final static Nshc3Convertor NSC3_CONVERTOR = new Nshc3Convertor();
     private final static Nshc4Convertor NSC4_CONVERTOR = new Nshc4Convertor();
     private final static TunIPv4SrcConvertor TUN_IPV4_SRC_CONVERTOR = new TunIPv4SrcConvertor();
+    private final static TunIPv4DstConvertor TUN_IPV4_DST_CONVERTOR = new TunIPv4DstConvertor();
 
     @Override
     public void close() {
@@ -461,6 +466,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(Nshc4Codec.SERIALIZER_KEY, NSC4_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxTunIpv4SrcKey.class, EncodeConstants.OF13_VERSION_ID), TUN_IPV4_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4SrcCodec.SERIALIZER_KEY, TUN_IPV4_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxTunIpv4DstKey.class, EncodeConstants.OF13_VERSION_ID), TUN_IPV4_DST_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4DstCodec.SERIALIZER_KEY, TUN_IPV4_DST_CONVERTOR));
     }
 
     /**
