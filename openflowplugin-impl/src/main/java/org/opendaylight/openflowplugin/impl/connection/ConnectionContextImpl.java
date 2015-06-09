@@ -89,7 +89,11 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void closeConnection(boolean propagate) {
-        SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
+        if (null == nodeId){
+            SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
+        } else {
+            SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
+        }
         final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
         LOG.debug("Actively closing connection: {}, datapathId:{}.",
                 connectionAdapter.getRemoteAddress(), datapathId);
@@ -107,7 +111,11 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
-        SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
+        if (null == nodeId){
+            SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
+        } else {
+            SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
+        }
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
