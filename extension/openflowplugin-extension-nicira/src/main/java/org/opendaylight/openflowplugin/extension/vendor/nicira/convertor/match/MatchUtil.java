@@ -7,9 +7,15 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.UnsignedBytes;
+import java.util.Iterator;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -49,6 +55,8 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
  *
  */
 public class MatchUtil {
+    private static final Splitter SPLITTER = Splitter.on('.');
+    private static final Joiner JOINER = Joiner.on('.');
 
     private final static Set<Class<? extends Augmentation<Extension>>> augmentationsOfExtension = new HashSet<>();
     public final static GroupingResolver<NxmNxRegGrouping, Extension> regResolver = new GroupingResolver<>(
@@ -129,4 +137,28 @@ public class MatchUtil {
         return matchEntryBuilder;
     }
 
+    public static Long ipv4ToLong(Ipv4Address ipv4) {
+        Iterator<String> iterator = SPLITTER.split(ipv4.getValue()).iterator();
+        byte[] bytes = new byte[8];
+        for(int i =0;i < bytes.length;i++) {
+            if(i<4) {
+                bytes[i] = 0;
+            } else {
+                bytes[i] = UnsignedBytes.parseUnsignedByte((iterator.next()));
+            }
+        }
+        Long result = Longs.fromByteArray(bytes);
+        return result;
+    }
+
+    public static Ipv4Address longToIpv4Address(Long l) {
+        byte[] bytes = Longs.toByteArray(l);
+        String[] strArray = new String[4];
+        for(int i = 4;i < bytes.length;i++) {
+            strArray[i-4]=UnsignedBytes.toString(bytes[i]);
+        }
+        String str = JOINER.join(strArray);
+        Ipv4Address result = new Ipv4Address(str);
+        return result;
+    }
 }
