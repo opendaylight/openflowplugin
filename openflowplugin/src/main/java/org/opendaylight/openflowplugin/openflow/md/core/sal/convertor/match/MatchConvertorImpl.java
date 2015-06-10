@@ -698,7 +698,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
                     arpThaBuilder.setMacAddress(arpTargetHardwareAddress.getAddress());
                     boolean hasMask = false;
-                    if (null != arpSourceHardwareAddress.getMask()) {
+                    if (null != arpTargetHardwareAddress.getMask()) {
                         arpThaBuilder.setMask(ByteBufUtils.macAddressToBytes(arpTargetHardwareAddress.getMask().getValue()));
                         hasMask = true;
                     }
