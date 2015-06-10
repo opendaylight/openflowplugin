@@ -149,10 +149,9 @@ public class FlowRegistryKeyFactoryTest {
         fb2.setPriority(null);
         try {
             FlowRegistryKeyFactory.create(fb2.build());
-            Assert.fail("hash creation should have failed because of NPE");
         } catch (Exception e) {
-            // expected
-            Assert.assertEquals("flow priority must not be null", e.getMessage());
+            // not expected
+            Assert.fail("no exception was expected while hash was creating.");
         }
 
         FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
