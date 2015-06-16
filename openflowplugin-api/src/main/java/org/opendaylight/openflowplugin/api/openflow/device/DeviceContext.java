@@ -178,5 +178,11 @@ public interface DeviceContext extends AutoCloseable,
      */
     void onPublished();
 
+    /**
+     * change packetIn rate limiter borders
+     *
+     * @param upperBound max amount of outstanding packetIns
+     */
+    void updatePacketInRateLimit(long upperBound);
 }
 
