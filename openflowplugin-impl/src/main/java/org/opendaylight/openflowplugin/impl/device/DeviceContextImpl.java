@@ -84,11 +84,12 @@ public class DeviceContextImpl implements DeviceContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
-    // TODO: watermarks should be derived from effective rpc limit (75%|95%)
-    private static final int PACKETIN_LOW_WATERMARK = 15000;
-    private static final int PACKETIN_HIGH_WATERMARK = 19000;
     // TODO: drain factor should be parametrized
     public static final float REJECTED_DRAIN_FACTOR = 0.25f;
+    // TODO: low water mark factor should be parametrized
+    private static final float LOW_WATERMARK_FACTOR = 0.75f;
+    // TODO: high water mark factor should be parametrized
+    private static final float HIGH_WATERMARK_FACTOR = 0.95f;
 
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
@@ -134,7 +135,7 @@ public class DeviceContextImpl implements DeviceContext {
         messageSpy = _messageSpy;
 
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
-                PACKETIN_LOW_WATERMARK, PACKETIN_HIGH_WATERMARK, messageSpy, REJECTED_DRAIN_FACTOR);
+                /*initial*/ 1000, /*initial*/2000, messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
         portStatusTranslator = translatorLibrary.lookupTranslator(
@@ -429,5 +430,10 @@ public class DeviceContextImpl implements DeviceContext {
         nodeConnectorCache.put(
                 Preconditions.checkNotNull(portNumber),
                 Preconditions.checkNotNull(nodeConnectorRef));
+    }
+
+    @Override
+    public void updatePacketInRateLimit(long upperBound) {
+        packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 }

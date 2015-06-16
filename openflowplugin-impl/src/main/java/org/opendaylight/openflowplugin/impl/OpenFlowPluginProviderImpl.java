@@ -59,6 +59,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
     private final int rpcRequestsQuota;
+    private final long globalNotificationQuota;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private RpcProviderRegistry rpcProviderRegistry;
@@ -74,9 +75,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
 
-    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota) {
+    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
         this.rpcRequestsQuota = (int) rpcRequestsQuota;
+        this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
     }
 
 
@@ -152,7 +154,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
