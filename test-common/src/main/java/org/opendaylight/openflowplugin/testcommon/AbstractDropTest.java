@@ -8,10 +8,13 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -34,7 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
@@ -53,11 +58,11 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     protected static final short TABLE_ID = 0;
 
     static final long STARTUP_LOOP_TICK = 500L;
-    static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    static final int STARTUP_LOOP_MAX_RETRIES = 1;
     private static final int PROCESSING_POOL_SIZE = 10000;
+    private static final int POOL_THREAD_AMOUNT = 1;
 
-    private final int POOL_THREAD_AMOUNT = 8;
-    private final ExecutorService executorService;
+    private final Map<NodeId, ExecutorService> executorServices = new HashMap<>();
 
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
@@ -86,11 +91,20 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     }
 
     public AbstractDropTest() {
+    }
+
+    public void removeNodesExecutor(final NodeId nodeId) {
+        LOG.debug("Removing executor service for node {}.", nodeId);
+        executorServices.remove(nodeId);
+    }
+
+    public ExecutorService createExecutorForNode(final NodeId nodeId) {
+        LOG.debug("Creating executor service for node {}.", nodeId);
         final ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE);
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
                 TimeUnit.MILLISECONDS,
                 workQueue);
-        threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
+        threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat(String.format("dropTest-%s-%%d", nodeId.getValue())).build());
         threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             @Override
             public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
@@ -101,8 +115,8 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                 }
             }
         });
-
-        executorService = threadPool;
+        executorServices.put(nodeId, threadPool);
+        return threadPool;
     }
 
     public final void clearStats() {
@@ -128,19 +142,28 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         LOG.debug("onPacketReceived - Entering - {}", notification);
 
         RCVD_UPDATER.incrementAndGet(this);
+        NodeKey nodeKey = notification.getIngress().getValue().firstKeyOf(Node.class, NodeKey.class);
+        NodeId nodeId = nodeKey.getId();
+        ExecutorService executorService = executorServices.get(nodeId);
 
-        try {
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    incrementRunableExecuted();
-                    processPacket(notification);
-                }
-            });
-        } catch (Exception e) {
-            incrementRunableRejected();
+        if (null == executorService) {
+            LOG.warn("There's no executor registered for node {}. Register inventory change listener which will add/remove executors.", nodeId);
+        } else {
+
+            try {
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        incrementRunableExecuted();
+                        processPacket(notification);
+                    }
+                });
+            } catch (Exception e) {
+                incrementRunableRejected();
+            }
         }
         LOG.debug("onPacketReceived - Leaving", notification);
+
     }
 
     private void processPacket(final PacketReceived notification) {
@@ -204,7 +227,9 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     @Override
     public void close() {
-        executorService.shutdown();
+        for (ExecutorService executorService : executorServices.values()) {
+            executorService.shutdown();
+        }
     }
 
     public void countFutureSuccess() {
