@@ -43,6 +43,7 @@ public class DropTestProviderImpl implements AutoCloseable {
         dropRpcProvider.setNotificationService(notificationService);
         dropRpcProvider.setFlowService(salFlowService);
 
+
         LOG.debug("Activator DropAllPack END");
     }
 
