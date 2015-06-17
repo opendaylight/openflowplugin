@@ -37,7 +37,6 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
     private final EventIdentifier doneEventIdentifier;
 
 
-
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
                                             final Class<?> requestType,
                                             final DeviceContext deviceContext,
@@ -82,7 +81,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
             if (virgin) {
-                StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
                 virgin = false;
             }
             StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);

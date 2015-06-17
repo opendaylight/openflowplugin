@@ -61,12 +61,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
@@ -179,9 +176,9 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processMeterConfigStatsUpdated(final Iterable<MeterConfigStatsUpdated> data, final DeviceContext deviceContext) {
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
+        deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (final MeterConfigStatsUpdated meterConfigStatsUpdated : data) {
-            final NodeId nodeId = meterConfigStatsUpdated.getId();
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
             for (final MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
                 final MeterId meterId = meterConfigStats.getMeterId();
                 final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
@@ -197,12 +194,13 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data, final DeviceContext deviceContext) {
-        deleteAllKnownFlows(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+        deleteAllKnownFlows(deviceContext);
         writeFlowStatistics(data, deviceContext);
         deviceContext.submitTransaction();
     }
 
     public static void writeFlowStatistics(Iterable<FlowsStatisticsUpdate> data, DeviceContext deviceContext) {
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
@@ -213,19 +211,18 @@ public final class StatisticsGatheringUtils {
                 final FlowKey flowKey = new FlowKey(flowId);
                 flowBuilder.setKey(flowKey);
                 final TableKey tableKey = new TableKey(tableId);
-                final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(flowsStatistics.getId());
                 final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
             }
         }
     }
 
-    public static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
+    public static void deleteAllKnownFlows(final DeviceContext deviceContext) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
+            InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
             final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
             for (short i = 0; i < numOfTablesOnDevice; i++) {
-                final KeyedInstanceIdentifier<Table, TableKey> iiToTable
-                        = nodeIdent.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(i));
+                final KeyedInstanceIdentifier<Table, TableKey> iiToTable = flowCapableNodePath.child(Table.class, new TableKey(i));
                 final ReadTransaction readTx = deviceContext.getReadTransaction();
                 final CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
                 try {
@@ -245,9 +242,8 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) {
+        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
         for (final QueueStatisticsUpdate queueStatisticsUpdate : data) {
-            final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
-                    .child(Node.class, new NodeKey(queueStatisticsUpdate.getId()));
             for (final QueueIdAndStatisticsMap queueStat : queueStatisticsUpdate.getQueueIdAndStatisticsMap()) {
                 if (queueStat.getQueueId() != null) {
                     final FlowCapableNodeConnectorQueueStatistics statChild =
@@ -269,8 +265,8 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) {
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(flowTableStatisticsUpdate.getId());
 
             for (final FlowTableAndStatisticsMap tableStat : flowTableStatisticsUpdate.getFlowTableAndStatisticsMap()) {
                 final InstanceIdentifier<FlowTableStatistics> tStatIdent = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
@@ -283,9 +279,8 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceContext deviceContext) {
+        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
         for (final NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate : data) {
-            final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
-                    .child(Node.class, new NodeKey(nodeConnectorStatisticsUpdate.getId()));
             for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort : nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
                 final FlowCapableNodeConnectorStatistics stats = new FlowCapableNodeConnectorStatisticsBuilder(nConnectPort).build();
                 final NodeConnectorKey key = new NodeConnectorKey(nConnectPort.getNodeConnectorId());
@@ -302,9 +297,7 @@ public final class StatisticsGatheringUtils {
 
     private static void processMetersStatistics(final Iterable<MeterStatisticsUpdated> data,
                                                 final DeviceContext deviceContext) {
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-        deleteAllKnownMeters(deviceContext, fNodeIdent);
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final MeterStatisticsUpdated meterStatisticsUpdated : data) {
             for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
                 final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
@@ -328,10 +321,11 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) {
-        for (final GroupDescStatsUpdated groupDescStatsUpdated : data) {
-            final NodeId nodeId = groupDescStatsUpdated.getId();
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent =
+                deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        deleteAllKnownGroups(deviceContext, fNodeIdent);
 
+        for (final GroupDescStatsUpdated groupDescStatsUpdated : data) {
             for (final GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
                 final GroupId groupId = groupDescStats.getGroupId();
 
@@ -357,9 +351,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) {
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-        deleteAllKnownGroups(deviceContext, fNodeIdent);
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
 
@@ -375,9 +367,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static InstanceIdentifier<FlowCapableNode> getFlowCapableNodeInstanceIdentifier(final NodeId nodeId) {
-        final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
-                .create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        return nodeIdent.augmentation(FlowCapableNode.class);
+    private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(final DeviceContext deviceContext) {
+        return deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
     }
 }
