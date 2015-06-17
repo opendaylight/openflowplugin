@@ -1,0 +1,38 @@
+module cisco-extension-impl {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:cof:impl:config";
+    prefix "ciscoExt-cfg-impl";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import openflow-provider {prefix openflow-provider; revision-date 2014-03-26;}
+    import cisco-extension {prefix ciscoExt-provider;}
+
+    description
+        "openflow extension for cisco - config-impl";
+
+    revision "2014-10-10" {
+        description
+            "Initial revision";
+    }
+
+    identity cisco-extension-provider-impl {
+        base config:module-type;
+        config:provided-service ciscoExt-provider:cisco-extension-provider;
+        config:java-name-prefix ConfigurableCiscoExtensionProvider;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case cisco-extension-provider-impl {
+            when "/config:modules/config:module/config:type = 'cisco-extension-provider-impl'";
+
+            container openflow-plugin-provider {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity openflow-provider:openflow-provider;
+                    }
+                }
+            }
+        }
+    }
+}

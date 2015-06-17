@@ -1,0 +1,115 @@
+module cisco-action-low {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowjava:cof:action";
+    prefix "cisco-action";
+
+    import openflow-action {prefix ofaction;revision-date "2015-02-03";}
+    import ietf-inet-types {prefix inet;}
+    import ietf-yang-types {prefix yang;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description 
+        "Cisco openflow extensions of action.";
+
+    revision "2014-10-08" {
+        description "Initial revision";
+    }
+
+    
+    // action subtypes (for registration)    
+    identity cof-at-output-nh {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity cof-at-vrf {
+        base ofaction:experimenter-action-sub-type;
+    }
+
+    identity cof-action-mpls-lsp {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity cof-action-fcid {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity cof-action-netflow {
+        base ofaction:experimenter-action-sub-type;
+    }
+
+    // nextHop ----
+    grouping ofj-cof-action-output-nh-grouping {
+        container action-output-nh {
+        
+            leaf address-type {
+                type uint16;
+            }
+            leaf address-extra-type {
+                type uint16;
+            }
+            
+            leaf address {
+                type binary;
+            }
+            leaf address-extra {
+                type uint32;
+            }
+        }
+    }
+    
+    // vrf ----
+    grouping ofj-cof-action-vrf-grouping {
+        container action-vrf {
+            leaf vpn-type {
+                type uint16;
+            }
+            leaf vrf-extra {
+                type binary;
+            }
+        }
+    }
+
+    // mpls lsp
+    grouping ofj-cof-action-mpls-lsp-grouping {
+        container action-mpls-lsp {
+            leaf name {
+                type binary;
+                description "This field has to use padding.";
+            }
+        }
+    }
+
+    // fcid
+    grouping ofj-cof-action-fcid-grouping {
+        container action-fcid {
+            leaf fcid {
+                type uint8;
+            }
+        }
+    }
+    // netflow
+    grouping ofj-cof-action-netflow-grouping {
+        container action-netflow {
+            leaf netflow {
+                type empty;
+            }
+        }
+    }
+
+    augment "/ofaction:action-container/ofaction:action-choice" {
+        ext:augment-identifier "ofj-aug-cof-action";
+        case ofj-cof-action-output-nh {
+            uses ofj-cof-action-output-nh-grouping;
+        }
+        case ofj-cof-action-vrf {
+            uses ofj-cof-action-vrf-grouping;
+        }
+        case ofj-cof-action-mpls-lsp {
+            uses ofj-cof-action-mpls-lsp-grouping;
+        }
+        case ofj-cof-action-fcid {
+            uses ofj-cof-action-fcid-grouping;
+        }
+        case ofj-cof-action-netflow {
+            uses ofj-cof-action-netflow-grouping;
+        }
+    }
+}

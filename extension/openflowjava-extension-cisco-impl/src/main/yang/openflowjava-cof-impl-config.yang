@@ -1,0 +1,36 @@
+module openflowjava-cof-impl-config {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:impl:config";
+    prefix "openflowjava-cof";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import openflowjava-cof-api-config {prefix openflowjava-cof-api-config;revision-date 2014-10-08;}
+
+    description
+        "Cisco extensions in openflow library.";
+
+    revision "2014-10-08" {
+        description
+            "Initial revision";
+    }
+
+    identity openflowjava-extension-cisco {
+        base config:module-type;
+        config:java-name-prefix CiscoExtensionProvider;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case openflowjava-extension-cisco {
+            when "/config:modules/config:module/config:type = 'openflowjava-extension-cisco'";
+
+            container cisco-extension-codec-registrator {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity openflowjava-cof-api-config:cisco-extension-codec-registrator;
+                    }
+                }
+            }
+        }
+    }
+}
