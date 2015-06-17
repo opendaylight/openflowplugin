@@ -8,7 +8,9 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+
 import java.util.concurrent.Callable;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -105,6 +108,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // a given flow object is removed.
             builder.setTransactionUri(new Uri(provider.getNewTransactionId())).
                 setStrict(Boolean.TRUE);
+            LOG.info ("BUG-2657 : REMOVE flow with cookie : {} from Node {}",
+                    removeDataObj.getCookie().getValue().doubleValue(),
+                    nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue());
             provider.getSalFlowService().removeFlow(builder.build());
         }
     }
@@ -128,7 +134,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // a given flow object is updated.
             builder.setUpdatedFlow((new UpdatedFlowBuilder(update)).setStrict(Boolean.TRUE).build());
             builder.setOriginalFlow((new OriginalFlowBuilder(original)).setStrict(Boolean.TRUE).build());
-
+            LOG.info ("BUG-2657 : UPDATE flow with cookie : {} on Node {}",
+                    update.getCookie().getValue().doubleValue(),
+                    nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue());
             provider.getSalFlowService().updateFlow(builder.build());
         }
     }
@@ -146,6 +154,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             builder.setFlowRef(new FlowRef(identifier));
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+            LOG.info ("BUG-2657 : ADD flow with cookie : {} to Node {}",
+                    addDataObj.getCookie().getValue().doubleValue(),
+                    nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue());
             provider.getSalFlowService().addFlow(builder.build());
         }
     }
