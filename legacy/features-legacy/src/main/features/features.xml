@@ -22,6 +22,6 @@
       <feature version="${mdsal.version}">odl-mdsal-broker</feature>
       <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
       <feature version="${sal.version}">odl-adsal-all</feature>
-      <bundle>mvn:org.opendaylight.openflowplugin.legacy/sal-compatibility/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.legacy/sal-compatibility/{{VERSION}}</bundle>
    </feature>
 </features>
