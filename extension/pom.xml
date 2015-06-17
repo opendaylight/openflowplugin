@@ -18,6 +18,9 @@
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
         <module>openflowplugin-extension-nicira-config</module>
+        <module>openflowplugin-extension-cisco</module>
+        <module>openflowjava-extension-cisco-api</module>
+        <module>openflowjava-extension-cisco-impl</module>
         <module>features</module>
         <module>test-extension</module>
     </modules>
