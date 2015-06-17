@@ -88,11 +88,11 @@ public class FlowConvertor {
     /**
      * Default idle timeout
      */
-    public static final Integer DEFAULT_IDLE_TIMEOUT = 5 * 60;
+    public static final Integer DEFAULT_IDLE_TIMEOUT = 0;
     /**
      * Default hard timeout
      */
-    public static final Integer DEFAULT_HARD_TIMEOUT = 10 * 60;
+    public static final Integer DEFAULT_HARD_TIMEOUT = 0;
     /**
      * Default priority
      */

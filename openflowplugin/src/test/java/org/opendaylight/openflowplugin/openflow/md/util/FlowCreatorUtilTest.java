@@ -84,8 +84,8 @@ public class FlowCreatorUtilTest {
         final Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
 
         final Integer defPri = Integer.valueOf(0x8000);
-        final Integer defIdle = Integer.valueOf(300);
-        final Integer defHard = Integer.valueOf(600);
+        final Integer defIdle = Integer.valueOf(0);
+        final Integer defHard = Integer.valueOf(0);
         final FlowModFlags defFlags = FlowModFlags.getDefaultInstance("sENDFLOWREM");
         final FlowModFlags flags = new FlowModFlags(false, true, false, true, false);
         final FlowCookie defCookie = new FlowCookie(BigInteger.ZERO);
