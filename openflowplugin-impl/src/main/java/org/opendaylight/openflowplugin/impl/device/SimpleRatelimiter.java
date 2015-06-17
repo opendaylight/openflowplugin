@@ -13,9 +13,9 @@ import javax.annotation.concurrent.GuardedBy;
 
 abstract class SimpleRatelimiter {
     private final AtomicInteger counter = new AtomicInteger();
-    private final int lowWatermark;
+    private int lowWatermark;
     private int lowWatermarkEffective;
-    private final int highWatermark;
+    private int highWatermark;
     @GuardedBy("counter")
     private volatile boolean limited;
 
@@ -86,5 +86,12 @@ abstract class SimpleRatelimiter {
 
     int getOccupiedPermits() {
         return counter.get();
+    }
+
+    void changeWaterMarks(final int newLowWatermark, final int newHighWatermark) {
+        synchronized (counter) {
+            lowWatermark = newLowWatermark;
+            highWatermark = newHighWatermark;
+        }
     }
 }

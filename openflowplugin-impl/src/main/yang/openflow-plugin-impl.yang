@@ -83,6 +83,10 @@ module openflow-plugin-provider-impl {
                 type boolean;
                 default false;
             }
+            leaf global-notification-quota {
+                type uint32;
+                default 131072;
+            }
         }
 
     }

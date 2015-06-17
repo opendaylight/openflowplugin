@@ -8,18 +8,19 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -107,6 +108,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
     private static final long TICK_DURATION = 10; // 0.5 sec.
+    private final long globalNotificationQuota;
     private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
@@ -117,7 +119,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
 
-    private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
+    private final Set<DeviceContext> deviceContexts = Sets.newConcurrentHashSet();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
@@ -127,7 +129,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
-                             final boolean switchFeaturesMandatory) {
+                             final boolean switchFeaturesMandatory,
+                             final long globalNotificationQuota) {
+        this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
@@ -227,6 +231,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
+        deviceContexts.add(deviceContext);
+
+        updatePacketInRateLimiters();
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionAdapter, deviceContext);
@@ -285,6 +292,22 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 LOG.trace("more info in exploration failure..", t);
             }
         });
+    }
+
+    private void updatePacketInRateLimiters() {
+        synchronized (deviceContexts) {
+            final int deviceContextsSize = deviceContexts.size();
+            if (deviceContextsSize > 0) {
+                long freshNotificationLimit = globalNotificationQuota / deviceContextsSize;
+                if (freshNotificationLimit < 100) {
+                    freshNotificationLimit = 100;
+                }
+                LOG.debug("fresh notification limit = {}", freshNotificationLimit);
+                for (DeviceContext deviceContext : deviceContexts) {
+                    deviceContext.updatePacketInRateLimit(freshNotificationLimit);
+                }
+            }
+        }
     }
 
     private void deviceCtxLevelUp(final DeviceContext deviceContext) {
@@ -607,6 +630,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         deviceContexts.remove(deviceContext);
+        updatePacketInRateLimiters();
     }
 
     @Override
