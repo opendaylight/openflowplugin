@@ -8,6 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import com.google.common.collect.Iterables;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
+import java.util.HashMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,26 +39,47 @@ import org.slf4j.LoggerFactory;
  * and update LLDPSpeaker and topology.
  */
 public class NodeConnectorInventoryEventTranslator implements DataChangeListener, AutoCloseable {
+    /**
+     *
+     */
+    private static final InstanceIdentifier<State> II_TO_STATE 
+        = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class)
+            .child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnector.class)
+            .child(State.class)
+            .build();
+
+    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR
+        = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class)
+            .child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnector.class)
+            .build();
+
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
 
     private final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    private final ListenerRegistration<DataChangeListener> listenerOnPortStateRegistration;
     private final Set<NodeConnectorEventsObserver> observers;
+    private final Map<InstanceIdentifier<?>,FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors = new HashMap<>();
 
     public NodeConnectorInventoryEventTranslator(DataBroker dataBroker, NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
         dataChangeListenerRegistration = dataBroker.registerDataChangeListener(
                 LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.builder(Nodes.class)
-                        .child(Node.class)
-                        .child(NodeConnector.class)
-                        .augmentation(FlowCapableNodeConnector.class)
-                        .build(),
+                II_TO_FLOW_CAPABLE_NODE_CONNECTOR,
                 this, AsyncDataBroker.DataChangeScope.BASE);
+        listenerOnPortStateRegistration = dataBroker.registerDataChangeListener(
+                LogicalDatastoreType.OPERATIONAL,
+                II_TO_STATE,
+                this, AsyncDataBroker.DataChangeScope.SUBTREE);
     }
 
     @Override
     public void close() {
         dataChangeListenerRegistration.close();
+        listenerOnPortStateRegistration.close();
     }
 
     @Override
@@ -65,10 +91,13 @@ public class NodeConnectorInventoryEventTranslator implements DataChangeListener
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
             InstanceIdentifier<NodeConnector> nodeConnectorInstanceId =
                     entry.getKey().firstIdentifierOf(NodeConnector.class);
-
-            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) entry.getValue();
-            if (!isPortDown(flowConnector)) {
-                notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
+            if (compareIITail(entry.getKey(),II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
+                FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) entry.getValue();
+                if (!isPortDown(flowConnector)) {
+                    notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
+                } else {
+                    iiToDownFlowCapableNodeConnectors.put(nodeConnectorInstanceId, flowConnector);
+                }
             }
         }
 
@@ -76,19 +105,44 @@ public class NodeConnectorInventoryEventTranslator implements DataChangeListener
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
             InstanceIdentifier<NodeConnector> nodeConnectorInstanceId =
                     entry.getKey().firstIdentifierOf(NodeConnector.class);
-            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) entry.getValue();
-            if (isPortDown(flowConnector)) {
-                notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
-            } else {
-                notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
+            if (compareIITail(entry.getKey(),II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
+                FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) entry.getValue();
+                if (isPortDown(flowConnector)) {
+                    notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
+                } else {
+                    notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
+                }
+            } else if (compareIITail(entry.getKey(),II_TO_STATE)) {
+                FlowCapableNodeConnector flowNodeConnector = iiToDownFlowCapableNodeConnectors.get(nodeConnectorInstanceId);
+                if (flowNodeConnector != null) {
+                    State state = (State)entry.getValue();
+                    if (!state.isLinkDown()) {
+                        FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder = new FlowCapableNodeConnectorBuilder(flowNodeConnector);
+                        flowCapableNodeConnectorBuilder.setState(state);
+                        notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowCapableNodeConnectorBuilder.build());
+                        iiToDownFlowCapableNodeConnectors.remove(nodeConnectorInstanceId);
+                    }
+                }
             }
         }
 
         // Iterate over removed node connectors
         for (InstanceIdentifier<?> removed : change.getRemovedPaths()) {
-            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = removed.firstIdentifierOf(NodeConnector.class);
-            notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
+            if (compareIITail(removed,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
+                InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = removed.firstIdentifierOf(NodeConnector.class);
+                notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
+            }
         }
+    }
+
+    /**
+     * @param key
+     * @param iiToFlowCapableNodeConnector
+     * @return
+     */
+    private boolean compareIITail(InstanceIdentifier<?> ii1,
+            InstanceIdentifier<?> ii2) {
+        return Iterables.getLast(ii1.getPathArguments()).equals(Iterables.getLast(ii2.getPathArguments()));
     }
 
     private static boolean isPortDown(FlowCapableNodeConnector flowCapableNodeConnector) {
