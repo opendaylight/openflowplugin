@@ -143,6 +143,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Type;
@@ -163,6 +164,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.dst._case.EthDstBuilder;
@@ -173,6 +175,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.type._case.Icmpv6TypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
@@ -722,7 +725,7 @@ public final class ActionConvertor {
 
             InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
             int port = settpsrcaction.getPort().getValue().intValue();
-            int type = 0x0f & port;
+            int type = 0xff & port;
 
             switch (protocol) {
                 case ICMP:
@@ -793,11 +796,11 @@ public final class ActionConvertor {
             matchBuilder.setOxmClass(OpenflowBasicClass.class);
             matchBuilder.setHasMask(false);
             int port = settpdstaction.getPort().getValue().intValue();
-            int code = 0x0f & port;
+            int code = 0xff & port;
 
             switch (protocol) {
                 case ICMP:
-                    matchBuilder.setOxmMatchField(Icmpv4Type.class);
+                    matchBuilder.setOxmMatchField(Icmpv4Code.class);
                     Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
                     Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
                     icmpv4CodeBuilder.setIcmpv4Code((short) code);
@@ -822,11 +825,11 @@ public final class ActionConvertor {
                     break;
                 case UDP:
                     matchBuilder.setOxmMatchField(UdpDst.class);
-                    UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
-                    UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
-                    udpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
-                    udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
-                    matchBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
+                    UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
+                    UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
+                    udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
+                    udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
+                    matchBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
                     break;
                 default:
                     LOG.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);
