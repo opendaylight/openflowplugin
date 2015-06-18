@@ -36,6 +36,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorInventoryEventTranslatorTest {
     static InstanceIdentifier<NodeConnector> id = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
+    static InstanceIdentifier<FlowCapableNodeConnector> iiToConnector = id.augmentation(FlowCapableNodeConnector.class);
     static FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector().build();
 
     @Mock DataBroker dataBroker;
@@ -48,6 +49,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     @Before
     public void setUp() {
+
         when(dataBroker.registerDataChangeListener(
                 any(LogicalDatastoreType.class),
                 any(InstanceIdentifier.class),
@@ -64,7 +66,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorCreation() {
         // Setup dataChangedEvent to mock new port creation in inventory
-        dataChangedEvent.created.put(id, fcnc);
+        dataChangedEvent.created.put(iiToConnector, fcnc);
 
         // Invoke NodeConnectorInventoryEventTranslator and check result
         translator.onDataChanged(dataChangedEvent);
@@ -111,7 +113,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
 
         // Setup dataChangedEvent to mock link down
-        dataChangedEvent.updated.put(id, fcnc);
+        dataChangedEvent.updated.put(iiToConnector, fcnc);
 
         // Invoke NodeConnectorInventoryEventTranslator and check result
         translator.onDataChanged(dataChangedEvent);
@@ -128,7 +130,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
 
         // Setup dataChangedEvent to mock link down and administrative port down
-        dataChangedEvent.updated.put(id, fcnc);
+        dataChangedEvent.updated.put(iiToConnector, fcnc);
 
         // Invoke NodeConnectorInventoryEventTranslator and check result
         translator.onDataChanged(dataChangedEvent);
@@ -143,7 +145,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorUpdateToUp() {
         // Setup dataChangedEvent to mock link up and administrative port up
-        dataChangedEvent.updated.put(id, fcnc);
+        dataChangedEvent.updated.put(iiToConnector, fcnc);
 
         // Invoke NodeConnectorInventoryEventTranslator and check result
         translator.onDataChanged(dataChangedEvent);
@@ -157,7 +159,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorRemoval() {
         // Setup dataChangedEvent to mock node connector removal
-        dataChangedEvent.removed.add(id);
+        dataChangedEvent.removed.add(iiToConnector);
 
         // Invoke NodeConnectorInventoryEventTranslator and check result
         translator.onDataChanged(dataChangedEvent);
@@ -173,10 +175,11 @@ public class NodeConnectorInventoryEventTranslatorTest {
     public  void testMultipleObserversNotified() throws Exception {
         // Create prerequisites
         InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
+        InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
 
         // Setup dataChangedEvent to mock port creation and removal
-        dataChangedEvent.created.put(id, fcnc);
-        dataChangedEvent.removed.add(id2);
+        dataChangedEvent.created.put(iiToConnector, fcnc);
+        dataChangedEvent.removed.add(iiToConnector2);
 
         // Invoke onDataChanged and check that both observers notified
         translator.onDataChanged(dataChangedEvent);
@@ -197,7 +200,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         translator.close();
 
         // Verify that ListenerRegistration to DOM events
-        verify(dataChangeListenerRegistration).close();
+        verify(dataChangeListenerRegistration, times(2)).close();
     }
 
     static class MockDataChangedEvent implements AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> {
