@@ -10,10 +10,12 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.Futures;
+
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -384,6 +386,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     protected void checkState(CONDUCTOR_STATE expectedState) {
         if (!conductorState.equals(expectedState)) {
+            LOG.warn("State of connection to switch {} is not correct, "
+                    + "terminating the connection",connectionAdapter.getRemoteAddress() );
             throw new IllegalStateException("Expected state: " + expectedState
                     + ", actual state:" + conductorState);
         }
@@ -575,11 +579,32 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void close() {
         conductorState = CONDUCTOR_STATE.RIP;
+        if(handshakeContext != null){
+            try {
+                handshakeContext.close();
+            } catch (Exception e) {
+                LOG.warn("Closing handshake context failed: {}", e.getMessage());
+                LOG.debug("Detail in hanshake context close:", e);
+            }
+        } else {
+            //This condition will occure when Old Helium openflowplugin implementation will be used.
+            shutdownPoolPolitely();
+        }
+    }
+
+    private void shutdownPoolPolitely() {
+        LOG.debug("terminating handshake pool");
+        hsPool.shutdown();
         try {
-            handshakeContext.close();
-        } catch (Exception e) {
-            LOG.warn("Closing handshake context failed: {}", e.getMessage());
-            LOG.debug("Detail in hanshake context close:", e);
+            hsPool.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.info("Error while awaiting termination on pool. Will use shutdownNow method.");
+        } finally {
+            hsPool.purge();
+            if (! hsPool.isTerminated()) {
+                hsPool.shutdownNow();
+            }
+            LOG.debug("pool is terminated: {}", hsPool.isTerminated());
         }
     }
 
