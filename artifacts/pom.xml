@@ -243,6 +243,18 @@
                 <classifier>features</classifier>
                 <type>xml</type>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>bulk-o-matic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>bulk-o-matic</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

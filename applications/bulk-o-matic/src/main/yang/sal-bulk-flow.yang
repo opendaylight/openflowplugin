@@ -1,0 +1,70 @@
+module sal-bulk-flow {
+    namespace "urn:opendaylight:bulk-flow:service";
+    prefix bflow;
+
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
+    import flow-node-inventory {prefix flow-inv; revision-date "2013-08-19";}
+
+    description "Openflow bulk flow management.";
+
+    revision "2015-06-08" {
+        description "Initial revision of bulk flow service";
+    }
+
+
+    grouping bulk-flow-base-content-grouping {
+        uses inv:node-context-ref;
+        uses types:flow;
+    }
+
+    grouping bulk-flow-list-grouping {
+        description "Suitable for rpc way";
+        list bulk-flow-item {
+            uses bulk-flow-base-content-grouping;
+        }
+    }
+
+    grouping bulk-flow-ds-list-grouping {
+        description "Suitable for dataStore way - includes flowId";
+        list bulk-flow-ds-item {
+            uses bulk-flow-base-content-grouping;
+            leaf flow-id {
+                mandatory true;
+                type flow-inv:flow-id;
+            }
+        }
+    }
+
+
+    rpc add-flows-rpc {
+        description "Adding multiple flows to openflow device via direct rpc invocation.";
+        input {
+            uses bulk-flow-list-grouping;
+        }
+    }
+    rpc remove-flows-rpc {
+        description "Removing multiple flows from openflow device via direct rpc invocation.";
+        input {
+            uses bulk-flow-list-grouping;
+        }
+    }
+
+    rpc add-flows-ds {
+        description "Adding multiple flows to openflow device via dataStore.";
+        input {
+            leaf always-create-parents {
+                description "true if all items must take care of parent structure";
+                type boolean;
+                default false;
+            }
+            uses bulk-flow-ds-list-grouping;
+        }
+    }
+    rpc remove-flows-ds {
+        description "Removing multiple flows from openflow device via dataStore.";
+        input {
+            uses bulk-flow-ds-list-grouping;
+        }
+    }
+}
