@@ -10,12 +10,10 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.Futures;
-
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -124,11 +122,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * @param connectionAdapter
-     * @param ingressMaxQueueSize
-     *            ingress queue limit (blocking)
+     * @param ingressMaxQueueSize ingress queue limit (blocking)
      */
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter,
-            int ingressMaxQueueSize) {
+                                   int ingressMaxQueueSize) {
         this.connectionAdapter = connectionAdapter;
         this.ingressMaxQueueSize = ingressMaxQueueSize;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
@@ -147,7 +144,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit,
                 handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), "OFHandshake-"
-                        + conductorId);
+                + conductorId);
 
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
@@ -165,8 +162,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /**
-     * @param errorHandler
-     *            the errorHandler to set
+     * @param errorHandler the errorHandler to set
      */
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
@@ -210,8 +206,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * @param message
-     * @param queueType
-     *            enqueue type
+     * @param queueType enqueue type
      */
     private void enqueueMessage(OfHeader message, QueueType queueType) {
         queue.push(message, this, queueType);
@@ -275,8 +270,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
-        processPortStatusMsg(message);
-        enqueueMessage(message);
+        try {
+            processPortStatusMsg(message);
+        } finally {
+            enqueueMessage(message);
+        }
     }
 
     protected void processPortStatusMsg(PortStatus msg) {
@@ -298,9 +296,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     "can't get bandwidth info from port: {}, aborting port update",
                     msg.toString());
         } else {
-            this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
-            this.getSessionContext().getPortsBandwidth()
-                    .put(portNumber, portBandwidth);
+            if (null != this.sessionContext) {
+                //FIXME these two properties are never used in code
+                this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
+                this.getSessionContext().getPortsBandwidth()
+                        .put(portNumber, portBandwidth);
+            } else {
+                LOG.warn("Trying to process update port message before session context was created.");
+            }
         }
     }
 
@@ -368,8 +371,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /**
-     * @param conductorState
-     *            the connectionState to set
+     * @param conductorState the connectionState to set
      */
     @Override
     public void setConductorState(CONDUCTOR_STATE conductorState) {
@@ -387,7 +389,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     protected void checkState(CONDUCTOR_STATE expectedState) {
         if (!conductorState.equals(expectedState)) {
             LOG.warn("State of connection to switch {} is not correct, "
-                    + "terminating the connection",connectionAdapter.getRemoteAddress() );
+                    + "terminating the connection", connectionAdapter.getRemoteAddress());
             throw new IllegalStateException("Expected state: " + expectedState
                     + ", actual state:" + conductorState);
         }
@@ -486,7 +488,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param negotiatedVersion
      */
     protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
-            Short negotiatedVersion) {
+                                      Short negotiatedVersion) {
         version = negotiatedVersion;
         if (version == OFConstants.OFP_VERSION_1_0) {
             // Because the GetFeaturesOutput contains information about the port
@@ -564,8 +566,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /**
-     * @param isBitmapNegotiationEnable
-     *            the isBitmapNegotiationEnable to set
+     * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
      */
     public void setBitmapNegotiationEnable(boolean isBitmapNegotiationEnable) {
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
@@ -579,7 +580,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void close() {
         conductorState = CONDUCTOR_STATE.RIP;
-        if(handshakeContext != null){
+        if (handshakeContext != null) {
             try {
                 handshakeContext.close();
             } catch (Exception e) {
@@ -593,7 +594,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     private void shutdownPoolPolitely() {
-        LOG.debug("Terminating handshake pool for node {}",connectionAdapter.getRemoteAddress());
+        LOG.debug("Terminating handshake pool for node {}", connectionAdapter.getRemoteAddress());
         hsPool.shutdown();
         try {
             hsPool.awaitTermination(1, TimeUnit.SECONDS);
@@ -601,7 +602,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             LOG.debug("Error while awaiting termination of pool. Will force shutdown now.");
         } finally {
             hsPool.purge();
-            if (! hsPool.isTerminated()) {
+            if (!hsPool.isTerminated()) {
                 hsPool.shutdownNow();
             }
             LOG.debug("is handshake pool for node {} is terminated : {}",
