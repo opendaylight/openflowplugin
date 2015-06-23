@@ -119,16 +119,6 @@
 
             <!-- thirdparty -->
             <dependency>
-                <groupId>org.openexi</groupId>
-                <artifactId>nagasena</artifactId>
-                <version>${exi.nagasena.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openexi</groupId>
-                <artifactId>nagasena-rta</artifactId>
-                <version>${exi.nagasena.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>1.4.01</version>
