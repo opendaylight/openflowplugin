@@ -38,7 +38,6 @@
         <build.helper.version>1.8</build.helper.version>
         <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
         <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-        <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
         <controller.distribution.version>0.2.2-SNAPSHOT</controller.distribution.version>
         <features.test.version>1.5.2-SNAPSHOT</features.test.version>
 
@@ -118,16 +117,6 @@
             </dependency>
 
             <!-- thirdparty -->
-            <dependency>
-                <groupId>org.openexi</groupId>
-                <artifactId>nagasena</artifactId>
-                <version>${exi.nagasena.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openexi</groupId>
-                <artifactId>nagasena-rta</artifactId>
-                <version>${exi.nagasena.version}</version>
-            </dependency>
             <dependency>
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
