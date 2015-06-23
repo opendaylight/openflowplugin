@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import static org.junit.Assert.assertNotNull;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,7 +88,7 @@ public class ConnectionConductorImplTest {
 
     protected QueueProcessorLightImpl queueProcessor;
 
-    private PopListener<DataObject> popListener;
+    private PopListenerCountingImpl<DataObject> popListener;
 
     private int experimenterMessageCounter;
     private int packetinMessageCounter;
@@ -103,6 +106,7 @@ public class ConnectionConductorImplTest {
     private MessageSpy<DataContainer> messageSpy;
     @Mock
     HandshakeContext handshakeContext;
+    private ErrorMessageService objErms;
 
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -204,7 +208,7 @@ public class ConnectionConductorImplTest {
             if (eventPlan.size() > 0) {
                 LOG.debug("eventPlan size: " + eventPlan.size());
                 for (SwitchTestEvent event : eventPlan) {
-                    LOG.debug(" # EVENT:: " + event.toString());
+                    LOG.debug(" # EVENT:: " + event);
                 }
             }
         }
@@ -381,26 +385,23 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnFlowRemovedMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objFms = new FlowRemovedMessageService();
+        FlowRemovedMessageService objFms = new FlowRemovedMessageService();
         controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
 
         simulateV13PostHandshakeState(connectionConductor);
+        objFms.resetLatch(2);
 
         // Now send Flow Removed messages
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setXid(1L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
-        synchronized (popListener) {
             LOG.debug("about to wait for popListener");
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, flowremovedMessageCounter);
         builder1.setXid(2L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
+
+        flushMessageProcessing();
+        Assert.assertTrue(objFms.await(maxProcessingTimeout, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, flowremovedMessageCounter);
     }
 
@@ -424,7 +425,7 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPacketInMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objPms = new PacketInMessageService();
+        PacketInMessageService objPms = new PacketInMessageService();
         controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
 
         simulateV13PostHandshakeState(connectionConductor);
@@ -434,15 +435,11 @@ public class ConnectionConductorImplTest {
         builder1.setVersion((short) 4);
         builder1.setBufferId((long) 1);
         connectionConductor.onPacketInMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, packetinMessageCounter);
         builder1.setBufferId((long) 2);
         connectionConductor.onPacketInMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
+
+        flushMessageProcessing();
+        Assert.assertTrue(objPms.await(maxProcessingTimeout, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, packetinMessageCounter);
     }
 
@@ -455,7 +452,7 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objPSms = new PortStatusMessageService();
+        PortStatusMessageService objPSms = new PortStatusMessageService();
         controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
 
         simulateV13PostHandshakeState(connectionConductor);
@@ -465,23 +462,26 @@ public class ConnectionConductorImplTest {
         builder1.setVersion((short) 4);
         PortFeatures features = new PortFeatures(true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRADD).setCurrentFeatures(features);
+        objPSms.resetLatch(3);
+        LOG.debug("sending port message");
         connectionConductor.onPortStatusMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, portstatusAddMessageCounter);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRMODIFY).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, portstatusModifyMessageCounter);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRDELETE).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
+
+        flushMessageProcessing();
+        Assert.assertTrue(objPSms.await(maxProcessingTimeout, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(1, portstatusModifyMessageCounter);
+        Assert.assertEquals(1, portstatusAddMessageCounter);
         Assert.assertEquals(1, portstatusDeleteMessageCounter);
+    }
+
+    private void flushMessageProcessing() throws InterruptedException {
+        // make sure that harvester sleeps deeply
+        Thread.sleep(maxProcessingTimeout);
+        // flushing messages
+        queueProcessor.getHarvesterHandle().ping();
     }
 
     /**
@@ -538,6 +538,22 @@ public class ConnectionConductorImplTest {
         return capabilities;
     }
 
+    public abstract class ProcessingLatchService {
+        private CountDownLatch processingLatch = new CountDownLatch(0);
+
+        public void resetLatch(int passAmount) {
+            processingLatch = new CountDownLatch(passAmount);
+        }
+
+        protected void countDown() {
+            processingLatch.countDown();
+        }
+
+        public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+            return processingLatch.await(timeout, unit);
+        }
+    }
+
     public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
         public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
@@ -547,25 +563,27 @@ public class ConnectionConductorImplTest {
         }
     }
 
-    public class PacketInMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
+    public class PacketInMessageService extends ProcessingLatchService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
         public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in PacketIn Service");
             ConnectionConductorImplTest.this.incrPacketinMessageCounter();
+            countDown();
             return null;
         }
     }
 
-    public class FlowRemovedMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
+    public class FlowRemovedMessageService extends ProcessingLatchService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
         public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
             ConnectionConductorImplTest.this.incrFlowremovedMessageCounter();
+            countDown();
             return null;
         }
     }
 
-    public class PortStatusMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
+    public class PortStatusMessageService extends ProcessingLatchService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
         public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in PortStatus Service");
@@ -576,15 +594,17 @@ public class ConnectionConductorImplTest {
             } else if (((PortStatusMessage) msg).getReason().equals(PortReason.OFPPRMODIFY)) {
                 ConnectionConductorImplTest.this.incrPortstatusModifyMessageCounter();
             }
+            countDown();
             return null;
         }
     }
 
-    public class ErrorMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
+    public class ErrorMessageService extends ProcessingLatchService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
         public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sw, final OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrErrorMessageCounter();
+            countDown();
             return null;
         }
     }
@@ -599,21 +619,19 @@ public class ConnectionConductorImplTest {
     @Test
     public void testOnErrorMessage() throws InterruptedException {
         simulateV13PostHandshakeState(connectionConductor);
+        final int messageAmount = 2;
 
+        objErms.resetLatch(messageAmount);
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setCode(100);
         connectionConductor.onErrorMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, errorMessageCounter);
         builder1.setCode(200);
         connectionConductor.onErrorMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(2, errorMessageCounter);
+
+        flushMessageProcessing();
+        Assert.assertTrue(objErms.await(maxProcessingTimeout, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(messageAmount, errorMessageCounter);
     }
 
     /**
@@ -632,7 +650,7 @@ public class ConnectionConductorImplTest {
         existingValues.add(objEms);
         tKey = new TranslatorKey(4, ExperimenterMessage.class.getName());
         translatorMapping.put(tKey, existingValues);
-        IMDMessageTranslator<OfHeader, List<DataObject>> objErms = new ErrorMessageService();
+        objErms = new ErrorMessageService();
         existingValues.add(objErms);
         tKey = new TranslatorKey(4, ErrorMessage.class.getName());
         translatorMapping.put(tKey, existingValues);
@@ -708,5 +726,6 @@ public class ConnectionConductorImplTest {
     private static void simulateV13PostHandshakeState(final ConnectionConductorImpl conductor) {
         GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
         conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);
+        LOG.debug("simulating post handshake event done");
     }
 }
