@@ -25,6 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public interface ConnectionContext {
 
     /**
+     * @param handshakeContext corresponding handshake context used upon this connection
+     */
+    void setHandshakeContext(HandshakeContext handshakeContext);
+
+    /**
      * distinguished connection states
      */
     enum CONNECTION_STATE {

@@ -60,6 +60,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         LOG.trace("prepare handshake context");
         HandshakeContext handshakeContext = new HandshakeContextImpl(handshakePool, handshakeManager);
         handshakeListener.setHandshakeContext(handshakeContext);
+        connectionContext.setHandshakeContext(handshakeContext);
 
         LOG.trace("prepare connection listeners");
         final ConnectionReadyListener connectionReadyListener = new ConnectionReadyListenerImpl(
