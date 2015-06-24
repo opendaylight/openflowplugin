@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
@@ -34,6 +35,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
+    private HandshakeContext handshakeContext;
 
     /**
      * @param connectionAdapter
@@ -100,12 +102,26 @@ public class ConnectionContextImpl implements ConnectionContext {
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         unregisterOutboundQueue();
+        closeHandshakeContext();
+
         if (getConnectionAdapter().isAlive()) {
             getConnectionAdapter().disconnect();
         }
 
         if (propagate) {
             propagateDeviceDisconnectedEvent();
+        }
+    }
+
+    private void closeHandshakeContext() {
+        if (handshakeContext != null) {
+            try {
+                handshakeContext.close();
+            } catch (Exception e) {
+                LOG.info("handshake context closing failed: ", e);
+            } finally {
+                handshakeContext = null;
+            }
         }
     }
 
@@ -132,7 +148,7 @@ public class ConnectionContextImpl implements ConnectionContext {
                 getConnectionState());
 
         unregisterOutboundQueue();
-
+        closeHandshakeContext();
         propagateDeviceDisconnectedEvent();
     }
 
@@ -170,5 +186,10 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void changeStateToWorking() {
         connectionState = CONNECTION_STATE.WORKING;
+    }
+
+    @Override
+    public void setHandshakeContext(HandshakeContext handshakeContext) {
+        this.handshakeContext = handshakeContext;
     }
 }
