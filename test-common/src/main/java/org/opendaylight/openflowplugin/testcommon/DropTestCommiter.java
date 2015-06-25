@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -121,6 +122,11 @@ public class DropTestCommiter extends AbstractDropTest {
         transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
         transaction.submit();
         LOG.debug("onPacketReceived - About to write flow commited");
+    }
+
+    @Override
+    protected void processBulkPackets(final InstanceIdentifier<Node> node, final List<MatchInstructionWrapper> instructionWrappers) {
+        //noop
     }
 
     @Override

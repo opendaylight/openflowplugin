@@ -13,11 +13,13 @@ import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServi
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalFlowBulkServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalGroupServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalMeterServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.SalFlowBulkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -35,6 +37,7 @@ public class MdSalRegistratorUtils {
     }
 
     public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
+        rpcContext.registerRpcServiceImplementation(SalFlowBulkService.class, new SalFlowBulkServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors

@@ -43,6 +43,33 @@ module packet-processing {
     	}
     }
 
+    grouping packet-received-body {
+        	leaf connection-cookie {
+                type connection-cookie;
+            }
+
+            leaf flow-cookie {
+                type flow-type:flow-cookie;
+            }
+
+            leaf table-id {
+            	type table-type:table-id;
+            }
+
+            leaf packet-in-reason {
+    	    	type identityref {
+    	    		base packet-in-reason;
+    	    	}
+    	   	}
+
+            container match {
+            		uses match-type:match;
+            }
+
+            uses raw-packet;
+
+    }
+
     identity packet-in-reason {
     	description "Base identity for all the available packet in reasons."; 
     }
@@ -64,30 +91,15 @@ module packet-processing {
 
     notification packet-received {
         description "Delivery of incoming packet wrapped in openflow structure.";
-    	leaf connection-cookie {
-            type connection-cookie;
-        }
-        
-        leaf flow-cookie {
-            type flow-type:flow-cookie;
-        }
-        
-        leaf table-id {
-        	type table-type:table-id;
-        }
-        
-        leaf packet-in-reason {
-	    	type identityref {
-	    		base packet-in-reason;
-	    	}
-	   	}
-        
-        container match {
-        		uses match-type:match;
-        }
-        
-        uses raw-packet;
+        uses packet-received-body;
     }
+    notification bulk-packet-received {
+        description "Delivery of incoming packets wrapped in openflow structure.";
+        list packets-received {
+            uses packet-received-body;
+        }
+    }
+
 
     rpc transmit-packet {
         description "Sending packet out through openflow device.";

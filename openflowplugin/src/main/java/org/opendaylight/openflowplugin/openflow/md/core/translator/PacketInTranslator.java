@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                 if (message.getMatch() != null && message.getMatch().getMatchEntry() != null) {
                     List<MatchEntry> entries = message.getMatch().getMatchEntry();
                     for (MatchEntry entry : entries) {
-                        if(InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
+                        if (InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
                             InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
                             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
                             if (inPort != null) {
@@ -101,14 +101,14 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(), dpid, ofVersion).build();
                     MatchBuilder matchBuilder = new MatchBuilder(match);
 
-                    AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+                    AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(
                                     message.getMatch().getMatchEntry(), ofVersion, MatchPath.PACKETRECEIVED_MATCH);
                     if (matchExtensionWrap != null) {
                         matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
                     }
 
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = matchBuilder.build();
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match packetInMatch = matchBuilder.build();
                     pktInBuilder.setMatch(packetInMatch);
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                     pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));

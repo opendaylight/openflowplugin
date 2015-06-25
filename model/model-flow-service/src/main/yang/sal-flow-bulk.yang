@@ -1,0 +1,64 @@
+module sal-flow-bulk {
+    namespace "urn:opendaylight:bulk:flow:service";
+    prefix bulk-flow;
+
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
+    import opendaylight-table-types {prefix table-type;revision-date "2013-10-26";}
+    import opendaylight-match-types {prefix match-type;revision-date "2013-10-26";}
+    import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+
+
+
+    description "Openflow bulk flow management.";
+
+    revision "2015-06-23" {
+        description "Initial revision of bulked flow service";
+    }
+    typedef flow-table-ref {
+        description "Openflow table identifier";
+        type instance-identifier;
+    }
+    typedef connection-cookie {
+        description "Openflow connection identifier. Outgoing packets should use the same connection they came in.";
+        type uint32;
+    }
+
+    identity packet-in-reason {
+    	description "Base identity for all the available packet in reasons.";
+    }
+
+    grouping node-flow {
+        description "Top openflow flow structure suitable for rpc input (contains node-context).";
+         leaf flow-ref {
+            type types:flow-ref;
+         }
+        uses types:flow;
+    }
+
+    grouping raw-packet {
+        description "Basic packet structure.";
+    	leaf ingress {
+    		type inv:node-connector-ref;
+    	}
+        leaf payload {
+    		type binary;
+    	}
+    }
+
+    rpc add-flows {
+        description "Adding number of flows to openflow device.";
+        input {
+            list flows {
+                uses node-flow;
+             }
+             uses "inv:node-context-ref";
+        }
+        output {
+            uses tr:transaction-aware;
+        }
+    }
+
+
+}

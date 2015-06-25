@@ -8,7 +8,9 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,8 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.bulk.packet.received.PacketsReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +84,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_REJECTED = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "runablesRejected");
     protected volatile int runablesRejected;
+
 
     public final DropTestStats getStats() {
         return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess, this.runablesExecuted, this.runablesRejected);
@@ -123,6 +128,27 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         RUNABLES_REJECTED.incrementAndGet(this);
     }
 
+
+    @Override
+    public void onBulkPacketReceived(final BulkPacketReceived notification) {
+        LOG.debug("onPacketReceived - Entering - {}", notification);
+
+        RCVD_UPDATER.incrementAndGet(this);
+
+        try {
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    incrementRunableExecuted();
+                    processBulkPacket(notification);
+                }
+            });
+        } catch (Exception e) {
+            incrementRunableRejected();
+        }
+        LOG.debug("onPacketReceived - Leaving", notification);
+    }
+
     @Override
     public final void onPacketReceived(final PacketReceived notification) {
         LOG.debug("onPacketReceived - Entering - {}", notification);
@@ -141,6 +167,60 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
+    }
+
+    private void processBulkPacket(final BulkPacketReceived notification) {
+
+
+        List<MatchInstructionWrapper> matchInstructionWrappers = new ArrayList<>();
+        InstanceIdentifier<Node> ncri = null;
+        for (PacketsReceived packet : notification.getPacketsReceived()) {
+            final byte[] rawPacket = packet.getPayload();
+            final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
+
+            final MatchBuilder match = new MatchBuilder();
+            final EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+            final EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
+
+            //TODO: use HEX, use binary form
+            //Hex.decodeHex("000000000001".toCharArray());
+
+            ethSourceBuilder.setAddress(new MacAddress(macAddressToString(srcMac)));
+            ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+            match.setEthernetMatch(ethernetMatch.build());
+
+            final DropActionBuilder dab = new DropActionBuilder();
+            final DropAction dropAction = dab.build();
+            final ActionBuilder ab = new ActionBuilder();
+            ab.setOrder(0);
+            ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
+
+            // Add our drop action to a list
+            final List<Action> actionList = Collections.singletonList(ab.build());
+
+            // Create an Apply Action
+            final ApplyActionsBuilder aab = new ApplyActionsBuilder();
+            aab.setAction(actionList);
+
+            // Wrap our Apply Action in an Instruction
+            final InstructionBuilder ib = new InstructionBuilder();
+            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build()).setOrder(0);
+
+            // Put our Instruction in a list of Instructions
+            final InstructionsBuilder isb = new InstructionsBuilder();
+            final List<Instruction> instructions = Collections.singletonList(ib.build());
+            isb.setInstruction(instructions);
+
+            // Get the Ingress nodeConnectorRef
+            final NodeConnectorRef ncr = packet.getIngress();
+
+            // Get the instance identifier for the nodeConnectorRef
+            if (null == ncri) {
+                ncri = (InstanceIdentifier<Node>) ncr.getValue();
+            }
+            matchInstructionWrappers.add(new MatchInstructionWrapper(match.build(), isb.build()));
+        }
+        processBulkPackets(ncri.firstIdentifierOf(Node.class), matchInstructionWrappers);
     }
 
     private void processPacket(final PacketReceived notification) {
@@ -201,6 +281,8 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     protected abstract void processPacket(InstanceIdentifier<Node> node, Match match, Instructions instructions);
 
+    protected abstract void processBulkPackets(InstanceIdentifier<Node> node, List<MatchInstructionWrapper> instructionWrappers);
+
 
     @Override
     public void close() {
@@ -213,5 +295,24 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     public void countFutureError() {
         RPC_FUTURE_FAIL_UPDATER.incrementAndGet(this);
+    }
+
+    protected class MatchInstructionWrapper {
+
+        private final Match match;
+        private final Instructions instructions;
+
+        public MatchInstructionWrapper(final Match match, final Instructions instruction) {
+            this.match = match;
+            this.instructions = instruction;
+        }
+
+        public Match getMatch() {
+            return match;
+        }
+
+        public Instructions getInstructions() {
+            return instructions;
+        }
     }
 }

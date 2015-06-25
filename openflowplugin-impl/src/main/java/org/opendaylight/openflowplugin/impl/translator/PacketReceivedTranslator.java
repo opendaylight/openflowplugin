@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
 /**
@@ -74,20 +74,20 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         }
 
         if (input.getMatch() != null) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = getPacketInMatch(input, datapathId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match packetInMatch = getPacketInMatch(input, datapathId);
             packetReceivedBuilder.setMatch(packetInMatch);
         }
 
         return packetReceivedBuilder.build();
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
         Match match = MatchConvertorImpl.fromOFMatchToSALMatch(input.getMatch(),
                 datapathId,
                 OpenflowVersion.get(input.getVersion().shortValue())).build();
         MatchBuilder matchBuilder = new MatchBuilder(match);
 
-        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match> matchExtensionWrap =
                 MatchExtensionHelper.processAllExtensions(
                         input.getMatch().getMatchEntry(), OpenflowVersion.get(input.getVersion().shortValue()), MatchPath.PACKETRECEIVED_MATCH);
         if (matchExtensionWrap != null) {

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.legacy.sal.compatibility;
 import org.opendaylight.controller.sal.core.ConstructionException;
 import org.opendaylight.controller.sal.packet.IPluginOutDataPacketService;
 import org.opendaylight.controller.sal.packet.RawPacket;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.slf4j.Logger;
@@ -20,6 +21,11 @@ class DataPacketAdapter implements PacketProcessingListener {
 
     // These are injected via Apache DM (see ComponentActivator)
     private IPluginOutDataPacketService dataPacketPublisher;
+
+    @Override
+    public void onBulkPacketReceived(final BulkPacketReceived notification) {
+        //noop
+    }
 
     @Override
     public void onPacketReceived(final PacketReceived packet) {
