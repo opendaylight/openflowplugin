@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -125,6 +126,11 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     @Override
     public void setPacketProcessingService(PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
+    }
+
+    @Override
+    public void onBulkPacketReceived(final BulkPacketReceived notification) {
+        //noop
     }
 
     @Override

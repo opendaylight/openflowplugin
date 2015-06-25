@@ -126,6 +126,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private final int maxQueueDepth = 25600;
     private final boolean switchFeaturesMandatory;
     private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
+    private final int packetInsPerfNotification = 100;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
@@ -219,7 +220,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), nodeId);
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager, packetInsPerfNotification);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
@@ -298,9 +299,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         synchronized (deviceContexts) {
             final int deviceContextsSize = deviceContexts.size();
             if (deviceContextsSize > 0) {
-                long freshNotificationLimit = globalNotificationQuota / deviceContextsSize;
-                if (freshNotificationLimit < 100) {
-                    freshNotificationLimit = 100;
+                long freshNotificationLimit = globalNotificationQuota / deviceContextsSize / packetInsPerfNotification;
+                final int minimumRateLimit = Math.max(100 / packetInsPerfNotification, 10);
+                if (freshNotificationLimit < minimumRateLimit) {
+                    freshNotificationLimit = minimumRateLimit;
                 }
                 LOG.debug("fresh notification limit = {}", freshNotificationLimit);
                 for (DeviceContext deviceContext : deviceContexts) {

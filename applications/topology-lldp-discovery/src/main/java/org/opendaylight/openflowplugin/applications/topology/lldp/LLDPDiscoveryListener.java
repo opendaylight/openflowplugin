@@ -12,6 +12,7 @@ import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDisc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.slf4j.Logger;
@@ -25,6 +26,11 @@ class LLDPDiscoveryListener implements PacketProcessingListener {
 
     LLDPDiscoveryListener(NotificationProviderService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @Override
+    public void onBulkPacketReceived(final BulkPacketReceived notification) {
+        //noop
     }
 
     public void onPacketReceived(PacketReceived lldp) {

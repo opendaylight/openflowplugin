@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.SalFlowBulkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,8 @@ public class DropTestProviderImpl implements AutoCloseable {
 
     public DropTestProviderImpl(final DataBroker dataBroker,
                                 final NotificationService notificationService,
-                                final SalFlowService salFlowService) {
+                                final SalFlowService salFlowService,
+                                final SalFlowBulkService salFlowBulkService) {
         Preconditions.checkNotNull(dataBroker, "Data broker can't be empty");
         Preconditions.checkNotNull(notificationService, "NotificationProviderService can't be empty");
         Preconditions.checkNotNull(salFlowService, "SalFlowService can't be empty");
@@ -42,6 +44,10 @@ public class DropTestProviderImpl implements AutoCloseable {
 
         dropRpcProvider.setNotificationService(notificationService);
         dropRpcProvider.setFlowService(salFlowService);
+
+        if (null != salFlowBulkService) {
+            dropRpcProvider.setSalFlowBulkService(salFlowBulkService);
+        }
 
         LOG.debug("Activator DropAllPack END");
     }

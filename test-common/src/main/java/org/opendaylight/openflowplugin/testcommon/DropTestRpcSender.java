@@ -12,9 +12,16 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.AddFlowsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.AddFlowsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.SalFlowBulkService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.add.flows.input.Flows;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.add.flows.input.FlowsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -40,12 +47,22 @@ public class DropTestRpcSender extends AbstractDropTest {
 
     private SalFlowService flowService;
 
+    private SalFlowBulkService salFlowBulkService;
+
+    private static final int flowsCountInBulk = 100;
+    private AddFlowsInputBuilder addFlowsInputBuilder;
+
     /**
      * @param flowService the flowService to set
      */
     public void setFlowService(final SalFlowService flowService) {
         this.flowService = flowService;
     }
+
+    public void setSalFlowBulkService(final SalFlowBulkService salFlowBulkService) {
+        this.salFlowBulkService = salFlowBulkService;
+    }
+
 
     private static final ThreadLocal<AddFlowInputBuilder> BUILDER = new ThreadLocal<AddFlowInputBuilder>() {
         @Override
@@ -66,6 +83,27 @@ public class DropTestRpcSender extends AbstractDropTest {
             return fb;
         }
     };
+
+    private static final ThreadLocal<FlowsBuilder> FR_BUILDER = new ThreadLocal<FlowsBuilder>() {
+        @Override
+        protected FlowsBuilder initialValue() {
+            final FlowsBuilder fb = new FlowsBuilder();
+
+            fb.setPriority(PRIORITY);
+            fb.setBufferId(BUFFER_ID);
+
+            final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
+            fb.setCookie(cookie);
+            fb.setCookieMask(cookie);
+            fb.setTableId(TABLE_ID);
+            fb.setHardTimeout(HARD_TIMEOUT);
+            fb.setIdleTimeout(IDLE_TIMEOUT);
+            fb.setFlags(new FlowModFlags(false, false, false, false, false));
+
+            return fb;
+        }
+    };
+
 
     private NotificationService notificationService;
 
@@ -89,6 +127,38 @@ public class DropTestRpcSender extends AbstractDropTest {
             LOG.debug("DropTest sender notification listener registration fail! ..", e);
             throw new IllegalStateException("DropTest startup fail! Try again later.", e);
         }
+    }
+
+
+    @Override
+    public void processBulkPackets(InstanceIdentifier<Node> node, List<MatchInstructionWrapper> instructionWrappers) {
+        addFlowsInputBuilder = new AddFlowsInputBuilder();
+        addFlowsInputBuilder.setFlows(new ArrayList<Flows>());
+        addFlowsInputBuilder.setNode(new NodeRef(node));
+        for (MatchInstructionWrapper matchInstructionWrapper : instructionWrappers) {
+            FlowsBuilder flowRefsBuilder = FR_BUILDER.get();
+            // Finally build our flow
+            flowRefsBuilder.setMatch(matchInstructionWrapper.getMatch());
+            flowRefsBuilder.setInstructions(matchInstructionWrapper.getInstructions());
+
+            // Construct the flow instance id
+            addFlowsInputBuilder.getFlows().add(flowRefsBuilder.build());
+        }
+        ListenableFuture<RpcResult<AddFlowsOutput>> result = JdkFutureAdapters.listenInPoolThread(salFlowBulkService.addFlows(addFlowsInputBuilder.build()));
+        Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowsOutput>>() {
+            @Override
+            public void onSuccess(final RpcResult<AddFlowsOutput> o) {
+                countFutureSuccess();
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                countFutureError();
+            }
+        });
+
+        addFlowsInputBuilder = null;
+
     }
 
     @Override
@@ -142,4 +212,5 @@ public class DropTestRpcSender extends AbstractDropTest {
             LOG.debug("unregistration of notification listener failed.. ", e);
         }
     }
+
 }

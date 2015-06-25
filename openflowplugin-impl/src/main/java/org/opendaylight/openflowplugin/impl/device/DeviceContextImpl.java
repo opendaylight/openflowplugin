@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +68,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.bulk.packet.received.PacketsReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.bulk.packet.received.PacketsReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
@@ -111,7 +115,10 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
     private Map<Long, NodeConnectorRef> nodeConnectorCache;
+    private int packetinCount = 0;
+    private final int packetInsPerNotification;
 
+    private List<PacketsReceived> packetsReceived = new ArrayList<>();
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -121,7 +128,11 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
                       @Nonnull final TranslatorLibrary translatorLibrary,
-                      @Nonnull final TransactionChainManager transactionChainManager) {
+                      @Nonnull final TransactionChainManager transactionChainManager,
+                      final int packetInsPerNotification) {
+
+        Preconditions.checkState(packetInsPerNotification > 0, "Packet ins per notification has to be greater than 0.");
+        this.packetInsPerNotification = packetInsPerNotification;
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -286,38 +297,70 @@ public class DeviceContextImpl implements DeviceContext {
             return;
         }
 
-        if (!packetInLimiter.acquirePermit()) {
-            LOG.debug("Packet limited");
-            // TODO: save packet into emergency slot if possible
-            // FIXME: some other counter
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
-            return;
-        }
 
-        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
-        if (NotificationPublishService.REJECTED.equals(offerNotification)) {
-            LOG.debug("notification offer rejected");
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
-            packetInLimiter.drainLowWaterMark();
-            packetInLimiter.releasePermit();
-            return;
-        }
+        if (packetinCount < packetInsPerNotification) {
+            addToBulkedNotification(packetReceived);
+            packetinCount++;
+        } else {
 
-        Futures.addCallback(offerNotification, new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(final Object result) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-                packetInLimiter.releasePermit();
+            if (!packetInLimiter.acquirePermit()) {
+                LOG.debug("Packet limited");
+                // TODO: save packet into emergency slot if possible
+                // FIXME: some other counter
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+                return;
             }
 
-            @Override
-            public void onFailure(final Throwable t) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
-                LOG.debug("notification offer failed: {}", t.getMessage());
-                LOG.trace("notification offer failed..", t);
+            addToBulkedNotification(packetReceived);
+
+            BulkPacketReceivedBuilder bulkPacketReceivedBuilder = new BulkPacketReceivedBuilder();
+            bulkPacketReceivedBuilder.setPacketsReceived(packetsReceived);
+            final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(bulkPacketReceivedBuilder.build());
+//        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+            if (NotificationPublishService.REJECTED.equals(offerNotification)) {
+                LOG.debug("notification offer rejected");
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+                packetInLimiter.drainLowWaterMark();
                 packetInLimiter.releasePermit();
+                return;
             }
-        });
+
+            Futures.addCallback(offerNotification, new FutureCallback<Object>() {
+                @Override
+                public void onSuccess(final Object result) {
+                    messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                    packetInLimiter.releasePermit();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                    LOG.debug("notification offer failed: {}", t.getMessage());
+                    LOG.trace("notification offer failed..", t);
+                    packetInLimiter.releasePermit();
+                }
+            });
+            packetinCount = 0;
+            packetsReceived = new ArrayList<>();
+        }
+    }
+
+    private void addToBulkedNotification(final PacketReceived packetReceived) {
+        PacketsReceivedBuilder packetsReceivedBuilder = createPacketsReceivedBuilder(packetReceived);
+        packetsReceived.add(packetsReceivedBuilder.build());
+    }
+
+    private PacketsReceivedBuilder createPacketsReceivedBuilder(final PacketReceived packetReceived) {
+        //TODO this needs to be done in own translator
+        PacketsReceivedBuilder packetsReceivedBuilder = new PacketsReceivedBuilder();
+        packetsReceivedBuilder.setConnectionCookie(packetReceived.getConnectionCookie());
+        packetsReceivedBuilder.setFlowCookie(packetReceived.getFlowCookie());
+        packetsReceivedBuilder.setIngress(packetReceived.getIngress());
+        packetsReceivedBuilder.setMatch(packetReceived.getMatch());
+        packetsReceivedBuilder.setPacketInReason(packetReceived.getPacketInReason());
+        packetsReceivedBuilder.setPayload(packetReceived.getPayload());
+        packetsReceivedBuilder.setTableId(packetReceived.getTableId());
+        return packetsReceivedBuilder;
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.add.flows.input.Flows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -256,7 +257,7 @@ public class FlowConvertor {
     }
 
     private static void salToOFFlowCommand(Flow flow, FlowModInputBuilder flowMod) {
-        if (flow instanceof AddFlowInput) {
+        if (flow instanceof AddFlowInput || flow instanceof Flows) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
             if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
@@ -466,7 +467,7 @@ public class FlowConvertor {
 
 
     private static Optional<? extends Flow> injectMatchToFlow(Flow sourceFlow, Match match) {
-        if (sourceFlow instanceof AddFlowInput) {
+        if (sourceFlow instanceof AddFlowInput || sourceFlow instanceof Flows) {
             return Optional.<AddFlowInput>of(new AddFlowInputBuilder(sourceFlow).setMatch(match).build());
         } else if (sourceFlow instanceof RemoveFlowInput) {
             return Optional.<RemoveFlowInput>of(new RemoveFlowInputBuilder(sourceFlow).setMatch(match).build());
@@ -483,7 +484,7 @@ public class FlowConvertor {
                 .setInstruction(injectPushActionToInstruction(sourceFlow))
                 .build();
 
-        if (sourceFlow instanceof AddFlowInput) {
+        if (sourceFlow instanceof AddFlowInput || sourceFlow instanceof Flows) {
             return Optional.<AddFlowInput>of(new AddFlowInputBuilder(sourceFlow)
                     .setMatch(match).setInstructions(instructions).build());
         } else if (sourceFlow instanceof RemoveFlowInput) {

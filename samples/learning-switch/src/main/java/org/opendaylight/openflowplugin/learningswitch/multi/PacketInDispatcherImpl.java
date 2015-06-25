@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BulkPacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -28,6 +29,11 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
      */
     public PacketInDispatcherImpl() {
         handlerMapping = new HashMap<>();
+    }
+
+    @Override
+    public void onBulkPacketReceived(final BulkPacketReceived notification) {
+        //noop
     }
 
     @Override

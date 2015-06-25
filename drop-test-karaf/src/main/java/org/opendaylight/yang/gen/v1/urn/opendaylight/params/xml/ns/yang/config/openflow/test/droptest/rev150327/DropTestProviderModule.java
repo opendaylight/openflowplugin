@@ -3,6 +3,7 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.droptestkaraf.DropTestProviderImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150623.SalFlowBulkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,8 @@ public class DropTestProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         DataBroker dataBroker = getDataBrokerDependency();
         NotificationService notificationAdapterDependency = getNotificationAdapterDependency();
         SalFlowService salFlowService = getRpcRegistryDependency().getRpcService(SalFlowService.class);
-        DropTestProviderImpl dropTestProvider = new DropTestProviderImpl(dataBroker, notificationAdapterDependency, salFlowService);
+        SalFlowBulkService salFlowBulkService = getRpcRegistryDependency().getRpcService(SalFlowBulkService.class);
+        DropTestProviderImpl dropTestProvider = new DropTestProviderImpl(dataBroker, notificationAdapterDependency, salFlowService, salFlowBulkService);
         LOG.info("Drop-test provider module initialized.");
         return dropTestProvider;
     }

@@ -22,7 +22,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentable;
 public class GroupingLooseResolverTest {
 
     /**
-     * test of method {@link GroupingLooseResolver#getExtension(Augmentable)}
+     * test of method {@link GroupingLooseResolver#getExtension(org.opendaylight.yangtools.yang.binding.DataObject)}
      */
     @Test
     public void testGetExtension() {
@@ -36,11 +36,11 @@ public class GroupingLooseResolverTest {
             .setExtensionList(Collections.singletonList(extension1)).build();
         Match match1 = mb1.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, odlxxx1).build();
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder mb2 = new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.MatchBuilder mb2 = new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.MatchBuilder();
         ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(JoachimTheTiny.class).build();
         GeneralAugMatchNotifPacketIn odlxxx2 = new GeneralAugMatchNotifPacketInBuilder()
             .setExtensionList(Collections.singletonList(extension2)).build();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match match2 = mb2.addAugmentation(GeneralAugMatchNotifPacketIn.class, odlxxx2).build();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.body.Match match2 = mb2.addAugmentation(GeneralAugMatchNotifPacketIn.class, odlxxx2).build();
 
         Assert.assertEquals(JoachimTheBig.class, eqGroup.getExtension(match1).get().getExtensionList().get(0).getExtensionKey());
         Assert.assertEquals(JoachimTheTiny.class, eqGroup.getExtension(match2).get().getExtensionList().get(0).getExtensionKey());
