@@ -13,9 +13,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class LLDPSpeakerPopListener<T> implements PopListener<T> {
@@ -39,6 +41,15 @@ public class LLDPSpeakerPopListener<T> implements PopListener<T> {
                     LLDPSpeaker.getInstance().removeNodeConnector(nodeConnectorInstanceId, ncb.build());
                 }
             }
+        }
+        if (processedMessage instanceof NodeConnectorRemoved) {
+            NodeConnectorRemoved connector = (NodeConnectorRemoved) processedMessage;
+            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = (InstanceIdentifier<NodeConnector>) connector.getNodeConnectorRef().getValue();
+            NodeConnectorBuilder ncb = new NodeConnectorBuilder();
+            NodeConnectorKey ncKey = connector.getNodeConnectorRef().getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+            ncb.setId(ncKey.getId());
+            ncb.setKey(ncKey);
+            LLDPSpeaker.getInstance().removeNodeConnector(nodeConnectorInstanceId, ncb.build());
         }
     }
 

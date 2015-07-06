@@ -217,6 +217,7 @@ public class MDController implements IMDController, AutoCloseable {
         //Notification for LLDPSpeaker
         LLDPSpeakerPopListener<DataObject> lldpPopListener  = new LLDPSpeakerPopListener<DataObject>();
         addMessagePopListener(NodeConnectorUpdated.class,lldpPopListener);
+        addMessagePopListener(NodeConnectorRemoved.class,lldpPopListener);
 
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
