@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
@@ -47,8 +48,8 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final ListenableFuture<Boolean> emptyFuture;
     private final List<MultipartType> collectingStatType;
 
-    private final StatisticsGatheringService statisticsGatheringService;
-    private final StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
+    private StatisticsGatheringService statisticsGatheringService;
+    private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
     public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
@@ -226,4 +227,16 @@ public class StatisticsContextImpl implements StatisticsContext {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
     }
+
+    @VisibleForTesting
+    protected void setStatisticsGatheringService(StatisticsGatheringService statisticsGatheringService) {
+        this.statisticsGatheringService = statisticsGatheringService;
+    }
+
+    @VisibleForTesting
+    protected void setStatisticsGatheringOnTheFlyService(StatisticsGatheringOnTheFlyService
+                                                             statisticsGatheringOnTheFlyService) {
+        this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
+    }
+
 }
