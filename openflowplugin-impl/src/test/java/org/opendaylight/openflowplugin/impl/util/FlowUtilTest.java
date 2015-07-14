@@ -1,0 +1,29 @@
+/*
+ *
+ *  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *  *
+ *  * This program and the accompanying materials are made available under the
+ *  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ *  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *
+ */
+
+package org.opendaylight.openflowplugin.impl.util;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+
+public class FlowUtilTest {
+
+    private static final short DUMMY_TABLE_ID = 1;
+
+    @Test
+    public void createAlienFlowIdTest() {
+        FlowId alienFlowId = FlowUtil.createAlienFlowId(DUMMY_TABLE_ID);
+        assertEquals("#UF$TABLE*1-1", alienFlowId.getValue());
+    }
+
+}
