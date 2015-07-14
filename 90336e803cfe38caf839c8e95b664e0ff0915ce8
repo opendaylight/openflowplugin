@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_a9a550b6",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpAbstract.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-07-14T14:36:56Z",
+      "side": 1,
+      "message": "could we come up with some more appropriate name (this general test parent class providing initiation of mocks)\n\n.. I guess it might use @Mock annotations",
+      "range": {
+        "startLine": 29,
+        "startChar": 13,
+        "endLine": 29,
+        "endChar": 41
+      },
+      "revId": "90336e803cfe38caf839c8e95b664e0ff0915ce8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_49acbca0",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImplParamTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-07-14T14:36:56Z",
+      "side": 1,
+      "message": "where it this used?",
+      "range": {
+        "startLine": 51,
+        "startChar": 37,
+        "endLine": 51,
+        "endChar": 42
+      },
+      "revId": "90336e803cfe38caf839c8e95b664e0ff0915ce8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
