@@ -9,16 +9,16 @@ module sal-echo {
     revision "2015-03-05" {
         description "Initial proposal, tentative API.";
     }
-    
+
     rpc send-echo {
         description "Sending echo message to openflow device.";
 
         input {
             uses "inv:node-context-ref";
             leaf data {
-                description "Openflow echo request payload (arbirary-length data ﬁeld). The
-                  data ﬁeld might be a message timestamp to check latency, various lengths
-                  to measure bandwidth, or zero-size to verify liveness between the switch 
+                description "Openflow echo request payload (arbirary-length data field). The
+                  data field might be a message timestamp to check latency, various lengths
+                  to measure bandwidth, or zero-size to verify liveness between the switch
                   and controller.";
 
                 type binary;
@@ -31,5 +31,5 @@ module sal-echo {
                 type binary;
             }
         }
-    }  
+    }
 }
