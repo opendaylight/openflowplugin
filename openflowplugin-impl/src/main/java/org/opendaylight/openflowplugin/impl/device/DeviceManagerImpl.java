@@ -310,13 +310,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
     }
 
-    private void deviceCtxLevelUp(final DeviceContext deviceContext) {
+    void deviceCtxLevelUp(final DeviceContext deviceContext) {
         deviceContext.getDeviceState().setValid(true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
         LOG.trace("Device context level up called.");
     }
 
-    private static void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
+    static void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> results) {
@@ -339,7 +339,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
 
-    private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final DeviceContext deviceContext,
+    static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final DeviceContext deviceContext,
                                                                                                        final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext,
@@ -349,7 +349,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         return Futures.allAsList(Arrays.asList(replyDesc));
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
+    ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
                                                                                                 final DeviceState deviceState) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
@@ -428,7 +428,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         this.translatorLibrary = translatorLibrary;
     }
 
-    private static ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
+    static ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
                                                                                        final InstanceIdentifier<Node> nodeII, final short version) {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
@@ -475,7 +475,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         return requestContext.getFuture();
     }
 
-    private static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
+    static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
         Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
@@ -506,7 +506,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     // FIXME : remove after ovs tableFeatures fix
-    private static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final Short nrOfTables) {
+    static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final Short nrOfTables) {
         LOG.debug("About to create {} empty tables.", nrOfTables);
         for (int i = 0; i < nrOfTables; i++) {
             final short tId = (short) i;
@@ -522,7 +522,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
     }
 
-    private static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
+    static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
                                                final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
         try {
             for (final MultipartReply reply : result) {
@@ -617,7 +617,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
     }
 
-    private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
+    static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
         final FlowCapableNodeBuilder flowCapableNodeBuilder = new FlowCapableNodeBuilder();
         final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         try {
