@@ -12,14 +12,16 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.common.util.concurrent.CheckedFuture;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import com.google.common.util.concurrent.Futures;
+import com.sun.xml.internal.stream.buffer.sax.Features;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -28,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -41,10 +44,17 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -125,7 +135,6 @@ public class DeviceManagerImplTest {
 
 
         FeaturesReply mockFeatures = mock(FeaturesReply.class);
-//        when(mockFeatures.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
 
 
@@ -143,5 +152,31 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setDeviceDisconnectedHandler(any(DeviceContext.class));
     }
 
+    @Test
+    public void chainTableTrunkWriteOF10Test() {
+        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+
+        KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+
+        GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
+        when(mockedFeatures.getTables()).thenReturn((short)2);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
+
+
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        RpcResult<List<MultipartReply>> mockedRpcResult = mock(RpcResult.class);
+        when(mockedRpcResult.isSuccessful()).thenReturn(true);
+        List<RpcResult<List<MultipartReply>>> data = new ArrayList<RpcResult<List<MultipartReply>>>();
+        data.add(mockedRpcResult);
+        data.add(mockedRpcResult);
+
+        DeviceManagerImpl.chainTableTrunkWriteOF10(mockedDeviceContext, Futures.immediateFuture(data));
+        verify(mockedDeviceContext,times(3))
+                .writeToTransaction(any(LogicalDatastoreType.class), any(InstanceIdentifier.class), any(FlowCapableNode.class));
+    }
 
 }
