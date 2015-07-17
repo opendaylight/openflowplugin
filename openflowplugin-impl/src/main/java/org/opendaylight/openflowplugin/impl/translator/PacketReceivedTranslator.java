@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -81,7 +82,8 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         return packetReceivedBuilder.build();
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
+    @VisibleForTesting
+    static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
         Match match = MatchConvertorImpl.fromOFMatchToSALMatch(input.getMatch(),
                 datapathId,
                 OpenflowVersion.get(input.getVersion().shortValue())).build();
@@ -96,7 +98,8 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         return matchBuilder.build();
     }
 
-    private static Long getPortNumberFromMatch(final List<MatchEntry> entries) {
+    @VisibleForTesting
+    static Long getPortNumberFromMatch(final List<MatchEntry> entries) {
         Long port = null;
         for (MatchEntry entry : entries) {
             if (InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
