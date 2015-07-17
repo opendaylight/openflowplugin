@@ -40,7 +40,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeatures()));
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeatures()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
-            builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeaturesV10()));
+            builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeatures()));
             builder.setQueue(Collections.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue>emptyList());
         }
         builder.setCurrentSpeed(input.getCurrSpeed());
