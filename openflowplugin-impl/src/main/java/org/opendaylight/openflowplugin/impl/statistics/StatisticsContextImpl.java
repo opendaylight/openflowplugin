@@ -170,7 +170,8 @@ public class StatisticsContextImpl implements StatisticsContext {
      *
      * @return
      */
-    private ListenableFuture<Boolean> deviceConnectionCheck() {
+    @VisibleForTesting
+    ListenableFuture<Boolean> deviceConnectionCheck() {
         if (!ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             ListenableFuture<Boolean> resultingFuture = SettableFuture.create();
             switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
