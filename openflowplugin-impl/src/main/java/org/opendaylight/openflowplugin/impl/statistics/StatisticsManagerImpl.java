@@ -16,7 +16,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -108,10 +107,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 timeCounter.addTimeMark();
                 LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
                 LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-                    calculateTimerDelay(timeCounter);
-                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
-                }
+                calculateTimerDelay(timeCounter);
+                scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             }
         });
     }
