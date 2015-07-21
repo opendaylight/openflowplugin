@@ -255,6 +255,7 @@ public final class StatisticsGatheringUtils {
                     LOG.trace("Reading of table features for table wit ID {} encountered execution exception {}.", i, e);
                 }
             }
+            deviceContext.getDeviceFlowRegistry().removeMarked();
         }
     }
 
