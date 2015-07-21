@@ -150,10 +150,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 timeCounter.addTimeMark();
                 LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
                 LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-                    calculateTimerDelay(timeCounter);
-                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
-                }
+                calculateTimerDelay(timeCounter);
+                scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             }
         });
     }
