@@ -260,20 +260,26 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testProcessPacketInMessage() {
+    public void testProcessPacketInMessageFutureSuccess() {
         PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
         NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-        ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
+        final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+    }
 
+    @Test
+    public void testProcessPacketInMessageFutureFailure() {
+        PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
+        NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        final ListenableFuture dummyFuture = Futures.immediateFailedFuture(new IllegalStateException());
 
-//        final ListenableFuture dummyFuture = Futures.immediateFuture(new IllegalStateException());
-//        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
-//        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
-//        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
+        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
+        deviceContext.processPacketInMessage(mockedPacketInMessage);
+        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
     }
 }
