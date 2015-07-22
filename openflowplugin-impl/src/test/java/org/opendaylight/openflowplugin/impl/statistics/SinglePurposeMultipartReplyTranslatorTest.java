@@ -5,10 +5,12 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.*;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
 import com.google.common.collect.Lists;
@@ -24,8 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.F
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
@@ -84,8 +84,9 @@ public class SinglePurposeMultipartReplyTranslatorTest {
     private static final Long DUMMY_DURATION_NSEC = 3343L;
     private static final GroupId DUMMY_GROUP_ID = new GroupId(55L);
     private static final Long DUMMY_REF_COUNT = 1234L;
+    private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
-
+    private static final Long GROUP_ACTION_BITMAP = 0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Test
     public void testTranslateFlow() {
@@ -183,11 +184,16 @@ public class SinglePurposeMultipartReplyTranslatorTest {
         assertEquals(1, groupDescStats.size());
         GroupDescStats groupDescStat = groupDescStats.get(0);
         assertEquals(DUMMY_GROUP_ID.getValue(),groupDescStat.getGroupId().getValue());
-        //FIXME
-//        assertEquals(DUMMY_GROUP_TYPE,groupDescStat.getGroupType() );
+        assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType() );
+    }
 
-
-
+    @Test
+    public void getGroupActionsSupportBitmap() {
+        ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+        final List<Long> groupActionsSupportBitmap = SinglePurposeMultipartReplyTranslator.getGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
+        assertEquals(1, groupActionsSupportBitmap.size());
+        final Long bitmap = groupActionsSupportBitmap.get(0);
+        assertEquals(GROUP_ACTION_BITMAP, bitmap);
     }
 
     private MultipartReplyBody prepareMultipartReplyGroupDesc() {
