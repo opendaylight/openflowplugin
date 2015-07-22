@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +39,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.*;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
@@ -195,13 +197,18 @@ public class DeviceContextImplTest {
 
     @Test
     public void testAuxiliaryConnectionContext() {
+        ConnectionContext mockedConnectionContext = prepareConnectionContext();
+        deviceContext.addAuxiliaryConenctionContext(mockedConnectionContext);
+        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
+        assertEquals(mockedConnectionContext, pickedConnectiobContexts);
+    }
+
+    private ConnectionContext prepareConnectionContext() {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
-        deviceContext.addAuxiliaryConenctionContext(mockedConnectionContext);
-        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
-        assertEquals(mockedConnectionContext, pickedConnectiobContexts);
+        return mockedConnectionContext;
     }
 
     @Test
@@ -260,20 +267,59 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testProcessPacketInMessage() {
+    public void testProcessPacketInMessageFutureSuccess() {
         PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
         NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-        ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
+        final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+    }
 
+    @Test
+    public void testProcessPacketInMessageFutureFailure() {
+        PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
+        NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        final ListenableFuture dummyFuture = Futures.immediateFailedFuture(new IllegalStateException());
 
-//        final ListenableFuture dummyFuture = Futures.immediateFuture(new IllegalStateException());
-//        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
-//        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
-//        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
+        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
+        deviceContext.processPacketInMessage(mockedPacketInMessage);
+        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
+    }
+
+    @Test
+    public void testTranslatorLibrary() {
+        final TranslatorLibrary pickedTranslatorLibrary = deviceContext.oook();
+        assertEquals(translatorLibrary, pickedTranslatorLibrary);
+    }
+
+    @Test
+    public void testGetTimer() {
+        final HashedWheelTimer pickedTimer = deviceContext.getTimer();
+        assertEquals(timer,pickedTimer);
+    }
+
+    @Test
+    public void testClose() {
+        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
+        InetSocketAddress mockRemoteAddress = mock(InetSocketAddress.class);
+        when(mockedConnectionAdapter.getRemoteAddress()).thenReturn(mockRemoteAddress);
+        when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+
+        NodeId dummyNodeId = new NodeId("dummyNodeId");
+        when(deviceState.getNodeId()).thenReturn(dummyNodeId);
+
+        ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
+        deviceContext.addAuxiliaryConenctionContext(mockedAuxiliaryConnectionContext);
+        DeviceContextClosedHandler mockedDeviceContextClosedHandler = mock(DeviceContextClosedHandler.class);
+        deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
+        deviceContext.close();
+        verify(connectionContext).closeConnection(eq(false));
+        verify(deviceState).setValid(eq(false));
+        verify(txChainManager).close();
+        verify(mockedAuxiliaryConnectionContext).closeConnection(eq(false));
     }
 }
