@@ -1,12 +1,20 @@
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
+
+import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,11 +42,14 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -48,9 +59,12 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImplTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(DeviceContextImplTest.class);
+    private static final short DUMMY_AUXILIARY_ID = 33;
+    private static final BigInteger DUMMY_COOKIE = new BigInteger("33");
     Xid xid;
     Xid xidMulti;
     DeviceContextImpl deviceContext;
+    @Mock
     TransactionChainManager txChainManager;
     @Mock
     RequestContext<GetAsyncReply> requestContext;
@@ -93,7 +107,7 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
+
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -154,5 +168,33 @@ public class DeviceContextImplTest {
         Assert.assertEquals(rTx, readTx);
     }
 
+    @Test
+    public void testInitialSubmitTransaction() {
+        deviceContext.initialSubmitTransaction();
+        verify(txChainManager).initialSubmitWriteTransaction();
+    }
 
+    @Test
+    public void testGetReservedXid() {
+        deviceContext.getReservedXid();
+        verify(outboundQueueProvider).reserveEntry();
+    }
+
+    @Test
+    public void testAuxiliaryConnectionContext() {
+        ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
+        FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
+        when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
+        when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
+        deviceContext.addAuxiliaryConenctionContext(mockedConnectionContext);
+        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
+        assertEquals(mockedConnectionContext, pickedConnectiobContexts);
+    }
+
+    @Test
+    public void testAddDeleteToTxChain() {
+        InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
+        verify(txChainManager).addDeleteOperationTotTxChain(eq(LogicalDatastoreType.CONFIGURATION),eq(dummyII));
+    }
 }
