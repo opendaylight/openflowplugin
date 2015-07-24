@@ -46,7 +46,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends AbstractSi
 
         // Set request body to main multipart request
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
+                MultipartType.OFPMPTABLE, xid.getValue(), getVersion());
 
         mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
 
