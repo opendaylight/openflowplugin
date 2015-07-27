@@ -11,6 +11,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.PortConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
@@ -25,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.PortConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
@@ -44,6 +46,7 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(PortConfigService.class, new PortConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
     }
 }

@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -116,6 +117,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
@@ -1163,6 +1166,39 @@ public class ModelDrivenSwitchImplTest {
         mdSwitchOF10.getQueueStatisticsFromGivenPort(input.build()).get();
         Mockito.when(features.getVersion()).thenReturn((short)4);
         mdSwitchOF13.getQueueStatisticsFromGivenPort(input.build()).get();
+        Mockito.verify(messageDispatchService, Mockito.times(2)).multipartRequest(
+                Matchers.any(MultipartRequestInput.class),
+                Matchers.any(SwitchConnectionDistinguisher.class));
+    }
+
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
+     * getPortConfig(org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.
+     * GetPortConfigInput)}
+     * .
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testGetPortConfigForGivenNode() throws InterruptedException, ExecutionException {
+        GetPortConfigOutputBuilder portConfigGivenPortOutput =
+                new GetPortConfigOutputBuilder();
+        portConfigGivenPortOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
+        RpcResult<Void> result = RpcResultBuilder.success((Void)null).build();
+        Mockito.when(
+                messageDispatchService.multipartRequest(Matchers.any(MultipartRequestInput.class),
+                        Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
+
+        GetPortConfigInputBuilder input =
+                new GetPortConfigInputBuilder();
+        input.setNode(new NodeRef(InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("openflow:1")))));
+
+        Mockito.when(features.getVersion()).thenReturn((short)1);
+        mdSwitchOF10.getPortConfig(input.build()).get();
+        Mockito.when(features.getVersion()).thenReturn((short)4);
+        mdSwitchOF13.getPortConfig(input.build()).get();
         Mockito.verify(messageDispatchService, Mockito.times(2)).multipartRequest(
                 Matchers.any(MultipartRequestInput.class),
                 Matchers.any(SwitchConnectionDistinguisher.class));

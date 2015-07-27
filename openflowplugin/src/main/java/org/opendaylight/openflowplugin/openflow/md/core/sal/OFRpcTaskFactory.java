@@ -122,6 +122,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -142,6 +145,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
@@ -1981,6 +1985,56 @@ public abstract class OFRpcTaskFactory {
                                 new GetQueueStatisticsFromGivenPortOutputBuilder()
                                         .setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
                         return queueStatsFromPortBuilder.build();
+                    }
+                });
+                return result;
+            }
+        }
+
+        return new OFRpcTaskImpl(taskContext, cookie, input);
+    }
+
+    /**
+     * @param taskContext
+     * @param input
+     * @param cookie
+     * @return task
+     */
+    public static OFRpcTask<GetPortConfigInput, RpcResult<GetPortConfigOutput>> createGetPortConfigTask(
+            final OFRpcTaskContext taskContext, final GetPortConfigInput input, SwitchConnectionDistinguisher cookie) {
+
+        class OFRpcTaskImpl extends OFRpcTask<GetPortConfigInput, RpcResult<GetPortConfigOutput>> {
+
+            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
+                    GetPortConfigInput input) {
+                super(taskContext, cookie, input);
+            }
+
+            @Override
+            public ListenableFuture<RpcResult<GetPortConfigOutput>> call() throws Exception {
+                final SettableFuture<RpcResult<GetPortConfigOutput>> result = SettableFuture.create();
+
+                final Long xid = taskContext.getSession().getNextXid();
+
+                MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+                builder.setType(MultipartType.OFPMPPORTDESC);
+                builder.setVersion(getVersion());
+                builder.setFlags(new MultipartRequestFlags(false));
+                builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder()
+                     .build());
+                builder.setXid(xid);
+
+                Future<RpcResult<Void>> resultFromOFLib = getMessageService()
+                        .multipartRequest(builder.build(), getCookie());
+                ListenableFuture<RpcResult<Void>> resultLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                Futures.addCallback(resultLib, new ResultCallback<GetPortConfigOutput>(result) {
+                    @Override
+                    public GetPortConfigOutput createResult() {
+                        GetPortConfigOutputBuilder portConfigOpBuilder =
+                                new GetPortConfigOutputBuilder()
+                                        .setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
+                        return portConfigOpBuilder.build();
                     }
                 });
                 return result;
