@@ -70,6 +70,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.GetPortConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
@@ -480,6 +482,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(SetConfigInput input) {
         OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> task = OFRpcTaskFactory.createSetNodeConfigTask(rpcTaskContext, input, null);
+        return task.submit();
+    }
+
+    @Override
+    public Future<RpcResult<GetPortConfigOutput>> getPortConfig(GetPortConfigInput input) {
+        LOG.debug("Calling the getPortConfig RPC method on MessageDispatchService");
+        OFRpcTask<GetPortConfigInput, RpcResult<GetPortConfigOutput>> task = OFRpcTaskFactory.createGetPortConfigTask(rpcTaskContext, input, null);
         return task.submit();
     }
 }
