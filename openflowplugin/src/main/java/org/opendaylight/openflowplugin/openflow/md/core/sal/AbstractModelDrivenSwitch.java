@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.port.config.rev150714.PortConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
@@ -65,6 +66,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         final RoutedRpcRegistration<SalMeterService> meterRegistration = rpcProviderRegistry.addRoutedRpcImplementation(SalMeterService.class, this);
         meterRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(meterRegistration);
+
+        final RoutedRpcRegistration<PortConfigService> pcRegistration = rpcProviderRegistry.addRoutedRpcImplementation(PortConfigService.class, this);
+        pcRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(pcRegistration);
 
         final RoutedRpcRegistration<SalGroupService> groupRegistration = rpcProviderRegistry.addRoutedRpcImplementation(SalGroupService.class, this);
         groupRegistration.registerPath(NodeContext.class, getIdentifier());

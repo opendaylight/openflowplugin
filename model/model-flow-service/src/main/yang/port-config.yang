@@ -1,0 +1,25 @@
+module port-config {
+    namespace "urn:opendaylight:module:port:config";
+    prefix port-config;
+
+    import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+
+    description "Openflow ondemand port config.";
+
+    revision "2015-07-14" {
+        description "Initial revision
+          + simplified version of node based port-configs or port based configurations";
+    }
+
+    rpc get-port-config{
+        description
+            "Retrieving the port configuration(OFPMP_PORT_DESCRIPTION) for the requested port";
+        input {
+            uses inv:node-context-ref;
+        }
+        output {
+            uses tr:transaction-aware;
+        }
+    }
+}
