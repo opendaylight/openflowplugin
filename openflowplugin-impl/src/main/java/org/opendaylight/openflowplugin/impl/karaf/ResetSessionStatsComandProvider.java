@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.karaf;
 import java.io.PrintStream;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
@@ -22,7 +22,7 @@ public class ResetSessionStatsComandProvider extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();
-        EventsTimeCounter.resetAllCounters();
+        SessionStatistics.resetAllCounters();
         out.print("Session statistics counters reset.\n");
         return null;
     }

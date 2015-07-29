@@ -76,4 +76,9 @@ public class SessionStatistics {
             count = UPDATER.incrementAndGet(this);
         }
     }
+
+    public static void resetAllCounters() {
+        sessionEvents.clear();
+    }
+
 }
