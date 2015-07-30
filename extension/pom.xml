@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.0.7-Helium-SR4</version>
         <relativePath>../</relativePath>
     </parent>
 
     <properties>
-        <yangtools.version>0.6.6-SNAPSHOT</yangtools.version>
-        <ofjava.version>0.5.4-SNAPSHOT</ofjava.version>
+        <yangtools.version>0.6.6-Helium-SR4</yangtools.version>
+        <ofjava.version>0.5.4-Helium-SR4</ofjava.version>
     </properties>
 
     <artifactId>openflowplugin-extension-parent</artifactId>
