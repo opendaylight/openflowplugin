@@ -175,14 +175,14 @@ public final class MultipartRequestInputFactory {
             case OFPMPMETER:
                 MultipartRequestMeterCaseBuilder multipartRequestMeterCaseBuilder = new MultipartRequestMeterCaseBuilder();
                 MultipartRequestMeterBuilder multipartRequestMeterBuilder = new MultipartRequestMeterBuilder();
-                MeterId meterId = new MeterId(OFConstants.OFPP_ANY);
+                MeterId meterId = new MeterId(OFConstants.OFPM_ALL);
                 multipartRequestMeterBuilder.setMeterId(meterId);
                 multipartRequestMeterCaseBuilder.setMultipartRequestMeter(multipartRequestMeterBuilder.build());
                 return multipartRequestMeterCaseBuilder.build();
             case OFPMPMETERCONFIG:
                 MultipartRequestMeterConfigCaseBuilder multipartRequestMeterConfigCaseBuilder = new MultipartRequestMeterConfigCaseBuilder();
                 MultipartRequestMeterConfigBuilder multipartRequestMeterConfigBuilder = new MultipartRequestMeterConfigBuilder();
-                MeterId configMeterId = new MeterId(OFConstants.OFPP_ANY);
+                MeterId configMeterId = new MeterId(OFConstants.OFPM_ALL);
                 multipartRequestMeterConfigBuilder.setMeterId(configMeterId);
                 multipartRequestMeterConfigCaseBuilder.setMultipartRequestMeterConfig(multipartRequestMeterConfigBuilder.build());
                 return multipartRequestMeterConfigCaseBuilder.build();
