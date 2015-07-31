@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceMocking {
+public abstract class ServiceMocking {
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
 
