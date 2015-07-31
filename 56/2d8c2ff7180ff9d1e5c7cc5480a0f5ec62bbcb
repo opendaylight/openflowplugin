@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-by: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-at: Fri, 31 Jul 2015 16:54:55 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/24648
+Project: openflowplugin
+Branch: refs/heads/stable/helium
