@@ -115,13 +115,6 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-netconf-connector</artifactId>
-            <version>${mdsal.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
 
         <!-- bundle dependencies -->
         <dependency>

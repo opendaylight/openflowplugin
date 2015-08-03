@@ -118,6 +118,12 @@ public abstract class OFPaxOptionsAssistant {
         return new DefaultCompositeOption(
 //                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
 //                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                mavenBundle("io.netty", "netty-common").versionAsInProject(), //
+                mavenBundle("io.netty", "netty-buffer").versionAsInProject(), //
+                mavenBundle("io.netty", "netty-handler").versionAsInProject(), //
+                mavenBundle("io.netty", "netty-codec").versionAsInProject(), //
+                mavenBundle("io.netty", "netty-transport").versionAsInProject(), //
+
                 mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
                 mavenBundle(OFPLUGIN_APPS, "topology-lldp-discovery").versionAsInProject(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
@@ -132,7 +138,6 @@ public abstract class OFPaxOptionsAssistant {
                 TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
-
     }
 
     private static Option mdSalImplBundles() {
