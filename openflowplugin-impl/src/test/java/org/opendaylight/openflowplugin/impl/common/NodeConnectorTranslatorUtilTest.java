@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.common;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * openflowplugin-impl
@@ -41,6 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Created: Mar 31, 2015
  */
 public class NodeConnectorTranslatorUtilTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorTranslatorUtilTest.class);
 
     private static final String MAC_ADDRESS = "00:01:02:03:04:05";
     private static final String NAME = "PortTranslatorTest";
@@ -129,6 +134,24 @@ public class NodeConnectorTranslatorUtilTest {
         assertEqualsPortFeatures(port.getCurrentFeatures(), flowCapableNodeConnector.getCurrentFeature());
         assertEqualsPortFeatures(port.getPeerFeatures(), flowCapableNodeConnector.getPeerFeatures());
         assertEqualsPortFeatures(port.getSupportedFeatures(), flowCapableNodeConnector.getSupported());
+    }
+
+    /**
+     * Here unsupported version is used
+     * Test method for {@link NodeConnectorTranslatorUtil#translateFlowCapableNodeFromPhyPort(PhyPort, short)}.
+     */
+    @Test
+    public void testTranslateFlowCapableNodeFromPhyPortOF12() {
+        final PhyPort port = mockPhyPortPort();
+        try {
+            final FlowCapableNodeConnector flowCapableNodeConnector = NodeConnectorTranslatorUtil
+                    .translateFlowCapableNodeFromPhyPort(port, (short) 0x03);
+            Assert.fail("port of version 0x03 (OF-1.2) should not be translated");
+        } catch (Exception e) {
+            LOG.debug("expected exception: {}", e.getMessage());
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
+
     }
 
     /**

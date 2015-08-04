@@ -47,6 +47,8 @@ public final class OFConstants {
     public static final Long OFPG_ALL = 0xfffffffcL;
     /** Refers to all queues conﬁgured at the speciﬁed port. */
     public static final Long OFPQ_ALL = ANY;
+    /** Represents all meters for stat requests commands. */
+    public static final Long OFPM_ALL = ANY;
     /** default cookie */
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
