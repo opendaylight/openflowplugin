@@ -84,8 +84,6 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public void onDeviceContextClosed(DeviceContext deviceContext) {
-        for (RoutedRpcRegistration<?> registration : rpcRegistrations) {
-            registration.close();
-        }
+        close();
     }
 }
