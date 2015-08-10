@@ -461,7 +461,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                 final InstanceIdentifier<Flow> flowRef = tableRef.child(Flow.class, flowKey);
                 if (nodeDeleteMap != null && flowKey.getId().getValue().startsWith(ALIEN_SYSTEM_FLOW_ID)) {
                     final Integer lifeIndex = nodeDeleteMap.get(flowRef);
-                    if (lifeIndex > 0) {
+                     if (lifeIndex != null && lifeIndex > 0) {
                         break;
                     } else {
                         nodeDeleteMap.remove(flowRef);
