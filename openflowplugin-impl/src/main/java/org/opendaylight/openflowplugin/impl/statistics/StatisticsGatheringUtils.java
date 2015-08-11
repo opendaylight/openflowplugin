@@ -40,8 +40,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
@@ -204,6 +207,8 @@ public final class StatisticsGatheringUtils {
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
+                flowBuilder.addAugmentation(FlowStatisticsData.class, refineFlowStatisticsAugmentation(flowStat).build());
+
                 final short tableId = flowStat.getTableId();
                 final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
                 final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
@@ -215,6 +220,18 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
             }
         }
+    }
+
+    /**
+     * Method extracts flow statistics out of flowAndStatistics model
+     *
+     * @param flowAndStats
+     */
+    private static FlowStatisticsDataBuilder refineFlowStatisticsAugmentation(final FlowAndStatisticsMapList flowAndStats) {
+        final FlowStatisticsBuilder flowStatisticsBuilder = new FlowStatisticsBuilder(flowAndStats);
+        final FlowStatisticsDataBuilder flowStatisticsDataBld = new FlowStatisticsDataBuilder();
+        flowStatisticsDataBld.setFlowStatistics(flowStatisticsBuilder.build());
+        return flowStatisticsDataBld;
     }
 
     public static void deleteAllKnownFlows(final DeviceContext deviceContext) {
