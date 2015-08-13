@@ -38,6 +38,8 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 public class HandshakeManagerImpl implements HandshakeManager {
 
+    private static final long activeXID = 20L;
+
     private static final Logger LOG = LoggerFactory
             .getLogger(HandshakeManagerImpl.class);
 
@@ -89,7 +91,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
 
         LOG.trace("handshake STARTED");
-        setActiveXid(20L);
+        setActiveXid(activeXID);
 
         try {
             if (receivedHello == null) {
