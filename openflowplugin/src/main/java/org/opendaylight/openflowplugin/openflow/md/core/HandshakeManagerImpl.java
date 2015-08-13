@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -51,8 +50,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short version;
     private ErrorHandler errorHandler;
 
-    private long maxTimeout = 8000;
-    private TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
+
+
     private Short highestVersion;
 
     private Long activeXid;
@@ -311,8 +310,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @throws Exception
      */
     private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) throws Exception {
-        
-        
+
+
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
 
         final SettableFuture<Void> resultFtr = SettableFuture.create();
