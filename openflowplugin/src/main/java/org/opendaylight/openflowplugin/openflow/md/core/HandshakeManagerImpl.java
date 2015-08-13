@@ -158,7 +158,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     private void stepByStepVersionSubStep(Short remoteVersion, Short lastProposedVersion) throws Exception {
-        if (remoteVersion == lastProposedVersion) {
+        if (remoteVersion.equals(lastProposedVersion)) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
         } else {
