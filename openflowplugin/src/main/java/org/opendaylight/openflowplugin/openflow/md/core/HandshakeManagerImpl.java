@@ -52,8 +52,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short version;
     private ErrorHandler errorHandler;
 
-    
-    
+
+
     private Short highestVersion;
 
     private Long activeXid;
@@ -312,8 +312,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @throws Exception
      */
     private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) throws Exception {
-        
-        
+
+
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
 
         final SettableFuture<Void> resultFtr = SettableFuture.create();
