@@ -21,3 +21,4 @@ yang-gen-config
 .externalToolBuilders
 maven-eclipse.xml
 .metadata/
+.checkstyle
