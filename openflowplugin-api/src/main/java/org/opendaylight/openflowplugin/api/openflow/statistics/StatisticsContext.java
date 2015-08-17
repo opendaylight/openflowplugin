@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
@@ -29,4 +30,9 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable {
      * @return handle to currently scheduled statistics polling
      */
     Optional<Timeout> getPollTimeout();
+
+    /**
+     * @return dedicated item life cycle change listener (per device)
+     */
+    ItemLifecycleListener getItemLifeCycleListener();
 }
