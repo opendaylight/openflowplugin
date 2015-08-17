@@ -8,21 +8,23 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Iterator;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 
 
 /**
@@ -36,6 +38,8 @@ public final class IpConversionUtil {
     private static final int INADDR4SZ = 4;
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
+    private static final int IPV4_ADDRESS_LENGTH = 32;
+    private static final int IPV6_ADDRESS_LENGTH = 128;
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -68,7 +72,7 @@ public final class IpConversionUtil {
 
     public static Iterator<String> splitToParts(final Ipv4Address ipv4Address) {
         /* Invalid (Ab)use of ip address as prefix!!! */
-        return Iterators.forArray(ipv4Address.getValue(), "32");
+        return Iterators.forArray(ipv4Address.getValue(), String.valueOf(IPV4_ADDRESS_LENGTH));
     }
 
     public static Iterator<String> splitToParts(final Ipv6Prefix ipv6Prefix) {
@@ -77,7 +81,7 @@ public final class IpConversionUtil {
 
     public static Iterator<String> splitToParts(final Ipv6Address ipv6Address) {
         /* Invalid (Ab)use of ip address as prefix!!! */
-        return Iterators.forArray(ipv6Address.getValue(), "128");
+        return Iterators.forArray(ipv6Address.getValue(), String.valueOf(IPV6_ADDRESS_LENGTH));
     }
 
     /* This forest of functions has a purpose:
@@ -92,7 +96,7 @@ public final class IpConversionUtil {
     */
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address){
-        return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + 32);
+        return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + IPV4_ADDRESS_LENGTH);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final String mask){
@@ -105,7 +109,7 @@ public final class IpConversionUtil {
         if (null != mask && !mask.isEmpty()) {
             return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + mask);
         } else {
-            return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + "32");
+            return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + IPV4_ADDRESS_LENGTH);
         }
     }
 
@@ -118,7 +122,7 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address){
-        return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + 128);
+        return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + IPV6_ADDRESS_LENGTH);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask){
@@ -129,7 +133,7 @@ public final class IpConversionUtil {
          * Note - there is no canonical form check here!!!
          */
         if (Strings.isNullOrEmpty(mask)) {
-            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + "128");
+            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + String.valueOf(IPV6_ADDRESS_LENGTH));
         } else {
             return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
         }
@@ -170,7 +174,7 @@ public final class IpConversionUtil {
     }
 
     public static Integer extractPrefix(final Ipv4Address ipv4Prefix) {
-        return 32;
+        return IPV4_ADDRESS_LENGTH;
     }
 
     public static Integer extractPrefix(final Ipv6Address ipv6Prefix) {
