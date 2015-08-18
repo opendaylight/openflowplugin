@@ -41,6 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContex
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -111,6 +112,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
     private Map<Long, NodeConnectorRef> nodeConnectorCache;
+    private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
 
 
     @VisibleForTesting
@@ -143,6 +145,8 @@ public class DeviceContextImpl implements DeviceContext {
         packetInTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceState.getVersion(), PacketIn.class.getName()));
         nodeConnectorCache = new ConcurrentHashMap<>();
+
+        itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
     }
 
     /**
@@ -352,6 +356,8 @@ public class DeviceContextImpl implements DeviceContext {
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
 
+        itemLifeCycleSourceRegistry.clear();
+
 
         for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
@@ -435,5 +441,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void updatePacketInRateLimit(long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
+    }
+
+    @Override
+    public ItemLifeCycleRegistry getItemLifeCycleSourceRegistry() {
+        return itemLifeCycleSourceRegistry;
     }
 }
