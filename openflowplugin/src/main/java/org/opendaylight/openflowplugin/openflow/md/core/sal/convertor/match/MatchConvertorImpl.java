@@ -393,7 +393,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     ipv4SrcBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         ipv4SrcBuilder.setMask(mask);
                         hasMask = true;
@@ -416,7 +416,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     ipv4DstBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         ipv4DstBuilder.setMask(mask);
                         hasMask = true;
@@ -442,7 +442,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     ipv4SrcBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         ipv4SrcBuilder.setMask(mask);
                         hasMask = true;
@@ -465,7 +465,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     ipv4DstBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         ipv4DstBuilder.setMask(mask);
                         hasMask = true;
@@ -494,7 +494,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     arpSpaBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         arpSpaBuilder.setMask(mask);
                         hasMask = true;
@@ -518,7 +518,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
                     arpTpaBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
-                    byte[] mask = extractIpv4Mask(hasMask, addressParts);
+                    byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
                         arpTpaBuilder.setMask(mask);
                         hasMask = true;
@@ -891,7 +891,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private static byte[] extractIpv4Mask(boolean hasMask, final Iterator<String> addressParts) {
+    private static byte[] extractIpv4Mask(final Iterator<String> addressParts) {
         final int prefix;
         if (addressParts.hasNext()) {
             int potentionalPrefix = Integer.parseInt(addressParts.next());
@@ -904,7 +904,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             int mask = 0xffffffff << (32 - prefix);
             byte[] maskBytes = new byte[]{(byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
                     (byte) mask};
-            hasMask = true;
             return maskBytes;
         }
         return null;
