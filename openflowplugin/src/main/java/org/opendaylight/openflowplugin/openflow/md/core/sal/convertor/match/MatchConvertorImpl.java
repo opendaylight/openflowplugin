@@ -1527,7 +1527,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         if (mplsBos.shortValue() != 0) {
             isBos = true;
         }
-        mplsBosBuilder.setBos(new Boolean(isBos));
+        mplsBosBuilder.setBos(isBos);
         mplsBosCaseBuilder.setMplsBos(mplsBosBuilder.build());
 
         matchEntryBuilder.setMatchEntryValue(mplsBosCaseBuilder.build());
