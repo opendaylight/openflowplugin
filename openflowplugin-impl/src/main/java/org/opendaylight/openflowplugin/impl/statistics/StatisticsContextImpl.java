@@ -27,8 +27,10 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -43,6 +45,8 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
+
+    private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
@@ -82,6 +86,7 @@ public class StatisticsContextImpl implements StatisticsContext {
             statListForCollecting.add(MultipartType.OFPMPQUEUE);
         }
         collectingStatType = ImmutableList.<MultipartType>copyOf(statListForCollecting);
+        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
     }
 
     @Override
@@ -244,5 +249,10 @@ public class StatisticsContextImpl implements StatisticsContext {
     protected void setStatisticsGatheringOnTheFlyService(StatisticsGatheringOnTheFlyService
                                                              statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
+    }
+
+    @Override
+    public ItemLifecycleListener getItemLifeCycleListener() {
+        return itemLifeCycleListener;
     }
 }
