@@ -276,7 +276,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;
-    private static final String noIp = "0.0.0.0/0";
+    private static final String NO_IP = "0.0.0.0/0";
 
     @Override
     public List<MatchEntry> convert(
@@ -944,7 +944,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                 ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
             }
-            if (!noIp.equals(ipv4PrefixStr)) {
+            if (!NO_IP.equals(ipv4PrefixStr)) {
                 ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
@@ -961,7 +961,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                 ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
             }
-            if (!noIp.equals(ipv4PrefixStr)) {
+            if (!NO_IP.equals(ipv4PrefixStr)) {
                 ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
