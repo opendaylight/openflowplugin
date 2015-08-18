@@ -11,27 +11,45 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -40,6 +58,15 @@ public class SalFlowServiceImplTest extends TestCase {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
+    private static final String DUMMY_NODE_ID = "dummyNodeID";
+    private static final String DUMMY_FLOW_ID = "dummyFlowID";
+    private static final Short DUMMY_TABLE_ID = (short) 0;
+
+    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II
+            = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
+
+    private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II
+            = NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
 
     @Mock
     private RequestContextStack mockedRequestContextStack;
@@ -61,6 +88,10 @@ public class SalFlowServiceImplTest extends TestCase {
     private Match match;
     private SalFlowServiceImpl salFlowService;
 
+    @Mock
+    DeviceState mockedDeviceState;
+    @Mock
+    private DeviceFlowRegistry deviceFlowRegistry;
 
     @Before
     public void initialization() {
@@ -74,40 +105,108 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
 
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
+        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
         when(requestContext.getXid()).thenReturn(new Xid(84L));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
 
         salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+
+
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_II);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
     }
 
     @Test
     public void testAddFlow() throws Exception {
-        final AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
+        addFlow(null);
+    }
+
+    @Test
+    public void testAddFlowWithItemLifecycle() throws Exception {
+        addFlow(mock(ItemLifecycleListener.class));
+    }
+
+    private void addFlow(final ItemLifecycleListener itemLifecycleListener) throws ExecutionException, InterruptedException {
+        AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
+        salFlowService.setItemLifecycleListener(itemLifecycleListener);
 
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
+        if (itemLifecycleListener != null) {
+            Mockito.verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
+        }
     }
 
     @Test
     public void testRemoveFlow() throws Exception {
-        final RemoveFlowInput mockedRemoveFlowInput = createFlowMock(RemoveFlowInput.class);
+        removeFlow(null);
+    }
+
+    @Test
+    public void testRemoveFlowWithItemLifecycle() throws Exception {
+        removeFlow(mock(ItemLifecycleListener.class));
+    }
+
+    private void removeFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+        RemoveFlowInput mockedRemoveFlowInput = createFlowMock(RemoveFlowInput.class);
+
+        if (itemLifecycleListener != null) {
+            salFlowService.setItemLifecycleListener(itemLifecycleListener);
+            mockingFlowRegistryLookup();
+
+        }
 
         verifyOutput(salFlowService.removeFlow(mockedRemoveFlowInput));
+        if (itemLifecycleListener != null) {
+            Mockito.verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any());
+        }
+
     }
 
     @Test
     public void testUpdateFlow() throws Exception {
-        final UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
+        updateFlow(null);
+    }
 
-        final UpdatedFlow mockedUpdateFlow = createFlowMock(UpdatedFlow.class);
+    @Test
+    public void testUpdateFlowWithItemLifecycle() throws Exception {
+        updateFlow(mock(ItemLifecycleListener.class));
+    }
+
+    private void updateFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+        UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
+
+        UpdatedFlow mockedUpdateFlow = createFlowMock(UpdatedFlow.class);
         when(mockedUpdateFlowInput.getUpdatedFlow()).thenReturn(mockedUpdateFlow);
 
-        final OriginalFlow mockedOriginalFlow = createFlowMock(OriginalFlow.class);
+        FlowRef mockedFlowRef = mock(FlowRef.class);
+        Mockito.doReturn(TABLE_II.child(Flow.class, new FlowKey(new FlowId(DUMMY_FLOW_ID)))).when(mockedFlowRef).getValue();
+        when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
+
+        OriginalFlow mockedOriginalFlow = createFlowMock(OriginalFlow.class);
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
 
+        if (itemLifecycleListener != null) {
+            salFlowService.setItemLifecycleListener(itemLifecycleListener);
+            mockingFlowRegistryLookup();
+        }
+
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
+
+        if (itemLifecycleListener != null) {
+            Mockito.verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
+            Mockito.verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any());
+        }
+
+    }
+
+    private void mockingFlowRegistryLookup() {
+        FlowDescriptor mockedFlowDescriptor = mock(FlowDescriptor.class);
+        when(mockedFlowDescriptor.getFlowId()).thenReturn(new FlowId(DUMMY_FLOW_ID));
+        when(mockedFlowDescriptor.getTableKey()).thenReturn(new TableKey(DUMMY_TABLE_ID));
+
+        when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 
     private <T extends DataObject> void verifyOutput(Future<RpcResult<T>> rpcResultFuture) throws ExecutionException, InterruptedException {
@@ -117,7 +216,7 @@ public class SalFlowServiceImplTest extends TestCase {
         assertTrue(addFlowOutputRpcResult.isSuccessful());
     }
 
-    private <T extends Flow> T createFlowMock(Class<T> flowClazz) {
+    private <T extends org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow> T createFlowMock(Class<T> flowClazz) {
         T mockedFlow = mock(flowClazz);
         when(mockedFlow.getMatch()).thenReturn(match);
         return mockedFlow;

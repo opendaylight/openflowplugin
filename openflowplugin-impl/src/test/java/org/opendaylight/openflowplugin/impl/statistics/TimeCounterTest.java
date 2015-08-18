@@ -27,6 +27,21 @@ public class TimeCounterTest {
         timeCounter = new TimeCounter();
     }
 
+    /**
+     * tm = time mark
+     * - tm1 at time 2 ms
+     * - tm2 at time 4 ms
+     * - tm3 at time 9 ms
+     * 
+     * awaited average time:
+     * - tm1 = 2/1 = 2 ms
+     * - tm2 = 4/2 = 2 ms
+     * - tm3 = 9/3 = 3 ms
+     *
+     * But this times are only theoretical if whole test is executed without latency and atomically. Therefore awaited
+     * average times can't be compared to exact values of awaited average time (therefore == was replaced with >=)
+     * @throws Exception
+     */
     @Test
     public void testGetAverageTimeBetweenMarks() throws Exception {
         Assert.assertEquals(0, timeCounter.getAverageTimeBetweenMarks());
@@ -35,15 +50,15 @@ public class TimeCounterTest {
 
         zzz(2L);
         timeCounter.addTimeMark();
-        Assert.assertEquals(2, timeCounter.getAverageTimeBetweenMarks());
+        Assert.assertTrue(timeCounter.getAverageTimeBetweenMarks() >= 2);
 
         zzz(2L);
         timeCounter.addTimeMark();
-        Assert.assertEquals(2, timeCounter.getAverageTimeBetweenMarks());
+        Assert.assertTrue(timeCounter.getAverageTimeBetweenMarks() >= 2);
 
         zzz(5L);
         timeCounter.addTimeMark();
-        Assert.assertEquals(3, timeCounter.getAverageTimeBetweenMarks());
+        Assert.assertTrue(timeCounter.getAverageTimeBetweenMarks() >= 3);
     }
 
     private void zzz(long length) {
