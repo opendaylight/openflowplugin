@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDiscon
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -184,5 +185,10 @@ public interface DeviceContext extends AutoCloseable,
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
+
+    /**
+     * @return registry point for item life cycle sources of device
+     */
+    ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 }
 

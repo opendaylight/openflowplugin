@@ -26,6 +26,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
@@ -221,11 +222,17 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     switch (targetWorkMode) {
                         case COLLECTALL:
                             scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+                            for (ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                                lifeCycleSource.setItemLifecycleListener(null);
+                            }
                             break;
                         case FULLYDISABLED:
                             final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
                             if (pollTimeout.isPresent()) {
                                 pollTimeout.get().cancel();
+                            }
+                            for (ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                                lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
                             break;
                         default:
