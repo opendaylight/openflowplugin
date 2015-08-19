@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_7b265718",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-19T21:36:34Z",
+      "side": 1,
+      "message": "i see there is an rpc created for changing the stats mode. Most of the time for an installation this decision is taken \nat customer engagement time. Do we have a flag in the config xml which went set will make a change to the mode?",
+      "range": {
+        "startLine": 27,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 14
+      },
+      "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
