@@ -11,6 +11,8 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflo
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.config.api.DependencyResolver;
 import org.opendaylight.controller.config.api.ModuleIdentifier;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.OldNotifProvider;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.OldNotifProviderImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +61,23 @@ public class OldNotifModule extends AbstractOldNotifModule {
         LOG.info("OldNotificationSupplier module initialization.");
         LOG.warn("OldNotificationSupplier module is marked like DEPRECATED. Modul could supplie old notification only for lithium release.");
         final OldNotifProviderConfig config = createConfig();
-        return null;
+        final OldNotifProvider provider = new OldNotifProviderImpl(config, getNotificationServiceDependency(),
+                getDataBrokerDependency());
+        provider.start();
+        LOG.info("StatisticsManager started successfully.");
+
+        return new AutoCloseable() {
+
+            @Override
+            public void close() throws Exception {
+                try {
+                    provider.close();
+                } catch (final Exception e) {
+                    LOG.error("Unexpected error by stoppping Old-Notification-Supplier module", e);
+                }
+                LOG.info("Old-Notification-Supplier module stopped.");
+            }
+        };
     }
 
     /*
