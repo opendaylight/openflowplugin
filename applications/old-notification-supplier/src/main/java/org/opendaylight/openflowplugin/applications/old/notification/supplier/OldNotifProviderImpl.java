@@ -10,10 +10,16 @@ package org.opendaylight.openflowplugin.applications.old.notification.supplier;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 
 /**
  * Provider Implementation
@@ -26,6 +32,7 @@ public class OldNotifProviderImpl implements OldNotifProvider {
 
     /* Supplier List property help for easy close method implementation and testing */
     private List<OldNotifSupplierDefinition<?>> supplierList;
+    private OldNotifSupplierForItemRoot<FlowCapableNode, NodeUpdated, NodeRemoved> nodeSupp;
 
     /**
      * Provider constructor set all needed final parameters
@@ -43,6 +50,9 @@ public class OldNotifProviderImpl implements OldNotifProvider {
 
     @Override
     public void start() {
+        nodeSupp = new NodeNotificationSupplierImpl(nps, db);
+
+        supplierList = new ArrayList<>(Arrays.<OldNotifSupplierDefinition<?>> asList(nodeSupp));
     }
 
     @Override
