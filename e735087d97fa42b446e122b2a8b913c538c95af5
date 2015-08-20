@@ -46,6 +46,30 @@
       "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_8102e43c",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-20T15:41:17Z",
+      "side": 1,
+      "message": "I understand that\u0027s the current implementation. \n\nRPCs would serve good, when we want to dynamically stop stats for certain nodes based on some design factors.\n\nBut like i said, most of the time, to run periodic stats or not , is a decision thats taken at the enagagement time.\n\nHence i feel that for us to tie to a solution, it would be essential to control it via 42-openflowplugin-new.xml",
+      "parentUuid": "3a79b1b5_7e95e53e",
+      "range": {
+        "startLine": 27,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 14
+      },
+      "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
