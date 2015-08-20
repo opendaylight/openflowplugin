@@ -17,6 +17,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeConnectorNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.FlowNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.GroupNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.MeterNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -90,6 +93,9 @@ public class OldNotifProviderImpl implements OldNotifProvider {
     public void start() {
         nodeSupp = new NodeNotificationSupplierImpl(nps, db);
         connectorSupp = new NodeConnectorNotificationSupplierImpl(nps, db);
+        flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
+        meterSupp = config.isMeterSupport() ? new MeterNotificationSupplierImpl(nps, db) : null;
+        groupSupp = config.isGroupSupport() ? new GroupNotificationSupplierImpl(nps, db) : null;
 
         supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp,
                 connectorStatSupp, flowStatSupp, flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp));
