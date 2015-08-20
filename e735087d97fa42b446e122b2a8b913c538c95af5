@@ -22,6 +22,30 @@
       "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e95e53e",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-08-20T06:36:29Z",
+      "side": 1,
+      "message": "Currently information about what type of statistic collection is enabled isn\u0027t stored in config datastore.\n\nIn StatisticsManagerImpl there is variable shuttingDownStatisticsPolling which is by default set to false (JAVA default behavior) - it means that statistics are polled and collected.\n\nIf user wants to change this behavior the RPC change-statistics-work-mode with FULLY_DISABLED has to be called.\n\nIf user wants to again poll statistics the same rpc with value COLLECT_ALL has to be called.",
+      "parentUuid": "3a79b1b5_7b265718",
+      "range": {
+        "startLine": 27,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 14
+      },
+      "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
