@@ -20,6 +20,12 @@ import org.opendaylight.openflowplugin.applications.old.notification.supplier.im
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.FlowNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.GroupNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.MeterNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.FlowStatNotifSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.FlowTableStatNotifSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.GroupStatNotifSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.MeterStatNotifSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.NodeConnectorStatNotifSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.QueueStatNotifSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -96,6 +102,12 @@ public class OldNotifProviderImpl implements OldNotifProvider {
         flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
         meterSupp = config.isMeterSupport() ? new MeterNotificationSupplierImpl(nps, db) : null;
         groupSupp = config.isGroupSupport() ? new GroupNotificationSupplierImpl(nps, db) : null;
+        connectorStatSupp = config.isNodeConnectorStatSupport() ? new NodeConnectorStatNotifSupplierImpl(nps, db) : null;
+        flowStatSupp = config.isFlowStatSupport() ? new FlowStatNotifSupplierImpl(nps, db) : null;
+        flowTableStatSupp = config.isFlowTableStatSupport() ? new FlowTableStatNotifSupplierImpl(nps, db) : null;
+        meterStatSupp = config.isMeterStatSupport() ? new MeterStatNotifSupplierImpl(nps, db) : null;
+        groupStatSupp = config.isGroupStatSupport() ? new GroupStatNotifSupplierImpl(nps, db) : null;
+        queueStatSupp = config.isQueueStatSupport() ? new QueueStatNotifSupplierImpl(nps, db) : null;
 
         supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp,
                 connectorStatSupp, flowStatSupp, flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp));
