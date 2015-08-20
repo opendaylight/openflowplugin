@@ -18,17 +18,27 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeConnectorNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.FlowNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.GroupNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.MeterNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAdded;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
 
 /**
  * Provider Implementation
@@ -44,6 +54,8 @@ public class OldNotifProviderImpl implements OldNotifProvider {
     private OldNotifSupplierForItemRoot<FlowCapableNode, NodeUpdated, NodeRemoved> nodeSupp;
     private OldNotifSupplierForItemRoot<FlowCapableNodeConnector, NodeConnectorUpdated, NodeConnectorRemoved> connectorSupp;
     private OldNotifSupplierForItem<Flow, FlowAdded, FlowUpdated, FlowRemoved> flowSupp;
+    private OldNotifSupplierForItem<Meter, MeterAdded, MeterUpdated, MeterRemoved> meterSupp;
+    private OldNotifSupplierForItem<Group, GroupAdded, GroupUpdated, GroupRemoved> groupSupp;
 
     /**
      * Provider constructor set all needed final parameters
@@ -64,8 +76,10 @@ public class OldNotifProviderImpl implements OldNotifProvider {
         nodeSupp = new NodeNotificationSupplierImpl(nps, db);
         connectorSupp = new NodeConnectorNotificationSupplierImpl(nps, db);
         flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
+        meterSupp = config.isMeterSupport() ? new MeterNotificationSupplierImpl(nps, db) : null;
+        groupSupp = config.isGroupSupport() ? new GroupNotificationSupplierImpl(nps, db) : null;
 
-        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp));
+        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp));
     }
 
     @Override
