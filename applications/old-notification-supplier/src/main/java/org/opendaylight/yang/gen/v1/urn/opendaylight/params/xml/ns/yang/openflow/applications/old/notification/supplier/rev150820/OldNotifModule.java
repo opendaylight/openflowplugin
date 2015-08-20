@@ -40,7 +40,7 @@ public class OldNotifModule extends AbstractOldNotifModule {
 
     /**
      * Module constructor
-     *
+     * 
      * @param identifier - {@link ModuleIdentifier}
      * @param dependencyResolver - {@link DependencyResolver}
      * @param oldModule - {@link OldNotifModule}
