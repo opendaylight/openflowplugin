@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+
+                <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:applications:old-notification-supplier">prefix:old-notification-supplier</type>
+                    <name>old-notification-supplier</name>
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                    <notification-service>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-notification-service
+                        </type>
+                        <name>binding-notification-broker</name>
+                    </notification-service>
+
+                    <old-notification-supplier-settings>
+                        <!--<port-support>true</port-support>-->
+                        <!--<flow-support>true</flow-support>-->
+                        <meter-support>true</meter-support>
+                        <group-support>true</group-support>
+                        <node-connector-stat-support>false</node-connector-stat-support>
+                        <flow-table-stat-support>false</flow-table-stat-support>
+                        <group-stat-support>false</group-stat-support>
+                        <meter-stat-support>false</meter-stat-support>
+                        <queue-stat-support>false</queue-stat-support>
+                        <flow-stat-support>false</flow-stat-support>
+                    </old-notification-supplier-settings>
+
+                </module>
+
+            </modules>
+        </data>
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:applications:old-notification-supplier?module=old-notification-supplier&amp;revision=2015-08-20</capability>
+        <capability>urn:opendaylight:flow:inventory?module=flow-node-inventory&amp;revision=2013-08-19</capability>
+        <capability>urn:opendaylight:inventory?module=opendaylight-inventory&amp;revision=2013-08-19</capability>
+        <capability>urn:opendaylight:flow:types?module=opendaylight-flow-types&amp;revision=2013-10-26</capability>
+    </required-capabilities>
+</snapshot>

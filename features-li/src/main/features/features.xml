@@ -118,4 +118,11 @@
         <configfile finalname="etc/opendaylight/karaf/71-bulk-o-matic.xml">mvn:org.opendaylight.openflowplugin.applications/bulk-o-matic/${project.version}/xml/config</configfile>
     </feature>
 
+    <feature name='odl-openflowplugin-old-notifications-li' description="OpenDaylight :: Openflow Plugin :: app old notifications supplier" version='${project.version}'>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-model-li</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/old-notification-supplier/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/73-old-notification-supplier.xml">mvn:org.opendaylight.openflowplugin.applications/old-notification-supplier/{{VERSION}}/xml/config</configfile>
+    </feature>
+
 </features>
