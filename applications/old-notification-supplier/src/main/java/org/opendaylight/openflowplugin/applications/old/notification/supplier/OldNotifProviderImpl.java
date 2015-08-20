@@ -17,9 +17,14 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeConnectorNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.NodeNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.FlowNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -38,6 +43,7 @@ public class OldNotifProviderImpl implements OldNotifProvider {
     private List<OldNotifSupplierDefinition<?>> supplierList;
     private OldNotifSupplierForItemRoot<FlowCapableNode, NodeUpdated, NodeRemoved> nodeSupp;
     private OldNotifSupplierForItemRoot<FlowCapableNodeConnector, NodeConnectorUpdated, NodeConnectorRemoved> connectorSupp;
+    private OldNotifSupplierForItem<Flow, FlowAdded, FlowUpdated, FlowRemoved> flowSupp;
 
     /**
      * Provider constructor set all needed final parameters
@@ -57,8 +63,9 @@ public class OldNotifProviderImpl implements OldNotifProvider {
     public void start() {
         nodeSupp = new NodeNotificationSupplierImpl(nps, db);
         connectorSupp = new NodeConnectorNotificationSupplierImpl(nps, db);
+        flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
 
-        supplierList = new ArrayList<>(Arrays.<OldNotifSupplierDefinition<?>> asList(nodeSupp, connectorSupp));
+        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp));
     }
 
     @Override
