@@ -46,7 +46,6 @@ import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private ExtensionConverterManager extensionConverterManager;
 
     private DataBroker dataBroker;
-    private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
@@ -141,12 +139,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void setRpcProviderRegistry(final RpcProviderRegistry rpcProviderRegistry) {
         this.rpcProviderRegistry = rpcProviderRegistry;
     }
-
-    @Override
-    public void setRole(final OfpRole role) {
-        this.role = role;
-    }
-
 
     @Override
     public void initialize() {

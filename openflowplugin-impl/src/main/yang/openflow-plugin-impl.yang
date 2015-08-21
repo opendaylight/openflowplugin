@@ -9,7 +9,6 @@ module openflow-plugin-provider-impl {
     import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
-    import openflow-plugin-types { prefix ofp-types; revision-date 2015-03-27;}
     import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
 
     description
@@ -70,10 +69,6 @@ module openflow-plugin-provider-impl {
                         config:required-identity openflow-switch-connection-provider:openflow-switch-connection-provider;
                     }
                 }
-            }
-            leaf role {
-                type ofp-types:ofp-role;
-                default "NOCHANGE";
             }
             leaf rpc-requests-quota {
                 type uint32;
