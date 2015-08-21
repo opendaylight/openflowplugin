@@ -30,7 +30,6 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(getRpcRequestsQuota(), getGlobalNotificationQuota());
 
         openflowPluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
-        openflowPluginProvider.setRole(getRole());
         openflowPluginProvider.setDataBroker(getDataBrokerDependency());
         openflowPluginProvider.setRpcProviderRegistry(getRpcRegistryDependency());
         openflowPluginProvider.setNotificationProviderService(getNotificationAdapterDependency());
