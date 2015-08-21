@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_ec3aaf35",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-21T01:10:31Z",
+      "side": 1,
+      "message": "Currently the submitTransaction() does not verify that transaction was successful or not.\nIn case statistics is not running, we cannot go with the fire-and-forget strategy.\n\nWe would want to perform a checkedGet on the transaction future result and ensure that the flow is added.\nIf the flow is not added due to an exeception, then we need to possible retry for n times (say 3).",
+      "range": {
+        "startLine": 33,
+        "startChar": 21,
+        "endLine": 33,
+        "endChar": 22
+      },
+      "revId": "8036c4f4c6de7955f6dfccae7f7da2c85f1361a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
