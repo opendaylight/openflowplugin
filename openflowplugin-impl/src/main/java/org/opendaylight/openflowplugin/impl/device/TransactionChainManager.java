@@ -107,7 +107,22 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 LOG.trace("nothing to commit - submit returns true");
                 return true;
             }
-            wTx.submit();
+            final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
+            Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    //no action required
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    if (t instanceof TransactionCommitFailedException) {
+                        LOG.debug("Transaction commit failed. {}", t);
+                    } else {
+                        LOG.debug("Exception during transaction submitting. {}", t);
+                    }
+                }
+            });
             wTx = null;
         }
         return true;
