@@ -22,6 +22,30 @@
       "revId": "8036c4f4c6de7955f6dfccae7f7da2c85f1361a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7269948a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-08-21T14:04:36Z",
+      "side": 1,
+      "message": "I prepared patch\n\nhttps://git.opendaylight.org/gerrit/#/c/25578/1\n\nwhere I didn\u0027t use checkedGet but callback.",
+      "parentUuid": "3a79b1b5_ec3aaf35",
+      "range": {
+        "startLine": 33,
+        "startChar": 21,
+        "endLine": 33,
+        "endChar": 22
+      },
+      "revId": "8036c4f4c6de7955f6dfccae7f7da2c85f1361a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
