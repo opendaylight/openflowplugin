@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
@@ -102,6 +104,8 @@ public interface DeviceContext extends AutoCloseable,
      */
     ReadTransaction getReadTransaction();
 
+
+    CheckedFuture<Void, TransactionCommitFailedException> submitTransactionWithFuture();
 
     /**
      * Method provides current devices connection context.

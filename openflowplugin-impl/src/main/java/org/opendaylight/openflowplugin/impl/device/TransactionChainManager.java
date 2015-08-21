@@ -113,6 +113,22 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return true;
     }
 
+    CheckedFuture<Void, TransactionCommitFailedException> submitWriteTransactionWithFuture() {
+        if (!submitIsEnabled) {
+            LOG.trace("transaction not committed - submit block issued");
+            return Futures.immediateCheckedFuture(null);
+        }
+        synchronized (txLock) {
+            if (wTx == null) {
+                LOG.trace("nothing to commit - submit returns true");
+                return Futures.immediateCheckedFuture(null);
+            }
+            final CheckedFuture<Void, TransactionCommitFailedException> future = wTx.submit();
+            wTx = null;
+        }
+        return Futures.immediateCheckedFuture(null);
+    }
+
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path) {
         final WriteTransaction writeTx = getTransactionSafely();
