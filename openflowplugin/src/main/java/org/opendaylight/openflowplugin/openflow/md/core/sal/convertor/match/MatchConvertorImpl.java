@@ -9,13 +9,12 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
-
+import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -264,8 +263,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -1820,7 +1817,22 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-
+//    /**
+//     * Method converts OF SetField action to SAL SetFiled action.
+//     *
+//     * @param action
+//     * @param ofVersion current ofp version
+//     * @return
+//     */
+//    public static SetField fromOFSetFieldToSALSetFieldAction(
+//            final Action action, OpenflowVersion ofVersion) {
+//        logger.debug("Converting OF SetField action to SAL SetField action");
+//        SetFieldBuilder setField = new SetFieldBuilder();
+//        OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
+//        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntry(), null, ofVersion);
+//        setField.fieldsFrom(match.build());
+//        return setField.build();
+//    }
 
     /**
      * Method converts OF SetField action to SAL SetFiled action.
