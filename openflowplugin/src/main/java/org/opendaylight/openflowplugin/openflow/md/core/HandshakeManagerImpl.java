@@ -7,11 +7,15 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
@@ -27,12 +31,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
  * @author mirehak
  *
@@ -46,7 +44,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short lastReceivedVersion;
     private final List<Short> versionOrder;
 
-
+    //private HelloMessage receivedHello;
     private final ConnectionAdapter connectionAdapter;
     private Short version;
     private ErrorHandler errorHandler;
@@ -311,8 +309,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @throws Exception
      */
     private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) throws Exception {
-        
-        
+        //Short highestVersion = ConnectionConductor.versionOrder.get(0);
+        //final Long helloXid = 21L;
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
 
         final SettableFuture<Void> resultFtr = SettableFuture.create();
