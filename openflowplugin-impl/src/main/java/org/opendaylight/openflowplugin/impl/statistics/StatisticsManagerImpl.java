@@ -8,28 +8,44 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
  */
-public class StatisticsManagerImpl implements StatisticsManager {
+public class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
+    private final RpcProviderRegistry rpcProviderRegistry;
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
@@ -41,9 +57,24 @@ public class StatisticsManagerImpl implements StatisticsManager {
     private static long currentTimerDelay = basicTimerDelay;
     private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
+    private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
+    private Semaphore workModeGuard = new Semaphore(1, true);
+    private boolean shuttingDownStatisticsPolling;
+    private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
+
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
         deviceInitPhaseHandler = handler;
+    }
+
+    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry) {
+        this.rpcProviderRegistry = rpcProviderRegistry;
+        controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
+    }
+
+    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+        this(rpcProviderRegistry);
+        this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
     }
 
     @Override
@@ -120,17 +151,21 @@ public class StatisticsManagerImpl implements StatisticsManager {
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
         if (null != hashedWheelTimer) {
-            Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    pollStatistics(deviceContext, statisticsContext, timeCounter);
-                }
-            }, currentTimerDelay, TimeUnit.MILLISECONDS);
-            statisticsContext.setPollTimeout(pollTimeout);
+            if (!shuttingDownStatisticsPolling) {
+                Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
+                    @Override
+                    public void run(final Timeout timeout) throws Exception {
+                        pollStatistics(deviceContext, statisticsContext, timeCounter);
+                    }
+                }, currentTimerDelay, TimeUnit.MILLISECONDS);
+                statisticsContext.setPollTimeout(pollTimeout);
+            }
         }
     }
 
-    private void calculateTimerDelay(final TimeCounter timeCounter) {
+    @VisibleForTesting
+    protected void calculateTimerDelay(final TimeCounter timeCounter) {
+        // TODO: move into TimeCounter
         long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
         if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;
@@ -146,6 +181,11 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
     }
 
+    @VisibleForTesting
+    protected static long getCurrentTimerDelay() {
+        return currentTimerDelay;
+    }
+
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         StatisticsContext statisticsContext = contexts.remove(deviceContext);
@@ -159,29 +199,56 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
     }
 
-    private final class TimeCounter {
-        private long beginningOfTime;
-        private long delta;
-        private int marksCount = 0;
+    @Override
+    public Future<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode() {
+        GetStatisticsWorkModeOutputBuilder smModeOutputBld = new GetStatisticsWorkModeOutputBuilder();
+        smModeOutputBld.setMode(workMode);
+        return RpcResultBuilder.success(smModeOutputBld.build()).buildFuture();
+    }
 
-        public void markStart() {
-            beginningOfTime = System.nanoTime();
-            delta = 0;
-            marksCount = 0;
-        }
-
-        public void addTimeMark() {
-            delta += System.nanoTime() - beginningOfTime;
-            marksCount++;
-        }
-
-        public long getAverageTimeBetweenMarks() {
-            long average = 0;
-            if (marksCount > 0) {
-                average = delta / marksCount;
+    @Override
+    public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
+        final Future<RpcResult<Void>> result;
+        // acquire exclusive access
+        if (workModeGuard.tryAcquire()) {
+            final StatisticsWorkMode targetWorkMode = input.getMode();
+            if (!workMode.equals(targetWorkMode)) {
+                shuttingDownStatisticsPolling = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+                // iterate through stats-ctx: propagate mode
+                for (Map.Entry<DeviceContext, StatisticsContext> contextEntry : contexts.entrySet()) {
+                    final DeviceContext deviceContext = contextEntry.getKey();
+                    final StatisticsContext statisticsContext = contextEntry.getValue();
+                    switch (targetWorkMode) {
+                        case COLLECTALL:
+                            scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+                            break;
+                        case FULLYDISABLED:
+                            final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
+                            if (pollTimeout.isPresent()) {
+                                pollTimeout.get().cancel();
+                            }
+                            break;
+                        default:
+                            LOG.warn("statistics work mode not supported: {}", targetWorkMode);
+                    }
+                }
+                workMode = targetWorkMode;
             }
-            return TimeUnit.NANOSECONDS.toMillis(average);
+            workModeGuard.release();
+            result = RpcResultBuilder.<Void>success().buildFuture();
+        } else {
+            result = RpcResultBuilder.<Void>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "mode change already in progress")
+                    .buildFuture();
         }
+        return result;
+    }
 
+    @Override
+    public void close() {
+        if (controlServiceRegistration != null) {
+            controlServiceRegistration.close();
+            controlServiceRegistration = null;
+        }
     }
 }
