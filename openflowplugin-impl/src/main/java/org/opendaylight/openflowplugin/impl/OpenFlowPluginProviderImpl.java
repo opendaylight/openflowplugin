@@ -72,6 +72,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private DataBroker dataBroker;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
+    private boolean isStatisticsPollingOff = false;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -79,6 +80,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
     }
 
+    @Override
+    public boolean isStatisticsPollingOff() {
+        return isStatisticsPollingOff;
+    }
+
+    @Override
+    public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
+        this.isStatisticsPollingOff = isStatisticsPollingOff;
+    }
 
     private void startSwitchConnections() {
         final List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
