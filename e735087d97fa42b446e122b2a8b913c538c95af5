@@ -70,6 +70,30 @@
       "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6426ab18",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-08-24T11:43:22Z",
+      "side": 1,
+      "message": "In following patch\nhttps://git.opendaylight.org/gerrit/#/c/25862/2\n\nconfiguration via config subsystem xml (42-openflowplugin-nex.xml) was added",
+      "parentUuid": "3a79b1b5_8102e43c",
+      "range": {
+        "startLine": 27,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 14
+      },
+      "revId": "e735087d97fa42b446e122b2a8b913c538c95af5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
