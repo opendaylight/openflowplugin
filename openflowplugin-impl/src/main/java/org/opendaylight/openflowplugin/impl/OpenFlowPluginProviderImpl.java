@@ -157,7 +157,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         registerMXBean(messageIntelligenceAgency);
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
-        statisticsManager = new StatisticsManagerImpl();
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
         connectionManager.setDeviceConnectedHandler(deviceManager);

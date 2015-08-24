@@ -74,11 +74,11 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
    private static final int MAX_BATCH = 100;
 
    private final BlockingQueue<StatDataStoreOperation> dataStoreOperQueue = new LinkedBlockingDeque<>(QUEUE_DEPTH);
-    private final Map<InstanceIdentifier<Node>, Pair<StatPermCollector, UUID>> nodeCollectorMap = new ConcurrentHashMap<>();
-    private AtomicInteger numNodesBeingCollected = new AtomicInteger(0);
+   private final Map<InstanceIdentifier<Node>, Pair<StatPermCollector, UUID>> nodeCollectorMap = new ConcurrentHashMap<>();
+   private AtomicInteger numNodesBeingCollected = new AtomicInteger(0);
 
 
-    private final DataBroker dataBroker;
+   private final DataBroker dataBroker;
    private final ExecutorService statRpcMsgManagerExecutor;
    private final ExecutorService statDataStoreOperationServ;
    private StatRpcMsgManager rpcMsgManager;

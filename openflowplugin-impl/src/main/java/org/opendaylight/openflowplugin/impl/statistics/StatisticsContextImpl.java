@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
@@ -146,6 +147,11 @@ public class StatisticsContextImpl implements StatisticsContext {
         this.pollTimeout = pollTimeout;
     }
 
+    @Override
+    public Optional<Timeout> getPollTimeout() {
+        return Optional.fromNullable(pollTimeout);
+    }
+
     void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
@@ -239,5 +245,4 @@ public class StatisticsContextImpl implements StatisticsContext {
                                                              statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
-
 }

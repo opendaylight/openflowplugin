@@ -15,6 +15,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceContextClosedHandler {
+public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler,
+        DeviceContextClosedHandler, AutoCloseable {
 
+    @Override
+    void close();
 }

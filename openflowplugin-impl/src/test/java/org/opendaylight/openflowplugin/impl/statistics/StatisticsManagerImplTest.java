@@ -1,12 +1,19 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.netty.util.HashedWheelTimer;
+import java.math.BigInteger;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -17,13 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-
-import java.math.BigInteger;
-
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,6 +48,8 @@ public class StatisticsManagerImplTest extends TestCase {
     DeviceState mockedDeviceState;
     @Mock
     DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
+    @Mock
+    private RpcProviderRegistry rpcProviderRegistry;
 
     @Before
     public void initialization() {
@@ -67,7 +69,7 @@ public class StatisticsManagerImplTest extends TestCase {
 
     @Test
     public void testOnDeviceContextLevelUp() throws Exception {
-        final StatisticsManagerImpl statisticsManager = new StatisticsManagerImpl();
+        final StatisticsManagerImpl statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry);
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
         verify(mockedDeviceState).setDeviceSynchronized(eq(true));
