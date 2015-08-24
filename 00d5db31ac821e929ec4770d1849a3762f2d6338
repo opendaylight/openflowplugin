@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_4d2dd345",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-08-24T15:41:26Z",
+      "side": 1,
+      "message": "this is never used",
+      "range": {
+        "startLine": 126,
+        "startChar": 72,
+        "endLine": 126,
+        "endChar": 78
+      },
+      "revId": "00d5db31ac821e929ec4770d1849a3762f2d6338",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
