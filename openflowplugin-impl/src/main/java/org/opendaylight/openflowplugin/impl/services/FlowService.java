@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -21,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -52,7 +54,24 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<O>>>() {
             @Override
             public void onSuccess(final List<RpcResult<O>> results) {
-                RpcResultBuilder<O> rpcResultBuilder = RpcResultBuilder.success();
+                final ArrayList<RpcError> errors = new ArrayList();
+                for (RpcResult<O> flowModResult : results) {
+                    if (flowModResult == null) {
+                        errors.add(RpcResultBuilder.newError(
+                                RpcError.ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
+                                "unexpected flowMod result (null) occurred"));
+                    } else if (!flowModResult.isSuccessful()) {
+                        errors.addAll(flowModResult.getErrors());
+                    }
+                }
+
+                final RpcResultBuilder<O> rpcResultBuilder;
+                if (errors.isEmpty()) {
+                    rpcResultBuilder = RpcResultBuilder.success();
+                } else {
+                    rpcResultBuilder = RpcResultBuilder.<O>failed().withRpcErrors(errors);
+                }
+
                 finalFuture.set(rpcResultBuilder.build());
             }
 
