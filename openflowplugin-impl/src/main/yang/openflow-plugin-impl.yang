@@ -87,6 +87,10 @@ module openflow-plugin-provider-impl {
                 type uint32;
                 default 131072;
             }
+            leaf is-statistics-polling-off {
+                type boolean;
+                default "true";
+            }
         }
 
     }

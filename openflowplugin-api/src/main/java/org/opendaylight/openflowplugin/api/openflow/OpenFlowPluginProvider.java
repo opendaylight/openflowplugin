@@ -59,6 +59,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     boolean isSwitchFeaturesMandatory();
 
+    boolean isStatisticsPollingOff();
 
+    void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff);
 
     }
