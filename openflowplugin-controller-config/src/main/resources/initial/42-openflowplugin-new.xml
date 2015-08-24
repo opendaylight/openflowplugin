@@ -85,6 +85,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                     <rpc-requests-quota>20000</rpc-requests-quota>
                     <switch-features-mandatory>false</switch-features-mandatory>
                     <global-notification-quota>64000</global-notification-quota>
+                    <is-statistics-polling-off>false</is-statistics-polling-off>
                 </module>
             </modules>
 
