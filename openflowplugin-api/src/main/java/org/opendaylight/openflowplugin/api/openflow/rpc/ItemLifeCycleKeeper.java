@@ -12,16 +12,13 @@ import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
- * A source of switch item lifecycle enables for injecting of
- * a {@link org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener}
- * in order to act upon item lifecycle changes.
+ * provides read-write access to assigned {@link ItemLifecycleListener}
  */
-public interface ItemLifeCycleSource {
+public interface ItemLifeCycleKeeper extends ItemLifeCycleSource {
 
     /**
-     * @param itemLifecycleListener acts upon lifecycle changes
+     * @return assigned item lifecycle listener
      */
-    void setItemLifecycleListener(@Nullable ItemLifecycleListener itemLifecycleListener);
-
-
+    @Nullable
+    ItemLifecycleListener getItemLifecycleListener();
 }
