@@ -199,14 +199,14 @@
         </dependency>
 
         <dependency>
-          <groupId>org.openexi</groupId>
-          <artifactId>nagasena</artifactId>
-          <scope>test</scope>
+            <groupId>openexi</groupId>
+            <artifactId>nagasena</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.openexi</groupId>
-          <artifactId>nagasena-rta</artifactId>
-          <scope>test</scope>
+            <groupId>openexi</groupId>
+            <artifactId>nagasena-rta</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
