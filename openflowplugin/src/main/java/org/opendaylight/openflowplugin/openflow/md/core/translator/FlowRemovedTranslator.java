@@ -198,7 +198,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch, sc.getFeatures().getDatapathId(), ofVersion));
             } else if (ofFlow.getMatchV10() != null) {
-                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10(), sc.getFeatures().getDatapathId(), ofVersion));
+                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10(), sc.getFeatures().getDatapathId(), ofVersion).build());
                 salFlowRemoved.setMatch(matchBuilder.build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
