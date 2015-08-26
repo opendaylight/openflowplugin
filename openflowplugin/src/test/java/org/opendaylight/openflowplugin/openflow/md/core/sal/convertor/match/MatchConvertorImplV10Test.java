@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +65,7 @@ public class MatchConvertorImplV10Test {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10).build();
 
         Assert.assertEquals("Wrong in port", "openflow:42:6653", salMatch.getInPort().getValue());
         Assert.assertEquals("Wrong dl src", new MacAddress("01:01:01:01:01:01"), salMatch.getEthernetMatch()
@@ -113,7 +112,7 @@ public class MatchConvertorImplV10Test {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10).build();
 
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl match", null, salMatch.getEthernetMatch());
@@ -134,7 +133,7 @@ public class MatchConvertorImplV10Test {
                 true, true, true, true, true, true));
         MatchV10 match = builder.build();
 
-        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10).build();
 
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl match", null, salMatch.getEthernetMatch());
@@ -158,7 +157,7 @@ public class MatchConvertorImplV10Test {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+        Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10).build();
 
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl match", null, salMatch.getEthernetMatch());
@@ -198,7 +197,7 @@ public class MatchConvertorImplV10Test {
 
         BigInteger dpid = BigInteger.valueOf(12345L);
         Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         EthernetMatch etherMatch = salMatch.getEthernetMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl src",
@@ -219,7 +218,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, true, true);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl src",
@@ -239,7 +238,7 @@ public class MatchConvertorImplV10Test {
         Short ipProto = 1;
         match = builder.setNwProto(ipProto).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         IpMatch ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -265,7 +264,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, true, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -290,7 +289,7 @@ public class MatchConvertorImplV10Test {
         Short icmpType = 10;
         match = builder.setTpSrc(icmpType.intValue()).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         Icmpv4Match icmpv4Match = salMatch.getIcmpv4Match();
@@ -319,7 +318,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, false, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         icmpv4Match = salMatch.getIcmpv4Match();
@@ -347,7 +346,7 @@ public class MatchConvertorImplV10Test {
         Short icmpCode = 33;
         match = builder.setTpSrc(null).setTpDst(icmpCode.intValue()).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         icmpv4Match = salMatch.getIcmpv4Match();
@@ -377,7 +376,7 @@ public class MatchConvertorImplV10Test {
         match = builder.setTpSrc(icmpType.intValue()).
             setTpDst(icmpCode.intValue()).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         icmpv4Match = salMatch.getIcmpv4Match();
@@ -420,7 +419,7 @@ public class MatchConvertorImplV10Test {
 
         BigInteger dpid = BigInteger.valueOf(12345L);
         Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         EthernetMatch etherMatch = salMatch.getEthernetMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl src",
@@ -440,7 +439,7 @@ public class MatchConvertorImplV10Test {
         Short ipProto = 6;
         match = builder.setNwProto(ipProto).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         IpMatch ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -466,7 +465,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, true, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -491,7 +490,7 @@ public class MatchConvertorImplV10Test {
         Integer srcPort = 60000;
         match = builder.setTpSrc(srcPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         TcpMatch tcpMatch = (TcpMatch)salMatch.getLayer4Match();
@@ -521,7 +520,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, false, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         tcpMatch = (TcpMatch)salMatch.getLayer4Match();
@@ -550,7 +549,7 @@ public class MatchConvertorImplV10Test {
         Integer dstPort = 6653;
         match = builder.setTpSrc(null).setTpDst(dstPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         tcpMatch = (TcpMatch)salMatch.getLayer4Match();
@@ -580,7 +579,7 @@ public class MatchConvertorImplV10Test {
         dstPort = 9999;
         match = builder.setTpSrc(srcPort).setTpDst(dstPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         tcpMatch = (TcpMatch)salMatch.getLayer4Match();
@@ -624,7 +623,7 @@ public class MatchConvertorImplV10Test {
 
         BigInteger dpid = BigInteger.valueOf(12345L);
         Match salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         EthernetMatch etherMatch = salMatch.getEthernetMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
         Assert.assertEquals("Wrong dl src",
@@ -644,7 +643,7 @@ public class MatchConvertorImplV10Test {
         Short ipProto = 17;
         match = builder.setNwProto(ipProto).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         IpMatch ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -670,7 +669,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, true, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         Assert.assertEquals("Wrong in port", null, salMatch.getInPort());
@@ -695,7 +694,7 @@ public class MatchConvertorImplV10Test {
         Integer srcPort = 60000;
         match = builder.setTpSrc(srcPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         UdpMatch udpMatch = (UdpMatch)salMatch.getLayer4Match();
@@ -725,7 +724,7 @@ public class MatchConvertorImplV10Test {
             true, true, false, true, true, true, false, true, false, false);
         match = builder.setWildcards(wc).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         udpMatch = (UdpMatch)salMatch.getLayer4Match();
@@ -754,7 +753,7 @@ public class MatchConvertorImplV10Test {
         Integer dstPort = 6653;
         match = builder.setTpSrc(null).setTpDst(dstPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         udpMatch = (UdpMatch)salMatch.getLayer4Match();
@@ -784,7 +783,7 @@ public class MatchConvertorImplV10Test {
         dstPort = 9999;
         match = builder.setTpSrc(srcPort).setTpDst(dstPort).build();
         salMatch = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-            match, dpid, OpenflowVersion.OF10);
+                match, dpid, OpenflowVersion.OF10).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
         udpMatch = (UdpMatch)salMatch.getLayer4Match();
