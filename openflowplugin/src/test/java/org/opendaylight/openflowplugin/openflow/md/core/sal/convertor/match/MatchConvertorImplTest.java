@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +152,7 @@ public class MatchConvertorImplTest {
                 FlowWildcardsV10 wc = wcBuilder.build();
                 MatchV10 ofMatch = builder.setWildcards(wc).build();
                 Match match = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-                        ofMatch, DPID, OpenflowVersion.OF10);
+                        ofMatch, DPID, OpenflowVersion.OF10).build();
                 checkDefaultV10(match, wc, vid);
 
                 IpMatch ipMatch = match.getIpMatch();
@@ -163,7 +164,7 @@ public class MatchConvertorImplTest {
                 wc = wcBuilder.setAll(true).build();
                 ofMatch = builder.setWildcards(wc).build();
                 match = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-                        ofMatch, DPID, OpenflowVersion.OF10);
+                        ofMatch, DPID, OpenflowVersion.OF10).build();
                 checkDefaultV10(match, wc, vid);
                 assertEquals(null, match.getIpMatch());
             }

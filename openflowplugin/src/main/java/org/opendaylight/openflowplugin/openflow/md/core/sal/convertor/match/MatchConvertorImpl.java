@@ -10,12 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
+import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -36,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
@@ -264,8 +264,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -889,7 +887,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
      * @return
      * @author avishnoi@in.ibm.com
      */
-    public static Match fromOFMatchV10ToSALMatch(final MatchV10 swMatch, final BigInteger datapathid, final OpenflowVersion ofVersion) {
+    public static MatchBuilder fromOFMatchV10ToSALMatch(@Nonnull final MatchV10 swMatch, @Nonnull final BigInteger datapathid, @Nonnull final OpenflowVersion ofVersion) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -1039,7 +1037,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
 
-        return matchBuilder.build();
+        return matchBuilder;
     }
 
     /**
@@ -1054,8 +1052,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
      * @author avishnoi@in.ibm.com
      */
     public static MatchBuilder fromOFMatchToSALMatch(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match swMatch,
-            final BigInteger datapathid, final OpenflowVersion ofVersion) {
+            @Nonnull final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match swMatch,
+            @Nonnull final BigInteger datapathid, @Nonnull final OpenflowVersion ofVersion) {
         return OfMatchToSALMatchConvertor(swMatch.getMatchEntry(), datapathid, ofVersion);
     }
 
