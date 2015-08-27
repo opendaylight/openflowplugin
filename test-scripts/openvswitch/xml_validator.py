@@ -4,6 +4,7 @@ Created on Jan 24, 2014
 @author: vdemcak
 '''
 
+from exceptions import StandardError
 import logging
 import os
 import re
@@ -26,21 +27,21 @@ class Loader():
     @staticmethod
     def buildXmlDocDictionaryForComarableElements(element, flow_dict, p_elm_name=None, kwd=None, akwd=None, mkwd=None):
         act_key_dict = kwd if (kwd > None) else akwd if (akwd > None) else mkwd if (mkwd > None) else None
-        if element > None :
+        if element > None:
             elm_alias = element.tag if (act_key_dict.get(element.tag, None) > None) else None
             if ((element.getchildren() > None) & (len(element.getchildren()) > 0)):
-                for child in element.getchildren() :
-                    if (element.tag == 'match') :
+                for child in element.getchildren():
+                    if (element.tag == 'match'):
                         Loader.buildXmlDocDictionaryForComarableElements(child, flow_dict, mkwd=mkwd)
-                    elif (element.tag == 'actions') :
+                    elif (element.tag == 'actions'):
                         Loader.buildXmlDocDictionaryForComarableElements(child, flow_dict, akwd=akwd)
-                    else :
-                        Loader.buildXmlDocDictionaryForComarableElements(child, flow_dict, elm_alias, kwd, akwd, mkwd);
-            else :
-                if element.text > None :
-                    text = re.sub( '[\s]+','', element.text, count=1)
+                    else:
+                        Loader.buildXmlDocDictionaryForComarableElements(child, flow_dict, elm_alias, kwd, akwd, mkwd)
+            else:
+                if element.text > None:
+                    text = re.sub('[\s]+', '', element.text, count=1)
                     a_key = p_elm_name if (p_elm_name > None) else element.tag
-                    flow_dict[a_key] = text;
+                    flow_dict[a_key] = text
         return
 
 type_int = 1
@@ -48,6 +49,7 @@ type_boolean = 2
 type_ethernet = 3
 type_ipv4 = 4
 type_ipv6 = 5
+
 
 class Field():
     """
@@ -86,7 +88,7 @@ class Field():
 class XMLValidator():
 
     log = logging.getLogger('XMLValidator')
-    log.propagate=False
+    log.propagate = False
     channel = logging.StreamHandler()
     log.addHandler(channel)
 
@@ -105,15 +107,15 @@ class XMLValidator():
 
     def create_dictionaries(self, file_name):
         self.test_name = file_name
-        
+
         formatter = logging.Formatter('TEST {0}: %(levelname)s: %(message)s'.format(self.test_name))
         XMLValidator.channel.setFormatter(formatter)
 
         self.flow_dict = dict()
         treeXml1, self.xml_string = Loader.loadXml(file_name)
-        Loader.buildXmlDocDictionaryForComarableElements(treeXml1, self.flow_dict, kwd=self.kwd, akwd=self.akwd, mkwd=self.mkwd)
+        Loader.buildXmlDocDictionaryForComarableElements(
+            treeXml1, self.flow_dict, kwd=self.kwd, akwd=self.akwd, mkwd=self.mkwd)
         XMLValidator.log.debug('loaded dict from xml: {0}'.format(self.flow_dict))
-
 
     def fill_fields(self):
         Matchers.fill_validator(self)
@@ -184,7 +186,7 @@ class XMLValidator():
         max_range = (2**16) - 1
 
         for n in numbers:
-            #if n == '' then the number is 0000 which is always smaller than max_range
+            # if n == '' then the number is 0000 which is always smaller than max_range
             if n != '' and int(n, 16) > max_range:
                 raise StandardError('number: {0} in ipv6 address: {1} larger than: {2}'.format(n, a, max_range))
 
@@ -195,15 +197,15 @@ class XMLValidator():
         ethernet_regexp = re.compile("^[0-9,A-F,a-f]{2}(:[0-9,A-F,a-f]{2}){5}$")
 
         try:
-            if value_type == type_boolean and value in ['true', 'false']:  #boolean values
+            if value_type == type_boolean and value in ['true', 'false']:  # boolean values
                     self.boolean_check(value, bits)
-            elif value_type == type_ethernet and ethernet_regexp.match(value):  #ethernet address
+            elif value_type == type_ethernet and ethernet_regexp.match(value):  # ethernet address
                 self.ethernet_check(value)
-            elif value_type == type_ipv4 and ipv4_regexp.match(value):  #IPV4 address
+            elif value_type == type_ipv4 and ipv4_regexp.match(value):  # IPV4 address
                 self.ipv4_check(value)
-            elif value_type == type_ipv6 and ipv6_regexp.match(value):  #IPV6 address
+            elif value_type == type_ipv6 and ipv6_regexp.match(value):  # IPV6 address
                 self.ipv6_check(value)
-            elif value_type == type_int:  #integer values
+            elif value_type == type_int:  # integer values
                 self.integer_check(value, bits, convert_from)
             else:
                 raise StandardError
@@ -222,37 +224,41 @@ class XMLValidator():
             XMLValidator.log.error('problem checking size for value: {0}, reason: {1}'.format(value, str(e)))
             self.xml_ok = False
 
-
     def has_prerequisite(self, key, values, convert_from, flow_dict):
         XMLValidator.log.debug('checking prerequisite: {0} - {1}'.format(key, values))
         try:
             flow_value_raw = flow_dict[key]
 
-            #if prerequisites values are [None] we don't care about actual value
+            # if prerequisites values are [None] we don't care about actual value
             if values != [None]:
                 flow_value = int(flow_value_raw, convert_from)
 
                 if flow_value not in values:
                     raise StandardError()
 
-            XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(key, values, flow_value_raw))
+            XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(
+                key, values, flow_value_raw))
 
         except KeyError:
-            XMLValidator.log.error('can\'t find element: {0} in xml {1} or in keywords {2}'.format(key, self.xml_string, self.mkwd.keys()))
+            XMLValidator.log.error('can\'t find element: {0} in xml {1} or in keywords {2}'.format(
+                key, self.xml_string, self.mkwd.keys()))
             self.xml_ok = False
 
         except ValueError or TypeError:
             # flow_value_raw is string that cannot be converted to decimal or hex number or None
             if flow_value_raw not in values:
-                XMLValidator.log.error('can\'t find element: {0} with value value: {1} '
-                               'in expected values {2}'.format(key, flow_value_raw, values))
+                XMLValidator.log.error(
+                    'can\'t find element: {0} with value value: {1} '
+                    'in expected values {2}'.format(key, flow_value_raw, values))
                 self.xml_ok = False
             else:
-                XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(key, values, flow_value_raw))
+                XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(
+                    key, values, flow_value_raw))
 
         except StandardError:
-            XMLValidator.log.error('can\'t find element: {0} with value value: {1} '
-                           'in expected values {2}'.format(key, flow_value, values))
+            XMLValidator.log.error(
+                'can\'t find element: {0} with value value: {1} '
+                'in expected values {2}'.format(key, flow_value, values))
             self.xml_ok = False
 
     def check_all_prerequisites(self, prerequisites_dict, convert_from, flow_dict):
@@ -309,6 +315,7 @@ class XMLValidator():
 
         return self.xml_ok
 
+
 class Matchers():
 
     IN_PORT = Field('in-port', 32)
@@ -363,7 +370,6 @@ class Matchers():
     TUNNEL_ID = Field('tunnel-id', 64)
     IPV6_EXTHDR = Field('ipv6-exthdr', 9, {'ethernet-type': [34525]})
 
-
     @staticmethod
     def fill_validator(validator):
         """
@@ -376,7 +382,8 @@ class Matchers():
         validator.add_field(Matchers.ETH_DST)
         validator.add_field(Matchers.ETH_SRC)
         validator.add_field(Matchers.ETH_TYPE)
-        #validator.add_field(Matchers.VLAN_VID) - incorrenct XML parsing, if vlan-id-present is present its overriden by it, need to fix loader
+        # incorrenct XML parsing, if vlan-id-present is present its overriden by it, need to fix loader
+        # validator.add_field(Matchers.VLAN_VID)
         validator.add_field(Matchers.VLAN_PCP)
         validator.add_field(Matchers.IP_DSCP)
         validator.add_field(Matchers.IP_ENC)
@@ -418,13 +425,13 @@ if __name__ == '__main__':
     with open(os.path.abspath(__file__ + '/../../../keywords.csv')) as f:
         keywords = dict(line.strip().split(';') for line in f if not line.startswith('#'))
 
-    #print keywords
+    # print keywords
 
     match_keywords = None
     with open(os.path.abspath(__file__ + '/../../../match-keywords.csv')) as f:
         match_keywords = dict(line.strip().split(';') for line in f if not line.startswith('#'))
 
-    #print match_keywords
+    # print match_keywords
 
     action_keywords = None
     with open(os.path.abspath(__file__ + '/../../../action-keywords.csv')) as f:
@@ -432,7 +439,7 @@ if __name__ == '__main__':
 
     paths_to_xml = list()
     for i in range(1, 50):
-        #paths_to_xml = ['xmls/f5.xml', 'xmls/f14.xml', 'xmls/f23.xml', 'xmls/f25.xml']
+        # paths_to_xml = ['xmls/f5.xml', 'xmls/f14.xml', 'xmls/f23.xml', 'xmls/f25.xml']
         paths_to_xml.append('xmls/f%d.xml' % i)
 
     validator = XMLValidator(keywords, action_keywords, match_keywords, logging.ERROR)
@@ -441,4 +448,3 @@ if __name__ == '__main__':
     for path in paths_to_xml:
         validator.create_dictionaries(path)
         validator.validate()
-
