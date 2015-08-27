@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_aa72427a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalMeterServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-27T01:34:30Z",
+      "side": 1,
+      "message": "Please give a qualified error message with the meter details, and stacktrace and with ERROr level",
+      "range": {
+        "startLine": 78,
+        "startChar": 20,
+        "endLine": 78,
+        "endChar": 25
+      },
+      "revId": "b34d7a480968be9d8a4402868c1112cf2eaabffe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ca6f7e91",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalMeterServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-27T01:34:30Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 104,
+        "startChar": 27,
+        "endLine": 104,
+        "endChar": 32
+      },
+      "revId": "b34d7a480968be9d8a4402868c1112cf2eaabffe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6a6c2a9d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalMeterServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-08-27T01:34:30Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 126,
+        "startChar": 20,
+        "endLine": 126,
+        "endChar": 25
+      },
+      "revId": "b34d7a480968be9d8a4402868c1112cf2eaabffe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
