@@ -1,4 +1,4 @@
-Whole descriptions
+Wiki documentation
 ==================
 
 https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin::Python_test_scripts
@@ -8,13 +8,13 @@ How to Run
 ==========
 
 note:
-    all script have help which descipble all parameters
+    all script have help which describe all parameters
 
 1. > python odl_crud_tests.py --odlhost 172.16.4.212 --fxmls 1,2
-   This runs tests f1 and f2 aginast ODL running on specified IP.
- 
-   To run with all XMLs, omit the '--xmls' option. 
+   This runs tests f1 and f2 against ODL running on the specified IP.
+
+   To run with all XMLs, omit the '--xmls' option.
 
    For more options, type 'sudo python odl_crud_tests.py --help'
-   
+
 3. > src has to be in PYTHONPATH so you are able to run sudo PYTHONPATH=src stress_test python2.6 stress_test.py
