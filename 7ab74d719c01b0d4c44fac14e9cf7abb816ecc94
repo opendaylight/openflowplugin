@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_a56d9334",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalGroupServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-08-27T13:49:51Z",
+      "side": 1,
+      "message": "done, see following patch set",
+      "parentUuid": "3a79b1b5_ea583afc",
+      "range": {
+        "startLine": 47,
+        "startChar": 13,
+        "endLine": 47,
+        "endChar": 32
+      },
+      "revId": "7ab74d719c01b0d4c44fac14e9cf7abb816ecc94",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_8a52e6db",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalGroupServiceImpl.java",
         "patchSetId": 5
