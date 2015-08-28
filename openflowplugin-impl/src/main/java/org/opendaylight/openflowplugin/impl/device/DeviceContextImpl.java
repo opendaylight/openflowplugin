@@ -43,16 +43,26 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
+import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -104,12 +114,14 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
+    private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private NotificationPublishService notificationPublishService;
     private NotificationService notificationService;
     private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
+    private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private Map<Long, NodeConnectorRef> nodeConnectorCache;
     private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
@@ -144,9 +156,15 @@ public class DeviceContextImpl implements DeviceContext {
                 new TranslatorKey(deviceState.getVersion(), PortGrouping.class.getName()));
         packetInTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceState.getVersion(), PacketIn.class.getName()));
+        flowRemovedTranslator = translatorLibrary.lookupTranslator(
+                new TranslatorKey(deviceState.getVersion(), FlowRemoved.class.getName()));
+
+
         nodeConnectorCache = new ConcurrentHashMap<>();
 
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
+        flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
+        itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
     }
 
     /**
@@ -251,7 +269,29 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
-        //TODO: will be defined later
+        final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
+        if (itemLifecycleListener != null) {
+            //1. translate to general flow (table, priority, match, cookie)
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
+                    flowRemovedTranslator.translate(flowRemoved, this, null);
+            //2. create registry key
+            FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
+            //3. lookup flowId
+            final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowRegKey);
+            //4. if flowId present:
+            if (flowDescriptor != null) {
+                // a) construct flow path
+                KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceState().getNodeInstanceIdentifier()
+                        .augmentation(FlowCapableNode.class)
+                        .child(Table.class, flowDescriptor.getTableKey())
+                        .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
+                // b) notify listener
+                itemLifecycleListener.onRemoved(flowPath);
+            } else {
+                LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
+                        getDeviceState().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
+            }
+        }
     }
 
     @Override
