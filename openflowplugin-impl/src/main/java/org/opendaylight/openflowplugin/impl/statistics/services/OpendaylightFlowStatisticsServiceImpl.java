@@ -79,24 +79,29 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                 }
     };
 
-    private final AggregateFlowsInTableService aggregateFlowsInTable;
     private final MatchingFlowsInTableService matchingFlowsInTable;
-    private final AllFlowsInAllTablesService allFlowsInAllTables;
-    private final AllFlowsInTableService allFlowsInTable;
-    private final FlowsInTableService flowsInTable;
+    private OpendaylightFlowStatisticsService delegate;
 
     public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        aggregateFlowsInTable = new AggregateFlowsInTableService(requestContextStack, deviceContext);
-        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext);
-        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext);
-        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext);
         matchingFlowsInTable = new MatchingFlowsInTableService(requestContextStack, deviceContext);
     }
 
+    public void setDelegate(OpendaylightFlowStatisticsService delegate) {
+        this.delegate = delegate;
+    }
+
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
-        return aggregateFlowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
     @Override
@@ -105,21 +110,45 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
         return Futures.transform(matchingFlowsInTable.handleServiceCall(input), matchingConvertor);
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
-        return allFlowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAllFlowStatisticsFromFlowTable(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
-        return allFlowsInAllTables.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAllFlowsStatisticsFromAllFlowTables(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
-        return flowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getFlowStatisticsFromFlowTable(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 }
