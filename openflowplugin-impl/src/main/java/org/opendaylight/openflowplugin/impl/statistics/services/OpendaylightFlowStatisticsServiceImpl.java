@@ -108,7 +108,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
-        return allFlowsInTable.handleServiceCall(input);
+        return Futures.transform(allFlowsInTable.handleServiceCall(input), allFlowsInTable.getTransformer());
     }
 
     @Override
