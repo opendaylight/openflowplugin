@@ -96,7 +96,7 @@ public abstract class OFPaxOptionsAssistant {
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
                 mavenBundle(OFPLUGIN_APPS, "forwardingrules-manager").versionAsInProject(),
                 mavenBundle(OFPLUGIN_APPS, "inventory-manager").versionAsInProject(),
-                mavenBundle("org.openexi", "nagasena").versionAsInProject()
+                mavenBundle("openexi", "nagasena").versionAsInProject()
                 );
     }
 
