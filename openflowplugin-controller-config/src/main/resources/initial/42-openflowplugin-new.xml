@@ -82,6 +82,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl">binding:binding-new-notification-publish-service</type>
                         <name>binding-notification-publish-adapter</name>
                     </notification-publish-adapter>
+                    <entity-ownership-service>
+                        <type xmlns:entity-ownership="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:entity-ownership-service">entity-ownership:entity-ownership-service</type>
+                        <name>entity-ownership-service</name>
+                    </entity-ownership-service>
                     <rpc-requests-quota>20000</rpc-requests-quota>
                     <switch-features-mandatory>false</switch-features-mandatory>
                     <global-notification-quota>64000</global-notification-quota>

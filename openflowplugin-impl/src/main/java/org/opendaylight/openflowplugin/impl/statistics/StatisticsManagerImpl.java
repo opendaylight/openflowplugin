@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+        LOG.debug("deviceContext.getDeviceState().getRole():"+deviceContext.getDeviceState().getRole());
+        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
+            // if slave, we dont poll for statistics and jump to rpc initialization
+            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+            return;
+        }
 
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
