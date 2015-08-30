@@ -39,4 +39,9 @@ public class RpcManagerImpl implements RpcManager {
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }

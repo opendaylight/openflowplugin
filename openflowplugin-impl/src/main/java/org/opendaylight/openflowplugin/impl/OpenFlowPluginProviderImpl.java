@@ -26,11 +26,13 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -38,6 +40,7 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrat
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
+import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -60,12 +63,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
     private DeviceManager deviceManager;
+    private RoleManager roleManager;
     private RpcManager rpcManager;
     private RpcProviderRegistry rpcProviderRegistry;
     private StatisticsManager statisticsManager;
     private ConnectionManager connectionManager;
     private NotificationService notificationProviderService;
     private NotificationPublishService notificationPublishService;
+    private EntityOwnershipService entityOwnershipService;
 
     private ExtensionConverterManager extensionConverterManager;
 
@@ -105,6 +110,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     public boolean isSwitchFeaturesMandatory() {
         return switchFeaturesMandatory;
+    }
+
+    @Override
+    public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
+        this.entityOwnershipService = entityOwnershipService;
     }
 
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -147,15 +157,19 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         registerMXBean(messageIntelligenceAgency);
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
+        roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService);
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
+        // CM -> DM -> Role -> SM -> RPC -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
-        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
-        deviceManager.setNotificationService(this.notificationProviderService);
-        deviceManager.setNotificationPublishService(this.notificationPublishService);
+        deviceManager.setDeviceInitializationPhaseHandler(roleManager);
+        roleManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+
+        deviceManager.setNotificationService(this.notificationProviderService);
+        deviceManager.setNotificationPublishService(this.notificationPublishService);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();
@@ -197,5 +211,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void close() throws Exception {
         //TODO: close all contexts, switchConnections (, managers)
+        rpcManager.close();
+        statisticsManager.close();
+        roleManager.close();
     }
 }
