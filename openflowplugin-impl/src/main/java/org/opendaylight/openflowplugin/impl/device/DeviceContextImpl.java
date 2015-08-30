@@ -44,6 +44,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
@@ -111,6 +112,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
     private Map<Long, NodeConnectorRef> nodeConnectorCache;
+    private RpcContext rpcContext;
 
 
     @VisibleForTesting
@@ -151,6 +153,13 @@ public class DeviceContextImpl implements DeviceContext {
      */
     void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
+    }
+
+    /**
+     * This method is called fron
+     */
+    void cancelTransaction() {
+        transactionChainManager.cancelWriteTransaction();
     }
 
     @Override
@@ -436,4 +445,16 @@ public class DeviceContextImpl implements DeviceContext {
     public void updatePacketInRateLimit(long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
+
+    @Override
+    public void setRpcContext(RpcContext rpcContext) {
+        this.rpcContext = rpcContext;
+    }
+
+    @Override
+    public RpcContext getRpcContext() {
+        return rpcContext;
+    }
+
+
 }
