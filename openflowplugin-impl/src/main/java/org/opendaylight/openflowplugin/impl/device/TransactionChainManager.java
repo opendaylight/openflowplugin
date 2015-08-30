@@ -113,6 +113,17 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return true;
     }
 
+    public void cancelWriteTransaction() {
+        if (wTx != null) {
+            synchronized (txLock) {
+                if (wTx == null) {
+                    wTx.cancel();
+                    wTx = null;
+                }
+            }
+        }
+    }
+
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path) {
         final WriteTransaction writeTx = getTransactionSafely();
@@ -144,6 +155,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             wTx = null;
         }
     }
+
 
     private WriteTransaction getTransactionSafely() {
         if (wTx == null && !TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
