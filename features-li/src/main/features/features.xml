@@ -30,10 +30,10 @@
         <feature version="${project.version}">odl-openflowplugin-nsf-services-li</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/{{VERSION}}</bundle>
         <!-- TODO : remove dependency on openflowplugin in the future -->
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-impl/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/{{VERSION}}</bundle>
 	<bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/{{VERSION}}/xml/config-Li</configfile>
