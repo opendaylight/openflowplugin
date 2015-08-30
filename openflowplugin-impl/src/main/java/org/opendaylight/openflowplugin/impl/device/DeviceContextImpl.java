@@ -48,6 +48,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
@@ -125,7 +126,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final TranslatorLibrary translatorLibrary;
     private Map<Long, NodeConnectorRef> nodeConnectorCache;
     private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
-
+    private RpcContext rpcContext;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -173,6 +174,13 @@ public class DeviceContextImpl implements DeviceContext {
      */
     void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
+    }
+
+    /**
+     * This method is called fron
+     */
+    void cancelTransaction() {
+        transactionChainManager.cancelWriteTransaction();
     }
 
     @Override
@@ -403,6 +411,13 @@ public class DeviceContextImpl implements DeviceContext {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
 
+        LOG.info("Closing transaction chain manager without cleaning inventory operational");
+        transactionChainManager.closeWithoutCleanup();
+    }
+
+    @Override
+    public void onDeviceDisconnectedFromCluster() {
+        LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
         transactionChainManager.close();
     }
 
@@ -487,4 +502,16 @@ public class DeviceContextImpl implements DeviceContext {
     public ItemLifeCycleRegistry getItemLifeCycleSourceRegistry() {
         return itemLifeCycleSourceRegistry;
     }
+
+    @Override
+    public void setRpcContext(RpcContext rpcContext) {
+        this.rpcContext = rpcContext;
+    }
+
+    @Override
+    public RpcContext getRpcContext() {
+        return rpcContext;
+    }
+
+
 }

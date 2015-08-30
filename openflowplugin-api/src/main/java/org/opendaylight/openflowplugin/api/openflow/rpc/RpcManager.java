@@ -18,6 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler {
+public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable {
 
 }
