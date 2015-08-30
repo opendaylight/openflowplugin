@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
+            // if slave, we dont poll for statistics and jump to rpc initialization
+            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        }
 
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
@@ -157,6 +162,11 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
             }
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 
     private final class TimeCounter {

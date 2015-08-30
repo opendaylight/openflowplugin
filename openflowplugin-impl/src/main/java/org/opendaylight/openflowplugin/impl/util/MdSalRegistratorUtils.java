@@ -36,6 +36,11 @@ public class MdSalRegistratorUtils {
         throw new IllegalStateException();
     }
 
+
+    public static void registerInitialServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
+        rpcContext.registerRpcServiceImplementation(SalRoleService.class, new SalRoleServiceImpl(rpcContext, deviceContext));
+    }
+
     public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
@@ -47,6 +52,5 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalRoleService.class, new SalRoleServiceImpl(rpcContext, deviceContext));
     }
 }

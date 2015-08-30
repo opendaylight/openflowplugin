@@ -5,16 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.opendaylight.openflowplugin.api.openflow.role;
 
-package org.opendaylight.openflowplugin.api.openflow.statistics;
-
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
+ * Created by kramesha on 8/31/15.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceContextClosedHandler, AutoCloseable {
-
+public interface RoleManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable {
+    /**
+     * Gets called by the EntityOwnershipCandidate after role change received from EntityOwnershipService
+     * @param oldRole
+     * @param newRole
+     */
+    void onRoleChanged(OfpRole oldRole, OfpRole newRole);
 }
