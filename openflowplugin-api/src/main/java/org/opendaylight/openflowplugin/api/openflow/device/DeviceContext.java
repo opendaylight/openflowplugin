@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegist
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -190,5 +191,14 @@ public interface DeviceContext extends AutoCloseable,
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
+
+    void setRpcContext(RpcContext rpcContext);
+
+    RpcContext getRpcContext();
+
+    /**
+     * Callback when confirmed that device is disconnected from cluster
+      */
+    void onDeviceDisconnectedFromCluster();
 }
 

@@ -13,9 +13,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RpcManagerImpl implements RpcManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private final int maxRequestsQuota;
@@ -33,10 +37,22 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+        LOG.debug("deviceContext.getDeviceState().getRole():"+deviceContext.getDeviceState().getRole());
+        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
+            // if slave, we dont poll for statistics and jump to rpc initialization
+            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+            return;
+        }
+
         final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext, maxRequestsQuota);
         deviceContext.addDeviceContextClosedHandler(rpcContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }
