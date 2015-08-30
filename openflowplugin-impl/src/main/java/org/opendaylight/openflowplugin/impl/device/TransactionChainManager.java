@@ -128,6 +128,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return true;
     }
 
+    public void cancelWriteTransaction() {
+        // there is no cancel txn in ping-pong broker. So we need to drop the chain and recreate it.
+        // since the chain is created per device, there won't be any other txns other than ones we created.
+        recreateTxChain();
+    }
+
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path) {
         final WriteTransaction writeTx = getTransactionSafely();
@@ -159,6 +165,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             wTx = null;
         }
     }
+
 
     private WriteTransaction getTransactionSafely() {
         if (wTx == null && !TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
@@ -204,6 +211,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     private void notifyReadyForNewTransactionChainAndCloseFactory() {
+        if(managerRegistration == null){
+            LOG.warn("managerRegistration is null");
+            return;
+        }
         synchronized (this) {
             try {
                 LOG.debug("Closing registration in manager.");
@@ -218,6 +229,15 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         }
         txChainFactory.close();
         LOG.debug("Transaction chain factory closed.");
+    }
+
+    public void closeWithoutCleanup() {
+        LOG.debug("closing txChainManager without cleanup of node {} from operational DS.", nodeII);
+        synchronized (txLock) {
+            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
+            notifyReadyForNewTransactionChainAndCloseFactory();
+            wTx = null;
+        }
     }
 
     public enum TransactionChainManagerStatus {

@@ -106,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -194,11 +195,12 @@ public class DeviceManagerImplTest {
 
     public void onDeviceContextLevelUp(boolean withException) {
         DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
 
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
-            DeviceState mockedDeviceState = mock(DeviceState.class);
-            when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         }
 
         deviceManager.onDeviceContextLevelUp(mockedDeviceContext);
