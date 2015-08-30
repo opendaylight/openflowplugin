@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
@@ -46,6 +47,7 @@ class DeviceStateImpl implements DeviceState {
     private boolean tableStatisticsAvailable;
     private boolean portStatisticsAvailable;
     private boolean queueStatisticsAvailable;
+    private OfpRole role;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -156,4 +158,13 @@ class DeviceStateImpl implements DeviceState {
         deviceSynchronized = _deviceSynchronized;
     }
 
+    @Override
+    public OfpRole getRole() {
+        return role;
+    }
+
+    @Override
+    public void setRole(OfpRole role) {
+        this.role = role;
+    }
 }
