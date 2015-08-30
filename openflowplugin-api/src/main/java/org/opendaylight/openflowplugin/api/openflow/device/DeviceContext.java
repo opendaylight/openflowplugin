@@ -25,6 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -184,5 +185,9 @@ public interface DeviceContext extends AutoCloseable,
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
+
+    void setRpcContext(RpcContext rpcContext);
+
+    RpcContext getRpcContext();
 }
 
