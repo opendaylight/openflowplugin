@@ -5,16 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.opendaylight.openflowplugin.api.openflow.role;
 
-package org.opendaylight.openflowplugin.api.openflow.statistics;
-
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
+ * Created by kramesha on 8/31/15.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceContextClosedHandler, AutoCloseable {
-
+public interface RoleManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable {
+    public static final String ENTITY_TYPE = "openflow";
 }

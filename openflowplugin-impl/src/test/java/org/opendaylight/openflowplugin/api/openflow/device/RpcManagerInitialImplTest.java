@@ -23,7 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
+import org.opendaylight.openflowplugin.impl.rpc.RpcManagerInitialImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -39,13 +39,13 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class RpcManagerImplTest {
+public class RpcManagerInitialImplTest {
 
     private static final int AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 12;
 
 
     final ProviderContext mockedProviderContext = mock(ProviderContext.class);
-    final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext, 500);
+    final RpcManagerInitialImpl rpcManager = new RpcManagerInitialImpl(mockedProviderContext, 500);
     final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
     @Mock
     private MessageSpy messageSpy;

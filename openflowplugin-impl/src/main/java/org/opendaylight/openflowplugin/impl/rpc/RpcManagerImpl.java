@@ -1,42 +1,38 @@
-/**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
-public class RpcManagerImpl implements RpcManager {
+/**
+ * Created by kramesha on 9/1/15.
+ */
+public class RpcManagerImpl implements RpcManager{
 
-    private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
-    private final int maxRequestsQuota;
 
-    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
-                          final int quotaValue) {
-        this.rpcProviderRegistry = rpcProviderRegistry;
-        maxRequestsQuota = quotaValue;
+    @Override
+    public void onDeviceContextLevelUp(@CheckForNull DeviceContext deviceContext) {
+
+        if (deviceContext.getDeviceState().getRole() == null || deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
+            // if the role change was not successful the role in devicestate will be null, still we would be registering services
+            MdSalRegistratorUtils.registerServices(deviceContext.getRpcContext(), deviceContext);
+        }
+
+        // finish device initialization cycle back to DeviceManager
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 
     @Override
-    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
+    public void setDeviceInitializationPhaseHandler(DeviceInitializationPhaseHandler handler) {
         deviceInitPhaseHandler = handler;
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
-        final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext, maxRequestsQuota);
-        deviceContext.addDeviceContextClosedHandler(rpcContext);
-        MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
-        // finish device initialization cycle back to DeviceManager
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+    public void close() throws Exception {
+
     }
 }
