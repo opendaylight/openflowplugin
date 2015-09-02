@@ -5,7 +5,7 @@
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <feature name='odl-flow-model' version='${project.version}' description="OpenDaylight :: Flow :: Model">
-        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-models</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-base/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-service/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-statistics/${project.version}</bundle>
