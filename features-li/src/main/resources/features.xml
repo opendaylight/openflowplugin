@@ -16,6 +16,8 @@
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
+
 
     <feature name='odl-openflowplugin-all-li' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound-li</feature>
@@ -63,7 +65,7 @@
     <feature name='odl-openflowplugin-nsf-model-li' version='${project.version}'
              description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
         <!-- general models -->
-        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-models</feature>
         <bundle>mvn:org.opendaylight.controller.model/model-inventory/${controller.model.version}</bundle>
         <bundle>mvn:org.opendaylight.controller.model/model-topology/${controller.model.version}</bundle>
         <!-- openflow specific models -->
