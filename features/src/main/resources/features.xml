@@ -85,6 +85,10 @@
         <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
+    <feature name='odl-openflowplugin-flow-programmer' description="OpenDaylight :: Openflow Plugin :: Flow Programmer" version='${project.version}'>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-flow-programmer/${project.version}</bundle>
+    </feature>
+
     <!-- CBENCH TESTING -->
     <feature name='odl-openflowplugin-drop-test' description="OpenDaylight :: Openflow Plugin :: Drop Test" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
