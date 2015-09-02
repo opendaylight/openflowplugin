@@ -16,6 +16,7 @@
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${project.version}/xml/features</repository>
 
     <feature name='odl-openflowplugin-all' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
@@ -83,6 +84,12 @@
         <feature version="${dlux.version}">odl-dlux-core</feature>
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
         <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+    <feature name='odl-openflowplugin-flow-programmer' description="OpenDaylight :: Openflow Plugin :: Flow Programmer" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+        <feature version='${project.version}'>odl-openflowplugin-nxm-extensions</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-flow-programmer/${project.version}</bundle>
     </feature>
 
     <!-- CBENCH TESTING -->
