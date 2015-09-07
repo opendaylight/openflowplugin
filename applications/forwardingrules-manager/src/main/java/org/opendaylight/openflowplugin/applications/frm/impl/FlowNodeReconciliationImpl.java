@@ -23,6 +23,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -30,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -168,13 +171,48 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             /* Groups - have to be first */
-            List<Group> groups = flowNode.get().getGroup() != null
-                    ? flowNode.get().getGroup() : Collections.<Group> emptyList();
-            for (Group group : groups) {
-                final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
-                        nodeIdent.child(Group.class, group.getKey());
-                this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
-            }
+                List<Group> groups = flowNode.get().getGroup() != null
+                        ? flowNode.get().getGroup() : Collections.<Group>emptyList();
+                List<Group> toBeInstalledGroups = new ArrayList<>();
+                toBeInstalledGroups.addAll(groups);
+                List<Long> alreadyInstalledGroupids = new ArrayList<>();
+
+                while (!toBeInstalledGroups.isEmpty()) {
+                    ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
+                    while (iterator.hasNext()) {
+                        Group group = iterator.next();
+                        List<Long> groupIds = new ArrayList<>();
+                        for (Bucket bucket : group.getBuckets().getBucket()) {
+                            for (Action action : bucket.getAction()) {
+//                                LOG.info("Group: {}, Bucket: {}, Action: {}",
+//                                        group, bucket, action);
+                                if (action.getAction().getImplementedInterface().getName()
+                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase")) {
+                                    Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                                    groupIds.add(groupId);
+                                }
+                            }
+                        }
+
+                        boolean okToInstall = true;
+                        // Check if the groupIds exist in the alreadyInstalled List.
+                        for (Long groupId : groupIds) {
+                            if (!alreadyInstalledGroupids.contains(groupId)) {
+                                okToInstall = false;
+                                break;
+                            }
+                        }
+
+
+                        if (okToInstall) {
+                            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
+                                    nodeIdent.child(Group.class, group.getKey());
+                            this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
+                            alreadyInstalledGroupids.add(group.getGroupId().getValue());
+                            iterator.remove();
+                        }
+                    }
+                }
             /* Meters */
             List<Meter> meters = flowNode.get().getMeter() != null
                     ? flowNode.get().getMeter() : Collections.<Meter> emptyList();
