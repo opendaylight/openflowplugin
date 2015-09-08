@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.util.concurrent.FutureCallback;
+import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -21,6 +22,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -33,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -42,23 +45,30 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractStatsServiceTest {
     @Mock
-    RequestContextStack rqContextStack;
+    protected RequestContextStack rqContextStack;
     @Mock
-    DeviceContext deviceContext;
+    protected DeviceContext deviceContext;
     @Mock
-    ConnectionContext connectionContext;
+    protected ConnectionContext connectionContext;
     @Mock
-    FeaturesReply features;
+    protected FeaturesReply features;
     @Mock
-    MessageSpy messageSpy;
+    private GetFeaturesOutput getFeaturesOutput;
     @Mock
-    OutboundQueue outboundQueueProvider;
+    protected MessageSpy messageSpy;
     @Mock
-    MultiMsgCollector multiMsgCollector;
+    protected OutboundQueue outboundQueueProvider;
     @Mock
-    TranslatorLibrary translatorLibrary;
+    protected MultiMsgCollector multiMsgCollector;
+    @Mock
+    protected TranslatorLibrary translatorLibrary;
+    @Mock
+    protected DeviceState deviceState;
 
-    final Answer<Void> answerVoidToCallback = new Answer<Void>() {
+
+    public static final NodeId NODE_ID = new NodeId("unit-test-node:123");
+
+    protected final Answer<Void> answerVoidToCallback = new Answer<Void>() {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
             final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) (invocation.getArguments()[2]);
@@ -80,9 +90,15 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class))).thenReturn(multiMsgCollector);
         Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
+        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceState.getNodeId()).thenReturn(NODE_ID);
+        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
+        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+
 
         setUp();
     }
@@ -91,7 +107,7 @@ public abstract class AbstractStatsServiceTest {
         //NOOP
     }
 
-    static NodeRef createNodeRef(String nodeIdValue) {
+    protected static NodeRef createNodeRef(String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
         return new NodeRef(nodePath);
