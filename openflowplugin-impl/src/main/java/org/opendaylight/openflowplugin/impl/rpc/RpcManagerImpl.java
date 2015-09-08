@@ -40,6 +40,12 @@ public class RpcManagerImpl implements RpcManager {
         final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext, maxRequestsQuota);
         deviceContext.addDeviceContextClosedHandler(rpcContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
+
+        if (isStatisticsRpcEnabled) {
+            MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
+                    notificationPublishService, new AtomicLong());
+        }
+
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
