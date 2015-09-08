@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -25,7 +26,8 @@ public class PortStatsServiceTest extends AbstractStatsServiceTest {
     private PortStatsService portStatsService;
 
     public void setUp() {
-        portStatsService = new PortStatsService(rqContextStack, deviceContext);
+        portStatsService = new PortStatsService(rqContextStack, deviceContext,
+                new AtomicLong());
     }
 
     @Test

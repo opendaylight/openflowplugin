@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
@@ -26,32 +28,38 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
     private final AllMeterStatsService allMeterStats;
     private final MeterFeaturesService meterFeatures;
     private final MeterStatsService meterStats;
+    private final NotificationPublishService notificationPublishService;
 
-    public OpendaylightMeterStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        allMeterConfig = new AllMeterConfigStatsService(requestContextStack, deviceContext);
-        allMeterStats = new AllMeterStatsService(requestContextStack, deviceContext);
-        meterFeatures = new MeterFeaturesService(requestContextStack, deviceContext);
-        meterStats = new MeterStatsService(requestContextStack, deviceContext);
+    public OpendaylightMeterStatisticsServiceImpl(final RequestContextStack requestContextStack,
+                                                  final DeviceContext deviceContext,
+                                                  final AtomicLong compatibilityXidSeed,
+                                                  final NotificationPublishService notificationPublishService) {
+        this.notificationPublishService = notificationPublishService;
+
+        allMeterConfig = new AllMeterConfigStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
+        allMeterStats = new AllMeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
+        meterFeatures = new MeterFeaturesService(requestContextStack, deviceContext, compatibilityXidSeed);
+        meterStats = new MeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
-        return allMeterConfig.handleServiceCall(input);
+        return allMeterConfig.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
-        return allMeterStats.handleServiceCall(input);
+        return allMeterStats.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
-        return meterFeatures.handleServiceCall(input);
+        return meterFeatures.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
-        return meterStats.handleServiceCall(input);
+        return meterStats.handleAndNotify(input, notificationPublishService);
     }
 }

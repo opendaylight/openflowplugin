@@ -10,12 +10,15 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -38,9 +41,13 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractStatsServ
     private RequestContext<Object> rqContext;
 
     private OpendaylightPortStatisticsServiceImpl portStatisticsService;
+    @Mock
+    private NotificationPublishService noticationPublishService;
+
 
     public void setUp() {
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext);
+        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
+                new AtomicLong(), noticationPublishService);
 
         rqContext = new AbstractRequestContext<Object>(42L) {
             @Override
