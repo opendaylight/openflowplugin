@@ -7,25 +7,37 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.base.Function;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class AllFlowsInTableService extends AbstractSimpleService<GetAllFlowStatisticsFromFlowTableInput, GetAllFlowStatisticsFromFlowTableOutput> {
+public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAllFlowStatisticsFromFlowTableInput,
+        GetAllFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
 
-    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext, GetAllFlowStatisticsFromFlowTableOutput.class);
+    private Function<? super RpcResult<List<MultipartReply>>, FlowsStatisticsUpdate> transformer;
+
+    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+        super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
@@ -49,5 +61,17 @@ public class AllFlowsInTableService extends AbstractSimpleService<GetAllFlowStat
         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
 
         return mprInput.build();
+    }
+
+    @Override
+    public GetAllFlowStatisticsFromFlowTableOutput buildTxCapableResult(TransactionId emulatedTxId) {
+        return new GetAllFlowStatisticsFromFlowTableOutputBuilder()
+                .setTransactionId(emulatedTxId)
+                .build();
+    }
+
+    @Override
+    public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> mpResult, TransactionId emulatedTxId) {
+        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult, getDeviceContext(), getOfVersion(), emulatedTxId);
     }
 }
