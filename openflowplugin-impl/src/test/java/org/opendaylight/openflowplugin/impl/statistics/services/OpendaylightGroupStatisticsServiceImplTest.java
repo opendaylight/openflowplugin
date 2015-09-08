@@ -10,12 +10,15 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInputBuilder;
@@ -42,9 +45,12 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractStatsSer
     private RequestContext<Object> rqContext;
 
     private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
+    @Mock
+    private NotificationPublishService notificationPublishService;
 
     public void setUp() {
-        groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext);
+        groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
+                new AtomicLong(), notificationPublishService);
 
         rqContext = new AbstractRequestContext<Object>(42L) {
             @Override
