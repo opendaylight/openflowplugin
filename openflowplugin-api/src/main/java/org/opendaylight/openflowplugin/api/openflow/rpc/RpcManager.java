@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
@@ -20,4 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
  */
 public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler {
 
+    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
+
+    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 }
