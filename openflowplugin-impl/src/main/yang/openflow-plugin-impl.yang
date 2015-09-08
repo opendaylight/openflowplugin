@@ -95,6 +95,12 @@ module openflow-plugin-provider-impl {
                 type boolean;
                 default "false";
             }
+            leaf is-statistics-rpc-enabled {
+                status deprecated;
+                description "Exposing backward compatible statistics rpcs providing result in form of async notification";
+                type boolean;
+                default "false";
+            }
         }
 
     }

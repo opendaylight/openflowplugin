@@ -79,6 +79,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
+    private boolean isStatisticsRpcEnabled;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -180,6 +181,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         roleManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+        rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
+        rpcManager.setNotificationPublishService(notificationPublishService);
 
         deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);
@@ -219,6 +222,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
+    }
+
+    @Override
+    public void setIsStatisticsRpcEnabled(final boolean isStatisticsRpcEnabled) {
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
     }
 
     @Override

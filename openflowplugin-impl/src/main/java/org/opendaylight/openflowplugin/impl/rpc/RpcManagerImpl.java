@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import java.util.concurrent.atomic.AtomicLong;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -28,6 +30,8 @@ public class RpcManagerImpl implements RpcManager {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private final int maxRequestsQuota;
     private final ConcurrentHashMap<DeviceContext, RpcContext> contexts = new ConcurrentHashMap<>();
+    private boolean isStatisticsRpcEnabled;
+    private NotificationPublishService notificationPublishService;
 
     public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
                           final int quotaValue) {
@@ -92,6 +96,13 @@ public class RpcManagerImpl implements RpcManager {
                         deviceContext.getDeviceState().getNodeId(), e);
             }
         }
+    }
+    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
+    }
 
+    @Override
+    public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
+        this.notificationPublishService = notificationPublishService;
     }
 }
