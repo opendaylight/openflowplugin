@@ -37,6 +37,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                     <!--      Possible transport-protocol options: TCP, TLS, UDP -->
                     <transport-protocol>TCP</transport-protocol>
                     <switch-idle-timeout>15000</switch-idle-timeout>
+                    <use-barrier>false</use-barrier>
                 </module>
                 <!-- default OF-switch-connection-provider (port 6653) -->
                 <module>
