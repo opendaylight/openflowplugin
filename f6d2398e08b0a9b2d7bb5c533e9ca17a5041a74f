@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_6368b0f5",
+        "filename": "model/model-flow-service/src/main/yang/sal-role.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T17:26:05Z",
+      "side": 1,
+      "message": "This is deprecated mainly because through this the protocol xid value is exposed outside ofPlugin. But for rpc we are able to wait for result and deliver it asynchronously (success or reason of failure).",
+      "range": {
+        "startLine": 34,
+        "startChar": 12,
+        "endLine": 34,
+        "endChar": 41
+      },
+      "revId": "f6d2398e08b0a9b2d7bb5c533e9ca17a5041a74f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
