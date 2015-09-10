@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_5aba386f",
+        "filename": "extension/features-li/src/main/resources/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2015-09-10T06:55:59Z",
+      "side": 1,
+      "message": "i believe you need to change it to odl-openflowplugin-nxm-extensions-li. Otherwise feature with this name already exist in the existing old code base.",
+      "revId": "a865be8b8ba9dd5186a9d5f74fb66093fbe76639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
