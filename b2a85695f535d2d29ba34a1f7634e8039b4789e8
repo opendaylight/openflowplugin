@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_23407855",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "Please use dependency management in ofPlugin-parent. There might even existing artifacts project for sal-common providing all the versions.",
+      "range": {
+        "startLine": 97,
+        "startChar": 27,
+        "endLine": 97,
+        "endChar": 35
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a65ed610",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "I missed where and why is this used.",
+      "range": {
+        "startLine": 189,
+        "startChar": 4,
+        "endLine": 191,
+        "endChar": 31
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_631d1073",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "According to my knowledge (since yesterday) this is not implemented by ping-pong data broker. Solution is to drop whole chain and recreate it. But this can fixed later.",
+      "range": {
+        "startLine": 120,
+        "startChar": 20,
+        "endLine": 120,
+        "endChar": 33
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_2625e6aa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "Is there a specific reason why not to use callback here? This way we hijack the invoking thread.",
+      "range": {
+        "startLine": 101,
+        "startChar": 44,
+        "endLine": 101,
+        "endChar": 69
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_c63bd2cf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "If the change role operation take more than 5 seconds the role change task wont be canceled but initiation process will log error and continue anyway.",
+      "range": {
+        "startLine": 103,
+        "startChar": 12,
+        "endLine": 103,
+        "endChar": 21
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_864cfa71",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalRoleServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "nice!",
+      "range": {
+        "startLine": 44,
+        "startChar": 43,
+        "endLine": 44,
+        "endChar": 45
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_86639adb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-09-10T18:03:29Z",
+      "side": 1,
+      "message": "We should also think about how and where to start statistics polling upon role changed to master.",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 78
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
