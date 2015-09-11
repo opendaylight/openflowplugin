@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_e93d81bc",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "will remove it. There was an issue with the ownership-service versioning in its topic branch.\nSince now it got merged to stable/lithium, it should have the right version.",
+      "parentUuid": "3a79b1b5_23407855",
+      "range": {
+        "startLine": 97,
+        "startChar": 27,
+        "endLine": 97,
+        "endChar": 35
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_a65ed610",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
         "patchSetId": 4
@@ -48,6 +72,29 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_c942053e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "Its used in RpcManagerImpl. Since the rpc context gets created in the RpcManagerInitialImpl, its used in the RpcManager for registering the rest of the rpcs",
+      "range": {
+        "startLine": 192,
+        "startChar": 0,
+        "endLine": 192,
+        "endChar": 1
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_631d1073",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
         "patchSetId": 4
@@ -59,6 +106,30 @@
       "writtenOn": "2015-09-10T18:03:29Z",
       "side": 1,
       "message": "According to my knowledge (since yesterday) this is not implemented by ping-pong data broker. Solution is to drop whole chain and recreate it. But this can fixed later.",
+      "range": {
+        "startLine": 120,
+        "startChar": 20,
+        "endLine": 120,
+        "endChar": 33
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_894c0d72",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "Yes i talked to Moiz too. Will drop the chain and recreate it. There should be way though to cancel a txn if its not submitted.",
+      "parentUuid": "3a79b1b5_631d1073",
       "range": {
         "startLine": 120,
         "startChar": 20,
@@ -94,6 +165,30 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_a947894a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "Will do",
+      "parentUuid": "3a79b1b5_2625e6aa",
+      "range": {
+        "startLine": 101,
+        "startChar": 44,
+        "endLine": 101,
+        "endChar": 69
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_c63bd2cf",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
         "patchSetId": 4
@@ -105,6 +200,30 @@
       "writtenOn": "2015-09-10T18:03:29Z",
       "side": 1,
       "message": "If the change role operation take more than 5 seconds the role change task wont be canceled but initiation process will log error and continue anyway.",
+      "range": {
+        "startLine": 103,
+        "startChar": 12,
+        "endLine": 103,
+        "endChar": 21
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4976f5a5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "On Failure, i am logging it now. Shouldnt we continue with the device init?",
+      "parentUuid": "3a79b1b5_c63bd2cf",
       "range": {
         "startLine": 103,
         "startChar": 12,
@@ -151,6 +270,30 @@
       "writtenOn": "2015-09-10T18:03:29Z",
       "side": 1,
       "message": "We should also think about how and where to start statistics polling upon role changed to master.",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 78
+      },
+      "revId": "b2a85695f535d2d29ba34a1f7634e8039b4789e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_69797192",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-11T07:14:28Z",
+      "side": 1,
+      "message": "Yes. On Slave to master , we should start statistics and enable rpcs\nOn Master to slave , we should stop statistics and disable rpcs.\nMaster to slave can normally only happen on switch disconnection\nWill fix in a subsequent patch",
+      "parentUuid": "3a79b1b5_86639adb",
       "range": {
         "startLine": 52,
         "startChar": 8,
