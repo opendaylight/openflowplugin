@@ -176,12 +176,7 @@ public class NodeStaticReplyTranslatorUtil {
             gCapability.add(SelectWeight.class);
         }
         groupFeature.setGroupCapabilitiesSupported(gCapability);
-        /* TODO :
-         *  My recommendation would be, its good to have a respective model of
-         * 'type bits', which will generate a class where all these flags will eventually
-         * be stored as boolean. It will be convenient for application to check the
-         * supported action, rather then doing bitmap operation.
-         */
+
         final List<Long> supportActionByGroups = new ArrayList<>();
         for (final ActionType actionType : reply.getActionsBitmap()) {
             long supportActionBitmap = 0;

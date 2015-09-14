@@ -439,10 +439,7 @@ public class SinglePurposeMultipartReplyTranslator {
 
     /*
      * Method returns the bitmap of actions supported by each group.
-     * TODO: My recommendation would be, its good to have a respective model of
-     * 'type bits', which will generate a class where all these flags will eventually
-     * be stored as boolean. It will be convenient for application to check the
-     * supported action, rather then doing bitmap operation.
+     *
      * @param actionsSupported
      * @return
      */

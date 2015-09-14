@@ -223,7 +223,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void close() throws Exception {
-        //TODO: close all contexts, switchConnections (, managers)
+        deviceManager.close();
         rpcManager.close();
         statisticsManager.close();
         roleManager.close();

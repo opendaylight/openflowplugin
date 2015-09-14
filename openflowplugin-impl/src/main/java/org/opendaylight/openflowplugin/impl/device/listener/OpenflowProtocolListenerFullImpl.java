@@ -70,7 +70,8 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     @Override
     public void onHelloMessage(final HelloMessage hello) {
-        // FIXME: invalid state - must disconnect and close all contexts
+        LOG.warn("hello message received outside handshake phase -> dropping connection {}", connectionAdapter.getRemoteAddress());
+        connectionAdapter.disconnect();
     }
 
     @Override

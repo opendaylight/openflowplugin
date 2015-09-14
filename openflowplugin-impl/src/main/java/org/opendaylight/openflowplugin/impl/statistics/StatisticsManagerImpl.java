@@ -177,7 +177,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @VisibleForTesting
     protected void calculateTimerDelay(final TimeCounter timeCounter) {
-        // TODO: move into TimeCounter
         long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
         if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;

@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.device.listener;
 
+import java.net.InetSocketAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +64,7 @@ public class OpenflowProtocolListenerFullImplTest {
         // place for mocking method's general behavior for HandshakeContext and ConnectionContext
         ofProtocolListener = new OpenflowProtocolListenerFullImpl(connectionAdapter, deviceReplyProcessor);
         connectionAdapter.setMessageListener(ofProtocolListener);
+        Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(InetSocketAddress.createUnresolved("ofp-junit.example.org", 6663));
         Mockito.verify(connectionAdapter).setMessageListener(Matchers.any(OpenflowProtocolListener.class));
     }
 
@@ -127,7 +129,9 @@ public class OpenflowProtocolListenerFullImplTest {
         HelloMessage helloMessage = new HelloMessageBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onHelloMessage(helloMessage);
-        // NOOP
+
+        Mockito.verify(connectionAdapter).getRemoteAddress();
+        Mockito.verify(connectionAdapter).disconnect();
     }
 
     /**
