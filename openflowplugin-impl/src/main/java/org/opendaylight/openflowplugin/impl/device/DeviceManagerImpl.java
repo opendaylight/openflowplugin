@@ -103,7 +103,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
+public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
@@ -287,9 +287,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
             @Override
             public void onFailure(final Throwable t) {
-                // FIXME : remove session
                 LOG.trace("Device capabilities gathering future failed.");
                 LOG.trace("more info in exploration failure..", t);
+                try {
+                    deviceContext.close();
+                } catch (Exception e) {
+                    LOG.warn("Failed to close device context: {}", deviceContext.getDeviceState().getNodeId(), t);
+                }
             }
         });
     }

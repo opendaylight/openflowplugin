@@ -63,7 +63,6 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
-        Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
 
         systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext);
     }
@@ -133,8 +132,7 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnDisconnectEvent4() throws Exception {
-//    TODO: solve    connectionContextGolem.chansetConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-
+        Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
         Mockito.when(connectionAdapter.isAlive()).thenReturn(false);
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();

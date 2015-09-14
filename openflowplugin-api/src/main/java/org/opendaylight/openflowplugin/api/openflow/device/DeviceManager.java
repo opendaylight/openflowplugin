@@ -25,7 +25,8 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
 public interface DeviceManager extends DeviceConnectedHandler,
         TranslatorLibrarian,
         DeviceInitializator,
-        DeviceInitializationPhaseHandler, DeviceContextClosedHandler {
+        DeviceInitializationPhaseHandler, DeviceContextClosedHandler,
+        AutoCloseable {
 
     /**
      * Sets notification receiving service

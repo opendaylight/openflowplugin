@@ -30,7 +30,6 @@ public class RpcContextImpl implements RpcContext {
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
 
-    // TODO: add private Sal salBroker
     private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new HashSet<>();
 
     public RpcContextImpl(final MessageSpy messageSpy, final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext, final int maxRequests) {

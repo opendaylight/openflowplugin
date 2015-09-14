@@ -60,9 +60,9 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
     }
 
     /**
-     * @param message
-     * @param statGroup TODO
-     * @return
+     * @param message counted element
+     * @param statGroup statistic counter group
+     * @return corresponding counter
      */
     private MessageCounters getCounters(final Class<?> message, final STATISTIC_GROUP statGroup) {
         ConcurrentMap<Class<?>, MessageCounters> groupData = getOrCreateGroupData(statGroup);
