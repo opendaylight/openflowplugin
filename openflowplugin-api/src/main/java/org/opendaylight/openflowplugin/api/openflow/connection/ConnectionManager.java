@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 
 /**
  * Connection manager manages connections with devices.
@@ -28,12 +27,4 @@ public interface ConnectionManager extends SwitchConnectionHandler {
      * @param deviceConnectedHandler
      */
     void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler);
-
-    /**
-     * Method registers handler responsible for operations related to connected device after
-     * message from device is received.
-     */
-    void setMessageHandler(MessageHandler messageHandler);
-
-
 }
