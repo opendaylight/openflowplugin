@@ -1764,33 +1764,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         return matchEntryBuilder.build();
     }
 
-    private static MatchEntry toOfVlanVid(final VlanId vlanId) {
-        // TODO: verify
-        boolean hasmask = false;
-        boolean setCfiBit = false;
-        Integer vidEntryValue = 0;
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setOxmMatchField(VlanVid.class);
-        VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
-        VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
-        if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
-            setCfiBit = true;
-            if (vlanId.getVlanId() != null) {
-                vidEntryValue = vlanId.getVlanId().getValue();
-            }
-            hasmask = (vidEntryValue == 0);
-        }
-        vlanVidBuilder.setCfiBit(setCfiBit);
-        vlanVidBuilder.setVlanVid(vidEntryValue);
-        if (hasmask) {
-            vlanVidBuilder.setMask(VLAN_VID_MASK);
-        }
-        vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
-        matchEntryBuilder.setHasMask(hasmask);
-        return matchEntryBuilder.build();
-    }
 
     private static MatchEntry toOfIpProto(final Short ipProtocol) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
