@@ -301,222 +301,81 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             matchEntryList.add(toOfMetadata(Metadata.class, metadata.getMetadata(), metadata.getMetadataMask()));
         }
 
-        EthernetMatch ethernetMatch = match.getEthernetMatch();
-        if (ethernetMatch != null) {
-            EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
-            if (ethernetDestination != null) {
-                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntryBuilder.setOxmMatchField(EthDst.class);
-                EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
-                EthDstBuilder ethDstBuilder = new EthDstBuilder();
-                ethDstBuilder.setMacAddress(ethernetDestination.getAddress());
-                boolean hasMask = false;
-                if (null != ethernetDestination.getMask()) {
-                    ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetDestination.getMask().getValue()));
-                    hasMask = true;
-                }
-                ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
-                matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
-                matchEntryBuilder.setHasMask(hasMask);
-                matchEntryList.add(matchEntryBuilder.build());
+        ethernetMatch(matchEntryList, match.getEthernetMatch());
+        vlanMatch(matchEntryList, match.getVlanMatch());
+        ipMatch(matchEntryList, match.getIpMatch());
+        layer4Match(matchEntryList, match.getLayer4Match());
+        icmpv4Match(matchEntryList, match.getIcmpv4Match());
+        icmpv6Match(matchEntryList, match.getIcmpv6Match());
+        layer3Match(matchEntryList, match.getLayer3Match());
+        protocolMatchFields(matchEntryList, match.getProtocolMatchFields());
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel = match
+                .getTunnel();
+        if (tunnel != null) {
+            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+            TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
+            TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
+            boolean hasMask = false;
+            if (null != tunnel.getTunnelMask()) {
+                hasMask = true;
+                tunnelIdBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelMask(), OFConstants.SIZE_OF_LONG_IN_BYTES));
             }
+            tunnelIdBuilder.setTunnelId(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelId(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+            tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
+            matchEntryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
+            matchEntryBuilder.setHasMask(hasMask);
+            matchEntryBuilder.setOxmMatchField(TunnelId.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntryList.add(matchEntryBuilder.build());
+        }
 
-            EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
-            if (ethernetSource != null) {
-                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntryBuilder.setOxmMatchField(EthSrc.class);
 
-                EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
-                EthSrcBuilder ethDstBuilder = new EthSrcBuilder();
-                ethDstBuilder.setMacAddress(ethernetSource.getAddress());
-                boolean hasMask = false;
-                if (null != ethernetSource.getMask()) {
-                    ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetSource.getMask().getValue()));
-                    hasMask = true;
-                }
-                ethSrcCaseBuilder.setEthSrc(ethDstBuilder.build());
-                matchEntryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
-                matchEntryBuilder.setHasMask(hasMask);
-                matchEntryList.add(matchEntryBuilder.build());
-            }
-
-            if (ethernetMatch.getEthernetType() != null) {
-                matchEntryList.add(toOfEthernetType(ethernetMatch.getEthernetType()));
+        /**
+         * TODO: EXTENSION PROPOSAL (match, MD-SAL to OFJava)
+         * - we might need version for conversion and for key
+         * - sanitize NPE
+         */
+        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
+        if (extensionListOpt.isPresent()) {
+            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
+                // TODO: get real version
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
+                ConvertorToOFJava<MatchEntry> convertor =
+                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                MatchEntry ofMatch = convertor.convert(extensionItem.getExtension());
+                matchEntryList.add(ofMatch);
             }
         }
 
-        VlanMatch vlanMatch = match.getVlanMatch();
-        if (vlanMatch != null) {
-            if (vlanMatch.getVlanId() != null) {
-                VlanId vlanId = vlanMatch.getVlanId();
-                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntryBuilder.setOxmMatchField(VlanVid.class);
+        return matchEntryList;
+    }
 
-                VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
-                VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
-                boolean setCfiBit = false;
-                Integer vidEntryValue = 0;
-                boolean hasmask = false;
-                if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
-                    setCfiBit = true;
-                    if (vlanId.getVlanId() != null) {
-                        vidEntryValue = vlanId.getVlanId().getValue();
-                    }
-                    hasmask = (vidEntryValue == 0);
-                    if (hasmask) {
-                        vlanVidBuilder.setMask(VLAN_VID_MASK);
-                    }
-                }
 
-                vlanVidBuilder.setCfiBit(setCfiBit);
-                vlanVidBuilder.setVlanVid(vidEntryValue);
-                vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
-                matchEntryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
-                matchEntryBuilder.setHasMask(hasmask);
-                matchEntryList.add(matchEntryBuilder.build());
+    private void protocolMatchFields(List<MatchEntry> matchEntryList,
+            ProtocolMatchFields protocolMatchFields) {
+        if (protocolMatchFields != null) {
+            if (protocolMatchFields.getMplsLabel() != null) {
+                matchEntryList.add(toOfMplsLabel(protocolMatchFields.getMplsLabel()));
             }
 
-            if (vlanMatch.getVlanPcp() != null) {
-                matchEntryList.add(toOfVlanPcp(vlanMatch.getVlanPcp()));
+            if (protocolMatchFields.getMplsBos() != null) {
+                matchEntryList.add(toOfMplsBos(protocolMatchFields.getMplsBos()));
+            }
+
+            if (protocolMatchFields.getMplsTc() != null) {
+                matchEntryList.add(toOfMplsTc(protocolMatchFields.getMplsTc()));
+            }
+
+            if (protocolMatchFields.getPbb() != null) {
+                matchEntryList.add(toOfMplsPbb(protocolMatchFields.getPbb()));
             }
         }
+    }
 
-        IpMatch ipMatch = match.getIpMatch();
-        if (ipMatch != null) {
-            if (ipMatch.getIpDscp() != null) {
-                matchEntryList.add(toOfIpDscp(ipMatch.getIpDscp()));
-            }
 
-            if (ipMatch.getIpEcn() != null) {
-                matchEntryList.add(toOfIpEcn(ipMatch.getIpEcn()));
-            }
-
-            if (ipMatch.getIpProtocol() != null) {
-                matchEntryList.add(toOfIpProto(ipMatch.getIpProtocol()));
-            }
-
-        }
-
-        Layer4Match layer4Match = match.getLayer4Match();
-        if (layer4Match != null) {
-            if (layer4Match instanceof TcpMatch) {
-                TcpMatch tcpMatch = (TcpMatch) layer4Match;
-
-                if (tcpMatch.getTcpSourcePort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(TcpSrc.class);
-
-                    TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
-                    TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
-                    tcpSrcBuilder.setPort(tcpMatch.getTcpSourcePort());
-                    tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
-
-                    matchEntryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-                if (tcpMatch.getTcpDestinationPort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(TcpDst.class);
-
-                    TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
-                    TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
-                    tcpDstBuilder.setPort(tcpMatch.getTcpDestinationPort());
-                    tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-            } else if (layer4Match instanceof UdpMatch) {
-                UdpMatch udpMatch = (UdpMatch) layer4Match;
-                if (udpMatch.getUdpSourcePort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(UdpSrc.class);
-
-                    UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
-                    UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
-                    boolean hasMask = false;
-                    udpSrcBuilder.setPort(udpMatch.getUdpSourcePort());
-                    udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(hasMask);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-
-                if (udpMatch.getUdpDestinationPort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(UdpDst.class);
-
-                    UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
-                    UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
-                    udpDstBuilder.setPort(udpMatch.getUdpDestinationPort());
-                    udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-            } else if (layer4Match instanceof SctpMatch) {
-                SctpMatch sctpMatch = (SctpMatch) layer4Match;
-                if (sctpMatch.getSctpSourcePort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(SctpSrc.class);
-
-                    SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
-                    SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
-                    sctpSrcBuilder.setPort(sctpMatch.getSctpSourcePort());
-                    sctpSrcCaseBuilder.setSctpSrc(sctpSrcBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-
-                if (sctpMatch.getSctpDestinationPort() != null) {
-                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(SctpDst.class);
-
-                    SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
-                    SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
-                    sctpDstBuilder.setPort(sctpMatch.getSctpDestinationPort());
-                    sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
-                    matchEntryList.add(matchEntryBuilder.build());
-                }
-            }
-        }
-
-        Icmpv4Match icmpv4Match = match.getIcmpv4Match();
-        if (icmpv4Match != null) {
-            if (icmpv4Match.getIcmpv4Type() != null) {
-                matchEntryList.add(toOfIcmpv4Type(icmpv4Match.getIcmpv4Type()));
-            }
-
-            if (icmpv4Match.getIcmpv4Code() != null) {
-                matchEntryList.add(toOfIcmpv4Code(icmpv4Match.getIcmpv4Code()));
-            }
-        }
-
-        Icmpv6Match icmpv6Match = match.getIcmpv6Match();
-        if (icmpv6Match != null) {
-            if (icmpv6Match.getIcmpv6Type() != null) {
-                matchEntryList.add(toOfIcmpv6Type(icmpv6Match.getIcmpv6Type()));
-            }
-
-            if (icmpv6Match.getIcmpv6Code() != null) {
-                matchEntryList.add(toOfIcmpv6Code(icmpv6Match.getIcmpv6Code()));
-            }
-        }
-
-        Layer3Match layer3Match = match.getLayer3Match();
+    private void layer3Match(List<MatchEntry> matchEntryList,
+            Layer3Match layer3Match) {
         if (layer3Match != null) {
             if (layer3Match instanceof Ipv4Match) {
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
@@ -796,67 +655,238 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 }
             }
         }
+    }
 
-        ProtocolMatchFields protocolMatchFields = match.getProtocolMatchFields();
-        if (protocolMatchFields != null) {
-            if (protocolMatchFields.getMplsLabel() != null) {
-                matchEntryList.add(toOfMplsLabel(protocolMatchFields.getMplsLabel()));
+
+    private void icmpv6Match(List<MatchEntry> matchEntryList,
+            Icmpv6Match icmpv6Match) {
+        if (icmpv6Match != null) {
+            if (icmpv6Match.getIcmpv6Type() != null) {
+                matchEntryList.add(toOfIcmpv6Type(icmpv6Match.getIcmpv6Type()));
             }
 
-            if (protocolMatchFields.getMplsBos() != null) {
-                matchEntryList.add(toOfMplsBos(protocolMatchFields.getMplsBos()));
-            }
-
-            if (protocolMatchFields.getMplsTc() != null) {
-                matchEntryList.add(toOfMplsTc(protocolMatchFields.getMplsTc()));
-            }
-
-            if (protocolMatchFields.getPbb() != null) {
-                matchEntryList.add(toOfMplsPbb(protocolMatchFields.getPbb()));
+            if (icmpv6Match.getIcmpv6Code() != null) {
+                matchEntryList.add(toOfIcmpv6Code(icmpv6Match.getIcmpv6Code()));
             }
         }
-
-        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel = match
-                .getTunnel();
-        if (tunnel != null) {
+    }
 
 
-            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
-            TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
-            boolean hasMask = false;
-            if (null != tunnel.getTunnelMask()) {
-                hasMask = true;
-                tunnelIdBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelMask(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+    private void icmpv4Match(List<MatchEntry> matchEntryList,
+            Icmpv4Match icmpv4Match) {
+        if (icmpv4Match != null) {
+            if (icmpv4Match.getIcmpv4Type() != null) {
+                matchEntryList.add(toOfIcmpv4Type(icmpv4Match.getIcmpv4Type()));
             }
-            tunnelIdBuilder.setTunnelId(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelId(), OFConstants.SIZE_OF_LONG_IN_BYTES));
-            tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
-            matchEntryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
-            matchEntryBuilder.setHasMask(hasMask);
-            matchEntryBuilder.setOxmMatchField(TunnelId.class);
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryList.add(matchEntryBuilder.build());
-        }
 
-
-        /**
-         * TODO: EXTENSION PROPOSAL (match, MD-SAL to OFJava)
-         * - we might need version for conversion and for key
-         * - sanitize NPE
-         */
-        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
-        if (extensionListOpt.isPresent()) {
-            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
-                // TODO: get real version
-                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
-                ConvertorToOFJava<MatchEntry> convertor =
-                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-                MatchEntry ofMatch = convertor.convert(extensionItem.getExtension());
-                matchEntryList.add(ofMatch);
+            if (icmpv4Match.getIcmpv4Code() != null) {
+                matchEntryList.add(toOfIcmpv4Code(icmpv4Match.getIcmpv4Code()));
             }
         }
+    }
 
-        return matchEntryList;
+
+    private void layer4Match(List<MatchEntry> matchEntryList,
+            Layer4Match layer4Match) {
+        if (layer4Match != null) {
+            if (layer4Match instanceof TcpMatch) {
+                TcpMatch tcpMatch = (TcpMatch) layer4Match;
+
+                if (tcpMatch.getTcpSourcePort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(TcpSrc.class);
+
+                    TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
+                    TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
+                    tcpSrcBuilder.setPort(tcpMatch.getTcpSourcePort());
+                    tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
+
+                    matchEntryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(false);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+                if (tcpMatch.getTcpDestinationPort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(TcpDst.class);
+
+                    TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
+                    TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
+                    tcpDstBuilder.setPort(tcpMatch.getTcpDestinationPort());
+                    tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(false);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+            } else if (layer4Match instanceof UdpMatch) {
+                UdpMatch udpMatch = (UdpMatch) layer4Match;
+                if (udpMatch.getUdpSourcePort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(UdpSrc.class);
+
+                    UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
+                    UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
+                    boolean hasMask = false;
+                    udpSrcBuilder.setPort(udpMatch.getUdpSourcePort());
+                    udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(hasMask);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+
+                if (udpMatch.getUdpDestinationPort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(UdpDst.class);
+
+                    UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
+                    UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
+                    udpDstBuilder.setPort(udpMatch.getUdpDestinationPort());
+                    udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(false);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+            } else if (layer4Match instanceof SctpMatch) {
+                SctpMatch sctpMatch = (SctpMatch) layer4Match;
+                if (sctpMatch.getSctpSourcePort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(SctpSrc.class);
+
+                    SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
+                    SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
+                    sctpSrcBuilder.setPort(sctpMatch.getSctpSourcePort());
+                    sctpSrcCaseBuilder.setSctpSrc(sctpSrcBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(false);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+
+                if (sctpMatch.getSctpDestinationPort() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(SctpDst.class);
+
+                    SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
+                    SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
+                    sctpDstBuilder.setPort(sctpMatch.getSctpDestinationPort());
+                    sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
+                    matchEntryBuilder.setHasMask(false);
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+            }
+        }
+    }
+
+
+    private void ipMatch(List<MatchEntry> matchEntryList, IpMatch ipMatch) {
+        if (ipMatch != null) {
+            if (ipMatch.getIpDscp() != null) {
+                matchEntryList.add(toOfIpDscp(ipMatch.getIpDscp()));
+            }
+
+            if (ipMatch.getIpEcn() != null) {
+                matchEntryList.add(toOfIpEcn(ipMatch.getIpEcn()));
+            }
+
+            if (ipMatch.getIpProtocol() != null) {
+                matchEntryList.add(toOfIpProto(ipMatch.getIpProtocol()));
+            }
+
+        }
+    }
+
+
+    private void vlanMatch(List<MatchEntry> matchEntryList,
+            VlanMatch vlanMatch) {
+        if (vlanMatch != null) {
+            if (vlanMatch.getVlanId() != null) {
+                VlanId vlanId = vlanMatch.getVlanId();
+                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                matchEntryBuilder.setOxmMatchField(VlanVid.class);
+
+                VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
+                VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
+                boolean setCfiBit = false;
+                Integer vidEntryValue = 0;
+                boolean hasmask = false;
+                if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
+                    setCfiBit = true;
+                    if (vlanId.getVlanId() != null) {
+                        vidEntryValue = vlanId.getVlanId().getValue();
+                    }
+                    hasmask = (vidEntryValue == 0);
+                    if (hasmask) {
+                        vlanVidBuilder.setMask(VLAN_VID_MASK);
+                    }
+                }
+
+                vlanVidBuilder.setCfiBit(setCfiBit);
+                vlanVidBuilder.setVlanVid(vidEntryValue);
+                vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
+                matchEntryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
+                matchEntryBuilder.setHasMask(hasmask);
+                matchEntryList.add(matchEntryBuilder.build());
+            }
+
+            if (vlanMatch.getVlanPcp() != null) {
+                matchEntryList.add(toOfVlanPcp(vlanMatch.getVlanPcp()));
+            }
+        }
+    }
+
+
+    private void ethernetMatch(List<MatchEntry> matchEntryList,
+            EthernetMatch ethernetMatch) {
+        if (ethernetMatch != null) {
+            EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
+            if (ethernetDestination != null) {
+                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                matchEntryBuilder.setOxmMatchField(EthDst.class);
+                EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
+                EthDstBuilder ethDstBuilder = new EthDstBuilder();
+                ethDstBuilder.setMacAddress(ethernetDestination.getAddress());
+                boolean hasMask = false;
+                if (null != ethernetDestination.getMask()) {
+                    ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetDestination.getMask().getValue()));
+                    hasMask = true;
+                }
+                ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
+                matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
+                matchEntryBuilder.setHasMask(hasMask);
+                matchEntryList.add(matchEntryBuilder.build());
+            }
+
+            EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
+            if (ethernetSource != null) {
+                MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                matchEntryBuilder.setOxmMatchField(EthSrc.class);
+
+                EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
+                EthSrcBuilder ethDstBuilder = new EthSrcBuilder();
+                ethDstBuilder.setMacAddress(ethernetSource.getAddress());
+                boolean hasMask = false;
+                if (null != ethernetSource.getMask()) {
+                    ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetSource.getMask().getValue()));
+                    hasMask = true;
+                }
+                ethSrcCaseBuilder.setEthSrc(ethDstBuilder.build());
+                matchEntryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
+                matchEntryBuilder.setHasMask(hasMask);
+                matchEntryList.add(matchEntryBuilder.build());
+            }
+
+            if (ethernetMatch.getEthernetType() != null) {
+                matchEntryList.add(toOfEthernetType(ethernetMatch.getEthernetType()));
+            }
+        }
     }
 
 
