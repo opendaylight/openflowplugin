@@ -140,6 +140,10 @@
             <groupId>com.github.romix</groupId>
             <artifactId>java-concurrent-hash-trie-map</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
