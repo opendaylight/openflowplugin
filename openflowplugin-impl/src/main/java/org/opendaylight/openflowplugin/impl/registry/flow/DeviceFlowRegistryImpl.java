@@ -45,7 +45,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey, final short tableId) {
+    public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey, @Deprecated final short tableId) {
+        //TODO: remove tableId parameter - it is contained in the first one
         final FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
         final FlowDescriptor alienFlowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
 

@@ -27,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
@@ -35,9 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,28 +55,7 @@ public class FlowRegistryKeyFactoryTest {
     public void setup() {
         List<FlowAndStatisticsMapList> flowAndStatisticsMapListList = new ArrayList<>();
         for (int i = 1; i < 4; i++) {
-            FlowAndStatisticsMapListBuilder flowAndStatisticsMapListBuilder = new FlowAndStatisticsMapListBuilder();
-            flowAndStatisticsMapListBuilder.setPriority(i);
-            flowAndStatisticsMapListBuilder.setTableId((short) i);
-            flowAndStatisticsMapListBuilder.setCookie(new FlowCookie(BigInteger.TEN));
-
-            MatchBuilder matchBuilder = new MatchBuilder();
-
-            EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
-
-            EthernetSourceBuilder ethernetSourceBuilder = new EthernetSourceBuilder();
-            MacAddress macAddress = new MacAddress("00:00:00:00:00:0" + i);
-            ethernetSourceBuilder.setAddress(macAddress);
-            ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build());
-
-            EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
-            ethernetDestinationBuilder.setAddress(new MacAddress("00:00:00:0" + i + ":00:00"));
-            ethernetMatchBuilder.setEthernetDestination(ethernetDestinationBuilder.build());
-
-            matchBuilder.setEthernetMatch(ethernetMatchBuilder.build());
-
-            flowAndStatisticsMapListBuilder.setMatch(matchBuilder.build());
-            flowAndStatisticsMapListList.add(flowAndStatisticsMapListBuilder.build());
+            flowAndStatisticsMapListList.add(TestFlowHelper.createFlowAndStatisticsMapListBuilder(i).build());
         }
         FLOWS_STATISTICS_UPDATE_BUILDER.setFlowAndStatisticsMapList(flowAndStatisticsMapListList);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
@@ -93,10 +68,42 @@ public class FlowRegistryKeyFactoryTest {
 
         HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            flowRegistryKeys.add(FlowRegistryKeyFactory.create(item));
-            flowRegistryKeys.add(FlowRegistryKeyFactory.create(item));
+            final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(item);
+            final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(item);
+            flowRegistryKeys.add(key1);
+            flowRegistryKeys.add(key1);
+            flowRegistryKeys.add(key2);
         }
         assertEquals(3, flowRegistryKeys.size());
+    }
+
+    @Test
+    public void testEqualsNegative() throws Exception {
+        final FlowAndStatisticsMapList flowStatisticsMapList1 = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
+        final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(flowStatisticsMapList1);
+
+        FlowRegistryKey key2;
+        FlowAndStatisticsMapListBuilder flowStatisticsMapListBld2;
+
+        // different priority
+        flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
+        flowStatisticsMapListBld2.setPriority(flowStatisticsMapListBld2.getPriority() + 1);
+        key2 = FlowRegistryKeyFactory.create(flowStatisticsMapListBld2.build());
+        Assert.assertFalse(key1.equals(key2));
+
+        // different match
+        flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
+        flowStatisticsMapListBld2.setMatch(new MatchBuilder().build());
+        key2 = FlowRegistryKeyFactory.create(flowStatisticsMapListBld2.build());
+        Assert.assertFalse(key1.equals(key2));
+
+        // different tableId
+        flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
+        flowStatisticsMapListBld2.setTableId((short) (flowStatisticsMapListBld2.getTableId() + 1));
+        key2 = FlowRegistryKeyFactory.create(flowStatisticsMapListBld2.build());
+        Assert.assertFalse(key1.equals(key2));
+
+        Assert.assertFalse(key1.equals(null));
     }
 
     @Test
