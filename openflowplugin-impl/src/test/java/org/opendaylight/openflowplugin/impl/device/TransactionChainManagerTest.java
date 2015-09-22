@@ -13,9 +13,11 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -61,6 +63,8 @@ public class TransactionChainManagerTest {
     HashedWheelTimer timer;
     @Mock
     Registration registration;
+    @Mock
+    private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
 
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
@@ -84,6 +88,7 @@ public class TransactionChainManagerTest {
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
     }
 
     @After
@@ -149,5 +154,32 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
+    }
+
+    @Test
+    public void testAttemptToRegisterHandler1() throws Exception {
+        boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
+        Assert.assertFalse(attemptResult);
+    }
+
+    @Test
+    public void testAttemptToRegisterHandler2() throws Exception {
+        final InOrder inOrder = Mockito.inOrder(writeTx, txChain);
+
+        txChainManager.close();
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, txChainManager.getTransactionChainManagerStatus());
+
+        boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
+        Assert.assertTrue(attemptResult);
+        //TODO: uncomment when txChainManager fixed (BUG-4328)
+        //Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
+
+        inOrder.verify(txChain).newWriteOnlyTransaction();
+        inOrder.verify(writeTx).delete(LogicalDatastoreType.OPERATIONAL, path);
+        inOrder.verify(writeTx).submit();
+        inOrder.verify(txChain).close();
+
+        attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
+        Assert.assertFalse(attemptResult);
     }
 }
