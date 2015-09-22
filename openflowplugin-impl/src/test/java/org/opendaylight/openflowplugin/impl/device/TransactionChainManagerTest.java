@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -126,33 +125,7 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data);
-    }
-
-    /**
-     * test of {@link TransactionChainManager#enableSubmit()}: submit - after counter activated
-     *
-     * @throws Exception
-     */
-    @Test
-    @Ignore  // FIXME : think about test -> we don't use submit by time and nrOfOperations
-    public void testEnableCounter2() throws Exception {
-        txChainManager.enableSubmit();
-
-        final Node data = new NodeBuilder().setId(nodeId).build();
-        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-
-        Mockito.verify(txChain).newWriteOnlyTransaction();
-        Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data);
-        Mockito.verify(writeTx).submit();
-
-        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-
-        Mockito.verify(txChain, Mockito.times(2)).newWriteOnlyTransaction();
-        Mockito.verify(writeTx, Mockito.times(4)).put(LogicalDatastoreType.CONFIGURATION, path, data);
-        Mockito.verify(writeTx, Mockito.times(2)).submit();
-        Mockito.verify(writeTx, Mockito.times(2)).getIdentifier();
+        Mockito.verify(writeTx, Mockito.never()).submit();
     }
 
     @Test

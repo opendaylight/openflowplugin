@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -71,17 +70,6 @@ public class DeviceStateImplTest {
     @Test(expected=IllegalArgumentException.class)
     public void testDeviceStateImplNullFeaturesReply(){
         new DeviceStateImpl(null, nodeId);
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#DeviceStateImpl(FeaturesReply, NodeId)}.
-     */
-    @Test(expected=IllegalArgumentException.class)
-    @Ignore // Available for OF1.0 only
-    public void testDeviceStateImplNullPhyPort(){
-        final FeaturesReply emptyFeaturesReply = Mockito.mock(FeaturesReply.class);
-        Mockito.when(emptyFeaturesReply.getPhyPort()).thenReturn(null);
-        new DeviceStateImpl(emptyFeaturesReply, nodeId);
     }
 
     /**

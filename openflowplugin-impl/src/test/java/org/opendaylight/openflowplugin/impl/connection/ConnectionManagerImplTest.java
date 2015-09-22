@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
-import static org.junit.Assert.fail;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -177,14 +175,4 @@ public class ConnectionManagerImplTest {
 
         Mockito.verify(deviceConnectedHandler, Mockito.timeout(FINAL_STEP_TIMEOUT)).deviceConnected(Matchers.any(ConnectionContext.class));
     }
-
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl#setOpenflowProtocolListener(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener)}.
-     */
-    @Test
-    @Ignore
-    public void testSetOpenflowProtocolListener() {
-        fail("Not yet implemented");
-    }
-
 }
