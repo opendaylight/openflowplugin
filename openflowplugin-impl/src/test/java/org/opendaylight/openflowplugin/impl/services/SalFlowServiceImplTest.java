@@ -4,6 +4,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -36,7 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
@@ -121,6 +124,34 @@ public class SalFlowServiceImplTest extends TestCase {
     @Test
     public void testAddFlow() throws Exception {
         addFlow(null);
+    }
+
+    @Test
+    public void testAddFlowFailCallback() throws Exception {
+        AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
+        Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
+                .when(requestContext).getFuture();
+
+        final Future<RpcResult<AddFlowOutput>> rpcResultFuture = salFlowService.addFlow(mockedAddFlowInput);
+
+        assertNotNull(rpcResultFuture);
+        final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
+        assertNotNull(addFlowOutputRpcResult);
+        assertFalse(addFlowOutputRpcResult.isSuccessful());
+    }
+
+    @Test
+    public void testRemoveFlowFailCallback() throws Exception {
+        RemoveFlowInput mockedRemoveFlowInput = createFlowMock(RemoveFlowInput.class);
+        Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
+                .when(requestContext).getFuture();
+
+        final Future<RpcResult<RemoveFlowOutput>> rpcResultFuture = salFlowService.removeFlow(mockedRemoveFlowInput);
+
+        assertNotNull(rpcResultFuture);
+        final RpcResult<?> removeFlowOutputRpcResult = rpcResultFuture.get();
+        assertNotNull(removeFlowOutputRpcResult);
+        assertFalse(removeFlowOutputRpcResult.isSuccessful());
     }
 
     @Test

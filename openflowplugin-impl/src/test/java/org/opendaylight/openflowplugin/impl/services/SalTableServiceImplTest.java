@@ -1,84 +1,133 @@
 package org.opendaylight.openflowplugin.impl.services;
 
-import junit.framework.TestCase;
-import org.junit.Before;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
-public class SalTableServiceImplTest extends TestCase {
+public class SalTableServiceImplTest extends ServiceMocking {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final int DUMMY_MAX_REQUEST = 88;
 
     @Mock
-    RequestContextStack mockedRequestContextStack;
-    @Mock
-    DeviceContext mockedDeviceContext;
-    @Mock
-    ConnectionContext mockedPrimConnectionContext;
-    @Mock
-    FeaturesReply mockedFeatures;
-    @Mock
-    ConnectionAdapter mockedConnectionAdapter;
-    @Mock
-    MessageSpy mockedMessagSpy;
-    @Mock
     RpcProviderRegistry mockedRpcProviderRegistry;
-    @Mock
-    OutboundQueue mockedOutboundQueue;
 
-    @Before
-    public void initialization() {
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
+    private SettableFuture<Object> handleResultFuture;
+    private SalTableServiceImpl salTableService;
 
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
+    @Override
+    public void setup() {
+        handleResultFuture = SettableFuture.create();
+        when(mockedRequestContext.getFuture()).thenReturn(handleResultFuture);
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
+                callback.onSuccess(null);
+                return null;
+            }
+        })
+                .when(mockedOutboundQueue).commitEntry(
+                Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
-
-        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
+        salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
-    public void testUpdateTable() throws ExecutionException, InterruptedException {
-        final RpcContextImpl rpcContext = new RpcContextImpl(mockedMessagSpy,
-                mockedRpcProviderRegistry, mockedDeviceContext, DUMMY_MAX_REQUEST);
-        final SalTableServiceImpl salTableService = new SalTableServiceImpl(rpcContext, mockedDeviceContext);
+    public void testUpdateTableFail1() throws ExecutionException, InterruptedException {
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().build();
+                handleResultFuture.set(rpcResult);
+                return null;
+            }
+        }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
+
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
-        assertNotNull(rpcResultFuture);
+        Assert.assertNotNull(rpcResultFuture);
+        verify(mockedRequestContextStack).createRequestContext();
+    }
+
+    @Test
+    public void testUpdateTableFail2() throws ExecutionException, InterruptedException {
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                        .build();
+                handleResultFuture.set(rpcResult);
+                return null;
+            }
+        }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
+
+        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
+        Assert.assertNotNull(rpcResultFuture);
+        verify(mockedRequestContextStack).createRequestContext();
+    }
+
+    @Test
+    public void testUpdateTableSuccess() throws ExecutionException, InterruptedException {
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                TableFeaturesBuilder tableFeaturesBld = new TableFeaturesBuilder()
+                        .setTableId((short) 0)
+                        .setName("Zafod")
+                        .setMaxEntries(42L)
+                        .setTableFeatureProperties(Collections.<TableFeatureProperties>emptyList());
+                MultipartReplyTableFeaturesBuilder mpTableFeaturesBld = new MultipartReplyTableFeaturesBuilder()
+                        .setTableFeatures(Collections.singletonList(tableFeaturesBld.build()));
+                MultipartReplyTableFeaturesCaseBuilder mpBodyBld = new MultipartReplyTableFeaturesCaseBuilder()
+                        .setMultipartReplyTableFeatures(mpTableFeaturesBld.build());
+                MultipartReplyMessageBuilder mpResultBld = new MultipartReplyMessageBuilder()
+                        .setType(MultipartType.OFPMPTABLEFEATURES)
+                        .setMultipartReplyBody(mpBodyBld.build())
+                        .setXid(21L);
+                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
+                        .success(Collections.singletonList((MultipartReply) mpResultBld.build()))
+                        .build();
+                handleResultFuture.set(rpcResult);
+                return null;
+            }
+        }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
+
+        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
+        Assert.assertNotNull(rpcResultFuture);
+        verify(mockedRequestContextStack).createRequestContext();
     }
 
     private UpdateTableInput prepareUpdateTable() {
