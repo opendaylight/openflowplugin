@@ -12,38 +12,34 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
-
-import java.math.BigInteger;
-import java.util.*;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.*;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.*;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.MultipartReplyPortDescBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -51,29 +47,65 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandTypeBitmap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortDescCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.MultipartReplyPortDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,9 +120,14 @@ public class DeviceManagerImplTest {
     private static final String DUMMY_DATAPATH_ID = "44";
     private static final Long DUMMY_PORT_NUMBER = 21L;
 
-
     @Mock
     CheckedFuture<Void,TransactionCommitFailedException> mockedFuture;
+    @Mock
+    private FeaturesReply mockFeatures;
+    @Mock
+    private OutboundQueue outboundQueueProvider;
+    @Mock
+    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
     @Test
     public void onDeviceContextLevelUpFailTest() {
@@ -122,6 +159,7 @@ public class DeviceManagerImplTest {
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
         DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_SWITCH_FEATURE_MANDATORY,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+        deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
     }
@@ -147,36 +185,87 @@ public class DeviceManagerImplTest {
 
     @Test
     public void deviceConnectedTest() {
-    }
-
-    @Test
-    public void deviceConnectedNewConnectionTest() {
         DeviceManagerImpl deviceManager = prepareDeviceManager();
-        TranslatorLibrary mockedTraslatorLibrary = mock(TranslatorLibrary.class);
-        mockedTraslatorLibrary.lookupTranslator(any(TranslatorKey.class));
-
-        deviceManager.setTranslatorLibrary(mockedTraslatorLibrary);
-
-        ConnectionContext mockConnectionContext = mock(ConnectionContext.class);
-        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
-
-
-        FeaturesReply mockFeatures = mock(FeaturesReply.class);
-        when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
-
-
-        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
-        when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+        injectMockTranslatorLibrary(deviceManager);
+        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
 
         deviceManager.deviceConnected(mockConnectionContext);
 
         InOrder order = inOrder(mockConnectionContext);
         order.verify(mockConnectionContext).getFeatures();
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
-        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(any(OutboundQueueHandlerRegistration
-                .class));
+        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
+                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
         order.verify(mockConnectionContext).setDeviceDisconnectedHandler(any(DeviceContext.class));
+
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+    }
+
+    @Test
+    public void deviceConnectedV10Test() {
+        DeviceManagerImpl deviceManager = prepareDeviceManager();
+        injectMockTranslatorLibrary(deviceManager);
+        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
+
+        deviceManager.deviceConnected(mockConnectionContext);
+
+        InOrder order = inOrder(mockConnectionContext);
+        order.verify(mockConnectionContext).getFeatures();
+        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
+        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
+                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
+        order.verify(mockConnectionContext).getNodeId();
+        order.verify(mockConnectionContext).setDeviceDisconnectedHandler(any(DeviceContext.class));
+
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+    }
+
+    protected ConnectionContext buildMockConnectionContext(short ofpVersion) {
+        ConnectionContext mockConnectionContext = mock(ConnectionContext.class);
+        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+
+        when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
+
+        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
+        when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+        when(mockFeatures.getVersion()).thenReturn(ofpVersion);
+        final Capabilities capabilitiesV13 = Mockito.mock(Capabilities.class);
+        final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
+        when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
+        when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
+
+        when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final FutureCallback<OfHeader> callBack = (FutureCallback<OfHeader>) invocation.getArguments()[2];
+                callBack.onSuccess(null);
+                return null;
+            }
+        })
+                .when(outboundQueueProvider)
+                .commitEntry(Matchers.anyLong(), Matchers.<MultipartRequestInput>any(), Matchers.<FutureCallback<OfHeader>>any());
+
+        when(mockedConnectionAdapter.registerOutboundQueueHandler(Matchers.<OutboundQueueHandler>any(), Matchers.anyInt(), Matchers.anyLong()))
+                .thenAnswer(new Answer<OutboundQueueHandlerRegistration<OutboundQueueHandler>>() {
+                    @Override
+                    public OutboundQueueHandlerRegistration<OutboundQueueHandler> answer(InvocationOnMock invocation) throws Throwable {
+                        OutboundQueueHandler handler = (OutboundQueueHandler) invocation.getArguments()[0];
+                        handler.onConnectionQueueChanged(outboundQueueProvider);
+                        return null;
+                    }
+                });
+
+        when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
+        return mockConnectionContext;
+    }
+
+    private void injectMockTranslatorLibrary(DeviceManagerImpl deviceManager) {
+        TranslatorLibrary mockedTraslatorLibrary = mock(TranslatorLibrary.class);
+        mockedTraslatorLibrary.lookupTranslator(any(TranslatorKey.class));
+
+        deviceManager.setTranslatorLibrary(mockedTraslatorLibrary);
     }
 
     @Test

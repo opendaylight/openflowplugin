@@ -92,6 +92,7 @@ abstract class SimpleRatelimiter {
         synchronized (counter) {
             lowWatermark = newLowWatermark;
             highWatermark = newHighWatermark;
+            resetLowWaterMark();
         }
     }
 }
