@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import java.util.Collections;
 import java.util.Set;
-import org.apache.mina.util.ConcurrentHashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.yangtools.concepts.Registration;
@@ -23,7 +23,7 @@ public class ItemLifeCycleRegistryImpl implements ItemLifeCycleRegistry {
     private final Set<ItemLifeCycleSource> registry;
 
     public ItemLifeCycleRegistryImpl() {
-        registry = new ConcurrentHashSet<>();
+        registry = Collections.newSetFromMap(new ConcurrentHashMap<ItemLifeCycleSource, Boolean>());
     }
 
 
