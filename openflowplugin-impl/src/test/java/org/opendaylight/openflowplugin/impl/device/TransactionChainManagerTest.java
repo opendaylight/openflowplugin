@@ -171,8 +171,6 @@ public class TransactionChainManagerTest {
 
         boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
         Assert.assertTrue(attemptResult);
-        //TODO: uncomment when txChainManager fixed (BUG-4328)
-        //Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
 
         inOrder.verify(txChain).newWriteOnlyTransaction();
         inOrder.verify(writeTx).delete(LogicalDatastoreType.OPERATIONAL, path);
