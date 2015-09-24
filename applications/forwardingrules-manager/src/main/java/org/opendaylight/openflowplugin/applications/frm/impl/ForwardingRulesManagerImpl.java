@@ -65,9 +65,13 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private ForwardingRulesCommiter<TableFeatures> tableListener;
     private FlowNodeReconciliation nodeListener;
 
+    private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
+
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-                                      final RpcConsumerRegistry rpcRegistry) {
+                                      final RpcConsumerRegistry rpcRegistry,
+                                      final ForwardingRulesManagerConfig config) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -205,6 +209,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeReconciliation getFlowNodeReconciliation() {
         return nodeListener;
+    }
+
+    @Override
+    public ForwardingRulesManagerConfig getConfiguration() {
+        return forwardingRulesManagerConfig;
     }
 }
 

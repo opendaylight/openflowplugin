@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -18,9 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
@@ -50,7 +49,10 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void addTwoFlowsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -91,7 +93,10 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -133,7 +138,10 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowScopeTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -177,7 +185,10 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void deleteFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -210,5 +221,28 @@ public class FlowListenerTest extends FRMTest {
         assertEquals(Boolean.TRUE, removeFlowCalls.get(0).isStrict());
 
         forwardingRulesManager.close();
+    }
+
+
+    @Test
+    public void staleMarkedFlowCreationTest() throws Exception{
+
+        addFlowCapableNode(s1Key);
+
+        StaleFlowKey flowKey = new StaleFlowKey(new FlowId("stale_Flow"));
+        InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+                .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+        InstanceIdentifier<StaleFlow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+                .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(StaleFlow.class, flowKey);
+        Table table = new TableBuilder().setKey(tableKey).setStaleFlow(Collections.<StaleFlow>emptyList()).build();
+        StaleFlow flow = new StaleFlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+
+        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
+        assertCommit(writeTx.submit());
+
+
+
     }
 }
