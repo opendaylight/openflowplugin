@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -137,5 +138,12 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return FlowNodeReconciliation
      */
     public FlowNodeReconciliation getFlowNodeReconciliation();
+
+    /**
+     * Returns the config-subsystem/fallback configuration of FRM
+     * @return ForwardingRulesManagerConfig
+     */
+    public ForwardingRulesManagerConfig getConfiguration();
+
 }
 
