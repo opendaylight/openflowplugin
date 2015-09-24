@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,6 +127,17 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     public void add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
                     final InstanceIdentifier<FlowCapableNode> nodeIdent) {
        //DO NOthing
+    }
+
+    @Override
+    public void createStaleMarkEntity(InstanceIdentifier<TableFeatures> identifier, TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("NO-OP");
+
+    }
+
+    @Override
+    public Future<? extends RpcResult> removeWithResult(InstanceIdentifier<TableFeatures> identifier, TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return null;
     }
 
 
