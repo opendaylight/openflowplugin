@@ -65,6 +65,20 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
                     throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
                 }
             }
+            else{
+                // Switch is NOT connected
+                switch (mod.getModificationType()) {
+                    case DELETE:
+                        createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                        break;
+                    case SUBTREE_MODIFIED:
+                        break;
+                    case WRITE:
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                }
+            }
         }
     }
 

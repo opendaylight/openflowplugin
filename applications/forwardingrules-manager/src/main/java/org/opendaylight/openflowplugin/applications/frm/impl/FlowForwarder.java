@@ -8,20 +8,30 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
-import java.util.concurrent.Callable;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
@@ -31,8 +41,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * GroupForwarder
@@ -48,11 +62,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
 
+    private final DataBroker dataBroker;
+
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
     public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Flow.class);
-        Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         registrationListener(db);
     }
 
@@ -109,6 +125,38 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }
     }
 
+
+
+
+    //TODO: Pull this into ForwardingRulesCommiter and override it here
+
+    @Override
+    public Future<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
+                       final Flow removeDataObj,
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+
+        Future<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
+        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
+            final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
+            builder.setFlowRef(new FlowRef(identifier));
+            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+
+            // This method is called only when a given flow object has been
+            // removed from datastore. So FRM always needs to set strict flag
+            // into remove-flow input so that only a flow entry associated with
+            // a given flow object is removed.
+            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).
+                    setStrict(Boolean.TRUE);
+            resultFuture = provider.getSalFlowService().removeFlow(builder.build());
+        }
+
+        return resultFuture;
+    }
+
+
+
     @Override
     public void update(final InstanceIdentifier<Flow> identifier,
                        final Flow original, final Flow update,
@@ -151,6 +199,17 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
+    public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent.toString(), del.toString());
+
+        StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
+        persistStaleFlow(staleFlow, nodeIdent);
+
+    }
+
+
+
+    @Override
     protected InstanceIdentifier<Flow> getWildCardPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class);
@@ -165,6 +224,41 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             return false;
         }
         return true;
+    }
+
+    private StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del, InstanceIdentifier<FlowCapableNode> nodeIdent){
+         StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
+        return staleFlowBuilder.setId(del.getId()).build();
+    }
+
+    private void persistStaleFlow(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent){
+        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent), staleFlow, false);
+
+        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+        handleStaleFlowResultFuture(submitFuture);
+    }
+
+    private void handleStaleFlowResultFuture(CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
+        Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                LOG.debug("Stale Flow creation success");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.error("Stale Flow creation failed {}", t);
+            }
+        });
+
+    }
+
+    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return nodeIdent
+                .child(Table.class, new TableKey(staleFlow.getTableId()))
+                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
+                        new StaleFlowKey(new FlowId(staleFlow.getId())));
     }
 }
 
