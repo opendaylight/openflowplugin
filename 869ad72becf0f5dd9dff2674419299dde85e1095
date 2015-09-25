@@ -22,6 +22,30 @@
       "revId": "869ad72becf0f5dd9dff2674419299dde85e1095",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_28d185fb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/OpenflowOwnershipListener.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-09-25T06:05:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a76adc5_c176b106",
+      "range": {
+        "startLine": 24,
+        "startChar": 62,
+        "endLine": 24,
+        "endChar": 76
+      },
+      "revId": "869ad72becf0f5dd9dff2674419299dde85e1095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
