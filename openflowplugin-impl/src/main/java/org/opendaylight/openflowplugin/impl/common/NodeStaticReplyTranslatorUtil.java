@@ -16,6 +16,7 @@ import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -76,7 +77,7 @@ public class NodeStaticReplyTranslatorUtil {
      * @param reply
      * @return
      */
-    public static FlowCapableNode nodeDescTranslator(@CheckForNull final MultipartReplyDesc reply) {
+    public static FlowCapableNode nodeDescTranslator(@CheckForNull final MultipartReplyDesc reply, final IpAddress ipAddress) {
         Preconditions.checkArgument(reply != null);
         final FlowCapableNodeBuilder flowCapAugBuilder = new FlowCapableNodeBuilder();
         flowCapAugBuilder.setDescription(reply.getDpDesc());
@@ -87,6 +88,9 @@ public class NodeStaticReplyTranslatorUtil {
         flowCapAugBuilder.setTable(Collections.<Table>emptyList());
         flowCapAugBuilder.setMeter(Collections.<Meter>emptyList());
         flowCapAugBuilder.setGroup(Collections.<Group>emptyList());
+        if (ipAddress != null) {
+            flowCapAugBuilder.setIpAddress(ipAddress);
+        }
         return flowCapAugBuilder.build();
     }
 

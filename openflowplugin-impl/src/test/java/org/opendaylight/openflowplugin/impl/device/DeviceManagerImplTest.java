@@ -134,10 +134,27 @@ public class DeviceManagerImplTest {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     @Mock
     private TranslatorLibrary translatorLibrary;
+    @Mock
+    private ConnectionContext mockConnectionContext;
+    @Mock
+    private ConnectionAdapter mockedConnectionAdapter;
+    @Mock
+    private DeviceContextImpl mockedDeviceContext;
 
     @Before
     public void setUp() throws Exception {
         OpenflowPortsUtil.init();
+
+        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+        when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
+        when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
+
+        final Capabilities capabilitiesV13 = Mockito.mock(Capabilities.class);
+        final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
+        when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
+        when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
+        when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
 
     @Test
@@ -178,7 +195,6 @@ public class DeviceManagerImplTest {
     public void onDeviceContextLevelUp(boolean withException) {
         DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
 
-        DeviceContextImpl mockedDeviceContext = mock(DeviceContextImpl.class);
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
             DeviceState mockedDeviceState = mock(DeviceState.class);
@@ -241,20 +257,7 @@ public class DeviceManagerImplTest {
     }
 
     protected ConnectionContext buildMockConnectionContext(short ofpVersion) {
-        ConnectionContext mockConnectionContext = mock(ConnectionContext.class);
-        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
-
-        when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
-
-        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
-        when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockFeatures.getVersion()).thenReturn(ofpVersion);
-        final Capabilities capabilitiesV13 = Mockito.mock(Capabilities.class);
-        final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
-        when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
-        when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
-        when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
-
         when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
@@ -287,13 +290,11 @@ public class DeviceManagerImplTest {
 
     @Test
     public void chainTableTrunkWriteOF10Test() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
         DeviceState mockedDeviceState = mock(DeviceState.class);
 
         GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
         when(mockedFeatures.getTables()).thenReturn((short) 2);
         when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
-
 
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
@@ -311,7 +312,11 @@ public class DeviceManagerImplTest {
 
     @Test
     public void testTranslateAndWriteReplyTypeDesc() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        DeviceState deviceState = Mockito.mock(DeviceState.class);
+        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(deviceState);
+
         Collection<MultipartReply> multipartReplyMessages = prepareDataforTypeDesc(mockedDeviceContext);
 
         DeviceManagerImpl.translateAndWriteReply(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
@@ -332,8 +337,6 @@ public class DeviceManagerImplTest {
 
     @Test
     public void translateAndWriteReplyTypeTableFeatures() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
-
         TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         tableFeature.setTableId(DUMMY_TABLE_ID);
         List<TableFeatures> tableFeatures = new ArrayList<>();
@@ -354,7 +357,6 @@ public class DeviceManagerImplTest {
 
     @Test
     public void translateAndWriteReplyTypeMeterFeatures() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
@@ -376,8 +378,6 @@ public class DeviceManagerImplTest {
 
     @Test
     public void translateAndWriteReplyTypeGroupFeatures() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
-
         MultipartReplyGroupFeaturesBuilder multipartReplyGroupFeaturesBuilder = new MultipartReplyGroupFeaturesBuilder();
         multipartReplyGroupFeaturesBuilder.setTypes(new GroupTypes(true, true, true, true));
         multipartReplyGroupFeaturesBuilder.setCapabilities(new GroupCapabilities(true, true, true, true));
@@ -400,8 +400,6 @@ public class DeviceManagerImplTest {
 
     @Test
     public void translateAndWriteReplyTypePortDesc() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
-
         ConnectionContext mockedPrimaryConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedFeatures.getDatapathId()).thenReturn(new BigInteger(DUMMY_DATAPATH_ID));
@@ -435,9 +433,10 @@ public class DeviceManagerImplTest {
 
     @Test
     public void createSuccessProcessingCallbackTest() {
-        DeviceContext mockedDeviceContext = mock(DeviceContext.class);
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
 
         List<MultipartReply> multipartReplies = new ArrayList<>(prepareDataforTypeDesc(mockedDeviceContext));
         RpcResult<List<MultipartReply>> result = RpcResultBuilder.<List<MultipartReply>>success(multipartReplies).build();
