@@ -15,6 +15,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +59,9 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -522,6 +529,29 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
     }
 
+    private static IpAddress getIpAddressOf(final DeviceContext deviceContext) {
+
+        InetSocketAddress remoteAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress();
+
+        if (remoteAddress == null) {
+            LOG.warn("IP address of the node {} cannot be obtained. No connection with switch.", deviceContext.getDeviceState().getNodeId());
+            return null;
+        }
+        LOG.info("IP address of switch is :"+remoteAddress);
+
+        final InetAddress address = remoteAddress.getAddress();
+        String hostAddress = address.getHostAddress();
+        if (address instanceof Inet4Address) {
+            return new IpAddress(new Ipv4Address(hostAddress));
+        }
+        if (address instanceof Inet6Address) {
+            return new IpAddress(new Ipv6Address(hostAddress));
+        }
+        LOG.info("Illegal IP address {} of switch:{} ", address, deviceContext.getDeviceState().getNodeId());
+        return null;
+
+    }
+
     static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
                                                final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
         try {
@@ -531,7 +561,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                     case OFPMPDESC:
                         Preconditions.checkArgument(body instanceof MultipartReplyDescCase);
                         final MultipartReplyDesc replyDesc = ((MultipartReplyDescCase) body).getMultipartReplyDesc();
-                        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc);
+                        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc, getIpAddressOf(dContext));
                         final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
                         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
                         break;
