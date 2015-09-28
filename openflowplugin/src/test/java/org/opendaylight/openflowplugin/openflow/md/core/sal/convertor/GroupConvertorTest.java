@@ -9,20 +9,29 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
@@ -33,9 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
+
+import com.google.common.collect.ImmutableList;
 
 public class GroupConvertorTest {
 
@@ -251,6 +260,117 @@ public class GroupConvertorTest {
                 Assert.assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
+    }
+
+    /**
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short, java.math.BigInteger)}
+     */
+    @Test
+    public void testGroupModConvertSortedBuckets() {
+
+        int actionOrder = 0;
+
+        ArrayList<Bucket> bucket = new ArrayList<Bucket>();
+
+        bucket.add(new BucketBuilder()
+                        .setBucketId(new BucketId((long) 4))
+                        .setWatchPort((long)2)
+                        .setWatchGroup((long) 1)
+                        .setAction(ImmutableList.of(new ActionBuilder()
+                        .setOrder(0)
+                        .setAction(new OutputActionCaseBuilder()
+                                        .setOutputAction(new OutputActionBuilder()
+                                                                .setOutputNodeConnector(new Uri("openflow:1:2"))
+                                                                .build())
+                                        .build())
+                        .build()))
+        .build());
+
+        bucket.add(new BucketBuilder()
+                        .setBucketId(new BucketId((long) 3))
+                        .setWatchPort((long)6)
+                        .setWatchGroup((long) 1)
+                        .setAction(ImmutableList.of(new ActionBuilder()
+                        .setOrder(0)
+                        .setAction(new OutputActionCaseBuilder()
+                                        .setOutputAction(new OutputActionBuilder()
+                                                                .setOutputNodeConnector(new Uri("openflow:1:6"))
+                                                                .build())
+                                        .build())
+                        .build()))
+                .build());
+
+        bucket.add(new BucketBuilder()
+                        .setBucketId(new BucketId((long) 2))
+                        .setWatchPort((long)5)
+                        .setWatchGroup((long) 1)
+                        .setAction(ImmutableList.of(new ActionBuilder()
+                        .setOrder(0)
+                        .setAction(new OutputActionCaseBuilder()
+                                        .setOutputAction(new OutputActionBuilder()
+                                                                .setOutputNodeConnector(new Uri("openflow:1:5"))
+                                                                .build())
+                                        .build())
+                        .build()))
+                .build());
+
+        bucket.add(new BucketBuilder()
+                    .setBucketId(new BucketId((long) 1))
+                    .setWatchPort((long)4)
+                    .setWatchGroup((long) 1)
+                    .setAction(ImmutableList.of(new ActionBuilder()
+                    .setOrder(0)
+                    .setAction(new OutputActionCaseBuilder()
+                                    .setOutputAction(new OutputActionBuilder()
+                                                            .setOutputNodeConnector(new Uri("openflow:1:4"))
+                                                            .build())
+                                    .build())
+                    .build()))
+            .build());
+
+        bucket.add(new BucketBuilder()
+                    .setBucketId(new BucketId((long) 0))
+                    .setWatchPort((long)3)
+                    .setWatchGroup((long) 1)
+                    .setAction(ImmutableList.of(new ActionBuilder()
+                    .setOrder(0)
+                    .setAction(new OutputActionCaseBuilder()
+                                    .setOutputAction(new OutputActionBuilder()
+                                                            .setOutputNodeConnector(new Uri("openflow:1:3"))
+                                                            .build())
+                                    .build())
+                    .build()))
+                    .build());
+
+
+        AddGroupInput input = new AddGroupInputBuilder()
+                                    .setGroupId(new GroupId((long) 1))
+                                    .setGroupName("Foo")
+                                    .setGroupType(GroupTypes.GroupFf)
+                                    .setBuckets(new BucketsBuilder()
+                                                       .setBucket(bucket)
+                                                       .build())
+                                    .build();
+
+        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(input, (short) 0X4, BigInteger.valueOf(1));
+
+        List<BucketsList> bucketList = outAddGroupInput.getBucketsList();
+        Assert.assertEquals( Long.valueOf(1), bucketList.get(0).getWatchGroup());
+        Assert.assertEquals( Long.valueOf(3), bucketList.get(0).getWatchPort().getValue());
+
+        Assert.assertEquals( Long.valueOf(1), bucketList.get(1).getWatchGroup());
+        Assert.assertEquals( Long.valueOf(4), bucketList.get(1).getWatchPort().getValue());
+
+        Assert.assertEquals( Long.valueOf(1), bucketList.get(2).getWatchGroup());
+        Assert.assertEquals( Long.valueOf(5), bucketList.get(2).getWatchPort().getValue());
+
+        Assert.assertEquals( Long.valueOf(1), bucketList.get(3).getWatchGroup());
+        Assert.assertEquals( Long.valueOf(6), bucketList.get(3).getWatchPort().getValue());
+
+        Assert.assertEquals( Long.valueOf(1), bucketList.get(4).getWatchGroup());
+        Assert.assertEquals( Long.valueOf(2), bucketList.get(4).getWatchPort().getValue());
+
+
     }
 
     /**
