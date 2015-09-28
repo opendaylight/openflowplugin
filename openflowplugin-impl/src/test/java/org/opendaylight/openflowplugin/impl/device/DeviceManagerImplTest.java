@@ -25,12 +25,15 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -86,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCaseBuilder;
@@ -121,13 +125,20 @@ public class DeviceManagerImplTest {
     private static final Long DUMMY_PORT_NUMBER = 21L;
 
     @Mock
-    CheckedFuture<Void,TransactionCommitFailedException> mockedFuture;
+    CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
     @Mock
     private FeaturesReply mockFeatures;
     @Mock
     private OutboundQueue outboundQueueProvider;
     @Mock
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    @Mock
+    private TranslatorLibrary translatorLibrary;
+
+    @Before
+    public void setUp() throws Exception {
+        OpenflowPortsUtil.init();
+    }
 
     @Test
     public void onDeviceContextLevelUpFailTest() {
@@ -208,6 +219,14 @@ public class DeviceManagerImplTest {
         injectMockTranslatorLibrary(deviceManager);
         ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
 
+        PhyPortBuilder phyPort = new PhyPortBuilder()
+                .setPortNo(41L);
+        when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
+        MessageTranslator<Object, Object> mockedTranslator = Mockito.mock(MessageTranslator.class);
+        when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceContext>any(), Matchers.any()))
+                .thenReturn(null);
+        when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
+
         deviceManager.deviceConnected(mockConnectionContext);
 
         InOrder order = inOrder(mockConnectionContext);
@@ -234,6 +253,7 @@ public class DeviceManagerImplTest {
         final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
         when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
+        when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
 
         when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
         Mockito.doAnswer(new Answer<Void>() {
@@ -262,10 +282,7 @@ public class DeviceManagerImplTest {
     }
 
     private void injectMockTranslatorLibrary(DeviceManagerImpl deviceManager) {
-        TranslatorLibrary mockedTraslatorLibrary = mock(TranslatorLibrary.class);
-        mockedTraslatorLibrary.lookupTranslator(any(TranslatorKey.class));
-
-        deviceManager.setTranslatorLibrary(mockedTraslatorLibrary);
+        deviceManager.setTranslatorLibrary(translatorLibrary);
     }
 
     @Test
@@ -274,7 +291,7 @@ public class DeviceManagerImplTest {
         DeviceState mockedDeviceState = mock(DeviceState.class);
 
         GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
-        when(mockedFeatures.getTables()).thenReturn((short)2);
+        when(mockedFeatures.getTables()).thenReturn((short) 2);
         when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
 
 
@@ -393,7 +410,6 @@ public class DeviceManagerImplTest {
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        TranslatorLibrary translatorLibrary = mock(TranslatorLibrary.class);
         MessageTranslator mockedTranslator = mock(MessageTranslator.class);
         when(translatorLibrary.lookupTranslator(any(TranslatorKey.class))).thenReturn(mockedTranslator);
         when(mockedDeviceContext.oook()).thenReturn(translatorLibrary);
@@ -432,8 +448,29 @@ public class DeviceManagerImplTest {
 
         RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.PROTOCOL, "dummy error").build();
         mockedRequestContextFuture = Futures.immediateFuture(rpcResult);
-        DeviceManagerImpl.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II,mockedRequestContextFuture);
+        DeviceManagerImpl.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
-
     }
+
+    @Test
+    public void testClose() throws Exception {
+        DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
+        final Set<DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.add(deviceContext);
+        Assert.assertEquals(1, deviceContexts.size());
+
+        deviceManager.close();
+
+        Mockito.verify(deviceContext).close();
+    }
+
+    private static Set<DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+        // HACK: contexts collection for testing shall be accessed in some more civilized way
+        final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
+        Assert.assertNotNull(contextsField);
+        contextsField.setAccessible(true);
+        return (Set<DeviceContext>) contextsField.get(deviceManager);
+    }
+
 }
