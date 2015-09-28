@@ -7,15 +7,19 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
@@ -43,6 +47,14 @@ public final class GroupConvertor {
     private static final Long DEFAULT_WATCH_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
+    private static final Comparator<Bucket> comparator = new Comparator<Bucket>(){
+        @Override
+        public int compare(Bucket bucket1,
+                           Bucket bucket2) {
+            if(bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
+            return  bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
+        }
+    };
 
     private GroupConvertor() {
 
@@ -53,9 +65,9 @@ public final class GroupConvertor {
     org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version,BigInteger datapathid) {
         List<BucketsList> bucketLists = null;
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
-        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput) {
+        if (source instanceof AddGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
-        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput) {
+        } else if (source instanceof RemoveGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
         } else if (source instanceof UpdatedGroup) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
@@ -80,6 +92,8 @@ public final class GroupConvertor {
         groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
         // Only if the bucket is configured for the group then add it
         if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+
+            Collections.sort(source.getBuckets().getBucket(), comparator);
 
             bucketLists = salToOFBucketList(source.getBuckets(), version, source.getGroupType().getIntValue(),datapathid);
             groupModInputBuilder.setBucketsList(bucketLists);
