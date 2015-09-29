@@ -9,6 +9,7 @@ module openflow-provider-impl {
     import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
+    import opendaylight-entity-ownership-service { prefix entity-ownership-service; }
 
     description
         "openflow-plugin-custom-config-impl";
@@ -67,6 +68,16 @@ module openflow-provider-impl {
                     }
                 }
             }
+
+	    container ownership-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory false;
+			config:required-identity entity-ownership-service:entity-ownership-service;
+		    }
+		}
+	    }
+		
             container rpc-registry {
                 uses config:service-ref {
                     refine type {

@@ -28,9 +28,9 @@ public final class TaskUtil {
     }
 
     /**
-     * @param session
-     * @param cookie
-     * @param messageService
+     * @param session switch session context
+     * @param cookie connection distinguisher cookie value
+     * @param messageService message dispatch service instance
      * @return barrier response
      */
     public static RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrier(SessionContext session,

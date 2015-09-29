@@ -524,8 +524,9 @@ public final class IpConversionUtil {
 
     /**
      * Print a v6 prefix in byte array + 1 notation
-     *
      * @param _binary_form - prefix, in byte [] form, last byte is netmask
+     * @return string of v6 prefix
+     * @throws UnknownHostException unknown host exception
      */
     public static String byteArrayV6PrefixToString(final byte [] _binary_form) throws UnknownHostException {
         /* NO DIY!!! - InetAddresses will actually print correct canonical

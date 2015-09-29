@@ -49,9 +49,9 @@ public final class OFToMDSalFlowConvertor {
      * Method convert Openflow 1.3+ specific instructions to MD-SAL format
      * flow instruction
      *
-     * @param instructions
+     * @param instructions instructions
      * @param ofVersion    current ofp version
-     * @return
+     * @return instruction converted to SAL instruction
      */
     public static Instructions toSALInstruction(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructions, OpenflowVersion ofVersion) {
@@ -161,6 +161,8 @@ public final class OFToMDSalFlowConvertor {
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
      *
      * @param ofVersion current ofp version
+     * @param actionsList list of action
+     * @return OF10 actions as an instructions
      */
 
     public static Instructions wrapOF10ActionsToInstruction(

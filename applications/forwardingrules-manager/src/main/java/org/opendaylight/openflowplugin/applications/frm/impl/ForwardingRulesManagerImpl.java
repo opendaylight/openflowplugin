@@ -13,6 +13,7 @@ import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
@@ -58,6 +59,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalGroupService salGroupService;
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
+    private EntityOwnershipService ownershipService;
 
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
@@ -184,6 +186,15 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public SalTableService getSalTableService() {
         return salTableService;
+    }
+
+    public void setOwnershipService(EntityOwnershipService ownershipService) {
+        this.ownershipService = Preconditions.checkNotNull(ownershipService, "OwnershipService can not be null!");
+    }
+
+    @Override
+    public EntityOwnershipService getOwnershipService() {
+        return ownershipService;
     }
 
     @Override

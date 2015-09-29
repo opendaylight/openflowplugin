@@ -32,7 +32,7 @@ public class RpcListeningExecutorService implements ListeningExecutorService {
     private DataContainer notSupportedTask = new NoDataContainerTask();
     
     /**
-     * @param executorService
+     * @param executorService executor service
      */
     public RpcListeningExecutorService(ListeningExecutorService executorService) {
         this.executorServiceDelegate = executorService;

@@ -43,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public class ActionSetNwDstReactorMappingFactory {
 
     /**
-     * @param conversionMapping
+     * @param conversionMapping conversion mapping
      */
     public static void addSetNwDstConvertors(final Map<Short, Convertor<SetNwDstActionCase, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new ActionSetNwDstConvertorV10Impl());
@@ -51,7 +51,7 @@ public class ActionSetNwDstReactorMappingFactory {
     }
 
     /**
-     * @param injectionMapping
+     * @param injectionMapping injection mapping
      */
     public static void addSetNwDstInjectors(final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.0| Ipv4Address -> ActionBuilder; SetNwDst

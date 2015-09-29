@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -81,6 +82,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 @Override
                 public ListenerRegistration<FlowForwarder> call() throws Exception {
                     return db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
+                    //return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),
+                    //                                     FlowForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {

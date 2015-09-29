@@ -26,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public abstract class MessageFactory {
 
     /**
-     * @param helloVersion
-     * @param helloXid
+     * @param helloVersion openflow version for hello message to send to switch
+     * @param helloXid transaction id for hello message
      * @return HelloInput without elements
      */
     public static HelloInput createHelloInput(short helloVersion, long helloXid) {
@@ -35,8 +35,8 @@ public abstract class MessageFactory {
     }
 
     /**
-     * @param highestVersion
-     * @param xid
+     * @param highestVersion highest openflow version
+     * @param xid transaction id
      * @return builder with prepared header
      */
     private static HelloInputBuilder prepareHelloInputBuilder(
@@ -48,9 +48,9 @@ public abstract class MessageFactory {
     }
     
     /**
-     * @param helloVersion
-     * @param helloXid
-     * @param versionOrder
+     * @param helloVersion openflow version for hello message to send to switch
+     * @param helloXid transaction id for hello message
+     * @param versionOrder list of openflow version in order
      * @return HelloInput with elements (version bitmap)
      */
     public static HelloInput createHelloInput(short helloVersion, long helloXid, List<Short> versionOrder) {
@@ -86,7 +86,7 @@ public abstract class MessageFactory {
     }
 
     /**
-     * @param elements
+     * @param elements list of versions
      * @return version boolean list
      */
     public static List<Boolean> digVersions(List<Elements> elements) {
@@ -102,8 +102,8 @@ public abstract class MessageFactory {
     }
     
     /**
-     * @param ofVersion 
-     * @param ofXid 
+     * @param ofVersion  openflow version
+     * @param ofXid transaction id
      * @return barrier message
      */
     public static BarrierInput createBarrier(short ofVersion, long ofXid) {

@@ -910,10 +910,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     /**
      * Method convert Openflow 1.0 specific flow match to MD-SAL format flow
      * match
-     *
-     * @param swMatch
-     * @return
-     * @author avishnoi@in.ibm.com
+     * @param swMatch source match
+     * @param datapathid datapath id
+     * @param ofVersion openflow version
+     * @return match builder
      */
     public static MatchBuilder fromOFMatchV10ToSALMatch(@Nonnull final MatchV10 swMatch, @Nonnull final BigInteger datapathid, @Nonnull final OpenflowVersion ofVersion) {
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -1072,10 +1072,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
      * Method converts Openflow 1.3+ specific flow match to MD-SAL format flow
      * match
      *
-     * @param swMatch
-     * @param swMatch
-     * @param datapathid
-     * @param ofVersion
+     * @param swMatch source match
+     * @param datapathid datapath id
+     * @param ofVersion openflow version
      * @return md-sal match instance
      * @author avishnoi@in.ibm.com
      */
@@ -1823,9 +1822,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     /**
      * Method converts OF SetField action to SAL SetFiled action.
      *
-     * @param action
+     * @param action input action
      * @param ofVersion current ofp version
-     * @return
+     * @return set field builder
      */
     public static SetField fromOFSetFieldToSALSetFieldAction(
             final Action action, final OpenflowVersion ofVersion) {

@@ -61,7 +61,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
     }
 
     /**
-     * @param ticket
+     * @param ticket ticket
      * @return runnable ticket processor
      */
     @Override
@@ -98,7 +98,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
     }
 
     /**
-     * @param ticket
+     * @param ticket ticket
      * @return runnable ticket processor
      */
     @Override
@@ -131,7 +131,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
 
 
     /**
-     * @param ticket
+     * @param ticket ticket
      *
      */
     @Override

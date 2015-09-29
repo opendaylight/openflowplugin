@@ -26,8 +26,8 @@ public abstract class ByteUtil {
     private static final BaseEncoding HEX_16_ENCODING = PLAIN_HEX_16_ENCODING.withSeparator(DEFAULT_HEX_SEPARATOR, 2);
 
     /**
-     * @param bytes
-     * @param delimiter
+     * @param bytes bytes that needs to be converted to hex
+     * @param delimiter string delimiter
      * @return hexString containing bytes, separated with delimiter
      */
     public static String bytesToHexstring(final byte[] bytes, final String delimiter) {
@@ -41,7 +41,8 @@ public abstract class ByteUtil {
     /**
      * Utility method to convert BigInteger to n element byte array
      *
-     * @param bigInteger
+     * @param bigInteger big integer value that needs to be converted to byte
+     * @param numBytes convert to number of bytes
      * @return byte array containing n * 8 bits.
      */
     public static byte[] convertBigIntegerToNBytes(final BigInteger bigInteger, final int numBytes) {

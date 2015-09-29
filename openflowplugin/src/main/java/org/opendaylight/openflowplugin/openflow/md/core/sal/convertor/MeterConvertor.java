@@ -53,9 +53,8 @@ public final class MeterConvertor {
 
     // Get all the data for the meter from the Yang/SAL-Layer
     /**
-     * @param version
-     * @param source
-     *            Data source
+     * @param version of version
+     * @param source Data source
      * @return MeterModInput required by OF Library
      */
     public static MeterModInputBuilder toMeterModInput(

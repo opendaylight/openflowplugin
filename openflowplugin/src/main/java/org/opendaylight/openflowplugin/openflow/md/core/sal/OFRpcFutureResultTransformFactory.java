@@ -40,9 +40,11 @@ public abstract class OFRpcFutureResultTransformFactory {
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
     /**
-     * @param input
-     * @param result
-     * @return
+     *
+     * @param input rpc result input
+     * @param result results
+     * @param <E> rpc result input type
+     * @return rpc result
      */
     protected static <E> RpcResult<E> assembleRpcResult(RpcResult<?> input, E result) {
         Collection<RpcError> errors = input.getErrors();
@@ -117,7 +119,7 @@ public abstract class OFRpcFutureResultTransformFactory {
     }
 
     /**
-     * @return
+     * @return rpc result function for group udpate
      */
     public static Function<RpcResult<UpdateGroupOutput>,RpcResult<RemoveGroupOutput>> createForRemoveGroupOutput() {
         return new Function<RpcResult<UpdateGroupOutput>,RpcResult<RemoveGroupOutput>>() {
@@ -162,7 +164,7 @@ public abstract class OFRpcFutureResultTransformFactory {
 
 
     /**
-     * @return
+     * @return return rpc result function
      */
     public static Function<RpcResult<UpdateMeterOutput>, RpcResult<RemoveMeterOutput>> createForRemoveMeterOutput() {
         return new Function<RpcResult<UpdateMeterOutput>,RpcResult<RemoveMeterOutput>>() {

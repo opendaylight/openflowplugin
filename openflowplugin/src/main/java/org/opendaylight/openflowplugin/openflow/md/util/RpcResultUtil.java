@@ -27,7 +27,8 @@ public final class RpcResultUtil {
     }
 
     /**
-     * @param e
+     * @param e connection exception
+     * @param <T> rpc result return type
      * @return error wrapped inside {@link RpcResult} which is wrapped inside future
      */
     public static <T> SettableFuture<RpcResult<T>> getRpcErrorFuture(ConnectionException e) {

@@ -61,10 +61,10 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
     }
 
     /**
-     * @param message
-     * @param errorType
-     * @param node
-     * @return
+     * @param message error message
+     * @param errorType error type
+     * @param node node ref
+     * @return error message
      */
     protected abstract org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorMessage getGranularNodeErrors(ErrorMessage message, ErrorType errorType, NodeRef node);
 

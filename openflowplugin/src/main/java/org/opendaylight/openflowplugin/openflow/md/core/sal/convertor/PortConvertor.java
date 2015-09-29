@@ -38,8 +38,9 @@ public final class PortConvertor {
     /**
      * This method is used by PORT_MOD_MESSAGE
      *
-     * @param source
-     * @return
+     * @param source source port
+     * @param version openflow version
+     * @return port mod input
      */
 
     public static PortModInput toPortModInput(
@@ -115,8 +116,8 @@ public final class PortConvertor {
      * message(OF1.3.1)
      */
     /**
-     * @param source
-     *            :SAL FlowCapablePort
+     * @param source FlowCapablePort
+     * @param version openflow version
      * @return OF:Ports
      */
     public static Ports toPortDesc(

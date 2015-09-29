@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -74,6 +75,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
                 @Override
                 public ListenerRegistration<MeterForwarder> call() throws Exception {
                     return db.registerDataTreeChangeListener(treeId, MeterForwarder.this);
+                    //return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),                                                                                   MeterForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {

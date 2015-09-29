@@ -14,7 +14,7 @@ import java.util.Comparator;
 /**
  * Comparator for comparing objects which extend Ordered.
  *
- * @param <T>
+ * @param <T> T
  */
 public class OrderComparator<T extends Ordered> implements Comparator<T> {
 

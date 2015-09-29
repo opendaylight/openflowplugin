@@ -40,8 +40,10 @@ public final class PacketOutConvertor {
     // Get all the data for the PacketOut from the Yang/SAL-Layer
 
     /**
-     * @param version
-     * @param inputPacket
+     * @param version openflow version
+     * @param inputPacket input packet
+     * @param datapathid  datapath id
+     * @param xid tx id
      * @return PacketOutInput required by OF Library
      */
     public static PacketOutInput toPacketOutInput(final TransmitPacketInput inputPacket, final short version, final Long xid,

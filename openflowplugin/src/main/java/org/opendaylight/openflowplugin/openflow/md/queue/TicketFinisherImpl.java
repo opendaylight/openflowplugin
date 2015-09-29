@@ -32,8 +32,8 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
     private BlockingQueue<TicketResult<DataObject>> queue;
 
     /**
-     * @param queue
-     * @param popListenersMapping
+     * @param queue ticket queue
+     * @param popListenersMapping message pop listener
      */
     public TicketFinisherImpl(BlockingQueue<TicketResult<DataObject>> queue,
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping) {

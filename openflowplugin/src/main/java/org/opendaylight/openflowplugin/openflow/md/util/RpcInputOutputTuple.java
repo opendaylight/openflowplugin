@@ -18,8 +18,8 @@ public class RpcInputOutputTuple<IN, OUT> {
     
     
     /**
-     * @param input
-     * @param output
+     * @param input input
+     * @param output output
      */
     public RpcInputOutputTuple(IN input, OUT output) {
         this.input = input;

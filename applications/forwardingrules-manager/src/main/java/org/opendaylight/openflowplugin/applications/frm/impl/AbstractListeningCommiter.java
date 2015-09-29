@@ -8,11 +8,17 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -20,6 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * AbstractChangeListner implemented basic {@link AsyncDataChangeEvent} processing for
@@ -41,6 +52,60 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
     }
 
+    /*
+    @Override
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
+        Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
+        Map<InstanceIdentifier<?>, DataObject> createdData = changeEvent.getCreatedData();
+        Map<InstanceIdentifier<?>, DataObject> updatedData = changeEvent.getUpdatedData();
+        Set<InstanceIdentifier<?>> removedData = changeEvent.getRemovedPaths();
+        Map<InstanceIdentifier<?>, DataObject> originalData = changeEvent.getOriginalData();
+
+
+        if(createdData != null && !createdData.isEmpty()) {
+            Set<InstanceIdentifier<?>> createdDataKeys = createdData.keySet();
+            for (InstanceIdentifier instanceId : createdDataKeys) {
+                InstanceIdentifier<FlowCapableNode> nodeInstanceId = 
+                    instanceId.firstIdentifierOf(FlowCapableNode.class);
+                if(nodeInstanceId != null &&
+                		getWildCardPath().getTargetType().isAssignableFrom(createdData.get(instanceId).getClass()) &&
+                				preConfigurationCheck(nodeInstanceId)) {
+                    add((InstanceIdentifier<T>)instanceId,(T)createdData.get(instanceId), nodeInstanceId);
+                }
+            }
+            return;
+        }
+
+        if(updatedData != null && !updatedData.isEmpty()) {
+            Set<InstanceIdentifier<?>> updatedDataKeys = updatedData.keySet();
+            for (InstanceIdentifier instanceId : updatedDataKeys) {
+                InstanceIdentifier<FlowCapableNode> nodeInstanceId = 
+                    instanceId.firstIdentifierOf(FlowCapableNode.class);
+                if(nodeInstanceId != null &&
+                		getWildCardPath().getTargetType().isAssignableFrom(createdData.get(instanceId).getClass()) &&
+                		getWildCardPath().getTargetType().isAssignableFrom(originalData.get(instanceId).getClass()) &&
+                				preConfigurationCheck(nodeInstanceId)) {
+                    update((InstanceIdentifier<T>)instanceId, (T)originalData.get(instanceId),
+                        (T)createdData.get(instanceId), nodeInstanceId);
+                }
+            }
+            return;
+        }
+
+        if(removedData != null && !removedData.isEmpty()) {
+            for (InstanceIdentifier instanceId : removedData) {
+                InstanceIdentifier<FlowCapableNode> nodeInstanceId = 
+                    instanceId.firstIdentifierOf(FlowCapableNode.class);
+                if(nodeInstanceId != null &&
+                		getWildCardPath().getTargetType().isAssignableFrom(originalData.get(instanceId).getClass()) &&
+                				preConfigurationCheck(nodeInstanceId)) {
+                    remove ((InstanceIdentifier<T>)instanceId, (T)originalData.get(instanceId), nodeInstanceId);
+                }
+            }
+            return;
+        }
+    }
+*/
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
@@ -98,7 +163,26 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        Preconditions.checkNotNull(nodeIdent, "FlowCapableNode ident can not be null!");
+        Preconditions.checkNotNull(nodeIdent, "nodeIdent can not be null!");
+        EntityOwnershipService ownershipService = provider.getOwnershipService();
+        if(ownershipService == null) {
+            LOG.debug("preConfigCheck: entityOwnershipService is null - assuming ownership");
+            return true;
+        }
+
+        InstanceIdentifier<Node> nodeInstanceId = nodeIdent.firstIdentifierOf(Node.class);
+        NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
+        final Entity entity = new Entity("openflow", nodeId.getValue());
+        Optional<EntityOwnershipState> entityOwnershipStateOptional = ownershipService.getOwnershipState(entity);
+        if(!entityOwnershipStateOptional.isPresent()) { //abset - assume this ofp is owning entity
+            LOG.debug("preConfigCheck: entity state of " + nodeId.getValue() + " is absent - assuming ownership");
+            return provider.isNodeActive(nodeIdent);
+        }
+        final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
+        if(!(entityOwnershipState.hasOwner() && entityOwnershipState.isOwner())) {
+            LOG.debug("preConfigCheck: not owner of " + nodeId.getValue() + " - skipping configuration");
+            return false;
+        }
         return provider.isNodeActive(nodeIdent);
     }
 }

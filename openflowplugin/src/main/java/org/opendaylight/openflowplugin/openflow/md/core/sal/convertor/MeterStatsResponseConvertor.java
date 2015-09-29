@@ -56,7 +56,7 @@ public class MeterStatsResponseConvertor {
     /**
      * Method converts list of OF Meter Stats to SAL Meter Stats.
      *
-     * @param allMeterStats
+     * @param allMeterStats all meter stats
      * @return List of MeterStats
      */
     public List<MeterStats> toSALMeterStatsList(
@@ -116,7 +116,7 @@ public class MeterStatsResponseConvertor {
     /**
      * Method convert list of OF Meter config Stats to SAL Meter Config stats
      *
-     * @param allMeterConfigs
+     * @param allMeterConfigs all meter configs
      * @return list of MeterConfigStats
      */
     public List<MeterConfigStats> toSALMeterConfigList(List<MeterConfig> allMeterConfigs) {

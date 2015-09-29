@@ -92,7 +92,7 @@ public class OFRpcTaskContext {
         this.maxTimeoutUnit = maxTimeoutUnit;
     }
     /**
-     * @param rpcPool
+     * @param rpcPool executor service pool for rpc
      */
     public void setRpcPool(ListeningExecutorService rpcPool) {
         this.rpcPool = rpcPool;
@@ -106,7 +106,7 @@ public class OFRpcTaskContext {
     }
     
     /**
-     * @param messageSpy
+     * @param messageSpy the message spy
      */
     public void setMessageSpy(MessageSpy<DataContainer> messageSpy) {
         this.messageSpy = messageSpy;

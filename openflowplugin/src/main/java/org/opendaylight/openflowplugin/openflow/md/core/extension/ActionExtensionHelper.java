@@ -32,9 +32,9 @@ public final class ActionExtensionHelper {
     }
 
     /**
-     * @param action
-     * @param ofVersion
-     * @param actionPath
+     * @param action openflow action
+     * @param ofVersion openflow version
+     * @param actionPath openflow action path
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action

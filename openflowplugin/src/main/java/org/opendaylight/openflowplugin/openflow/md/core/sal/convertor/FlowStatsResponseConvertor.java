@@ -38,8 +38,10 @@ public class FlowStatsResponseConvertor {
     /**
      * Method returns the list of MD-SAL format flow statistics, converted flow Openflow
      * specific flow statistics.
-     * @param allFlowStats
-     * @return
+     * @param allFlowStats all flow stats
+     * @param datapathid  datapath id
+     * @param ofVersion  openflow version
+     * @return list of flow and statistics mapping
      */
     public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats, BigInteger datapathid, OpenflowVersion ofVersion){
 
@@ -55,8 +57,10 @@ public class FlowStatsResponseConvertor {
     /**
      * Method convert Openflow switch specific flow statistics to the MD-SAL format
      * flow statistics.
-     * @param flowStats
-     * @return
+     * @param flowStats flow statis
+     * @param datapathid  datapath id
+     * @param ofVersion  openflow version
+     * @return flow and statistics map
      */
     public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats, BigInteger datapathid, OpenflowVersion ofVersion){
         FlowAndStatisticsMapListBuilder salFlowStatsBuilder = new FlowAndStatisticsMapListBuilder();

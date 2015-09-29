@@ -198,9 +198,9 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext task context
+     * @param input flow object input
+     * @param cookie switch connection distinguisher cookie value
      * @return UpdateFlow task
      */
     public static OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> createAddFlowTask(
@@ -245,6 +245,12 @@ public abstract class OFRpcTaskFactory {
      * The next flowmod gets executed if the earlier one is successful.
      * All the flowmods should have the same xid, in-order to cross-reference
      * the notification
+     * @param taskContext task context
+     * @param ofFlowModInputs list of flow mod as input
+     * @param index  starting index
+     * @param cookie switch connection distinguisher
+     * @return listenable future with update flow output
+     *
      */
     protected static ListenableFuture<RpcResult<UpdateFlowOutput>> chainFlowMods(
             final List<FlowModInputBuilder> ofFlowModInputs, final int index,
@@ -285,8 +291,8 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param input
-     * @return
+     * @param input flow input
+     * @return flow added notification
      */
     protected static NotificationComposer<FlowAdded> createFlowAddedNotification(
             final AddFlowInput input) {
@@ -302,9 +308,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext task context
+     * @param input update flow input
+     * @param cookie switch connection distinguisher cookie value
+     * @param rwTx  read write transaction
      * @return UpdateFlow task
      */
     public static OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> createUpdateFlowTask(
@@ -422,8 +429,8 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param input
-     * @return
+     * @param input update flow input
+     * @return flow update notification
      */
     protected static NotificationComposer<FlowUpdated> createFlowUpdatedNotification(final UpdateFlowInput input) {
         return new NotificationComposer<FlowUpdated>() {
@@ -438,9 +445,9 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext taks context
+     * @param input group update input
+     * @param cookie switch connection distinguisher cookie value
      * @return update group task
      */
     public static OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> createAddGroupTask(
@@ -484,8 +491,8 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param input
-     * @return
+     * @param input group add input
+     * @return group added notification
      */
     protected static NotificationComposer<GroupAdded> createGroupAddedNotification(
             final AddGroupInput input) {
@@ -501,9 +508,9 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext task context
+     * @param input meter add input
+     * @param cookie switch connection distinguisher
      * @return update meter task
      */
     public static OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> createAddMeterTask(
@@ -545,8 +552,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input add meter input
+     * @return meter added notification composer
      */
     protected static NotificationComposer<MeterAdded> createMeterAddedNotification(
             final AddMeterInput input) {
@@ -562,9 +569,9 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext task context
+     * @param input update group output
+     * @param cookie switch connection distinguisher cookie value
      * @return UpdateFlow task
      */
     public static OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> createUpdateGroupTask(
@@ -609,8 +616,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input group update input
+     * @return group updated notification composer
      */
     protected static NotificationComposer<GroupUpdated> createGroupUpdatedNotification(
             final UpdateGroupInput input) {
@@ -626,9 +633,9 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
+     * @param taskContext task context
+     * @param input update meter input
+     * @param cookie switch connection distinguisher cookie value
      * @return update meter task
      */
     public static OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> createUpdateMeterTask(
@@ -671,8 +678,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input meter update input
+     * @return meter updated notification
      */
     protected static NotificationComposer<MeterUpdated> createMeterUpdatedNotification(
             final UpdateMeterInput input) {
@@ -689,10 +696,10 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input update flow input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task remove flow task
      */
     public static OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> createRemoveFlowTask(
             OFRpcTaskContext taskContext, RemoveFlowInput input,
@@ -731,8 +738,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input remove flow input
+     * @return flow removed notification
      */
     protected static NotificationComposer<FlowRemoved> createFlowRemovedNotification(
             final RemoveFlowInput input) {
@@ -749,10 +756,10 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input remove group input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task remove group task
      */
     public static OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> createRemoveGroupTask(
             final OFRpcTaskContext taskContext, RemoveGroupInput input,
@@ -795,8 +802,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input group remove input
+     * @return group removed notification
      */
     protected static NotificationComposer<GroupRemoved> createGroupRemovedNotification(
             final RemoveGroupInput input) {
@@ -812,10 +819,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input meter removed input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task meter remove task
      */
     public static OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> createRemoveMeterTask(
             OFRpcTaskContext taskContext, RemoveMeterInput input,
@@ -859,8 +866,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param input
-     * @return
+     * @param input remove meter input
+     * @return meter removed notification composer
      */
     protected static NotificationComposer<MeterRemoved> createMeterRemovedNotification(
             final RemoveMeterInput input) {
@@ -876,10 +883,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get all statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all group statistics task
      */
     public static OFRpcTask<GetAllGroupStatisticsInput, RpcResult<GetAllGroupStatisticsOutput>> createGetAllGroupStatisticsTask(
             final OFRpcTaskContext taskContext, GetAllGroupStatisticsInput input,
@@ -945,10 +952,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get group description input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get group description task
      */
     public static OFRpcTask<GetGroupDescriptionInput, RpcResult<GetGroupDescriptionOutput>> createGetGroupDescriptionTask(
             final OFRpcTaskContext taskContext, GetGroupDescriptionInput input,
@@ -998,10 +1005,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get group feature input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get group feature task
      */
     public static OFRpcTask<GetGroupFeaturesInput, RpcResult<GetGroupFeaturesOutput>> createGetGroupFeaturesTask(
             final OFRpcTaskContext taskContext, GetGroupFeaturesInput input,
@@ -1052,10 +1059,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get group statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get group statistics task
      */
     public static OFRpcTask<GetGroupStatisticsInput, RpcResult<GetGroupStatisticsOutput>> createGetGroupStatisticsTask(
             final OFRpcTaskContext taskContext, final GetGroupStatisticsInput input,
@@ -1110,10 +1117,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get meter config statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all mtere config statistics task
      */
     public static OFRpcTask<GetAllMeterConfigStatisticsInput, RpcResult<GetAllMeterConfigStatisticsOutput>> createGetAllMeterConfigStatisticsTask(
             final OFRpcTaskContext taskContext, final GetAllMeterConfigStatisticsInput input,
@@ -1171,10 +1178,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get all meter statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all meter statistics task
      */
     public static OFRpcTask<GetAllMeterStatisticsInput, RpcResult<GetAllMeterStatisticsOutput>> createGetAllMeterStatisticsTask(
             final OFRpcTaskContext taskContext, final GetAllMeterStatisticsInput input,
@@ -1233,10 +1240,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get meter features input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get meter feature task
      */
     public static OFRpcTask<GetMeterFeaturesInput, RpcResult<GetMeterFeaturesOutput>> createGetMeterFeaturesTask(
             final OFRpcTaskContext taskContext, final GetMeterFeaturesInput input,
@@ -1289,10 +1296,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get meter statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get meter statistics task
      */
     public static OFRpcTask<GetMeterStatisticsInput, RpcResult<GetMeterStatisticsOutput>> createGetMeterStatisticsTask(
             final OFRpcTaskContext taskContext, final GetMeterStatisticsInput input,
@@ -1349,10 +1356,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get all node connector statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all node connector statistics task
      */
     public static OFRpcTask<GetAllNodeConnectorsStatisticsInput, RpcResult<GetAllNodeConnectorsStatisticsOutput>>
     createGetAllNodeConnectorsStatisticsTask(
@@ -1404,10 +1411,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get node connector statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get node connector statistics task
      */
     public static OFRpcTask<GetNodeConnectorStatisticsInput, RpcResult<GetNodeConnectorStatisticsOutput>>
     createGetNodeConnectorStatisticsTask(
@@ -1462,10 +1469,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get all flow statistics from flow table
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all flow statistics from flow table task
      */
     public static OFRpcTask<GetAllFlowStatisticsFromFlowTableInput, RpcResult<GetAllFlowStatisticsFromFlowTableOutput>>
     createGetAllFlowStatisticsFromFlowTableTask(
@@ -1521,10 +1528,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get all flow statistics from all flow table
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get all flow statistics from all flow table task
      */
     public static OFRpcTask<GetAllFlowsStatisticsFromAllFlowTablesInput, RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>>
     createGetAllFlowsStatisticsFromAllFlowTablesTask(
@@ -1583,10 +1590,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get flow statistics from flow table
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get flow statistics from flow table task
      */
     public static OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>>
     createGetFlowStatisticsFromFlowTableTask(
@@ -1666,10 +1673,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input get aggregate flow statistics from flow table for all flow input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task get aggregate flow stats from flow table for all flow task
      */
     public static OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
     createGetAggregateFlowStatisticsFromFlowTableForAllFlowsTask(
@@ -1726,10 +1733,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input aggregate flow statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to fetch the statistics
      */
     public static OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
     createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(
@@ -1797,10 +1804,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input flow table statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to fetch table statistics
      */
     public static OFRpcTask<GetFlowTablesStatisticsInput, RpcResult<GetFlowTablesStatisticsOutput>> createGetFlowTablesStatisticsTask(
             final OFRpcTaskContext taskContext, final GetFlowTablesStatisticsInput input, SwitchConnectionDistinguisher cookie) {
@@ -1849,10 +1856,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input queue statistics input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to fetch all queue statistics
      */
     public static OFRpcTask<GetAllQueuesStatisticsFromAllPortsInput, RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> createGetAllQueuesStatisticsFromAllPortsTask(
             final OFRpcTaskContext taskContext, final GetAllQueuesStatisticsFromAllPortsInput input, SwitchConnectionDistinguisher cookie) {
@@ -1903,10 +1910,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input queue statist from specific port input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to get queue statistics from specific port
      */
     public static OFRpcTask<GetAllQueuesStatisticsFromGivenPortInput, RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> createGetAllQueuesStatisticsFromGivenPortTask(
             final OFRpcTaskContext taskContext, final GetAllQueuesStatisticsFromGivenPortInput input, SwitchConnectionDistinguisher cookie) {
@@ -1959,10 +1966,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input queue statistics from given port
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to get queue statistics from given port
      */
     public static OFRpcTask<GetQueueStatisticsFromGivenPortInput, RpcResult<GetQueueStatisticsFromGivenPortOutput>> createGetQueueStatisticsFromGivenPortTask(
             final OFRpcTaskContext taskContext, final GetQueueStatisticsFromGivenPortInput input, SwitchConnectionDistinguisher cookie) {
@@ -2029,7 +2036,7 @@ public abstract class OFRpcTaskFactory {
         private SettableFuture<RpcResult<T>> result;
 
         /**
-         * @param result
+         * @param result result
          */
         public ResultCallback(SettableFuture<RpcResult<T>> result) {
             this.result = result;
@@ -2054,10 +2061,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input update port input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to update port
      */
     public static OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> createUpdatePortTask(
             final OFRpcTaskContext taskContext, final UpdatePortInput input,
@@ -2094,10 +2101,10 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie
-     * @return task
+     * @param taskContext task context
+     * @param input update table input
+     * @param cookie switch connection distinguisher cookie value
+     * @return task task to udpate table input
      */
     public static OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> createUpdateTableTask(
             final OFRpcTaskContext taskContext, final UpdateTableInput input,

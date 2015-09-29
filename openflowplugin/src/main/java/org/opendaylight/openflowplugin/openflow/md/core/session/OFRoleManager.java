@@ -53,7 +53,7 @@ public class OFRoleManager implements AutoCloseable {
     private final SessionManager sessionManager;
 
     /**
-     * @param sessionManager
+     * @param sessionManager switch connection session manager
      */
     public OFRoleManager(final SessionManager sessionManager) {
         Preconditions.checkNotNull("Session manager can not be empty.", sessionManager);
@@ -73,7 +73,7 @@ public class OFRoleManager implements AutoCloseable {
     /**
      * change role on each connected device
      *
-     * @param role
+     * @param role openflow role
      */
     public void manageRoleChange(final OfpRole role) {
         for (final SessionContext session : sessionManager.getAllSessions()) {

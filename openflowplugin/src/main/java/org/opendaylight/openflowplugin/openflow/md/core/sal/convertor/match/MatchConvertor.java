@@ -20,7 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public interface MatchConvertor<E> extends Convertor<Match, E> {
     
     /**
-     * @param source
+     * @param source match input
+     * @param datapathid datapath id
      * @return converted match (into OF-API model)
      */
     @Override

@@ -122,8 +122,8 @@ public class OpenflowPortsUtil {
     }
 
     /**
-     * @param ofVersion
-     * @param portNumber
+     * @param ofVersion OpenFlow version of the switch
+     * @param portNumber port number
      * @return true if port number is valid for given protocol version
      */
     public static boolean checkPortValidity(final OpenflowVersion ofVersion, final Long portNumber) {
@@ -141,7 +141,7 @@ public class OpenflowPortsUtil {
     }
 
     /**
-     * @param portNumber
+     * @param portNumber port number
      * @return string containing number or logical name
      */
     public static String portNumberToString(final PortNumberUni portNumber) {
