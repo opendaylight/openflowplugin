@@ -19,11 +19,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -257,6 +262,13 @@ public class StatPermCollectorImpl implements StatPermCollector {
 
     private void collectStatCrossNetwork() {
         for (final Entry<InstanceIdentifier<Node>, StatNodeInfoHolder> nodeEntity : statNodeHolder.entrySet()) {
+            final NodeKey nodeKey = nodeEntity.getKey().firstKeyOf(Node.class);
+            if (!this.isThisInstanceNodeOwner(nodeKey.getId())) {
+                continue;
+            }
+            LOG.trace("*this* instance of openflow plugin is owner of the " +
+                    "node {}, so collecting the statistics.",nodeKey);
+
             final List<StatCapabTypes> listNeededStat = nodeEntity.getValue().getStatMarkers();
             final NodeRef actualNodeRef = nodeEntity.getValue().getNodeRef();
             final Short maxTables = nodeEntity.getValue().getMaxTables();
@@ -315,6 +327,24 @@ public class StatPermCollectorImpl implements StatPermCollector {
                 }
             }
         }
+    }
+
+    private boolean isThisInstanceNodeOwner(NodeId nodeId) {
+        final Entity deviceEntity = new Entity("openflow",nodeId.getValue());
+        if(manager.getOwnershipService().isCandidateRegistered(deviceEntity)) {
+            Optional<EntityOwnershipState> deviceOwnershipState = manager.getOwnershipService()
+                    .getOwnershipState(deviceEntity);
+
+            if(deviceOwnershipState.isPresent()) {
+                return deviceOwnershipState.get().isOwner();
+            } else {
+                LOG.error("Node {} is connected to the controller but ownership state is missing.");
+            }
+        } else {
+            LOG.warn("Node {} is connected to *this* openflow plugin instance but not *this* instance" +
+                    "didn't registered the device for ownership.",nodeId);
+        }
+        return false;
     }
 
     private class StatNodeInfoHolder {
