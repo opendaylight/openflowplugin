@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
  * <li>{@link #call()} returns true if role request was successful</li>
  * </ul>
  */
-final class RolePushTask implements Callable<Boolean> {
+//final class RolePushTask implements Callable<Boolean> {
+public class RolePushTask implements Callable<Boolean> {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(RolePushTask.class);
@@ -98,6 +99,8 @@ final class RolePushTask implements Callable<Boolean> {
         }
 
         generationId = RoleUtil.getNextGenerationId(generationId);
+	LOG.debug("RolePushTask: generationId: " , generationId , " role " , role);
+
 
         // try to possess role on device
         Future<RpcResult<RoleRequestOutput>> roleReply = RoleUtil.sendRoleChangeRequest(session, role, generationId);

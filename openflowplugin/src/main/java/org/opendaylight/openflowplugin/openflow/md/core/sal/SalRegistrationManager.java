@@ -42,6 +42,8 @@ import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,9 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     private final SwitchFeaturesUtil swFeaturesUtil;
 
     private ListenerRegistration<SessionListener> sessionListenerRegistration;
+
+    private OfEntityManager entManager;
+    private ModelDrivenSwitchImpl ofSwitch;
 
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
@@ -82,6 +87,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         this.rpcProviderRegistry = rpcProviderRegistry;
     }
 
+    public void setOfEntityManager(OfEntityManager entManager) {
+	this.entManager = entManager;
+    }
+
     public void init() {
         LOG.debug("init..");
         sessionListenerRegistration = getSessionManager().registerSessionListener(this);
@@ -97,7 +106,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
-        ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
+        ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier,
+							 context);
         CompositeObjectRegistration<ModelDrivenSwitch> registration =
                 ofSwitch.register(rpcProviderRegistry);
         context.setProviderRegistration(registration);
@@ -108,6 +118,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
                 nodeAdded(ofSwitch, features, nodeRef),
                 context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
+	ofSwitch.reqOpenflowEntityOwnership(entManager, nodeId, context);
     }
 
     @Override
@@ -116,6 +127,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         BigInteger datapathId = features.getDatapathId();
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
+	NodeId nodeId = nodeIdFromDatapathId(datapathId);
+	ofSwitch.unregOpenflowEntityOwnership(entManager, nodeId);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
 
         CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
@@ -129,6 +142,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
                 nodeRemoved, context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
+
 
     private NodeUpdated nodeAdded(final ModelDrivenSwitch sw, final GetFeaturesOutput features, final NodeRef nodeRef) {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();

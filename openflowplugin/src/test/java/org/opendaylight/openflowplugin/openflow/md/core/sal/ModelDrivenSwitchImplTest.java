@@ -154,6 +154,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 
 /**
  * simple NPE smoke test
@@ -178,6 +180,8 @@ public class ModelDrivenSwitchImplTest {
     private DataBroker dataBroker;
     @Mock
     private ReadWriteTransaction rwTx;
+    @Mock
+    private EntityOwnershipService entityOwnershipService;
 
     /**
      * @throws java.lang.Exception
