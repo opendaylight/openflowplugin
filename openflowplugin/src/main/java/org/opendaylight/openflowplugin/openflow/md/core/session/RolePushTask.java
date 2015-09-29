@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Date;
 
 /**
  * push role to device - basic step:<br/>
@@ -31,12 +32,13 @@ import org.slf4j.LoggerFactory;
  * <li>{@link #call()} returns true if role request was successful</li>
  * </ul>
  */
-final class RolePushTask implements Callable<Boolean> {
+//final class RolePushTask implements Callable<Boolean> {
+public class RolePushTask implements Callable<Boolean> {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(RolePushTask.class);
 
-    public static final long TIMEOUT = 2000;
+    public static final long TIMEOUT = 7000;
     public static final TimeUnit TIMEOUT_UNIT = TimeUnit.MILLISECONDS;
     private OfpRole role;
     private SessionContext session;
@@ -79,25 +81,47 @@ final class RolePushTask implements Callable<Boolean> {
     public Boolean call() throws RolePushException {
         if (!session.isValid()) {
             String msg = "giving up role change: current session is invalid";
-            LOG.debug(msg);
+            LOG.error(msg);
             throw new RolePushException(msg);
         }
 
         // adopt actual generationId from device (first shot failed and this is retry)
         BigInteger generationId = null;
         try {
-            generationId = RoleUtil.readGenerationIdFromDevice(session).get(TIMEOUT, TIMEOUT_UNIT);
+            Date date = new Date();
+            Future<BigInteger> generationIdFuture = RoleUtil.readGenerationIdFromDevice(session);
+            // flush election result with barrier
+            BarrierInput barrierInput = MessageFactory.createBarrier(
+                session.getFeatures().getVersion(), session.getNextXid());
+            Future<RpcResult<BarrierOutput>> barrierResult = session.getPrimaryConductor().getConnectionAdapter().barrier(barrierInput);
+            try {
+                barrierResult.get(TIMEOUT, TIMEOUT_UNIT);
+            } catch (Exception e) {
+                String msg = String.format("giving up role change: barrier after read generationid failed : %s", e.getMessage());
+                LOG.warn(msg);
+                throw new RolePushException(msg);
+            }
+            try {
+                generationId = generationIdFuture.get(0, TIMEOUT_UNIT);
+            } catch (Exception e) {
+                String msg = String.format("giving up role change: readGenerationId failed %s", e.getMessage());
+                throw new RolePushException(msg);
+            }
+
+	    LOG.info("RolePushTask: Reading Generation ID in RolePushTask " + generationId);
         } catch (Exception e) {
-            LOG.debug("generationId request failed: ", e);
+            LOG.error("RolePushTask: request failed: ", e);
         }
 
         if (generationId == null) {
+	    LOG.error("RolePushTask: Generation ID is NULL"); 
             String msg = "giving up role change: current generationId can not be read";
-            LOG.debug(msg);
             throw new RolePushException(msg);
         }
 
         generationId = RoleUtil.getNextGenerationId(generationId);
+	LOG.error("RolePushTask: generationId: " + generationId + " role " + role);
+
 
         // try to possess role on device
         Future<RpcResult<RoleRequestOutput>> roleReply = RoleUtil.sendRoleChangeRequest(session, role, generationId);

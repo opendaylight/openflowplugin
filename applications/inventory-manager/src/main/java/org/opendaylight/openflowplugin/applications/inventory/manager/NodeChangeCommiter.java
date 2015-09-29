@@ -17,6 +17,10 @@ import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
@@ -44,6 +48,7 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeCommiter.class);
 
     private final FlowCapableInventoryProvider manager;
+    private EntityOwnershipService ownershipService;
 
     // cache for nodes which were deleted, we get more than one nodeRemoved notification
     private Cache<NodeRef, Boolean> deletedNodeCache =
@@ -57,6 +62,31 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
         this.manager = Preconditions.checkNotNull(manager);
     }
 
+    public void setOwnershipService(EntityOwnershipService ownershipService) {
+        this.ownershipService = ownershipService;
+    }
+
+    private boolean preConfigurationCheck(final InstanceIdentifier<Node> nodeIdent) {
+        Preconditions.checkNotNull(nodeIdent, "nodeIdent can not be null!");
+        if(this.ownershipService == null ) {
+            LOG.debug("preConfigCheck: entityOwnershipService is null - assuming ownership");
+            return true;
+        }
+        NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
+        final Entity entity = new Entity("openflow", nodeId.getValue());
+        Optional<EntityOwnershipState> entityOwnershipStateOptional = ownershipService.getOwnershipState(entity);
+        if(!entityOwnershipStateOptional.isPresent()) { //abset - assume this ofp is owning entity
+            LOG.debug("preConfigCheck: entity state of " + nodeId.getValue() + " is absent - assuming ownership");
+            return true;
+        }
+        final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
+        if(!(entityOwnershipState.hasOwner() && entityOwnershipState.isOwner())) {
+            LOG.debug("preConfigCheck: not owner of " + nodeId.getValue() + " - skipping configuration");
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public synchronized void onNodeConnectorRemoved(final NodeConnectorRemoved connector) {
         if(deletedNodeConnectorCache.getIfPresent(connector.getNodeConnectorRef()) == null){
@@ -66,6 +96,14 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
             // the entire transaction chain, there by failing deserving removals
             LOG.debug("Already received notification to remove nodeConnector, {} - Ignored",
                     connector.getNodeConnectorRef().getValue());
+            return;
+        }
+
+        NodeConnectorRef nodeConnectorRef = connector.getNodeConnectorRef();
+        InstanceIdentifier<?> nodeConnectorIdent = nodeConnectorRef.getValue();
+        InstanceIdentifier<Node> nodeIdent = nodeConnectorIdent.firstIdentifierOf(Node.class);
+        if(!preConfigurationCheck(nodeIdent)) {
+            LOG.debug("Skipping inventory manager for node "+ nodeIdent + " for connector(removed)");
             return;
         }
 
@@ -85,7 +123,13 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
         if (deletedNodeConnectorCache.getIfPresent(connector.getNodeConnectorRef()) != null){
             deletedNodeConnectorCache.invalidate(connector.getNodeConnectorRef());
         }
-
+        NodeConnectorRef nodeConnectorRef = connector.getNodeConnectorRef();
+        InstanceIdentifier<?> nodeConnectorIdent = nodeConnectorRef.getValue();
+        InstanceIdentifier<Node> nodeIdent = nodeConnectorIdent.firstIdentifierOf(Node.class);
+        if(!preConfigurationCheck(nodeIdent)) {
+            LOG.debug("Skipping inventory manager for node "+ nodeIdent + " for connector(update)");
+            return;
+        }
         LOG.debug("Node connector updated notification received.");
         manager.enqueue(new InventoryOperation() {
             @Override
@@ -120,7 +164,12 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
                     node.getNodeRef().getValue());
             return;
         }
-
+        InstanceIdentifier<?> nodeRefIdent = node.getNodeRef().getValue();
+        InstanceIdentifier<Node> nodeIdent = nodeRefIdent.firstIdentifierOf(Node.class);
+        if(!preConfigurationCheck(nodeIdent)) {
+            LOG.debug("Skipping inventory manager for node(removed) "+ nodeIdent);
+            return;
+        }
         LOG.debug("Node removed notification received, {}", node.getNodeRef().getValue());
         manager.enqueue(new InventoryOperation() {
             @Override
@@ -140,6 +189,13 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
 
         final FlowCapableNodeUpdated flowNode = node.getAugmentation(FlowCapableNodeUpdated.class);
         if (flowNode == null) {
+            return;
+        }
+        InstanceIdentifier<?> nodeRefIdent = node.getNodeRef().getValue();
+        InstanceIdentifier<Node> nodeIdent = nodeRefIdent.firstIdentifierOf(Node.class);
+
+        if(!preConfigurationCheck(nodeIdent)) {
+            LOG.debug("Skipping inventory manager for node(updated) "+ nodeIdent);
             return;
         }
         LOG.debug("Node updated notification received,{}", node.getNodeRef().getValue());

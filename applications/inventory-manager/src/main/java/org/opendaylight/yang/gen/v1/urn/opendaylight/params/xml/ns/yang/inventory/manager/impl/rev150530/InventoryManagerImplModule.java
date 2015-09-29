@@ -1,6 +1,7 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530;
 
 import org.opendaylight.openflowplugin.applications.inventory.manager.InventoryActivator;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 
 public class InventoryManagerImplModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530.AbstractInventoryManagerImplModule {
     public InventoryManagerImplModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
@@ -20,6 +21,7 @@ public class InventoryManagerImplModule extends org.opendaylight.yang.gen.v1.urn
     public java.lang.AutoCloseable createInstance() {
         InventoryActivator provider = new InventoryActivator();
         getBrokerDependency().registerProvider(provider);
+        provider.setOwnershipService(getOwnershipServiceDependency());
         return provider;
     }
 
