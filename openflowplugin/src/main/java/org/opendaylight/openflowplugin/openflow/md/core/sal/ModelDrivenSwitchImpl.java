@@ -89,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.slf4j.Logger;
 
 /**
@@ -122,6 +123,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         rpcTaskContext.setMaxTimeoutUnit(maxTimeoutUnit);
         rpcTaskContext.setRpcPool(OFSessionUtil.getSessionManager().getRpcPool());
         rpcTaskContext.setMessageSpy(OFSessionUtil.getSessionManager().getMessageSpy());
+
     }
 
     @Override

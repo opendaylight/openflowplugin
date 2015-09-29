@@ -39,6 +39,8 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
 
     protected final SessionContext sessionContext;
 
+    private boolean isEntityOwner = false;
+
     protected AbstractModelDrivenSwitch(InstanceIdentifier<Node> identifier,SessionContext conductor) {
         this.identifier = identifier;
         this.sessionContext = conductor;
@@ -116,4 +118,13 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         return sessionContext;
     }
 
+    @Override
+    public boolean isEntityOwner() {
+        return isEntityOwner;
+    }
+
+    @Override
+    public void setEntityOwnership(boolean isOwner) {
+        isEntityOwner = isOwner;
+    }
 }
