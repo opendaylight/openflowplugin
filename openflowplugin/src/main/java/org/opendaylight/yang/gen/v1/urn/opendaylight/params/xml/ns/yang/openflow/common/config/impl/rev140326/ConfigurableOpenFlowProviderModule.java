@@ -52,6 +52,7 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         pluginProvider.setNotificationService(getNotificationServiceDependency());
         pluginProvider.setRpcRegistry(getRpcRegistryDependency());
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
+	pluginProvider.setEntityOwnershipService(getOwnershipServiceDependency());
         pluginProvider.setRole(getRole());
         pluginProvider.initialization();
         return pluginProvider;
