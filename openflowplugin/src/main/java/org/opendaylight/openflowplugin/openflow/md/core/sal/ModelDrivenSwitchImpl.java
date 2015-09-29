@@ -122,6 +122,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         rpcTaskContext.setMaxTimeoutUnit(maxTimeoutUnit);
         rpcTaskContext.setRpcPool(OFSessionUtil.getSessionManager().getRpcPool());
         rpcTaskContext.setMessageSpy(OFSessionUtil.getSessionManager().getMessageSpy());
+
     }
 
     @Override

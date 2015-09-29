@@ -52,6 +52,7 @@ public interface SessionManager extends AutoCloseable {
      * @param context
      */
     public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context);
+    public void setRole(SessionContext context);
 
     /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by

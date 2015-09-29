@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.statistics.manager;
 
 import java.util.List;
 import java.util.UUID;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -271,6 +272,16 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
      * @param nodeInstanceIdentifier
      */
     UUID getGeneratedUUIDForNode(InstanceIdentifier<Node> nodeInstanceIdentifier);
+
+    /*
+     * Setting entity-ownership-service
+     */
+    void setOwnershipService(EntityOwnershipService ownershipService);
+ 
+    /**
+      * Getting entity-ownership-service
+      */
+    EntityOwnershipService getOwnershipService();
 
 }
 

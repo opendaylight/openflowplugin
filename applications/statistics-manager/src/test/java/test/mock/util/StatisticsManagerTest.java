@@ -180,6 +180,7 @@ public abstract class StatisticsManagerTest extends AbstractDataBrokerTest {
         confBuilder.setMinRequestNetMonitorInterval(DEFAULT_MIN_REQUEST_NET_MONITOR_INTERVAL);
         StatisticsManager statsProvider = new StatisticsManagerImpl(getDataBroker(), confBuilder.build());
         statsProvider.start(notificationMock.getNotifBroker(), rpcRegistry);
+        statsProvider.setOwnershipService(new EntityOwnershipServiceMock());
         return statsProvider;
     }
 

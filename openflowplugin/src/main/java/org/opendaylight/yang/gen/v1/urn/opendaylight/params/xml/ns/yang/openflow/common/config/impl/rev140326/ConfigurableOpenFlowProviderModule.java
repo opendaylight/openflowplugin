@@ -21,18 +21,18 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
     private OpenflowPluginProvider pluginProvider;
 
     /**
-     * @param identifier
-     * @param dependencyResolver
+     * @param identifier module identifier
+     * @param dependencyResolver dependency resolver
      */
     public ConfigurableOpenFlowProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
 
     /**
-     * @param identifier
-     * @param dependencyResolver
-     * @param oldModule
-     * @param oldInstance
+     * @param identifier module identifier
+     * @param dependencyResolver dependency resolver
+     * @param oldModule old module
+     * @param oldInstance old instance
      */
     public ConfigurableOpenFlowProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver,
             ConfigurableOpenFlowProviderModule oldModule, java.lang.AutoCloseable oldInstance) {
@@ -52,6 +52,7 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         pluginProvider.setNotificationService(getNotificationServiceDependency());
         pluginProvider.setRpcRegistry(getRpcRegistryDependency());
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
+        pluginProvider.setEntityOwnershipService(getOwnershipServiceDependency());
         pluginProvider.setRole(getRole());
         pluginProvider.initialization();
         return pluginProvider;
