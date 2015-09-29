@@ -42,6 +42,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
+
 
 /**
  * forwardingrules-manager
@@ -99,6 +104,30 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
+    private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
+        Preconditions.checkNotNull(fNodeIdent, "fNodeIdent can not be null!");
+        EntityOwnershipService ownershipService = provider.getOwnershipService();
+        if(ownershipService == null) {
+            LOG.debug("preConfigCheck: entityOwnershipService is null - assuming ownership");
+            return true;
+        }
+
+        InstanceIdentifier<Node> nodeIdent = fNodeIdent.firstIdentifierOf(Node.class);
+        NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
+        final Entity entity = new Entity("openflow", nodeId.getValue());
+        Optional<EntityOwnershipState> entityOwnershipStateOptional = ownershipService.getOwnershipState(entity);
+        if(!entityOwnershipStateOptional.isPresent()) { //abset - assume this ofp is owning entity
+            LOG.debug("preConfigCheck: entity state of " + nodeId.getValue() + " is absent - assuming ownership");
+            return true;
+        }
+        final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
+        if(!(entityOwnershipState.hasOwner() && entityOwnershipState.isOwner())) {
+            LOG.debug("preConfigCheck: not owner of " + nodeId.getValue() + " - skipping configuration");
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
         Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
@@ -112,14 +141,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         for (InstanceIdentifier<?> entryKey : removeData) {
             final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
                     .firstIdentifierOf(FlowCapableNode.class);
-            if ( ! nodeIdent.isWildcarded()) {
+            if (preConfigurationCheck(nodeIdent) && (! nodeIdent.isWildcarded())) {
                 flowNodeDisconnected(nodeIdent);
             }
         }
         for (InstanceIdentifier<?> entryKey : createdData) {
             final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
                     .firstIdentifierOf(FlowCapableNode.class);
-            if ( ! nodeIdent.isWildcarded()) {
+            if (preConfigurationCheck(nodeIdent) && (! nodeIdent.isWildcarded())) {
                 flowNodeConnected(nodeIdent);
             }
         }

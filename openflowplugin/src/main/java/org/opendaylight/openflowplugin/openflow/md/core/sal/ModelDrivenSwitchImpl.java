@@ -89,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.slf4j.Logger;
 
 /**
@@ -122,6 +123,23 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         rpcTaskContext.setMaxTimeoutUnit(maxTimeoutUnit);
         rpcTaskContext.setRpcPool(OFSessionUtil.getSessionManager().getRpcPool());
         rpcTaskContext.setMessageSpy(OFSessionUtil.getSessionManager().getMessageSpy());
+
+    }
+
+    public void reqOpenflowEntityOwnership(OfEntityManager entManager, NodeId nodeId, SessionContext sessionContext)
+    {
+	sessionContext.setValid(true);
+	entManager.requestOpenflowEntityOwnership(nodeId, sessionContext);
+    }
+
+    public void setRole(OfEntityManager entManager,SessionContext sessionContext)
+    {
+	entManager.setRole(sessionContext);
+    }
+
+    public void unregOpenflowEntityOwnership(OfEntityManager entManager, NodeId nodeId)
+    {
+	entManager.removeSession(nodeId);
     }
 
     @Override

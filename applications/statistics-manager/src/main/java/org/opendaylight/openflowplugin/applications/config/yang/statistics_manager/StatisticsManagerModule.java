@@ -31,6 +31,8 @@ public class StatisticsManagerModule extends org.opendaylight.openflowplugin.app
         LOG.info("StatisticsManager module initialization.");
         final StatisticsManagerConfig config = createConfig();
         final StatisticsManager statisticsManagerProvider = new StatisticsManagerImpl(getDataBrokerDependency(), config);
+        statisticsManagerProvider.setOwnershipService(getOwnershipServiceDependency());
+        LOG.info("Ownership exists : " + (getOwnershipServiceDependency() == null ? "false" : "true"));
         statisticsManagerProvider.start(getNotificationServiceDependency(), getRpcRegistryDependency());
 
         final StatisticsManager statisticsManagerProviderExposed = statisticsManagerProvider;
