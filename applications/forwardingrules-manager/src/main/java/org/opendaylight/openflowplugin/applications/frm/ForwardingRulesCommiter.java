@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+//import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -26,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * Created: Aug 25, 2014
  */
-public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, DataTreeChangeListener<D> {
+public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, ClusteredDataChangeListener {
 
     /**
      * Method removes DataObject which is identified by InstanceIdentifier

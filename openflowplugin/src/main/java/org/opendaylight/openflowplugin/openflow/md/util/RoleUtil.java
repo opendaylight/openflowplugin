@@ -12,6 +12,8 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -25,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Date;
 
 /**
  *
@@ -114,18 +117,20 @@ public final class RoleUtil {
      * @return generationId from future RpcResult
      */
     public static Future<BigInteger> readGenerationIdFromDevice(SessionContext sessionContext) {
-        Future<BigInteger> generationIdFuture = null;
         Future<RpcResult<RoleRequestOutput>> roleReply = sendRoleChangeRequest(sessionContext, OfpRole.NOCHANGE, BigInteger.ZERO);
-        generationIdFuture = Futures.transform(
-                JdkFutureAdapters.listenInPoolThread(roleReply),
-                new Function<RpcResult<RoleRequestOutput>, BigInteger>() {
-                    @Override
-                    public BigInteger apply(RpcResult<RoleRequestOutput> input) {
-                        return input.getResult().getGenerationId();
-                    }
-                });
+        final SettableFuture<BigInteger> result = SettableFuture.create();
 
-        return generationIdFuture;
+        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(roleReply), new FutureCallback<RpcResult<RoleRequestOutput>>() {
+            @Override
+            public void onSuccess(RpcResult<RoleRequestOutput> input) {
+                result.set(input.getResult().getGenerationId());
+            }
+            @Override
+            public void onFailure(Throwable t) {
+                //TODO
+            }
+        });
+        return result;
     }
 
     /**

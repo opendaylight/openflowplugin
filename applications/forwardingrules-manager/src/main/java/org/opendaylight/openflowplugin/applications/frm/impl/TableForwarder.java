@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -36,20 +37,21 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
-    private ListenerRegistration<TableForwarder> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     public TableForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, TableFeatures.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        //final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
 
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<TableForwarder>>() {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<?>>() {
                 @Override
-                public ListenerRegistration<TableForwarder> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, TableForwarder.this);
+                public ListenerRegistration<?> call() throws Exception {
+                    //return db.registerDataTreeChangeListener(treeId, TableForwarder.this);
+                    return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),                                                                                   TableForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {

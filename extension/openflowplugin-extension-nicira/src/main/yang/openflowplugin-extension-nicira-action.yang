@@ -340,7 +340,6 @@ bits specified from the register.";
     grouping nx-action-set-nsp-grouping {
         container nx-set-nsp {
             description "Sets NSP header";
-            description "Sets NSH Service Path ID (NSP) header";
             leaf nsp {
                 type uint32;
             }
