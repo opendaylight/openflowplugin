@@ -114,14 +114,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private HandshakeContext handshakeContext;
 
     /**
-     * @param connectionAdapter
+     * @param connectionAdapter connection adaptor for switch
      */
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
         this(connectionAdapter, INGRESS_QUEUE_MAX_SIZE);
     }
 
     /**
-     * @param connectionAdapter
+     * @param connectionAdapter connection adaptor for switch
      * @param ingressMaxQueueSize ingress queue limit (blocking)
      */
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter,
@@ -384,7 +384,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /**
-     * @param expectedState
+     * @param expectedState connection conductor state
      */
     protected void checkState(CONDUCTOR_STATE expectedState) {
         if (!conductorState.equals(expectedState)) {
@@ -484,8 +484,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * used by tests
      *
-     * @param featureOutput
-     * @param negotiatedVersion
+     * @param featureOutput feature request output
+     * @param negotiatedVersion negotiated openflow connection version
      */
     protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
                                       Short negotiatedVersion) {
@@ -501,11 +501,12 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             enqueueMessage(featureOutput);
         }
 
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        SessionContext sessionContext =  OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
+	OFSessionUtil.setRole(sessionContext);
     }
 
     /*

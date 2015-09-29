@@ -33,12 +33,17 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWra
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.SalRegistrationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+
+import static org.mockito.Matchers.any;
 
 /**
  * test of {@link SessionManagerOFImpl}
@@ -65,6 +70,13 @@ public class SessionManagerOFImplTest {
     @Mock
     private DataBroker dataService;
 
+    @Mock
+    private OfEntityManager entManager;
+
+    @Mock
+    private ModelDrivenSwitchImpl ofSwitch;
+
+
     /**
      * prepare session manager
      */
@@ -75,7 +87,7 @@ public class SessionManagerOFImplTest {
         Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);
 
         // provider context - registration responder
-        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(Matchers.any(Class.class), Matchers.any(RpcService.class)))
+        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(any(Class.class), any(RpcService.class)))
         .then(new Answer<RoutedRpcRegistration<?>>() {
             @Override
             public RoutedRpcRegistration<?> answer(InvocationOnMock invocation) {
@@ -91,6 +103,7 @@ public class SessionManagerOFImplTest {
         sessionListener.setPublishService(notificationProviderService);
         sessionListener.setRpcProviderRegistry(rpcProviderRegistry);
         sessionListener.setDataService(dataService);
+        sessionListener.setOfEntityManager(entManager);
 
         // session manager (mimic SalRegistrationManager.onSessionInitiated())
         sm = SessionManagerOFImpl.getInstance();
