@@ -41,7 +41,8 @@ public abstract class OFSessionUtil {
      * @param features
      * @param version
      */
-    public static void registerSession(ConnectionConductorImpl connectionConductor,
+    // public static void registerSession(ConnectionConductorImpl connectionConductor,
+    public static SessionContext registerSession(ConnectionConductorImpl connectionConductor,
             GetFeaturesOutput features, short version) {
         SwitchSessionKeyOF sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
@@ -66,6 +67,7 @@ public abstract class OFSessionUtil {
             context.setSeed((int) System.currentTimeMillis());
             connectionConductor.setSessionContext(context);
             getSessionManager().addSessionContext(sessionKey, context);
+		System.out.println("registerSession: After call to addSessionContext");
         } else {
             // handle auxiliary
             if (sessionContext == null) {
@@ -99,6 +101,12 @@ public abstract class OFSessionUtil {
                 throw new IllegalStateException("registered session context is invalid");
             }
         }
+	return(resulContext);
+    }
+
+    public static void setRole(SessionContext sessionContext)
+    {
+            getSessionManager().setRole(sessionContext);
     }
 
     /**

@@ -472,6 +472,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             requestPorts();
         }
 
+	System.out.println("onHandshakeSuccessfull: After postHandshakeBasic");
         requestDesc();
     }
 
@@ -501,17 +502,20 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             enqueueMessage(featureOutput);
         }
 
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        SessionContext sessionContext =  OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
+	System.out.println("postHandshakeBasic: After plugQueue");
+	OFSessionUtil.setRole(sessionContext);
     }
 
     /*
      * Send an OFPMP_DESC request message to the switch
      */
     private void requestDesc() {
+	System.out.println("requestDesc: Sending multipart request to switch");
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setType(MultipartType.OFPMPDESC);
         builder.setVersion(getVersion());

@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Date;
 
 /**
  * push role to device - basic step:<br/>
@@ -31,12 +32,13 @@ import org.slf4j.LoggerFactory;
  * <li>{@link #call()} returns true if role request was successful</li>
  * </ul>
  */
-final class RolePushTask implements Callable<Boolean> {
+//final class RolePushTask implements Callable<Boolean> {
+public class RolePushTask implements Callable<Boolean> {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(RolePushTask.class);
 
-    public static final long TIMEOUT = 2000;
+    public static final long TIMEOUT = 4000;
     public static final TimeUnit TIMEOUT_UNIT = TimeUnit.MILLISECONDS;
     private OfpRole role;
     private SessionContext session;
@@ -86,18 +88,28 @@ final class RolePushTask implements Callable<Boolean> {
         // adopt actual generationId from device (first shot failed and this is retry)
         BigInteger generationId = null;
         try {
+		Date date = new Date();
+	    System.out.println("RolePushTask: Reading Generation ID in RolePushTask" + date.toString()); 
+	    LOG.debug("RolePushTask: Reading Generation ID in RolePushTask");
             generationId = RoleUtil.readGenerationIdFromDevice(session).get(TIMEOUT, TIMEOUT_UNIT);
         } catch (Exception e) {
+		Date date = new Date();
+	    System.out.println("RolePushTask: Exception Generation ID in RolePushTask"  + e + date.toString()); 
             LOG.debug("generationId request failed: ", e);
         }
 
         if (generationId == null) {
+		Date date = new Date();
+	    System.out.println("RolePushTask: Generation ID is NULL" + date.toString()); 
+	    LOG.debug("RolePushTask: Generation ID is NULL"); 
             String msg = "giving up role change: current generationId can not be read";
             LOG.debug(msg);
             throw new RolePushException(msg);
         }
 
         generationId = RoleUtil.getNextGenerationId(generationId);
+	LOG.debug("RolePushTask: generationId: " , generationId , " role " , role);
+
 
         // try to possess role on device
         Future<RpcResult<RoleRequestOutput>> roleReply = RoleUtil.sendRoleChangeRequest(session, role, generationId);
