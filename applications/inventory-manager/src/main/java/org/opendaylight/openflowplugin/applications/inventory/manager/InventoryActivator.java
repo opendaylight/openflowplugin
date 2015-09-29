@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.inventory.manager;
 
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
@@ -17,6 +18,11 @@ import org.slf4j.LoggerFactory;
 public class InventoryActivator implements BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(InventoryActivator.class);
     private FlowCapableInventoryProvider provider;
+    private EntityOwnershipService ownershipService;
+
+    public void setOwnershipService(EntityOwnershipService ownershipService) {
+        this.ownershipService = ownershipService;
+    }
 
     @Override
     public void onSessionInitiated(final ProviderContext session) {
@@ -25,6 +31,7 @@ public class InventoryActivator implements BindingAwareProvider, AutoCloseable {
                 session.getSALService(NotificationProviderService.class);
 
         provider = new FlowCapableInventoryProvider(dataBroker, salNotifiService);
+        provider.setOwnershipService(ownershipService);
         provider.start();
     }
 
