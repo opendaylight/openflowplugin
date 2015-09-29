@@ -501,11 +501,12 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             enqueueMessage(featureOutput);
         }
 
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        SessionContext sessionContext =  OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
+	OFSessionUtil.setRole(sessionContext);
     }
 
     /*

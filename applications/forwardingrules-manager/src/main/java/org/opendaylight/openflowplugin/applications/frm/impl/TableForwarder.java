@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -53,6 +54,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
                 @Override
                 public ListenerRegistration<TableForwarder> call() throws Exception {
                     return db.registerDataTreeChangeListener(treeId, TableForwarder.this);
+                    //return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),                                                                                   TableForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {
