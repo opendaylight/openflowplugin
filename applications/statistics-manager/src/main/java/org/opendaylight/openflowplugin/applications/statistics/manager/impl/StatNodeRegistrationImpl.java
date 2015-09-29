@@ -10,15 +10,25 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector.StatCapabTypes;
@@ -39,9 +49,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,18 +74,20 @@ import org.slf4j.LoggerFactory;
  *
  * Created: Aug 28, 2014
  */
-public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChangeListener {
+public class StatNodeRegistrationImpl implements StatNodeRegistration, ClusteredDataChangeListener, EntityOwnershipListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatNodeRegistrationImpl.class);
 
     private final StatisticsManager manager;
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
     private ListenerRegistration<?> notifListenerRegistration;
+    private DataBroker db;
+    private EntityOwnershipListenerRegistration ofListenerRegistration = null;
 
     public StatNodeRegistrationImpl(final StatisticsManager manager, final DataBroker db,
             final NotificationProviderService notificationService) {
         this.manager = Preconditions.checkNotNull(manager, "StatisticManager can not be null!");
-        Preconditions.checkArgument(db != null, "DataBroker can not be null!");
+        this.db = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         Preconditions.checkArgument(notificationService != null, "NotificationProviderService can not be null!");
         notifListenerRegistration = notificationService.registerNotificationListener(this);
         /* Build Path */
@@ -78,6 +95,9 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 .child(Node.class).augmentation(FlowCapableNode.class);
         listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 flowNodeWildCardIdentifier, StatNodeRegistrationImpl.this, DataChangeScope.BASE);
+        if(manager.getOwnershipService() != null) {
+            ofListenerRegistration = manager.getOwnershipService().registerListener("openflow", this);
+        }
     }
 
     @Override
@@ -100,6 +120,15 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 LOG.warn("Error by stop FlowCapableNode DataChange StatListeningCommiter.", e);
             }
             listenerRegistration = null;
+        }
+
+        if (ofListenerRegistration!= null) {
+            try {
+                ofListenerRegistration.close();
+            } catch (final Exception e) {
+                LOG.warn("Error by stop FlowCapableNode EntityOwnershipListener.", e);
+            }
+            ofListenerRegistration = null;
         }
     }
 
@@ -144,6 +173,27 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
         manager.disconnectedNodeUnregistration(nodeIdent);
     }
 
+    private boolean preConfigurationCheck(final InstanceIdentifier<Node> nodeIdent) {
+        Preconditions.checkNotNull(nodeIdent, "nodeIdent can not be null!");
+        NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
+        final Entity entity = new Entity("openflow", nodeId.getValue());
+        EntityOwnershipService ownershipService = manager.getOwnershipService();
+        if(ownershipService == null) {
+            LOG.error("preConfigCheck: EntityOwnershipService is null - assuming ownership");
+            return true;
+        }
+        Optional<EntityOwnershipState> entityOwnershipStateOptional = ownershipService.getOwnershipState(entity);
+        if(!entityOwnershipStateOptional.isPresent()) { //abset - assume this ofp is owning entity
+            LOG.warn("preConfigCheck: Entity state of {} is absent - assuming ownership",nodeId.getValue());
+            return true;
+        }
+        final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
+        if(!(entityOwnershipState.hasOwner() && entityOwnershipState.isOwner())) {
+            LOG.info("preConfigCheck: Controller is not the owner of {}",nodeId.getValue());
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public void onNodeConnectorRemoved(final NodeConnectorRemoved notification) {
@@ -173,6 +223,7 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
         Preconditions.checkNotNull(notification);
         final FlowCapableNodeUpdated newFlowNode =
                 notification.getAugmentation(FlowCapableNodeUpdated.class);
+        LOG.info("Received onNodeUpdated for node {} ", newFlowNode);
         if (newFlowNode != null && newFlowNode.getSwitchFeatures() != null) {
             final NodeRef nodeRef = notification.getNodeRef();
             final InstanceIdentifier<?> nodeRefIdent = nodeRef.getValue();
@@ -200,10 +251,24 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 final NodeRef nodeRef = new NodeRef(nodeIdent);
                 // FIXME: these calls is a job for handshake or for inventory manager
                 /* check Group and Meter future */
-                manager.getRpcMsgManager().getGroupFeaturesStat(nodeRef);
-                manager.getRpcMsgManager().getMeterFeaturesStat(nodeRef);
+                if(preConfigurationCheck(nodeIdent)) {
+                    manager.getRpcMsgManager().getGroupFeaturesStat(nodeRef);
+                    manager.getRpcMsgManager().getMeterFeaturesStat(nodeRef);
+                }
             }
         }
     }
-}
 
+    @Override
+    public void ownershipChanged(EntityOwnershipChange ownershipChange) {
+        //I believe the only scenario we need to handle here is
+        // isOwner=false && hasOwner=false. E.g switch is connected to only
+        // one controller and that goes down, all other controller will get
+        // notification about ownership change with the flag set as above.
+        // In this scenario, topology manager should remove the node from
+        // operational data store, so no explict action is required here.
+        // But I need to test this behavior and then if requires implement
+        // the logic here.
+    }
+
+}

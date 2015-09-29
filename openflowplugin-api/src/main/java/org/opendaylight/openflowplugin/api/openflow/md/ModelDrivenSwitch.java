@@ -57,4 +57,17 @@ public interface ModelDrivenSwitch
      * @return session context object
      */
     SessionContext getSessionContext();
+
+    /**
+     * Returns whether this *instance* is entity owner or not
+     * @return true if it's entity owner, else false.
+     */
+    boolean isEntityOwner();
+
+    /**
+     * Set entity ownership satus of this switch in *this* instance
+     * @param isOwner
+     */
+    void setEntityOwnership(boolean isOwner);
+
 }

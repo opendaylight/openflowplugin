@@ -144,6 +144,10 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     }
 
     @Override
+    public void setRole(SessionContext context) {
+	sessionNotifier.setRole(context);
+    }
+    @Override
     public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
                                     SwitchConnectionDistinguisher connectionCookie) {
         SessionContext context = getSessionContext(sessionKey);
@@ -201,6 +205,17 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
                     listener.getInstance().onSessionAdded(sessionKey, context);
                 } catch (Exception e) {
                     LOG.error("Unhandled exeption occured while invoking onSessionAdded on listener", e);
+                }
+            }
+        }
+
+        @Override
+        public void setRole(SessionContext context) {
+            for (ListenerRegistration<SessionListener> listener : sessionListeners) {
+                try {
+                    listener.getInstance().setRole(context);
+                } catch (Exception e) {
+                    LOG.error("Unhandled exeption occured while invoking setRole on listener", e);
                 }
             }
         }
