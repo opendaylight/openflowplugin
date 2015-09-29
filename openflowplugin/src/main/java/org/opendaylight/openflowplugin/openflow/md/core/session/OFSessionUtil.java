@@ -37,11 +37,12 @@ public abstract class OFSessionUtil {
             .getLogger(OFSessionUtil.class);
 
     /**
-     * @param connectionConductor
-     * @param features
-     * @param version
+     * @param connectionConductor switch connection conductor
+     * @param features switch feature output
+     * @param version openflow version
      */
-    public static void registerSession(ConnectionConductorImpl connectionConductor,
+    // public static void registerSession(ConnectionConductorImpl connectionConductor,
+    public static SessionContext registerSession(ConnectionConductorImpl connectionConductor,
             GetFeaturesOutput features, short version) {
         SwitchSessionKeyOF sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
@@ -99,10 +100,16 @@ public abstract class OFSessionUtil {
                 throw new IllegalStateException("registered session context is invalid");
             }
         }
+	return(resulContext);
+    }
+
+    public static void setRole(SessionContext sessionContext)
+    {
+            getSessionManager().setRole(sessionContext);
     }
 
     /**
-     * @param datapathId
+     * @param datapathId switch datapath id
      * @return readable version of datapathId (hex)
      */
     public static String dumpDataPathId(BigInteger datapathId) {
@@ -110,7 +117,7 @@ public abstract class OFSessionUtil {
     }
 
     /**
-     * @param datapathId
+     * @param datapathId switch datapath id
      * @return new session key
      */
     public static SwitchSessionKeyOF createSwitchSessionKey(
@@ -121,8 +128,8 @@ public abstract class OFSessionUtil {
     }
 
     /**
-     * @param features
-     * @param seed 
+     * @param features switch feature output
+     * @param seed  seed value
      * @return connection cookie key
      * @see #createConnectionCookie(BigInteger,short, int)
      */
@@ -133,9 +140,9 @@ public abstract class OFSessionUtil {
     }
 
     /**
-     * @param datapathId
-     * @param auxiliaryId
-     * @param seed 
+     * @param datapathId switch datapath id
+     * @param auxiliaryId connection aux id
+     * @param seed  seed value
      * @return connection cookie key
      */
     public static SwitchConnectionDistinguisher createConnectionCookie(
