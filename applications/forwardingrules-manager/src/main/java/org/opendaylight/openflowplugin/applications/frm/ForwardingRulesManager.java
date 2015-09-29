@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -107,6 +108,11 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return
      */
     public SalTableService getSalTableService();
+
+    /**
+     * Entity ownership service
+     */
+    public EntityOwnershipService getOwnershipService();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
