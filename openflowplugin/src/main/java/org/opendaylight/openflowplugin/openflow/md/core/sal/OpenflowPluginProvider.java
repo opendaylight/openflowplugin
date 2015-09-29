@@ -22,9 +22,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +50,11 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
     private OfpRole role;
 
     private OFRoleManager roleManager;
+    private OfEntityManager entManager;
     private DataBroker dataBroker;
     private NotificationProviderService notificationService;
     private RpcProviderRegistry rpcRegistry;
+    private EntityOwnershipService entityOwnershipService;
 
     /**
      * Initialization of services and msgSpy counter
@@ -59,12 +63,15 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
+	entManager = new OfEntityManager(entityOwnershipService);
+        entManager.setDataBroker(dataBroker);
 
         LOG.debug("dependencies gathered..");
         registrationManager = new SalRegistrationManager();
         registrationManager.setDataService(dataBroker);
         registrationManager.setPublishService(notificationService);
         registrationManager.setRpcProviderRegistry(rpcRegistry);
+        registrationManager.setOfEntityManager(entManager);
         registrationManager.init();
 
         mdController = new MDController();
@@ -147,6 +154,10 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
 
     public void setRpcRegistry(RpcProviderRegistry rpcRegistry) {
         this.rpcRegistry = rpcRegistry;
+    }
+
+    public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
+	this.entityOwnershipService = entityOwnershipService;
     }
 
     @VisibleForTesting

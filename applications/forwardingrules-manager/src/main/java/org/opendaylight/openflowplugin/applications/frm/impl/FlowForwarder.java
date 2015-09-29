@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -48,7 +49,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
 
-    private ListenerRegistration<FlowForwarder> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Flow.class);
@@ -57,14 +58,15 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private void registrationListener(final DataBroker db) {
-        final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        //final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<FlowForwarder>>() {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<?>>() {
                 @Override
-                public ListenerRegistration<FlowForwarder> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
+                public ListenerRegistration<?> call() throws Exception {
+                    return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),
+                                                         FlowForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -36,6 +37,7 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     private BindingTransactionChain txChain;
     private ListenerRegistration<?> listenerRegistration;
     private Thread thread;
+    private EntityOwnershipService ownershipService;
 
     FlowCapableInventoryProvider(final DataBroker dataBroker, final NotificationProviderService notificationService) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -44,6 +46,7 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
 
     void start() {
         final NodeChangeCommiter changeCommiter = new NodeChangeCommiter(FlowCapableInventoryProvider.this);
+        changeCommiter.setOwnershipService(ownershipService);
         this.listenerRegistration = this.notificationService.registerNotificationListener(changeCommiter);
 
         this.txChain = (dataBroker.createTransactionChain(this));
@@ -53,6 +56,10 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
         thread.start();
 
         LOG.info("Flow Capable Inventory Provider started.");
+    }
+
+    public void setOwnershipService(EntityOwnershipService ownershipService) {
+        this.ownershipService = ownershipService;
     }
 
     void enqueue(final InventoryOperation op) {

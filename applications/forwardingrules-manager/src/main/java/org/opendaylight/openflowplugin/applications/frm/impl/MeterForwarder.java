@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.concurrent.Callable;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -45,20 +46,21 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
 
-    private ListenerRegistration<MeterForwarder> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     public MeterForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Meter.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        //final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
 
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<MeterForwarder>>() {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<?>>() {
                 @Override
-                public ListenerRegistration<MeterForwarder> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, MeterForwarder.this);
+                public ListenerRegistration<?> call() throws Exception {
+                    //return db.registerDataTreeChangeListener(treeId, MeterForwarder.this);
+                    return db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, getWildCardPath(),                                                                                   MeterForwarder.this, DataChangeScope.SUBTREE);
                 }
             });
         } catch (final Exception e) {

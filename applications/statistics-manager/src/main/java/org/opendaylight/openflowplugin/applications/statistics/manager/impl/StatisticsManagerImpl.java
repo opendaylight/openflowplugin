@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -81,6 +82,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
    private final DataBroker dataBroker;
    private final ExecutorService statRpcMsgManagerExecutor;
    private final ExecutorService statDataStoreOperationServ;
+   private EntityOwnershipService ownershipService;
    private StatRpcMsgManager rpcMsgManager;
    private List<StatPermCollector> statCollectors;
    private final Object statCollectorLock = new Object();
@@ -397,6 +399,16 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
         }
         // we dont want to mark operations with null uuid and get NPEs later. So mark them with invalid ones
         return UUID.fromString("invalid-uuid");
+    }
+
+    @Override
+    public void setOwnershipService(EntityOwnershipService ownershipService) {
+        this.ownershipService = ownershipService;
+    }
+
+    @Override
+    public EntityOwnershipService getOwnershipService() {
+        return this.ownershipService;
     }
 }
 
