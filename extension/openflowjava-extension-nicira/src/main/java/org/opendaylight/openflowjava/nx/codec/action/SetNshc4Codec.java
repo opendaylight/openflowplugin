@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
  */
 public class SetNshc4Codec extends AbstractActionCodec {
     public static final int LENGTH = 16;
-    public static final byte NXAST_SET_NSC_SUBTYPE = 37;
+    public static final byte NXAST_SET_NSC_SUBTYPE = 110;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
             new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionSetNshc4.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =

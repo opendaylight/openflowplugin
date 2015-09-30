@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
  */
 public class SetNsiCodec extends AbstractActionCodec {
     public static final int LENGTH = 16;
-    public static final byte NXAST_SET_NSI_SUBTYPE = 33;
+    public static final byte NXAST_SET_NSI_SUBTYPE = 106;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
             new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionSetNsi.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
