@@ -189,6 +189,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onErrorMessage(ErrorMessage errorMessage) {
+LOG.ERROR("ERROR");
         enqueueMessage(errorMessage);
     }
 
