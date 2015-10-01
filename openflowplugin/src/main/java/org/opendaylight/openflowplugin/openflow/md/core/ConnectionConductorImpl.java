@@ -399,6 +399,16 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void onDisconnectEvent(DisconnectEvent arg0) {
         SessionManager sessionManager = OFSessionUtil.getSessionManager();
         sessionManager.invalidateOnDisconnect(this);
+        /**
+         * When a switch disconnects, queueKeeper attached to the switch is
+         * closed. This is needed to avaid accumulation of unnecessary queueKeepers
+         * registered with the Harvester, after disconnection of switches.
+         */
+        try {
+             queue.close();
+        } catch (Exception e) {
+             LOG.warn("Failed to close queueKeeper", e);
+        }
         close();
     }
 
