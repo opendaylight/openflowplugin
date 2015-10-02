@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_5626c917",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-10-02T15:57:01Z",
+      "side": 1,
+      "message": "nice-to-have: it would be much better to build parallel way for propagating role change as this one is meant to be used only once per connection lifetime. Please add at least TODO here.",
+      "range": {
+        "startLine": 71,
+        "startChar": 16,
+        "endLine": 71,
+        "endChar": 87
+      },
+      "revId": "394070ad0df667ed373f56cc045e484f4401515d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_d612d9b3",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/common/NodeConnectorTranslatorUtilTest.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-10-02T15:57:01Z",
+      "side": 1,
+      "message": "this is probably not intended - it is not really covering any class with test",
+      "range": {
+        "startLine": 287,
+        "startChar": 3,
+        "endLine": 299,
+        "endChar": 5
+      },
+      "revId": "394070ad0df667ed373f56cc045e484f4401515d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
