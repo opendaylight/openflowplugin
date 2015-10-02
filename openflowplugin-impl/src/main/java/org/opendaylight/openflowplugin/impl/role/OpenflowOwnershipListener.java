@@ -5,11 +5,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -26,7 +29,6 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
     private EntityOwnershipService entityOwnershipService;
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private Map<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
-    private final Map<Entity, Boolean> ownershipMap = new ConcurrentHashMap<>();
     private final ExecutorService roleChangeExecutor = Executors.newSingleThreadExecutor();
 
     public OpenflowOwnershipListener(EntityOwnershipService entityOwnershipService) {
@@ -43,8 +45,6 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
 
         RoleChangeListener roleChangeListener = roleChangeListenerMap.get(ownershipChange.getEntity());
 
-        ownershipMap.put(ownershipChange.getEntity(), ownershipChange.isOwner());
-
         if (roleChangeListener != null) {
             LOG.debug("Found local entity:{}", ownershipChange.getEntity());
 
@@ -53,7 +53,6 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
                 // possible the last node to be disconnected from device.
                 // eligible for the device to get deleted from inventory.
                 LOG.debug("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
-                ownershipMap.remove(ownershipChange.getEntity());
                 roleChangeListener.onDeviceDisconnectedFromCluster();
 
             } else {
@@ -71,23 +70,28 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
         final Entity entity = roleChangeListener.getEntity();
         final OpenflowOwnershipListener self = this;
 
-        if(this.hasOwner(entity)) {
-            LOG.debug("An owner exist for entity {}", entity);
-            roleChangeExecutor.submit(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    if(self.isOwner(entity)){
-                        LOG.debug("Ownership is here for entity {} becoming master", entity);
-                        roleChangeListener.onRoleChanged(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
-                    } else {
-                        LOG.debug("Ownership is NOT here for entity {} becoming alave", entity);
-                        roleChangeListener.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+        Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(entity);
 
+        if (entityOwnershipStateOptional != null && entityOwnershipStateOptional.isPresent()) {
+            final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
+            if (entityOwnershipState.hasOwner()) {
+                LOG.debug("An owner exist for entity {}", entity);
+                roleChangeExecutor.submit(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        if (entityOwnershipState.isOwner()) {
+                            LOG.debug("Ownership is here for entity {} becoming master", entity);
+                            roleChangeListener.onRoleChanged(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
+                        } else {
+                            LOG.debug("Ownership is NOT here for entity {} becoming alave", entity);
+                            roleChangeListener.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+
+                        }
+
+                        return null;
                     }
-
-                    return null;
-                }
-            });
+                });
+            }
         }
     }
 
@@ -96,20 +100,5 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
         if (entityOwnershipListenerRegistration != null) {
             entityOwnershipListenerRegistration.close();
         }
-    }
-
-    private boolean hasOwner(Entity entity){
-        return ownershipMap.containsKey(entity);
-    }
-
-    private boolean isOwner(Entity entity){
-        if(hasOwner(entity)){
-            Boolean isOwner = ownershipMap.get(entity);
-            if(isOwner != null) {
-                return isOwner.booleanValue();
-            }
-        }
-
-        return false;
     }
 }
