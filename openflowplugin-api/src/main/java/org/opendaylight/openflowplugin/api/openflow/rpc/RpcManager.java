@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
@@ -18,6 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable {
+public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable, DeviceContextClosedHandler {
 
 }

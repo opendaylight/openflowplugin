@@ -130,7 +130,6 @@ public class RoleContextImpl implements RoleContext {
     public void close() throws Exception {
         if (entityOwnershipCandidateRegistration != null) {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
-            LOG.error("Who called this close?????", new Throwable());
             entityOwnershipCandidateRegistration.close();
         }
     }

@@ -80,9 +80,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
-        LOG.debug("deviceContext.getDeviceState().getRole():"+deviceContext.getDeviceState().getRole());
+        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", deviceContext.getDeviceState().getNodeId(),
+                deviceContext.getDeviceState().getRole());
         if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
             // if slave, we dont poll for statistics and jump to rpc initialization
+            LOG.info("Skipping Statistics for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
             deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             return;
         }
@@ -91,6 +93,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
         }
+
+        LOG.info("Starting Statistics for master role for node:{}", deviceContext.getDeviceState().getNodeId());
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);

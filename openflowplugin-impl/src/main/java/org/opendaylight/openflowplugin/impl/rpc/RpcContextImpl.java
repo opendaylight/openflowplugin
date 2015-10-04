@@ -62,6 +62,8 @@ public class RpcContextImpl implements RpcContext {
         for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
             rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistration.close();
+            LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
+                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
         }
     }
 
@@ -80,12 +82,5 @@ public class RpcContextImpl implements RpcContext {
                 messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
             }
         };
-    }
-
-    @Override
-    public void onDeviceContextClosed(DeviceContext deviceContext) {
-        for (RoutedRpcRegistration<?> registration : rpcRegistrations) {
-            registration.close();
-        }
     }
 }
