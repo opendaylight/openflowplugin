@@ -18,6 +18,6 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcContext extends RequestContextStack, AutoCloseable, DeviceContextClosedHandler {
+public interface RpcContext extends RequestContextStack, AutoCloseable {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 }
