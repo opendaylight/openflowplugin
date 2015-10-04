@@ -154,7 +154,7 @@ public class DeviceTransactionChainManagerProviderTest {
                     }
                 });
         Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
-        txChainManager.close();
+        txChainManager.cleanupPostClosure();
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
         txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);

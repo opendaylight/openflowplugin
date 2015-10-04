@@ -373,7 +373,7 @@ public class DeviceContextImplTest {
         deviceContext.close();
         verify(connectionContext).closeConnection(eq(false));
         verify(deviceState).setValid(eq(false));
-        verify(txChainManager).closeWithoutCleanup();
+        verify(txChainManager).close();
         verify(mockedAuxiliaryConnectionContext).closeConnection(eq(false));
     }
 
@@ -483,6 +483,6 @@ public class DeviceContextImplTest {
         Assert.assertEquals(0, deviceContext.getDeviceGroupRegistry().getAllGroupIds().size());
         Assert.assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
-        Mockito.verify(txChainManager).closeWithoutCleanup();
+        Mockito.verify(txChainManager).close();
     }
 }
