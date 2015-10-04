@@ -483,6 +483,6 @@ public class DeviceContextImplTest {
         Assert.assertEquals(0, deviceContext.getDeviceGroupRegistry().getAllGroupIds().size());
         Assert.assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
-        Mockito.verify(txChainManager).closeWithoutCleanup();
+        Mockito.verify(txChainManager).close();
     }
 }
