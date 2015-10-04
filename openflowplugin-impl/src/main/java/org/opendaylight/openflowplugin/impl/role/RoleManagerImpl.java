@@ -76,12 +76,12 @@ public class RoleManagerImpl implements RoleManager {
                 LOG.error("RoleChange on device {} was not successful after several attempts. " +
                         "Closing the device Context, reconnect the device and start over",
                         deviceContext.getPrimaryConnectionContext().getNodeId().getValue(), throwable);
-//                try {
-//                    deviceContext.close();
-//                } catch (Exception e) {
-//                    LOG.warn("Error closing device context for device:{}",
-//                            deviceContext.getPrimaryConnectionContext().getNodeId().getValue(),  e);
-//                }
+                try {
+                    deviceContext.close();
+                } catch (Exception e) {
+                    LOG.warn("Error closing device context for device:{}",
+                            deviceContext.getPrimaryConnectionContext().getNodeId().getValue(),  e);
+                }
             }
         });
     }
