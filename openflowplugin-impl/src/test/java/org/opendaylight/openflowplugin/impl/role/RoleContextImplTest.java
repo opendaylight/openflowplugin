@@ -83,6 +83,7 @@ public class RoleContextImplTest {
         when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
         when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceContext.getPrimaryConnectionContext().getFeatures()).thenReturn(featuresReply);
+        when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
     }
 
     @Test

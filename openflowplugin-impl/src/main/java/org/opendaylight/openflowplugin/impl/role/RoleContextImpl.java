@@ -92,7 +92,12 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void onRoleChanged(final OfpRole oldRole, final OfpRole newRole) {
 
-        // called notification thread from md-sal
+        if (!isDeviceConnected()) {
+            // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
+            LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
+                    deviceContext.getPrimaryConnectionContext().getNodeId());
+            return;
+        }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
                 deviceContext.getPrimaryConnectionContext().getNodeId());
