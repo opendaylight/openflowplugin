@@ -175,8 +175,16 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             if (deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
                 ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
                 deviceContext.onPublished();
+
             } else {
-                ((DeviceContextImpl) deviceContext).cancelTransaction();
+                //if role = slave
+                try {
+                    ((DeviceContextImpl) deviceContext).cancelTransaction();
+                } catch (Exception e) {
+                    //TODO: how can we avoid it. pingpong does not have cancel
+                    LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
+                }
+
             }
 
         } catch (final Exception e) {
