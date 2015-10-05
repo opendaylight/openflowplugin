@@ -175,19 +175,26 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             if (deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
                 ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
                 deviceContext.onPublished();
+
             } else {
-                ((DeviceContextImpl) deviceContext).cancelTransaction();
+                //if role = slave
+                try {
+                    ((DeviceContextImpl) deviceContext).cancelTransaction();
+                } catch (Exception e) {
+                    //TODO: how can we avoid it. pingpong does not have cancel
+                    LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
+                }
+
             }
 
         } catch (final Exception e) {
             LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
             LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
-            // TODO: This is not the appropriate handling of the exception. An exception always happens when we submit a transaction on the slave
-//            try {
-//                deviceContext.close();
-//            } catch (final Exception e1) {
-//                LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
-//            }
+            try {
+                deviceContext.close();
+            } catch (final Exception e1) {
+                LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
+            }
         }
     }
 
