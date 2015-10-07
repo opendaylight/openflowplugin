@@ -234,7 +234,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     @Override
     public void onHelloMessage(final HelloMessage hello) {
-        LOG.debug("processing HELLO.xid: {}", hello.getXid());
+        LOG.info("processing HELLO.xid: {} from device {}", hello.getXid(), connectionAdapter.getRemoteAddress());
         firstHelloProcessed = true;
         checkState(CONDUCTOR_STATE.HANDSHAKING);
         HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
@@ -397,6 +397,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onDisconnectEvent(DisconnectEvent arg0) {
+        LOG.info("Disconnecting from device {} ", connectionAdapter.getRemoteAddress());
         SessionManager sessionManager = OFSessionUtil.getSessionManager();
         sessionManager.invalidateOnDisconnect(this);
         close();

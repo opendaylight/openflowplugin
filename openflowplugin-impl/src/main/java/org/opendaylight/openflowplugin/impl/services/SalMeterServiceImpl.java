@@ -68,13 +68,25 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Meter add finished without error, id={}", input.getMeterId());
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter add finished without error, id={} from device {}", input.getMeterId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                     addIfNecessaryToDS(input.getMeterId(),input);
+                } else {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter add finished with error, id={} from device {}", input.getMeterId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("meter add failed, id={} from device {}", input.getMeterId(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
             }
         });
@@ -91,16 +103,29 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<UpdateMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Meter update finished without error, id={}", input.getOriginalMeter().getMeterId());
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter update finished without error, id={} from device {}", input.getOriginalMeter().getMeterId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
+
                     if (itemLifecycleListener != null) {
                         removeIfNecessaryFromDS(input.getOriginalMeter().getMeterId());
                         addIfNecessaryToDS(input.getUpdatedMeter().getMeterId(),input.getUpdatedMeter());
+                    }
+                } else {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter update finished with error, id={} from device {}", input.getOriginalMeter().getMeterId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("meter update failed, id={} from device {}", input.getOriginalMeter().getMeterId().getValue(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.error("Meter update failed. for id={}. Exception {}.",input.getOriginalMeter().getMeterId(),t);
             }
         });
@@ -116,13 +141,25 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Meter remove finished without error, id={}", input.getMeterId());
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter remove finished without error, id={} from device {}", input.getMeterId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                     removeIfNecessaryFromDS(input.getMeterId());
+                } else {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("meter remove finished with error, id={} from device {}", input.getMeterId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()){
+                    LOG.debug("meter remove failed, id={} from device {}", input.getMeterId(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.error("Meter remove failed for id={}. Exception {}",input.getMeterId(),t);
             }
         });

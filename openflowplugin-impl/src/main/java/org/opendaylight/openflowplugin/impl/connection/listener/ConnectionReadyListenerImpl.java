@@ -36,7 +36,7 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
 
     @Override
     public void onConnectionReady() {
-        LOG.debug("device is connected and ready-to-use (pipeline prepared): {}",
+        LOG.info("device is connected and ready-to-use (pipeline prepared): {}",
                 connectionContext.getConnectionAdapter().getRemoteAddress());
 
         if (connectionContext.getConnectionState() == null) {

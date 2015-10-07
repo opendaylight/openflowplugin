@@ -143,7 +143,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             auxiliaryId = 0;
         }
 
-        LOG.debug("disconnecting: node={}|auxId={}|connection state = {}",
+        LOG.info("disconnecting: node={}|auxId={}|connection state = {}",
                 remoteAddress,
                 auxiliaryId,
                 getConnectionState());

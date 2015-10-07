@@ -72,13 +72,25 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("group add finished without error, id={}", input.getGroupId().getValue());
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group add finished without error, id={} from device {}", input.getGroupId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                     addIfNecessaryToDS(input.getGroupId(), input);
+                } else {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group add finished with error, id={} from device {}", input.getGroupId().getValue(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("group add failed, id={} from device {}", input.getGroupId().getValue(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.error("group add failed for id={}. Exception: {}", input.getGroupId().getValue(), t);
             }
         });
@@ -94,14 +106,26 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<UpdateGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Group update succeded");
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group update finished without error, id={} from device {}", input.getOriginalGroup().getGroupId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                     removeIfNecessaryFromDS(input.getOriginalGroup().getGroupId());
                     addIfNecessaryToDS(input.getUpdatedGroup().getGroupId(), input.getUpdatedGroup());
+                } else {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group update finished with error, id={} from device {}", input.getOriginalGroup().getGroupId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("group update failed, id={} from device {}", input.getOriginalGroup().getGroupId(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.debug("Group update failed for id={}. Exception: {}", input.getOriginalGroup().getGroupId(), t);
             }
         });
@@ -116,13 +140,26 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Group remove succeded");
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group remove finished without error, id={} from device {}", input.getGroupId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
+
                     removeIfNecessaryFromDS(input.getGroupId());
+                } else  {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("group remove finished with error, id={} from device {}", input.getGroupId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("group remove failed, id={} from device {}", input.getGroupId(),
+                        deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+                }
                 LOG.error("Group remove failed for id={}. Exception: {}", input.getGroupId(), t);
             }
         });

@@ -90,6 +90,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<BarrierOutput>> barrier(BarrierInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending barrier message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).barrier(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -99,6 +102,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<Void>> experimenter(ExperimenterInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending experimenter message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).experimenter(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -107,9 +113,11 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> flowMod(final FlowModInput input, SwitchConnectionDistinguisher cookie) {
-        LOG.debug("Calling OFLibrary flowMod");
         Future<RpcResult<Void>> response = null;
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending flowMod message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             response = getConnectionAdapter(cookie).flowMod(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -141,6 +149,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending getAsync message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).getAsync(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -150,6 +161,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<GetConfigOutput>> getConfig(GetConfigInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending getConfig message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).getConfig(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -159,6 +173,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<GetFeaturesOutput>> getFeatures(GetFeaturesInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending getFeatures message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).getFeatures(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -169,6 +186,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     public Future<RpcResult<GetQueueConfigOutput>> getQueueConfig(GetQueueConfigInput input,
                                                                   SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending getQueueConfig message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).getQueueConfig(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -177,9 +197,11 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> groupMod(final GroupModInput input, SwitchConnectionDistinguisher cookie) {
-        LOG.debug("Calling OFLibrary groupMod");
         Future<RpcResult<Void>> response = null;
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending groupMod message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             response = getConnectionAdapter(cookie).groupMod(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -209,9 +231,11 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> meterMod(final MeterModInput input, SwitchConnectionDistinguisher cookie) {
-        LOG.debug("Calling OFLibrary meterMod");
         Future<RpcResult<Void>> response = null;
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending meterMod message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             response = getConnectionAdapter(cookie).meterMod(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -242,6 +266,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<java.lang.Void>> multipartRequest(MultipartRequestInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending multipartRequest message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).multipartRequest(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -251,6 +278,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<Void>> packetOut(PacketOutInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending packetOut message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).packetOut(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -259,9 +289,11 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> portMod(final PortModInput input, SwitchConnectionDistinguisher cookie) {
-        LOG.debug("Calling OFLibrary portMod");
         Future<RpcResult<Void>> response = null;
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending portMod message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             response = getConnectionAdapter(cookie).portMod(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -292,6 +324,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<RoleRequestOutput>> roleRequest(RoleRequestInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending roleRequest message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).roleRequest(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -301,6 +336,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<Void>> setAsync(SetAsyncInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace("Sending setAsync message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).setAsync(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -310,6 +348,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<Void>> setConfig(SetConfigInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending setConfig message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).setConfig(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
@@ -319,6 +360,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     @Override
     public Future<RpcResult<Void>> tableMod(TableModInput input, SwitchConnectionDistinguisher cookie) {
         try {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Sending tableMod message to device {}", getConnectionAdapter(cookie).getRemoteAddress());
+            }
             return getConnectionAdapter(cookie).tableMod(input);
         } catch (ConnectionException e) {
             return RpcResultUtil.getRpcErrorFuture(e);
