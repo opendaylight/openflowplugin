@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_c4d76c22",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 369,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-10-09T16:12:48Z",
+      "side": 1,
+      "message": "If you are changing the close method from closing without cleaning inventory to just close - you should update the message.",
+      "range": {
+        "startLine": 369,
+        "startChar": 18,
+        "endLine": 369,
+        "endChar": 25
+      },
+      "revId": "612eefaeb49204bb3fa950d9550087ac7d10ce04",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_04ed64ef",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-10-09T16:12:48Z",
+      "side": 1,
+      "message": "Again - do you need to change the message as you have changed the close method?",
+      "range": {
+        "startLine": 375,
+        "startChar": 18,
+        "endLine": 375,
+        "endChar": 26
+      },
+      "revId": "612eefaeb49204bb3fa950d9550087ac7d10ce04",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
