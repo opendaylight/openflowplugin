@@ -47,10 +47,10 @@ public final class PacketOutConvertor {
     public static PacketOutInput toPacketOutInput(final TransmitPacketInput inputPacket, final short version, final Long xid,
                                                   final BigInteger datapathid) {
 
+        LOG.trace("toPacketOutInput for datapathId:{}, xid:{}", datapathid, xid);
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr = null;
         Long bufferId = OFConstants.OFP_NO_BUFFER;
-        List<Action> actions = new ArrayList<>();
         Iterable<PathArgument> inArgs = null;
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         if (inputPacket.getIngress() != null) {
@@ -78,23 +78,33 @@ public final class PacketOutConvertor {
             new Exception("PORT NR not exist in Egress");
         }
 
-        // TODO VD P! wait for way to move Actions (e.g. augmentation)
-        ActionBuilder aBuild = new ActionBuilder();
+        List<Action> actions = null;
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
+                inputPacket.getAction();
+        if (inputActions != null) {
+            actions = ActionConvertor.getActions(inputActions, version, datapathid, null);
 
-        OutputActionCaseBuilder outputActionCaseBuilder =
-                new OutputActionCaseBuilder();
+        } else {
+            actions = new ArrayList<>();
+            // TODO VD P! wait for way to move Actions (e.g. augmentation)
+            ActionBuilder aBuild = new ActionBuilder();
 
-        OutputActionBuilder outputActionBuilder =
-                new OutputActionBuilder();
+            OutputActionCaseBuilder outputActionCaseBuilder =
+                    new OutputActionCaseBuilder();
 
-        outputActionBuilder.setPort(outPort);
-        outputActionBuilder.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
+            OutputActionBuilder outputActionBuilder =
+                    new OutputActionBuilder();
 
-        outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
+            outputActionBuilder.setPort(outPort);
+            outputActionBuilder.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
 
-        aBuild.setActionChoice(outputActionCaseBuilder.build());
+            outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
 
-        actions.add(aBuild.build());
+            aBuild.setActionChoice(outputActionCaseBuilder.build());
+
+            actions.add(aBuild.build());
+        }
+
         builder.setAction(actions);
         builder.setData(inputPacket.getPayload());
         builder.setVersion(version);
