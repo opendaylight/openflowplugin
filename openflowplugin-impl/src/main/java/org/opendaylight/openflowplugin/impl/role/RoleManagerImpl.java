@@ -55,6 +55,7 @@ public class RoleManagerImpl implements RoleManager {
         if (deviceContext.getDeviceState().getFeatures().getVersion() < OFConstants.OFP_VERSION_1_3) {
             // Roles are not supported before OF1.3, so move forward.
             deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
+            return;
         }
 
         RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
