@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_8402d46d",
+        "filename": "openflowplugin-flow-programmer/features/pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "I\u0027m pretty sure build-helper is handled by features parent and not needed here.",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_24f98080",
+        "filename": "openflowplugin-flow-programmer/features/pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "I\u0027m pretty sure that features-parent handles running the features-test and so this is not needed here.",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_44f4bc86",
+        "filename": "openflowplugin-flow-programmer/features/pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "Please add a dependency for each \u003crepo\u003e \u003cfeature\u003e and \u003cbundle\u003e you list in your features file.",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_04eec4b4",
+        "filename": "openflowplugin-flow-programmer/pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "Why not just use config-parent here and simplify the pom file tremendously (while also inheriting best practices)?",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_64369854",
+        "filename": "openflowplugin-flow-programmer/src/test/resources/log4j.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "Could you help me understand what this does?  How is it being hooked into the things that use flowprogrammer?",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_e44948d1",
+        "filename": "pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-10-09T17:10:37Z",
+      "side": 1,
+      "message": "Please consider properly nesting this as a module under the openflowplugin-flow-programmer directory",
+      "revId": "747d77b24da1abda0e589acaff3fd9405a6c4262",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
