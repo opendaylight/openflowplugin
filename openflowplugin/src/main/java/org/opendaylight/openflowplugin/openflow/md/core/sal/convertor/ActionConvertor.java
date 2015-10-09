@@ -307,6 +307,7 @@ public final class ActionConvertor {
                                 version);
                 ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor =
                         OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                LOG.trace("OFP Extension action, key:{}, converter:{}", key, convertor);
                 if (convertor != null) {
                     ofAction = convertor.convert(action);
                 }
