@@ -12,10 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
@@ -39,8 +38,7 @@ public interface SessionContext {
     GetFeaturesOutput getFeatures();
 
     /**
-     * @param auxiliaryKey
-     *            key under which the auxiliary conductor is stored
+     * @param auxiliaryKey key under which the auxiliary conductor is stored
      * @return list of auxiliary connection wrappers
      */
     ConnectionConductor getAuxiliaryConductor(
@@ -58,7 +56,7 @@ public interface SessionContext {
      * @param conductor
      */
     void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey,
-            ConnectionConductor conductor);
+                               ConnectionConductor conductor);
 
     /**
      * @param connectionCookie
@@ -84,24 +82,31 @@ public interface SessionContext {
 
     /**
      * Returns a map containing all OFPhysicalPorts of this switch.
+     *
      * @return The Map of OFPhysicalPort
      */
+    @Deprecated
     Map<Long, PortGrouping> getPhysicalPorts();
 
     /**
      * Returns a map containing all bandwidths for all OFPorts of this switch.
+     *
      * @return The Map of bandwidths for all OFPorts
      */
+    @Deprecated
     Map<Long, Boolean> getPortsBandwidth();
 
     /**
      * Returns a Set containing all port IDs of this switch.
+     *
      * @return The Set of port ID
      */
+    @Deprecated
     Set<Long> getPorts();
 
     /**
      * Returns OFPhysicalPort of the specified portNumber of this switch.
+     *
      * @param portNumber The port ID
      * @return OFPhysicalPort for the specified PortNumber
      */
@@ -109,6 +114,7 @@ public interface SessionContext {
 
     /**
      * Returns the bandwidth of the specified portNumber of this switch.
+     *
      * @param portNumber the port ID
      * @return bandwidth
      */
@@ -116,6 +122,7 @@ public interface SessionContext {
 
     /**
      * Returns True if the port is enabled,
+     *
      * @param portNumber
      * @return True if the port is enabled
      */
@@ -123,6 +130,7 @@ public interface SessionContext {
 
     /**
      * Returns True if the port is enabled.
+     *
      * @param port
      * @return True if the port is enabled
      */
@@ -130,6 +138,7 @@ public interface SessionContext {
 
     /**
      * Returns a list containing all enabled ports of this switch.
+     *
      * @return List containing all enabled ports of this switch
      */
     List<PortGrouping> getEnabledPorts();
@@ -137,15 +146,15 @@ public interface SessionContext {
     // TODO:: add listeners here, manager will set them and conductor use them
 
     /**
-     *  get message dispatch service to send the message to switch
+     * get message dispatch service to send the message to switch
      *
      * @return the message service
      */
     IMessageDispatchService getMessageDispatchService();
 
-   /**
-    * @return the unique xid for this session
-    */
+    /**
+     * @return the unique xid for this session
+     */
     Long getNextXid();
 
     /**
