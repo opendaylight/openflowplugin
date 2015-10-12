@@ -85,7 +85,7 @@ public class StatPermCollectorImpl implements StatPermCollector {
             .setNameFormat(name + "-thread-%d").build();
         statNetCollectorServ = Executors.newSingleThreadExecutor(threadFact);
         maxNodeForCollector = maxNodeForCollectors;
-        LOG.trace("StatCollector {} start successfull!", name);
+        LOG.trace("StatCollector {} start successful!", name);
     }
 
     /**
