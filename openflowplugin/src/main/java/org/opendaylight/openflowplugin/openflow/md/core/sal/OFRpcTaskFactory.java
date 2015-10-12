@@ -388,7 +388,7 @@ public abstract class OFRpcTaskFactory {
 
                         @Override
                         public void onFailure(Throwable t) {
-                            LOG.debug("Reading flow-hash-id map from operational DS wasn't successfull");
+                            LOG.debug("Reading flow-hash-id map from operational DS wasn't successful");
                         }
                     });
 
