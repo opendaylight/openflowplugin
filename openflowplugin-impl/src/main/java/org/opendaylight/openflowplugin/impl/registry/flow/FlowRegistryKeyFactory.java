@@ -33,6 +33,7 @@ public class FlowRegistryKeyFactory {
 
         private final short tableId;
         private final int priority;
+ 	private final int importance;
         private final BigInteger cookie;
         private final Match match;
 
@@ -40,6 +41,7 @@ public class FlowRegistryKeyFactory {
             //TODO: mandatory flow input values (or default values) should be specified via yang model
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
+	    importance = MoreObjects.firstNonNull(flow.getImportance(), OFConstants.DEFAULT_FLOW_IMPORTANCE);
             match = Preconditions.checkNotNull(flow.getMatch(), "Match value must not be null");
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
@@ -58,6 +60,9 @@ public class FlowRegistryKeyFactory {
             if (priority != that.priority) {
                 return false;
             }
+	    if (importance != that.importance) {
+                return false;
+            } 	
             if (tableId != that.tableId) {
                 return false;
             }
@@ -84,6 +89,11 @@ public class FlowRegistryKeyFactory {
         @Override
         public int getPriority() {
             return priority;
+        }
+	
+	@Override
+        public int getImportance() {
+            return importance;
         }
 
         @Override

@@ -173,7 +173,7 @@ public class TableFeaturesReplyConvertor {
                 salTableFeatures.setMetadataWrite(new BigInteger(OFConstants.SIGNUM_UNSIGNED, ofTableFeatures.getMetadataWrite()));
             }
             if (ofTableFeatures.getConfig() != null) {
-                salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().isOFPTCDEPRECATEDMASK()));
+                salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().isOFPTCDEPRECATEDMASK(),ofTableFeatures.getConfig().isOFPTCEVICTION()));                
             }
             salTableFeatures.setMaxEntries(ofTableFeatures.getMaxEntries());
             salTableFeatures.setTableProperties(toTableProperties(ofTableFeatures.getTableFeatureProperties()));

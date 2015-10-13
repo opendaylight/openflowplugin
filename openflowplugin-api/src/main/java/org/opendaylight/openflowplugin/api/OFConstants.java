@@ -54,6 +54,7 @@ public final class OFConstants {
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
     public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
     public static final Integer DEFAULT_FLOW_PRIORITY = 0x8000;
+    public static final Integer DEFAULT_FLOW_IMPORTANCE = 0x8000;
 
     /** indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */

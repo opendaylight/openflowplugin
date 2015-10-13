@@ -135,7 +135,7 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslatorTest {
         tableFeatBuilder.setMetadataMatch(metadataMatch);
         byte[] metadataWrite = new byte[]{1, 2, 3, 4, 5, 6, 7, 8};
         tableFeatBuilder.setMetadataWrite(metadataWrite);
-        tableFeatBuilder.setConfig(new TableConfig(false));
+        tableFeatBuilder.setConfig(new TableConfig(false,false));
         tableFeatBuilder.setMaxEntries(10L);
         List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
@@ -172,6 +172,7 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslatorTest {
         Assert.assertEquals("Wrong metadata match", new BigInteger(metadataMatch), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", new BigInteger(metadataWrite), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().isEVICTION());
         Assert.assertEquals("Wrong max entries", 10, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties size", 1, feature.getTableProperties().getTableFeatureProperties().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties

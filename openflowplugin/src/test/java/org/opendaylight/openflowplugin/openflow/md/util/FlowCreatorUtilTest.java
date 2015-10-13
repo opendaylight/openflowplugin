@@ -106,6 +106,12 @@ public class FlowCreatorUtilTest {
                               new UpdatedFlowBuilder().setPriority(defPri),
                               ver);
             canModifyFlowTest(true,
+                              new OriginalFlowBuilder().setImportance(defPri),
+                              updatedBuilder, ver);
+            canModifyFlowTest(true, originalBuilder,
+                              new UpdatedFlowBuilder().setImportance(defPri),
+                              ver);
+            canModifyFlowTest(true,
                               new OriginalFlowBuilder().setIdleTimeout(defIdle),
                               updatedBuilder, ver);
             canModifyFlowTest(true, originalBuilder,
@@ -141,6 +147,8 @@ public class FlowCreatorUtilTest {
                               updatedBuilder.setHardTimeout(1200), ver);
             canModifyFlowTest(true, originalBuilder.setPriority(100),
                               updatedBuilder.setPriority(100), ver);
+            canModifyFlowTest(true, originalBuilder.setImportance(100),
+                              updatedBuilder.setImportance(100), ver);
             canModifyFlowTest(true, originalBuilder.setFlags(flags),
                               updatedBuilder.setFlags(flags), ver);
             canModifyFlowTest(true, originalBuilder.setCookie(cookie),
@@ -160,7 +168,7 @@ public class FlowCreatorUtilTest {
                                   updatedBuilder, ver);
             }
 
-            // Set different idle-timeout, hard-timeout, priority.
+            // Set different idle-timeout, hard-timeout, priority, importance.
             final Integer[] integers = {null, Integer.valueOf(3600)};
             for (final Integer i: integers) {
                 canModifyFlowTest(false, originalBuilder,
@@ -182,6 +190,12 @@ public class FlowCreatorUtilTest {
                                   ver);
                 canModifyFlowTest(false,
                                   new OriginalFlowBuilder(org).setPriority(i),
+                                  updatedBuilder, ver);
+                canModifyFlowTest(false, originalBuilder,
+                                  new UpdatedFlowBuilder(upd).setImportance(i),
+                                  ver);
+                canModifyFlowTest(false,
+                                  new OriginalFlowBuilder(org).setImportance(i),
                                   updatedBuilder, ver);
             }
 

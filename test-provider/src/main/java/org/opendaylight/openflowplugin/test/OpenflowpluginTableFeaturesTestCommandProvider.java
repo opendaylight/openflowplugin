@@ -145,7 +145,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
             tableFeature1.setMetadataWrite(BigInteger.valueOf(10));
             tableFeature1.setMaxEntries(10000L);
 
-            tableFeature1.setConfig(new TableConfig(false));
+            tableFeature1.setConfig(new TableConfig(false,false));
 
             List<TableFeatureProperties> properties = new ArrayList<TableFeatureProperties>();
 

@@ -169,7 +169,7 @@ public class TableFeaturesConvertor {
             ofTableFeatures.setMetadataWrite(salTableFeatures.getMetadataWrite());
             ofTableFeatures.setMaxEntries(salTableFeatures.getMaxEntries());
             if (salTableFeatures.getConfig() != null) {
-                ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK()));
+                ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK(),salTableFeatures.getConfig().isEVICTION()));                
             }
             ofTableFeatures.setTableFeatureProperties(toTableProperties(salTableFeatures.getTableProperties()));
             ofTableFeaturesList.add(ofTableFeatures.build());

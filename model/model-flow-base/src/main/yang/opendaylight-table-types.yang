@@ -20,6 +20,7 @@ module opendaylight-table-types {
     typedef table-config {
         type bits {
             bit DEPRECATED-MASK;
+            bit EVICTION;
         }
     }
 

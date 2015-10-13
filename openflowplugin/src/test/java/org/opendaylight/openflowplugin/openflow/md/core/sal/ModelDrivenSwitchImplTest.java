@@ -286,11 +286,13 @@ public class ModelDrivenSwitchImplTest {
         updatedFlow.setBarrier(false);
         updatedFlow.setMatch(createMatch());
         updatedFlow.setPriority(65);
+        updatedFlow.setImportance(65);
         updatedFlow.setFlags(new FlowModFlags(true, false, true, false, true));
         input.setUpdatedFlow(updatedFlow.build());
         OriginalFlowBuilder originalFlowBuilder = new OriginalFlowBuilder();
         originalFlowBuilder.setMatch(createMatch());
         originalFlowBuilder.setPriority(65);
+        originalFlowBuilder.setImportance(65);
         originalFlowBuilder.setFlags(new FlowModFlags(true, false, true, false, true));
         input.setOriginalFlow(originalFlowBuilder.build());
         KeyedInstanceIdentifier<Flow, FlowKey> dummyIdentifier = InstanceIdentifier.create(Nodes.class)
@@ -852,7 +854,7 @@ public class ModelDrivenSwitchImplTest {
     private static UpdatedTable createUpdateTable() {
         UpdatedTableBuilder updatedTableBuilder = new UpdatedTableBuilder();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setConfig(new TableConfig(true));
+        tableFeaturesBuilder.setConfig(new TableConfig(true,true));
         tableFeaturesBuilder.setKey(new TableFeaturesKey((short) 42));
         tableFeaturesBuilder.setMaxEntries(42L);
         tableFeaturesBuilder.setMetadataMatch(BigInteger.valueOf(42424242));

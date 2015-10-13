@@ -152,6 +152,7 @@ public class MultipartReplyTranslatorFirstTest {
         statsBuilder.setDurationSec(2L);
         statsBuilder.setDurationNsec(3L);
         statsBuilder.setPriority(4);
+        statsBuilder.setImportance(4);
         statsBuilder.setIdleTimeout(5);
         statsBuilder.setHardTimeout(6);
         FlowModFlags flags = new FlowModFlags(true, false, true, false, true);
@@ -170,6 +171,7 @@ public class MultipartReplyTranslatorFirstTest {
         statsBuilder.setDurationSec(20L);
         statsBuilder.setDurationNsec(30L);
         statsBuilder.setPriority(40);
+        statsBuilder.setImportance(40);
         statsBuilder.setIdleTimeout(50);
         statsBuilder.setHardTimeout(60);
         flags = new FlowModFlags(false, true, false, true, false);

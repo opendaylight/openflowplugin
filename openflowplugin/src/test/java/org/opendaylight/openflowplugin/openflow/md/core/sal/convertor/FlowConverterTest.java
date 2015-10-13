@@ -195,6 +195,11 @@ public class FlowConverterTest {
         }
 
         @Override
+        public Integer getImportance() {
+            return null;
+        } 
+
+        @Override
         public Integer getIdleTimeout() {
             return null;
         }

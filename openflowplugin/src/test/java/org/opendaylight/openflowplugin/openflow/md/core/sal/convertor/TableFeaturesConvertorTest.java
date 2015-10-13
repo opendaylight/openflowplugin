@@ -326,7 +326,7 @@ public class TableFeaturesConvertorTest extends TestCase {
             tableFeaturesBuilder.setMetadataMatch(BigInteger.ONE);
             tableFeaturesBuilder.setMetadataWrite(BigInteger.ONE);
             tableFeaturesBuilder.setMaxEntries((long) 1 + (10 * i));
-            tableFeaturesBuilder.setConfig(new TableConfig(false));
+            tableFeaturesBuilder.setConfig(new TableConfig(false,false));
             tableFeaturesBuilder.setTableProperties(getTableProperties());
             tableFeaturesList.add(tableFeaturesBuilder.build());
         }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013, 2015 Ericsson. and others.  All rights reserved.
+/*
+ * Copyright (c) 2013, 2014 Ericsson and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -97,6 +97,7 @@ public class FlowConvertor {
      * Default priority
      */
     public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
+    public static final Integer DEFAULT_IMPORTANCE = Integer.parseInt("8000", 16);
     private static final Long DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
@@ -188,6 +189,7 @@ public class FlowConvertor {
         salToOFFlowIdleTimeout(flow, flowMod);
         salToOFFlowHardTimeout(flow, flowMod);
         salToOFFlowPriority(flow, flowMod);
+        salToOFFlowImportance(flow, flowMod);
         salToOFFlowBufferId(flow, flowMod);
         salToOFFlowOutPort(flow, flowMod);
         salToOFFlowOutGroup(flow, flowMod);
@@ -236,6 +238,14 @@ public class FlowConvertor {
             flowMod.setPriority(flow.getPriority());
         } else {
             flowMod.setPriority(DEFAULT_PRIORITY);
+        }
+    }
+    
+    private static void salToOFFlowImportance(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getImportance() != null) {
+            flowMod.setImportance(flow.getImportance());
+        } else {
+            flowMod.setImportance(DEFAULT_IMPORTANCE);
         }
     }
 

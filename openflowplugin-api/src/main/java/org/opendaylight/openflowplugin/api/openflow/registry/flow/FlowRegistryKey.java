@@ -20,6 +20,8 @@ public interface FlowRegistryKey {
 
     int getPriority();
 
+    int getImportance();
+
     BigInteger getCookie();
 
 

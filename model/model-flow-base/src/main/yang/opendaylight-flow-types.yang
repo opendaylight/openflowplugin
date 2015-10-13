@@ -136,7 +136,11 @@ module opendaylight-flow-types {
         leaf priority {
             type uint16;
         }
-        
+
+        leaf importance {
+            type uint16;
+        }
+
         leaf idle-timeout {
             type uint16;
         }

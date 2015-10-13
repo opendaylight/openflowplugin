@@ -140,7 +140,7 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMetadataMatch(metaMatch);
         byte[] metaWrite = new byte[]{8, 9, 10, 11, 12, 13, 14, 15};
         featuresBuilder.setMetadataWrite(metaWrite);
-        featuresBuilder.setConfig(new TableConfig(false));
+        featuresBuilder.setConfig(new TableConfig(false,false));
         featuresBuilder.setMaxEntries(42L);
         features.add(featuresBuilder.build());
         builder.setTableFeatures(features);
@@ -152,6 +152,7 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().isEVICTION());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 0, feature.getTableProperties().getTableFeatureProperties().size());
     }
@@ -173,7 +174,7 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMetadataMatch(metaMatch);
         byte[] metaWrite = new byte[]{8, 9, 10, 11, 12, 13, 14, 15};
         featuresBuilder.setMetadataWrite(metaWrite);
-        featuresBuilder.setConfig(new TableConfig(false));
+        featuresBuilder.setConfig(new TableConfig(false,false));
         featuresBuilder.setMaxEntries(42L);
 
         List<TableFeatureProperties> properties = new ArrayList<>();
@@ -283,7 +284,7 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMetadataMatch(metaMatch2);
         byte[] metaWrite2 = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
         featuresBuilder.setMetadataWrite(metaWrite2);
-        featuresBuilder.setConfig(new TableConfig(false));
+        featuresBuilder.setConfig(new TableConfig(false,false));
         featuresBuilder.setMaxEntries(24L);
 
         /* -------------------------------------------------- */
@@ -513,6 +514,7 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().isEVICTION());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 4, feature.getTableProperties().getTableFeatureProperties().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties
@@ -566,6 +568,7 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch2), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite2), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().isEVICTION());
         Assert.assertEquals("Wrong max-entries", 24, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 10, feature.getTableProperties().getTableFeatureProperties().size());
         property = feature.getTableProperties().getTableFeatureProperties().get(0);
