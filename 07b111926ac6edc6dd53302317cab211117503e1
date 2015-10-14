@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_f8e1e0d0",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/OpenflowProgrammer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "How can I detect a conflict? I see it checked for the writemerge to fail but apart from that I do not see anything specific,",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_b8eb68af",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/ArpData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "I can understand the purpose of these methods but in general there are no javadocs, no comments explaining how this class could be used, etc.",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_78cdd05c",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/EthernetData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "Same general comment as Arpdata. No javadoc, no class comments, no method comments.",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_58d25401",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/EthernetData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "Arpdata.java aslready have a method to perform this conversion. it seems this should be in a helper class.",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_d805047b",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/Ipv4Data.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "There was already a method for this. Again, I think this might be better served in an abstract or helper class",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_f8080093",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/Ipv6Data.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "Same method again. There were already two exact methods to convert macaddress to long",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_f82fa0f4",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowconflictdetection/L4Data.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "Does this work for UDP and SCTP as well? Youa re calling this method for all L4 protocols.",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_9836ac51",
+        "filename": "openflowplugin-flow-programmer/src/main/java/org/opendaylight/openflowplugin/flowprogrammer/flowutils/OpenflowUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-14T04:57:47Z",
+      "side": 1,
+      "message": "No javadocs for methods",
+      "revId": "07b111926ac6edc6dd53302317cab211117503e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
