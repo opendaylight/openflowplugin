@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_93ac4fa2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 2774
+      },
+      "writtenOn": "2015-10-14T09:34:44Z",
+      "side": 1,
+      "message": "That should not be a LOG.error() and should be informative of what is happening",
+      "revId": "9e0f5be2dbd4e0a418aeef0267cc4165179d7044",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
