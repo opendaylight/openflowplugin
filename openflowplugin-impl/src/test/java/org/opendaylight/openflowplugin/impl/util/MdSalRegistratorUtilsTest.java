@@ -30,7 +30,7 @@ public class MdSalRegistratorUtilsTest {
      * Number of currently registrated services (can be changed) in {@link MdSalRegistratorUtils#registerServices
      * (RpcContext, DeviceContext)}
      */
-    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 9;
+    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 10;
 
     @Test
     public void registerServiceTest() {
