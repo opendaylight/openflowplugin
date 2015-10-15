@@ -367,13 +367,13 @@ public class DeviceContextImpl implements DeviceContext {
         }
 
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
-        transactionChainManager.closeWithoutCleanup();
+        transactionChainManager.close();
     }
 
     @Override
     public void onDeviceDisconnectedFromCluster() {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.close();
+        transactionChainManager.cleanupPostClosure();
     }
 
     @Override

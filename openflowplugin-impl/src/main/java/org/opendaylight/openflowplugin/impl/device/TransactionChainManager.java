@@ -168,16 +168,39 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitIsEnabled = true;
     }
 
-    @Override
-    public void close() {
+    /**
+     * When a device disconnects from a node of the cluster, the device context gets closed. With that the txChainMgr
+     * status is set to SHUTTING_DOWN and is closed.
+     * When the EntityOwnershipService notifies and is derived that this was indeed the last node from which the device
+     * had disconnected, then we clean the inventory.
+     * Called from DeviceContext
+     */
+    public void cleanupPostClosure() {
         LOG.debug("Removing node {} from operational DS.", nodeII);
         synchronized (txLock) {
-            final WriteTransaction writeTx = getTransactionSafely();
+            final WriteTransaction writeTx;
+
+            //TODO(Kamal): Fix this. This might cause two txChain Manager working on the same node.
+            if (txChainFactory == null) {
+                LOG.info("Creating new Txn Chain Factory for cleanup purposes - Race Condition Hazard, " +
+                        "Concurrent Modification Hazard, node:{}", nodeII);
+                createTxChain(dataBroker);
+            }
+
+            if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
+                // status is already shutdown. so get the tx directly
+                writeTx = txChainFactory.newWriteOnlyTransaction();
+            } else {
+                writeTx = getTransactionSafely();
+            }
+
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             writeTx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
             LOG.debug("Delete node {} from operational DS put to write transaction.", nodeII);
+
             CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
             LOG.debug("Delete node {} from operational DS write transaction submitted.", nodeII);
+
             Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void aVoid) {
@@ -213,10 +236,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             }
         }
         txChainFactory.close();
+        txChainFactory = null;
         LOG.debug("Transaction chain factory closed.");
     }
 
-    public void closeWithoutCleanup() {
+    @Override
+    public void close() {
         LOG.debug("closing txChainManager without cleanup of node {} from operational DS.", nodeII);
         synchronized (txLock) {
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
