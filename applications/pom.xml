@@ -98,6 +98,7 @@
         <!--<module>features</module>-->
         <!-- experimental apps -->
         <module>bulk-o-matic</module>
+        <module>pipeline-manager</module>
     </modules>
 
 </project>
