@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>util</artifactId>
+            <artifactId>openflowjava-util</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
