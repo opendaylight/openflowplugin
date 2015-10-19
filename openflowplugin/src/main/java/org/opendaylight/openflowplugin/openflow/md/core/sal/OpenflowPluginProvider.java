@@ -63,6 +63,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
+	System.out.println("OpenflowPluginProvider:creating OfEntityManager" + entityOwnershipService);
 	entManager = new OfEntityManager(entityOwnershipService);
 
         LOG.debug("dependencies gathered..");
@@ -71,6 +72,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         registrationManager.setPublishService(notificationService);
         registrationManager.setRpcProviderRegistry(rpcRegistry);
         registrationManager.setOfEntityManager(entManager);
+	System.out.println("OpenflowPluginProvider: After setting OfEntityManager");
         registrationManager.init();
 
         mdController = new MDController();
@@ -157,6 +159,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
 
     public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
 	this.entityOwnershipService = entityOwnershipService;
+	System.out.println("OpenflowPluginProvider: setting entityOwnershipService" + this.entityOwnershipService);
     }
 
     @VisibleForTesting

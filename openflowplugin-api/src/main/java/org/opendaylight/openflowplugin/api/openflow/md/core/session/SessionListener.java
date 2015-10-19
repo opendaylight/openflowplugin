@@ -26,5 +26,6 @@ public interface SessionListener extends EventListener {
      * @param context
      */
     void onSessionRemoved(SessionContext context);
+    void setRole(SessionContext context);
 
 }

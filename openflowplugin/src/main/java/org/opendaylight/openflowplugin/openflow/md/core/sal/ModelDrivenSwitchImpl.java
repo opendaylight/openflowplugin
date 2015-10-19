@@ -128,10 +128,14 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     public void reqOpenflowEntityOwnership(OfEntityManager entManager, NodeId nodeId, SessionContext sessionContext)
     {
-	entManager.requestOpenflowEntityOwnership(nodeId, sessionContext);
 	sessionContext.setValid(true);
+	entManager.requestOpenflowEntityOwnership(nodeId, sessionContext);
     }
 
+    public void setRole(OfEntityManager entManager,SessionContext sessionContext)
+    {
+	entManager.setRole(sessionContext);
+    }
 
     public void unregOpenflowEntityOwnership(OfEntityManager entManager, NodeId nodeId)
     {

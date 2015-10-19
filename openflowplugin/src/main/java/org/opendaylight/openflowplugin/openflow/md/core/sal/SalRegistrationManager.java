@@ -94,8 +94,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     public void init() {
         LOG.debug("init..");
         sessionListenerRegistration = getSessionManager().registerSessionListener(this);
+	System.out.println("SalRegistrationManager: After call to registerSessionListener");
         getSessionManager().setNotificationProviderService(publishService);
         getSessionManager().setDataBroker(dataService);
+	System.out.println("SalRegistrationManager: After call to setdatabroker");
         LOG.debug("SalRegistrationManager initialized");
     }
 
@@ -106,6 +108,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
+	System.out.println("onSessionAdded before calling ModelDrivenSwitchImpl");
         ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier,
 							 context);
         CompositeObjectRegistration<ModelDrivenSwitch> registration =
@@ -118,7 +121,13 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
                 nodeAdded(ofSwitch, features, nodeRef),
                 context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
+	System.out.println("onSessionAdded before calling reqOpenflowEntityOwnership");
 	ofSwitch.reqOpenflowEntityOwnership(entManager, nodeId, context);
+    }
+
+    @Override
+    public void setRole (SessionContext context) {
+	ofSwitch.setRole(entManager, context);
     }
 
     @Override
@@ -128,6 +137,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
 	NodeId nodeId = nodeIdFromDatapathId(datapathId);
+	System.out.println("onSessionRemoved before calling unregOpenflowEntityOwnership");
 	ofSwitch.unregOpenflowEntityOwnership(entManager, nodeId);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
 

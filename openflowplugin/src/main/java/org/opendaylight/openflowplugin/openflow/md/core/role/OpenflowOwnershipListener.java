@@ -21,6 +21,7 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener {
 
     @Override
     public void ownershipChanged(EntityOwnershipChange ownershipChange) {
+	System.out.println("ownershipChanged: Before calling onRoleChanged");
         this.entManager.onRoleChanged(ownershipChange);
     }
 }
