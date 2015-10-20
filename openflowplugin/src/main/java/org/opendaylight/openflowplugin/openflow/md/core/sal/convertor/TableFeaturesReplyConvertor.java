@@ -34,12 +34,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.mpls.action._case.PopMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.pbb.action._case.PopPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
@@ -396,21 +420,27 @@ public class TableFeaturesReplyConvertor {
 
             if (currInstructionType instanceof GotoTableCase) {
                 builder.setInstruction((new GoToTableCaseBuilder()
+                        .setGoToTable(new GoToTableBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof WriteMetadataCase) {
                 builder.setInstruction((new WriteMetadataCaseBuilder()
+                        .setWriteMetadata(new WriteMetadataBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof WriteActionsCase) {
                 builder.setInstruction((new WriteActionsCaseBuilder()
+                        .setWriteActions(new WriteActionsBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof ApplyActionsCase) {
                 builder.setInstruction((new ApplyActionsCaseBuilder()
+                        .setApplyActions(new ApplyActionsBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof ClearActionsCase) {
                 builder.setInstruction((new ClearActionsCaseBuilder()
+                        .setClearActions(new ClearActionsBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof MeterCase) {
                 builder.setInstruction((new MeterCaseBuilder()
+                        .setMeter(new MeterBuilder().build())
                         .build()));
             } else if (currInstructionType instanceof ExperimenterIdCase) {
                 // TODO: Experimenter instructions are unhandled
@@ -438,24 +468,24 @@ public class TableFeaturesReplyConvertor {
     static {
         Builder<Class<?>, org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> builder = ImmutableMap.builder();
 
-        builder.put(OutputActionCase.class, new OutputActionCaseBuilder().build());
-        builder.put(GroupCase.class, new GroupActionCaseBuilder().build());
-        builder.put(CopyTtlOutCase.class, new CopyTtlOutCaseBuilder().build());
-        builder.put(CopyTtlInCase.class, new CopyTtlInCaseBuilder().build());
-        builder.put(SetMplsTtlCase.class, new SetMplsTtlActionCaseBuilder().build());
-        builder.put(DecMplsTtlCase.class, new DecMplsTtlCaseBuilder().build());
-        builder.put(PushVlanCase.class, new PushVlanActionCaseBuilder().build());
-        builder.put(PopVlanCase.class, new PopVlanActionCaseBuilder().build());
-        builder.put(PushMplsCase.class, new PushMplsActionCaseBuilder().build());
-        builder.put(PopMplsCase.class, new PopMplsActionCaseBuilder().build());
-        builder.put(SetQueueCase.class, new SetQueueActionCaseBuilder().build());
-        builder.put(SetNwTtlCase.class, new SetNwTtlActionCaseBuilder().build());
-        builder.put(DecNwTtlCase.class, new DecNwTtlCaseBuilder().build());
-        builder.put(SetFieldCase.class, new SetFieldCaseBuilder().build());
-        builder.put(PushPbbCase.class, new PushPbbActionCaseBuilder().build());
-        builder.put(PopPbbCase.class, new PopPbbActionCaseBuilder().build());
-        builder.put(SetNwSrcCase.class, new SetNwSrcActionCaseBuilder().build());
-        builder.put(SetNwDstCase.class, new SetNwDstActionCaseBuilder().build());
+        builder.put(OutputActionCase.class, new OutputActionCaseBuilder().setOutputAction(new OutputActionBuilder().build()).build());
+        builder.put(GroupCase.class, new GroupActionCaseBuilder().setGroupAction(new GroupActionBuilder().build()).build());
+        builder.put(CopyTtlOutCase.class, new CopyTtlOutCaseBuilder().setCopyTtlOut(new CopyTtlOutBuilder().build()).build());
+        builder.put(CopyTtlInCase.class, new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build());
+        builder.put(SetMplsTtlCase.class, new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(new SetMplsTtlActionBuilder().build()).build());
+        builder.put(DecMplsTtlCase.class, new DecMplsTtlCaseBuilder().setDecMplsTtl(new DecMplsTtlBuilder().build()).build());
+        builder.put(PushVlanCase.class, new PushVlanActionCaseBuilder().setPushVlanAction(new PushVlanActionBuilder().build()).build());
+        builder.put(PopVlanCase.class, new PopVlanActionCaseBuilder().setPopVlanAction(new PopVlanActionBuilder().build()).build());
+        builder.put(PushMplsCase.class, new PushMplsActionCaseBuilder().setPushMplsAction(new PushMplsActionBuilder().build()).build());
+        builder.put(PopMplsCase.class, new PopMplsActionCaseBuilder().setPopMplsAction(new PopMplsActionBuilder().build()).build());
+        builder.put(SetQueueCase.class, new SetQueueActionCaseBuilder().setSetQueueAction(new SetQueueActionBuilder().build()).build());
+        builder.put(SetNwTtlCase.class, new SetNwTtlActionCaseBuilder().setSetNwTtlAction(new SetNwTtlActionBuilder().build()).build());
+        builder.put(DecNwTtlCase.class, new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build());
+        builder.put(SetFieldCase.class, new SetFieldCaseBuilder().setSetField(new SetFieldBuilder().build()).build());
+        builder.put(PushPbbCase.class, new PushPbbActionCaseBuilder().setPushPbbAction(new PushPbbActionBuilder().build()).build());
+        builder.put(PopPbbCase.class, new PopPbbActionCaseBuilder().setPopPbbAction(new PopPbbActionBuilder().build()).build());
+        builder.put(SetNwSrcCase.class, new SetNwSrcActionCaseBuilder().setSetNwSrcAction(new SetNwSrcActionBuilder().build()).build());
+        builder.put(SetNwDstCase.class, new SetNwDstActionCaseBuilder().setSetNwDstAction(new SetNwDstActionBuilder().build()).build());
 
         OF_TO_SAL_ACTION = builder.build();
     }
