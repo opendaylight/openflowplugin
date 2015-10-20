@@ -1,0 +1,49 @@
+/**
+ * Copyright (c) 2015 Hewlett-Packard Development Company, L.P. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+module pipeline-manager {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:pipeline-manager";
+    prefix "pipeline-manager";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+
+    description
+        "Service definition for pipeline manager";
+
+    revision "2015-09-25" {
+        description
+            "Initial revision";
+    }
+
+    identity pipeline-manager {
+        base config:service-type;
+        config:java-class "org.opendaylight.openflowplugin.applications.pipeline_manager.PipelineManager";
+    }
+
+    identity pipeline-manager-impl {
+        base config:module-type;
+        config:java-name-prefix PipelineManagerProvider;
+        config:provided-service pipeline-manager;
+
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case pipeline-manager-impl {
+            when "/config:modules/config:module/config:type = 'pipeline-manager-impl'";
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+        }
+    }
+}
