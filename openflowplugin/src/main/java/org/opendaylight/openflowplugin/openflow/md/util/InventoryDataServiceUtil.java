@@ -195,7 +195,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     //TODO : create new module openflowplugin-util, move there this method along with TestProviderTransactionUtil#getDataObject
-    private static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction, final InstanceIdentifier<T> identifier) {
+    public static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction, final InstanceIdentifier<T> identifier) {
         Optional<T> optionalData = null;
         try {
             optionalData = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
