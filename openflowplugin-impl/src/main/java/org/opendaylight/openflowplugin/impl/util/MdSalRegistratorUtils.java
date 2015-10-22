@@ -48,5 +48,7 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalRoleService.class, new SalRoleServiceImpl(rpcContext, deviceContext));
+
+        // TODO: experimenter symmetric and multipart message services
     }
 }
