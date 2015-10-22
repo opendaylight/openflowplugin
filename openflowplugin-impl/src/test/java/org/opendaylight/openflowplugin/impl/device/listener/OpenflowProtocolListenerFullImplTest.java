@@ -103,7 +103,8 @@ public class OpenflowProtocolListenerFullImplTest {
         ExperimenterMessage experimenterMessage = new ExperimenterMessageBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onExperimenterMessage(experimenterMessage);
-        // NOOP
+
+        Mockito.verify(deviceReplyProcessor).processExperimenterMessage(Matchers.<ExperimenterMessage>any());
     }
 
     /**

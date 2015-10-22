@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
@@ -303,5 +304,15 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
             MessageTypeKey<?> key, ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor) {
         registryMessageFromOFJAva.put(key, convertor);
         return hireMessageJanitor(key, convertor);
+    }
+
+    @Override
+    public <F extends ExperimenterMessageOfChoice, T extends DataContainer> ConvertorMessageToOFJava<F, T> getMessageConverter(TypeVersionKey<F> key) {
+        return (ConvertorMessageToOFJava<F, T>) registryMessageToOFJAva.get(key);
+    }
+
+    @Override
+    public <F extends DataContainer, P extends AugmentationPath> ConvertorMessageFromOFJava<F, P> getMessageConverter(MessageTypeKey<?> key) {
+        return (ConvertorMessageFromOFJava<F, P>) registryMessageFromOFJAva.get(key);
     }
 }
