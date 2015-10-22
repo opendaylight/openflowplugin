@@ -46,6 +46,7 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
+        // TODO: experimenter symmetric and multipart message services
     }
 
     public static void unregisterServices(final RpcContext rpcContext) throws Exception {
