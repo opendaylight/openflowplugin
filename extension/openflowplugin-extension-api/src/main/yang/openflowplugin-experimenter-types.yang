@@ -1,0 +1,15 @@
+module openflowplugin-experimenter-types {
+    namespace "urn:opendaylight:openflowplugin:experimenter:types";
+    prefix exp-type;
+
+    revision "2015-10-20" {
+        description "Initial revision of experimenter basic types";
+    }
+
+
+    grouping experimenter-core-message {
+        choice experimenter-message-of-choice {
+            // to be augmented by vendors
+        }
+    }
+}
