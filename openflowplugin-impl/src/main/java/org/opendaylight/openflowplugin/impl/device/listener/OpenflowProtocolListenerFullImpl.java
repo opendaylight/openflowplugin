@@ -59,8 +59,8 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     @Override
     public void onExperimenterMessage(final ExperimenterMessage notification) {
-        // TODO Auto-generated method stub
-
+        LOG.trace("Received experiementer message: {}", notification.getClass());
+        deviceReplyProcessor.processExperimenterMessage(notification);
     }
 
     @Override

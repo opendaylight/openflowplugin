@@ -17,8 +17,8 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumpe
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -118,21 +118,21 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
             LOG.debug("my role was chaged from {} to {}", role, newRole);
             role = newRole;
             switch (role) {
-            case BECOMEMASTER:
-                //TODO: implement appropriate action
-                roleManager.manageRoleChange(role);
-                break;
-            case BECOMESLAVE:
-                //TODO: implement appropriate action
-                roleManager.manageRoleChange(role);
-                break;
-            case NOCHANGE:
-                //TODO: implement appropriate action
-                roleManager.manageRoleChange(role);
-                break;
-            default:
-                LOG.warn("role not supported: {}", role);
-                break;
+                case BECOMEMASTER:
+                    //TODO: implement appropriate action
+                    roleManager.manageRoleChange(role);
+                    break;
+                case BECOMESLAVE:
+                    //TODO: implement appropriate action
+                    roleManager.manageRoleChange(role);
+                    break;
+                case NOCHANGE:
+                    //TODO: implement appropriate action
+                    roleManager.manageRoleChange(role);
+                    break;
+                default:
+                    LOG.warn("role not supported: {}", role);
+                    break;
             }
         }
     }
