@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
@@ -22,5 +24,15 @@ public interface ConvertorMessageToOFJava<F extends ExperimenterMessageOfChoice,
      * @param experimenterMessageCase where is vendor's augmentation
      * @return message converted to OFJava-API
      */
-    T convert(F experimenterMessageCase);
+    T convert(F experimenterMessageCase) throws ConversionException;
+
+    /**
+     * @return corresponding experimenter id (vendor id)
+     */
+    ExperimenterId getExperimenterId();
+
+    /**
+     * @return corresponding experimenter message type
+     */
+    long getType();
 }

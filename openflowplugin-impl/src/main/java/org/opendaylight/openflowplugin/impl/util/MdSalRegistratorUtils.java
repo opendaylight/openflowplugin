@@ -13,6 +13,7 @@ import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServi
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalExperimenterMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalGroupServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalMeterServiceImpl;
@@ -20,6 +21,7 @@ import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
@@ -50,5 +52,7 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(SalRoleService.class, new SalRoleServiceImpl(rpcContext, deviceContext));
 
         // TODO: experimenter symmetric and multipart message services
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
+                new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
     }
 }
