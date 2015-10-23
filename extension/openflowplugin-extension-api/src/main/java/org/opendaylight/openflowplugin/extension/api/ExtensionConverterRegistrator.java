@@ -59,15 +59,14 @@ public interface ExtensionConverterRegistrator {
      * @param convertor TO OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
-    ObjectRegistration<ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer>> registerMessageConvertor(
-            TypeVersionKey<? extends ExperimenterMessageOfChoice> key, ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> convertor);
+    <I extends ExperimenterMessageOfChoice, O extends DataContainer> ObjectRegistration<ConvertorMessageToOFJava<I, O>> registerMessageConvertor(
+            TypeVersionKey<I> key, ConvertorMessageToOFJava<I, O> convertor);
 
     /**
      * @param key       consists of: experimenter type, version
      * @param convertor FROM OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
-    ObjectRegistration<ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath>> registerMessageConvertor(
-            MessageTypeKey<?> key,
-            ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor);
+    <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>> registerMessageConvertor(
+            MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor);
 }
