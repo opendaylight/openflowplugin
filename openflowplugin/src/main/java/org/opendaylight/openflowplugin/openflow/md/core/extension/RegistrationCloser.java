@@ -133,8 +133,8 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
      *
      * @param <TO> target type of wrapped convertor
      */
-    public static class RegistrationCloserMessageToOFJava<TO extends DataContainer> extends
-            RegistrationCloser<TypeVersionKey<? extends ExperimenterMessageOfChoice>, ConvertorMessageToOFJava<ExperimenterMessageOfChoice, TO>> {
+    public static class RegistrationCloserMessageToOFJava<TO extends DataContainer, K extends ExperimenterMessageOfChoice> extends
+            RegistrationCloser<TypeVersionKey<K>, ConvertorMessageToOFJava<K, TO>> {
 
         @Override
         public void close() throws Exception {
