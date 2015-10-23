@@ -54,7 +54,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
-import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
@@ -136,7 +135,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final int maxQueueDepth = 25600;
     private final boolean switchFeaturesMandatory;
     private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
-    private ExtensionConverterManager extensionConverterManager;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
@@ -232,7 +230,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager);
-        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterManager);
+        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
@@ -678,5 +676,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
+    }
+
+    @Override
+    public ExtensionConverterProvider getExtensionConverterProvider() {
+        return extensionConverterProvider;
     }
 }

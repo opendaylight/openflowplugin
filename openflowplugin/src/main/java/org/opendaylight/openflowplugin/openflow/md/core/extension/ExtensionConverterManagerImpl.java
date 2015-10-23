@@ -50,8 +50,8 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     private final Map<ConverterExtensionKey<?>, ConvertorToOFJava<?>> registryToOFJAva;
     private final Map<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<? extends Action, ? extends DataContainer>> registryActionToOFJAva;
     private final Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
-    private final Map<TypeVersionKey<?>, ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer>> registryMessageToOFJAva;
-    private final Map<MessageTypeKey<?>, ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath>> registryMessageFromOFJAva;
+    private final Map<TypeVersionKey<?>, ConvertorMessageToOFJava<? extends ExperimenterMessageOfChoice, ? extends DataContainer>> registryMessageToOFJAva;
+    private final Map<MessageTypeKey<?>, ConvertorMessageFromOFJava<? extends ExperimenterDataOfChoice, MessagePath>> registryMessageFromOFJAva;
 
     /**
      * default ctor
@@ -128,10 +128,10 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param extConvertor
      * @return
      */
-    private <TO extends DataContainer> RegistrationCloserMessageToOFJava<TO> hireMessageJanitor(
-            final TypeVersionKey<? extends ExperimenterMessageOfChoice> key,
-            final ConvertorMessageToOFJava<ExperimenterMessageOfChoice, TO> extConvertor) {
-        RegistrationCloserMessageToOFJava<TO> janitor = new RegistrationCloserMessageToOFJava<>();
+    private <TO extends DataContainer, K extends ExperimenterMessageOfChoice> RegistrationCloserMessageToOFJava<TO, K> hireMessageJanitor(
+            final TypeVersionKey<K> key,
+            final ConvertorMessageToOFJava<K, TO> extConvertor) {
+        RegistrationCloserMessageToOFJava<TO, K> janitor = new RegistrationCloserMessageToOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
         janitor.setRegistrator(this);
@@ -293,15 +293,15 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     @Override
-    public ObjectRegistration<ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer>> registerMessageConvertor(
-            TypeVersionKey<? extends ExperimenterMessageOfChoice> key, ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> convertor) {
+    public <I extends ExperimenterMessageOfChoice, O extends DataContainer> ObjectRegistration<ConvertorMessageToOFJava<I, O>> registerMessageConvertor(
+            TypeVersionKey<I> key, ConvertorMessageToOFJava<I, O> convertor) {
         registryMessageToOFJAva.put(key, convertor);
         return hireMessageJanitor(key, convertor);
     }
 
     @Override
-    public ObjectRegistration<ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath>> registerMessageConvertor(
-            MessageTypeKey<?> key, ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor) {
+    public <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>> registerMessageConvertor(
+            MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor) {
         registryMessageFromOFJAva.put(key, convertor);
         return hireMessageJanitor(key, convertor);
     }

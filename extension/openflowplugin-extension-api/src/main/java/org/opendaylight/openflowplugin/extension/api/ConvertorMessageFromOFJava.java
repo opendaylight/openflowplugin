@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -24,5 +25,5 @@ public interface ConvertorMessageFromOFJava<F extends DataContainer, P extends A
      * @param path  in yang schema where a converted value has to be augmented
      * @return message converted to MD-SAL and its type
      */
-    ExperimenterMessageOfChoice convert(F input, P path);
+    ExperimenterMessageOfChoice convert(F input, P path) throws ConversionException;
 }
