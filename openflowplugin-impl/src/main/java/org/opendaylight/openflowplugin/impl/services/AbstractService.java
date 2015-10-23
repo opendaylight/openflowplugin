@@ -82,7 +82,7 @@ abstract class AbstractService<I, O> {
         return messageSpy;
     }
 
-    protected abstract OfHeader buildRequest(Xid xid, I input);
+    protected abstract OfHeader buildRequest(Xid xid, I input) throws Exception;
 
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
