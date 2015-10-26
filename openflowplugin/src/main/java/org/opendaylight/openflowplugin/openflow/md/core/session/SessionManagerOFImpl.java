@@ -96,7 +96,7 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     public void invalidateSessionContext(SwitchSessionKeyOF sessionKey) {
         SessionContext context = getSessionContext(sessionKey);
         if (context == null) {
-            LOG.warn("context for invalidation not found");
+            LOG.info("context for invalidation not found");
         } else {
             synchronized (context) {
                 for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
@@ -112,7 +112,7 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
 
     private void invalidateDeadSessionContext(SessionContext sessionContext) {
         if (sessionContext == null) {
-            LOG.warn("context for invalidation not found");
+            LOG.info("context for invalidation not found");
         } else {
             synchronized (sessionContext) {
                 for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : sessionContext
@@ -158,7 +158,7 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     private static void invalidateAuxiliary(SessionContext context, SwitchConnectionDistinguisher connectionCookie,
                                             boolean disconnect) {
         if (context == null) {
-            LOG.warn("context for invalidation not found");
+            LOG.info("context for invalidation not found");
         } else {
             ConnectionConductor auxiliaryConductor = context.removeAuxiliaryConductor(connectionCookie);
             if (auxiliaryConductor == null) {
