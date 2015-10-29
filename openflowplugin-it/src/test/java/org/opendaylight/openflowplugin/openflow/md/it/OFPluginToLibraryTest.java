@@ -13,14 +13,11 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.util.Deque;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
@@ -67,6 +64,7 @@ public class OFPluginToLibraryTest {
         LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
         switchSim = createSimpleClient();
         scenarioPool = new ThreadPoolLoggingExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, SCENARIO_POOL_QUEUE, "scenario");
+        Thread.sleep(5000L);
     }
 
     /**
