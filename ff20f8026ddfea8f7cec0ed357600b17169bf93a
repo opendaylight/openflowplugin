@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_9331d7a4",
+        "filename": "extension/openflowplugin-extension-api/src/main/yang/sal-experimenter-message.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2015-10-29T23:45:40Z",
+      "side": 1,
+      "message": "can we call it experimenter-message-from-device?\n\nfrom-dev seems confusing",
+      "range": {
+        "startLine": 28,
+        "startChar": 42,
+        "endLine": 28,
+        "endChar": 43
+      },
+      "revId": "ff20f8026ddfea8f7cec0ed357600b17169bf93a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
