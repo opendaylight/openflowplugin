@@ -225,14 +225,14 @@ module opendaylight-action-types {
 
             case copy-ttl-out-case {
                 container copy-ttl-out {
-                    presence "no content action"
+                    presence "no content action";
                 }
              }
 
 
             case copy-ttl-in-case {
                 container copy-ttl-in {
-                    presence "no content action"
+                    presence "no content action";
                 }
              }
 
@@ -349,13 +349,13 @@ module opendaylight-action-types {
 
 	    case strip-vlan-action-case {
                 container strip-vlan-action {
-                    presence "no content action"
+                    presence "no content action";
                 }
              }
 
             case sw-path-action-case {
                 container sw-path-action {
-                    presence "no content action"
+                    presence "no content action";
                 }
              }
          }
