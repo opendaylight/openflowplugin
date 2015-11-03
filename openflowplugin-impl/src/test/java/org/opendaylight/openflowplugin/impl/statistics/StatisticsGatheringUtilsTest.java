@@ -392,15 +392,14 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queuePath = dummyNodePath
+        KeyedInstanceIdentifier<Queue, QueueKey> queuePath = dummyNodePath
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
-                .child(Queue.class, new QueueKey(new QueueId(queueIdValue)))
-                .augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
+                .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
         verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(queuePath),
-                Matchers.any(FlowCapableNodeConnectorQueueStatisticsData.class));
+                Matchers.any(Queue.class));
     }
 
     @Test
