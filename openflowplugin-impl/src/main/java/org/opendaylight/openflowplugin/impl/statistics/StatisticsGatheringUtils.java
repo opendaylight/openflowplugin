@@ -51,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
@@ -259,6 +260,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) {
+        // TODO: clean all queues of all node-connectors before writing up-to-date stats
         final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
         for (final QueueStatisticsUpdate queueStatisticsUpdate : data) {
             for (final QueueIdAndStatisticsMap queueStat : queueStatisticsUpdate.getQueueIdAndStatisticsMap()) {
@@ -273,8 +275,12 @@ public final class StatisticsGatheringUtils {
                             .child(NodeConnector.class, new NodeConnectorKey(queueStat.getNodeConnectorId()))
                             .augmentation(FlowCapableNodeConnector.class)
                             .child(Queue.class, qKey);
-                    final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queueStatIdent = queueIdent.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
-                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
+                    final QueueBuilder queueBuilder = new QueueBuilder()
+                            .setKey(qKey)
+                            .setQueueId(queueStat.getQueueId())
+                            // node-connector-id is already contained in parent node and the port-id here is of incompatible format
+                            .addAugmentation(FlowCapableNodeConnectorQueueStatisticsData.class, statBuild.build());
+                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueIdent, queueBuilder.build());
                 }
             }
         }
