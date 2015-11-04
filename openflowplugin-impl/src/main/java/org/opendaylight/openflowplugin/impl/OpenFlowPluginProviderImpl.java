@@ -73,6 +73,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
+    private boolean isStatisticsPerFlow = false;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -88,6 +89,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
         this.isStatisticsPollingOff = isStatisticsPollingOff;
+    }
+
+    @Override
+    public boolean isStatisticsPerFlow() {
+        return this.isStatisticsPerFlow;
+    }
+
+    @Override
+    public void setIsStatisticsPerFlow(final boolean isStatisticsPerFlow) {
+        this.isStatisticsPerFlow = isStatisticsPerFlow;
     }
 
     private void startSwitchConnections() {
@@ -157,7 +168,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         registerMXBean(messageIntelligenceAgency);
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, isStatisticsPerFlow);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
         connectionManager.setDeviceConnectedHandler(deviceManager);
