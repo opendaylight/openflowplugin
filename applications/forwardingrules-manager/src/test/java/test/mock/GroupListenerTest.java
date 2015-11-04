@@ -40,7 +40,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void addTwoGroupsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -75,7 +75,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void updateGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -107,7 +107,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void removeGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
