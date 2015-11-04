@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 
+import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -137,5 +139,20 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return FlowNodeReconciliation
      */
     public FlowNodeReconciliation getFlowNodeReconciliation();
+
+    /**
+     * Content definition method and prevent code duplicity
+     * @return FlowNodeConnectorInventoryTranslatorImpl
+     */
+    public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
+
+    /**
+     * Returns the config-subsystem/fallback configuration of FRM
+     * @return ForwardingRulesManagerConfig
+     */
+    public ForwardingRulesManagerConfig getConfiguration();
+
+
+
 }
 
