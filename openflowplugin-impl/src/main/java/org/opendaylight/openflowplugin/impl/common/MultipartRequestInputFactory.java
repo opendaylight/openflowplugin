@@ -93,10 +93,26 @@ public final class MultipartRequestInputFactory {
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
                                                                   @Nonnull final MultipartType type) {
-        return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type, ofVersion));
+        return makeMultipartRequestInput(xid, ofVersion, type, makeDefaultEmptyRequestBody(type, ofVersion));
     }
 
 
+    /**
+     * Method validate input and makes {@link MultipartRequestInput} from input values. Method set
+     * a moreRequest marker to false and it creates default empty {@link MultipartRequestBody}
+     * by {@link MultipartType}
+     *
+     * @param xid
+     * @param type
+     * @param ofVersion
+     * @param  body
+     * @return
+     */
+    public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
+                                                                  @Nonnull final MultipartType type,
+                                                                  @Nonnull final MultipartRequestBody body) {
+        return maker(xid, type, ofVersion, false, body);
+    }
 
     /**
      * Method build {@link MultipartRequestInput} from input values. It is private because we would like
@@ -126,24 +142,7 @@ public final class MultipartRequestInputFactory {
             case OFPMPDESC:
                 return new MultipartRequestDescCaseBuilder().build();
             case OFPMPFLOW:
-                MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-                MultipartRequestFlowBuilder multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
-                multipartRequestFlowBuilder.setTableId(OFConstants.OFPTT_ALL);
-                multipartRequestFlowBuilder.setOutPort(OFConstants.OFPP_ANY);
-                multipartRequestFlowBuilder.setOutGroup(OFConstants.OFPG_ANY);
-                multipartRequestFlowBuilder.setCookie(BigInteger.ZERO);
-                multipartRequestFlowBuilder.setCookieMask(BigInteger.ZERO);
-                switch (version) {
-                    case OFConstants.OFP_VERSION_1_0:
-                        MatchV10Builder matchV10Builder = MatchUtil.createEmptyV10Match();
-                        multipartRequestFlowBuilder.setMatchV10(matchV10Builder.build());
-                        break;
-                    case OFConstants.OFP_VERSION_1_3:
-                        multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
-                        break;
-                }
-                multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
-                return multipartRequestFlowCaseBuilder.build();
+                return makeDefaultMultipartRequestFlowCase(version, BigInteger.ZERO, BigInteger.ZERO);
             case OFPMPAGGREGATE:
                 return new MultipartRequestAggregateCaseBuilder().build();
             case OFPMPTABLE:
@@ -199,6 +198,29 @@ public final class MultipartRequestInputFactory {
             default:
                 throw new IllegalArgumentException("Unknown MultipartType " + type);
         }
+    }
+
+    public static MultipartRequestBody makeDefaultMultipartRequestFlowCase(@CheckForNull short version,
+                                                                           @CheckForNull BigInteger cookie,
+                                                                           @CheckForNull BigInteger cookieMask) {
+        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+        MultipartRequestFlowBuilder multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
+        multipartRequestFlowBuilder.setTableId(OFConstants.OFPTT_ALL);
+        multipartRequestFlowBuilder.setOutPort(OFConstants.OFPP_ANY);
+        multipartRequestFlowBuilder.setOutGroup(OFConstants.OFPG_ANY);
+        multipartRequestFlowBuilder.setCookie(cookie);
+        multipartRequestFlowBuilder.setCookieMask(cookieMask);
+        switch (version) {
+            case OFConstants.OFP_VERSION_1_0:
+                MatchV10Builder matchV10Builder = MatchUtil.createEmptyV10Match();
+                multipartRequestFlowBuilder.setMatchV10(matchV10Builder.build());
+                break;
+            case OFConstants.OFP_VERSION_1_3:
+                multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                break;
+        }
+        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
+        return multipartRequestFlowCaseBuilder.build();
     }
 
     private static boolean validationOfMultipartTypeAndRequestBody(@CheckForNull final MultipartType type,

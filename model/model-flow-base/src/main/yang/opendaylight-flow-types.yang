@@ -206,6 +206,9 @@ module opendaylight-flow-types {
             default "false";
         }
 
+        leaf collect-stats {
+            type boolean;
+        }
     }
 
     grouping flow-statistics {

@@ -60,4 +60,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setEntityOwnershipService(EntityOwnershipService entityOwnershipService);
 
+    boolean isStatisticsPerFlow();
+
+    void setIsStatisticsPerFlow(final boolean isStatisticsPerFlow);
+
     }
