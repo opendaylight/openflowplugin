@@ -50,7 +50,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void addTwoFlowsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -91,7 +91,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -133,7 +133,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowScopeTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -177,7 +177,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void deleteFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
