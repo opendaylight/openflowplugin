@@ -59,15 +59,24 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
 
+    //muthu
+    private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
+    //shuva
+    private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
+
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
+
+
     private FlowNodeReconciliation nodeListener;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-                                      final RpcConsumerRegistry rpcRegistry) {
+                                      final RpcConsumerRegistry rpcRegistry,
+                                      final ForwardingRulesManagerConfig config) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -91,6 +100,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
         this.tableListener = new TableForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
+        //shuva
+        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
 
     }
@@ -205,6 +216,15 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeReconciliation getFlowNodeReconciliation() {
         return nodeListener;
+    }
+
+    @Override
+    public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
+        return flowNodeConnectorInventoryTranslatorImpl;
+    }
+    @Override
+    public ForwardingRulesManagerConfig getConfiguration(){
+        return forwardingRulesManagerConfig;
     }
 }
 
