@@ -40,7 +40,7 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void addTwoMetersTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -76,7 +76,7 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void updateMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -109,7 +109,7 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void removeMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
