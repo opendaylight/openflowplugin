@@ -190,6 +190,11 @@ public class FlowConverterTest {
         }
 
         @Override
+        public Boolean isCollectStats() {
+            return null;
+        }
+
+        @Override
         public Integer getPriority() {
             return null;
         }

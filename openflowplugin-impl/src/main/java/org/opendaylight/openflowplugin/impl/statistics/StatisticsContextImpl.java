@@ -29,9 +29,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.PerFlowStatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -49,20 +51,24 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
+    private final boolean isStatisticsPerFlow;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
     private final List<MultipartType> collectingStatType;
 
     private StatisticsGatheringService statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
+    private PerFlowStatisticsGatheringOnTheFlyService perFlowStatisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
-    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
+    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext, final boolean isStatisticsPerFlow) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
+        this.isStatisticsPerFlow = isStatisticsPerFlow;
         devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
+        perFlowStatisticsGatheringOnTheFlyService = new PerFlowStatisticsGatheringOnTheFlyService(this, deviceContext);
 
         final List<MultipartType> statListForCollecting = new ArrayList<>();
         if (devState.isTableStatisticsAvailable()) {
@@ -201,8 +207,12 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
+        StatisticsGatherer statisticsGatherer = statisticsGatheringOnTheFlyService;
+        if (isStatisticsPerFlow) {
+            statisticsGatherer = perFlowStatisticsGatheringOnTheFlyService;
+        }
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringOnTheFlyService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
+                statisticsGatherer, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
