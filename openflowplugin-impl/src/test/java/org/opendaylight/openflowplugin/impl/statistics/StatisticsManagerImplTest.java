@@ -169,7 +169,7 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelUp1() throws Exception {
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true, false);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {

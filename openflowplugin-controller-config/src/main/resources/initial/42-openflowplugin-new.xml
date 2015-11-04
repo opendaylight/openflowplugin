@@ -90,6 +90,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                     <switch-features-mandatory>false</switch-features-mandatory>
                     <global-notification-quota>64000</global-notification-quota>
                     <is-statistics-polling-off>false</is-statistics-polling-off>
+                    <is-statistics-per-flow>false</is-statistics-per-flow>
                 </module>
             </modules>
 

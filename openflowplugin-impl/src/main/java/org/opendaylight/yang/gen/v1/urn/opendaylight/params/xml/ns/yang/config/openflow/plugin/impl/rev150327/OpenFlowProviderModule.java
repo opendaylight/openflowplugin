@@ -38,6 +38,7 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         openflowPluginProvider.setIsStatisticsPollingOff(getIsStatisticsPollingOff());
         openflowPluginProvider.setEntityOwnershipService(getEntityOwnershipServiceDependency());
         openflowPluginProvider.setIsStatisticsRpcEnabled(getIsStatisticsRpcEnabled());
+        openflowPluginProvider.setIsStatisticsPerFlow(getIsStatisticsPerFlow());
 
         openflowPluginProvider.initialize();
 
