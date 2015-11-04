@@ -63,6 +63,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private Semaphore workModeGuard = new Semaphore(1, true);
     private boolean shuttingDownStatisticsPolling;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    private boolean isStatisticsPerFlow;
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -74,9 +75,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling, final boolean isStatsticsPerFlow) {
         this(rpcProviderRegistry);
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        this.isStatisticsPerFlow = isStatsticsPerFlow;
     }
 
     @Override
@@ -97,7 +99,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         LOG.info("Starting Statistics for master role for node:{}", deviceContext.getDeviceState().getNodeId());
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, isStatisticsPerFlow);
         deviceContext.addDeviceContextClosedHandler(this);
         final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {

@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -45,6 +46,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -61,6 +63,7 @@ import java.util.concurrent.Future;
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
+    private static final BigInteger collectStatsCookie = new BigInteger("9223372036854775808" /* 1 << 63 */);
 
     private final DataBroker dataBroker;
 
@@ -194,6 +197,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             builder.setFlowRef(new FlowRef(identifier));
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+            if (addDataObj.isCollectStats() != null) {
+                if (addDataObj.isCollectStats()) {
+                    builder.setCookie(new FlowCookie(builder.getCookie().getValue().or(collectStatsCookie)));
+                } else {
+                    builder.setCookie(new FlowCookie(builder.getCookie().getValue().and(collectStatsCookie.not())));
+                }
+            }
             provider.getSalFlowService().addFlow(builder.build());
         }
     }

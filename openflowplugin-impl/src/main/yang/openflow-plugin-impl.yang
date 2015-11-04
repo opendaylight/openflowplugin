@@ -101,6 +101,10 @@ module openflow-plugin-provider-impl {
                 type boolean;
                 default "false";
             }
+            leaf is-statistics-per-flow {
+                type boolean;
+                default "false";
+            }
         }
 
     }
