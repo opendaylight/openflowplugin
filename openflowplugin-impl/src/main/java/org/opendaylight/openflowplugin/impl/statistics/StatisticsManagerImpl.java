@@ -54,9 +54,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private static final long basicTimerDelay = 3000;
-    private static long currentTimerDelay = basicTimerDelay;
-    private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
+    private long basicTimerDelay = 3000;
+    private long currentTimerDelay = basicTimerDelay;
+    private final long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private Semaphore workModeGuard = new Semaphore(1, true);
@@ -73,9 +73,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling,
+                                 long basicTimerDelay) {
         this(rpcProviderRegistry);
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        this.basicTimerDelay = basicTimerDelay;
     }
 
     @Override
@@ -183,7 +185,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @VisibleForTesting
-    protected static long getCurrentTimerDelay() {
+    protected long getCurrentTimerDelay() {
         return currentTimerDelay;
     }
 

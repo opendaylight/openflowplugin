@@ -57,4 +57,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff);
 
+    long getStatisticsPollingInterval();
+
+    void setStatisticsPollingInterval(final long statisticsPollingInterval);
     }

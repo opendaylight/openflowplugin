@@ -169,7 +169,7 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelUp1() throws Exception {
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true, 3000);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -344,8 +344,8 @@ public class StatisticsManagerImplTest {
         when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(2000L, 4000L);
 
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(3000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(3000L, statisticsManager.getCurrentTimerDelay());
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(6000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(6000L, statisticsManager.getCurrentTimerDelay());
     }
 }
