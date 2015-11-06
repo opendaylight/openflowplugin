@@ -67,4 +67,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
      * @param isStatisticsRpcEnabled
      */
     void setIsStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
+
+    long getStatisticsPollingInterval();
+
+    void setStatisticsPollingInterval(final long statisticsPollingInterval);
 }

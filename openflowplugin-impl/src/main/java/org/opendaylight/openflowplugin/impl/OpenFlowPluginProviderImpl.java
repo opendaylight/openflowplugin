@@ -80,6 +80,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private long statisticsPollingInterval = 3000;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -95,6 +96,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
         this.isStatisticsPollingOff = isStatisticsPollingOff;
+    }
+
+    @Override
+    public long getStatisticsPollingInterval() {
+        return this.statisticsPollingInterval;
+    }
+
+    @Override
+    public void setStatisticsPollingInterval(long statisticsPollingInterval) {
+        this.statisticsPollingInterval = statisticsPollingInterval;
     }
 
     private void startSwitchConnections() {
@@ -172,7 +183,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff,
+                statisticsPollingInterval);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
         // CM -> DM -> Role -> SM -> RPC -> DM
