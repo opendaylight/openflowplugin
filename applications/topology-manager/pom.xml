@@ -74,8 +74,8 @@
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+    <connection>scm:git:ssh://review.inocybe.com:29418/odl/openflowplugin.git</connection>
+    <developerConnection>scm:git:ssh://review.inocybe.com:29418/odl/openflowplugin.git</developerConnection>
     <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
     <tag>HEAD</tag>
   </scm>

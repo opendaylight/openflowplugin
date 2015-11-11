@@ -312,8 +312,8 @@
   </profiles>
 
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
+    <connection>scm:git:ssh://review.inocybe.com:29418/odl/controller.git</connection>
+    <developerConnection>scm:git:ssh://review.inocybe.com:29418/odl/controller.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:Main</url>
   </scm>

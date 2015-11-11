@@ -10,8 +10,8 @@
     <artifactId>drop-test-karaf</artifactId>
     <packaging>bundle</packaging>
     <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+        <connection>scm:git:ssh://review.inocybe.com:29418/odl/openflowplugin.git</connection>
+        <developerConnection>scm:git:ssh://review.inocybe.com:29418/odl/openflowplugin.git</developerConnection>
     </scm>
     <dependencies>
         <dependency>
