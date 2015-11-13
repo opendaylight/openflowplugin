@@ -9,14 +9,19 @@ package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * registration place for message converters provided by vendor extension
@@ -48,4 +53,21 @@ public interface ExtensionConverterRegistrator {
      */
     ObjectRegistration<ConvertorActionFromOFJava<Action, ActionPath>> registerActionConvertor(
             ActionSerializerKey<?> key, ConvertorActionFromOFJava<Action, ActionPath> convertor);
+
+    /**
+     * @param key       consists of: experimenter type, version
+     * @param convertor TO OFJava (suitable for both: symmetric and multipart)
+     * @return closeable registration
+     */
+    ObjectRegistration<ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer>> registerMessageConvertor(
+            TypeVersionKey<? extends ExperimenterMessageOfChoice> key, ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> convertor);
+
+    /**
+     * @param key       consists of: experimenter type, version
+     * @param convertor FROM OFJava (suitable for both: symmetric and multipart)
+     * @return closeable registration
+     */
+    ObjectRegistration<ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath>> registerMessageConvertor(
+            MessageTypeKey<?> key,
+            ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor);
 }
