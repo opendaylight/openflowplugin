@@ -98,6 +98,7 @@
         <!--<module>features</module>-->
         <!-- experimental apps -->
         <module>bulk-o-matic</module>
+        <module>openflow-benchmark</module>
     </modules>
 
 </project>
