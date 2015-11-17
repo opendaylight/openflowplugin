@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_17263817",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/Ipv4SubnetUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2774
+      },
+      "writtenOn": "2015-11-17T07:21:45Z",
+      "side": 1,
+      "message": "These are already in the Ipv4Adress and Ipv4Netmask constructor, why are we repeating them? At the very least we should reuse those.\n\nAlso, if you run the address past the normal java parser(s) it will do equivalent checks so you do not need to re-check versus regexps.",
+      "revId": "5eac98086e772e9e291df405c701f28217a6a72f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_7711acab",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/Ipv4SubnetUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 2774
+      },
+      "writtenOn": "2015-11-17T07:21:45Z",
+      "side": 1,
+      "message": "Does this work on addresses larger than 0x7F FF FF FF? Java int is signed so I think that you have to upcast to long int for comparison.",
+      "revId": "5eac98086e772e9e291df405c701f28217a6a72f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
