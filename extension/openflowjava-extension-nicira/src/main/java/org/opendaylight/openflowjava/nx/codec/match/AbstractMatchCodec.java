@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -18,12 +19,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
-public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OFDeserializer<MatchEntry> {
+public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OFDeserializer<MatchEntry>,
+        HeaderDeserializer<MatchEntry> {
 
     private NxmHeader headerWithMask;
     private NxmHeader headerWithoutMask;
 
-    protected MatchEntryBuilder deserializeHeader(ByteBuf message) {
+    public MatchEntry deserializeHeader(ByteBuf rawMessage) {
+        return deserializeHeaderBuilder(rawMessage).build();
+    }
+
+    protected MatchEntryBuilder deserializeHeaderBuilder(ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
