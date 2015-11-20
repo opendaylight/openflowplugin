@@ -199,12 +199,12 @@ public class OFPluginFlowTest {
         ScenarioFactory.appendPostHandshakeScenario(handshakeScenario, true);
         WaitForMessageEvent flowModEvent = new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes(
-                        "04 0e 00 58 00 00 00 03 00 00 00 00 00 00 00 0a "
-                        + "00 00 00 00 00 00 00 0a 00 00 00 00 00 00 80 00 "
-                        + "ff ff ff ff ff ff ff ff ff ff ff ff 00 01 00 00 "
-                        + "00 01 00 16 80 00 0a 02 08 00 80 00 19 08 0a 00 "
-                        + "00 01 ff ff ff 00 00 00 00 04 00 10 00 00 00 00 "
-                        + "00 18 00 08 00 00 00 00"));
+                        "04 0e 00 58 00 00 00 03 00 00 00 00 00 00 00 0a 00 "
+                      + "00 00 00 00 00 00 0a 00 00 00 00 00 00 80 00 "
+                      + "ff ff ff ff ff ff ff ff ff ff ff ff 00 01 00 00 "
+                      + "00 01 00 12 80 00 0a 02 08 00 80 00 18 04 0a 00 "
+                      + "00 01 00 00 00 00 00 00 00 04 00 10 00 00 00 00 "
+                      + "00 18 00 08 00 00 00 00"));
         handshakeScenario.addFirst(flowModEvent);
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
@@ -279,7 +279,7 @@ public class OFPluginFlowTest {
     private static MatchBuilder createMatch1() {
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/24");
+        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/32");
         ipv4Match.setIpv4Destination(prefix);
         Ipv4Match i4m = ipv4Match.build();
         match.setLayer3Match(i4m);
