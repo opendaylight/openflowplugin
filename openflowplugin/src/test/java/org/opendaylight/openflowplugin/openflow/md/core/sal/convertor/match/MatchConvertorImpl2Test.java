@@ -681,4 +681,52 @@ public class MatchConvertorImpl2Test {
         Assert.assertArrayEquals("Wrong tunnel id mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 14},
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getMask());
     }
+
+   /**
+    * Test
+    * {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+    */
+    @Test
+    public void testIpv4MatchConversionWithValidDestIP() {
+       MatchBuilder builder = new MatchBuilder();
+       Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+       ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/32"));
+       ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.10.16.0/20"));
+       builder.setLayer3Match(ipv4MatchBuilder.build());
+       Match match = builder.build();
+       String expectedErrorMessage = "Current yangtools are incapable of complying to the Yang RFC.Invalid argument given in IP address field: 10.0.0.2/20";
+       List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+       Assert.assertEquals("Wrong entries size", 2, entries.size());
+
+       MatchEntry entry = entries.get(0);
+       checkEntryHeader(entry, Ipv4Src.class, false);
+       Assert.assertEquals("Wrong ipv4 src", "10.0.0.1",
+                 ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getIpv4Address().getValue());
+       entry = entries.get(1);
+       checkEntryHeader(entry, Ipv4Dst.class, true);
+       Assert.assertEquals("Wrong ipv4 dst", "10.10.16.0",
+             ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
+       }
+
+     /**
+      * Test
+      * {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+      */
+       @Test
+        public void testIpv4MatchConversionWithInValidDestIP() {
+           MatchBuilder builder = new MatchBuilder();
+           Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+           ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/32"));
+           ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.10.17.0/20"));
+           builder.setLayer3Match(ipv4MatchBuilder.build());
+           
+           Match match = builder.build();
+           String expectedErrorMessage = "Current yangtools are incapable of complying to the Yang RFC.Invalid argument given in IP address field: 10.10.17.0/20";
+           try {
+                List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+            } catch (IllegalArgumentException e) {
+                    Assert.assertEquals(expectedErrorMessage, e.getMessage());
+             }
+           }
+
 }

@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Ipv4SubnetUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -274,6 +275,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;
     private static final String NO_IP = "0.0.0.0/0";
+    private static final String IPV4_PREFIX_LENGTH = "32";
 
     @Override
     public List<MatchEntry> convert(
@@ -403,6 +405,26 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 }
                 if (ipv4Match.getIpv4Destination() != null) {
                     Ipv4Prefix ipv4Prefix = ipv4Match.getIpv4Destination();
+
+                     /*
+                      * Added for bug 3050 : Discard the request if
+                      * the ip address in flow request is not a canonical format
+                      * ip address prefix; this is in order to keep the data in
+                      * config and operational stores same, so that the entries
+                      * can can expire etc.. The canonical format of an IPv4
+                      * prefix has all bits of the IPv4 address set to zero that
+                      * are not part of the IPv4 prefix.
+                      */
+			if (!checkIfPrefixValueIsMax(ipv4Prefix)) {
+                                String ipv4AddressStr = ipv4Prefix.getValue();
+                                Ipv4SubnetUtils ipv4SubnetUtils = new Ipv4SubnetUtils();
+                                if (!ipv4SubnetUtils.checkIfValidIP(ipv4AddressStr)) {
+                                    throw new IllegalArgumentException(
+                                       "Current yangtools are incapable of complying to the Yang RFC."
+                                        + "Invalid argument given in IP address field: "
+                                        + ipv4AddressStr);
+				}
+			}
                     MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
                     matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
                     matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
@@ -905,6 +927,11 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             return maskBytes;
         }
         return null;
+    }
+
+   private static boolean checkIfPrefixValueIsMax(final Ipv4Prefix ipv4Prefix) {
+        String[] ipv4PrefixTokens = ipv4Prefix.getValue().split("/");
+        return (ipv4PrefixTokens[1].equalsIgnoreCase(IPV4_PREFIX_LENGTH));
     }
 
     /**
