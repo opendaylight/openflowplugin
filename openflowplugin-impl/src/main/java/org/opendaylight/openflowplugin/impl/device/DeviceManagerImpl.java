@@ -132,7 +132,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final Set<DeviceContext> deviceContexts = Sets.newConcurrentHashSet();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
-    private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
+    private final long barrierNanos;
     private final int maxQueueDepth = 25600;
     private final boolean switchFeaturesMandatory;
     private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
@@ -141,7 +141,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
                              final boolean switchFeaturesMandatory,
-                             final long globalNotificationQuota) {
+                             final long globalNotificationQuota,
+                             final long barrierMillis) {
+        this.barrierNanos = TimeUnit.MILLISECONDS.toNanos(barrierMillis);
         this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);

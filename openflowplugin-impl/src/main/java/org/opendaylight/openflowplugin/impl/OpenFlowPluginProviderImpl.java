@@ -79,6 +79,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
+    private long barrierDuration = 500;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -94,6 +95,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
         this.isStatisticsPollingOff = isStatisticsPollingOff;
+    }
+
+    @Override
+    public long getBarrierDuration() {
+        return barrierDuration;
+    }
+
+    @Override
+    public void setBarrierDuration(final long barrierDuration) {
+        this.barrierDuration = barrierDuration;
     }
 
     private void startSwitchConnections() {
@@ -167,7 +178,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota, barrierDuration);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService);

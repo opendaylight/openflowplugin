@@ -118,6 +118,7 @@ public class DeviceManagerImplTest {
 
     private static final boolean TEST_VALUE_SWITCH_FEATURE_MANDATORY = true;
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
+    private static final long TEST_VALUE_BARRIER_DURATION = 500l;
     private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
     private static final Short DUMMY_TABLE_ID = 1;
@@ -187,7 +188,7 @@ public class DeviceManagerImplTest {
 
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
         DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_SWITCH_FEATURE_MANDATORY,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, TEST_VALUE_BARRIER_DURATION);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;

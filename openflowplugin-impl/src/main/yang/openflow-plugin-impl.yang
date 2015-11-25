@@ -95,6 +95,10 @@ module openflow-plugin-provider-impl {
                 type boolean;
                 default "false";
             }
+            leaf barrier-duration {
+                 type uint32;
+                 default "500";
+            }
         }
 
     }
