@@ -48,8 +48,12 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
@@ -84,8 +88,12 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.N
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NsiConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NspConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.RegConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpDstConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpSrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4SrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIdConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.UdpDstConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.UdpSrcConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
@@ -218,6 +226,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,6 +274,10 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private final static Nshc4Convertor NSC4_CONVERTOR = new Nshc4Convertor();
     private final static TunIPv4SrcConvertor TUN_IPV4_SRC_CONVERTOR = new TunIPv4SrcConvertor();
     private final static TunIPv4DstConvertor TUN_IPV4_DST_CONVERTOR = new TunIPv4DstConvertor();
+    private final static TcpSrcConvertor TCP_SRC_CONVERTOR = new TcpSrcConvertor();
+    private final static TcpDstConvertor TCP_DST_CONVERTOR = new TcpDstConvertor();
+    private final static UdpSrcConvertor UDP_SRC_CONVERTOR = new UdpSrcConvertor();
+    private final static UdpDstConvertor UDP_DST_CONVERTOR = new UdpDstConvertor();
 
     @Override
     public void close() {
@@ -468,6 +484,14 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4SrcCodec.SERIALIZER_KEY, TUN_IPV4_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxTunIpv4DstKey.class, EncodeConstants.OF13_VERSION_ID), TUN_IPV4_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4DstCodec.SERIALIZER_KEY, TUN_IPV4_DST_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfTcpSrcKey.class, EncodeConstants.OF13_VERSION_ID), TCP_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(TcpSrcCodec.SERIALIZER_KEY, TCP_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfTcpDstKey.class, EncodeConstants.OF13_VERSION_ID), TCP_DST_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(TcpDstCodec.SERIALIZER_KEY, TCP_DST_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfUdpSrcKey.class, EncodeConstants.OF13_VERSION_ID), UDP_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(UdpSrcCodec.SERIALIZER_KEY, UDP_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfUdpDstKey.class, EncodeConstants.OF13_VERSION_ID), UDP_DST_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(UdpDstCodec.SERIALIZER_KEY, UDP_DST_CONVERTOR));
     }
 
     /**

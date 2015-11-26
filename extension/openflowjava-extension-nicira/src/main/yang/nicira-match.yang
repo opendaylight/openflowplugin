@@ -3,13 +3,14 @@ module nicira-match {
 
     namespace "urn:opendaylight:openflowjava:nx:match";
     prefix "nicira-match";
-    
+
     import openflow-extensible-match {prefix ofoxm;}
     import openflow-types {prefix oft;}
     import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
 
-    description 
+    description
         "Nicira openflow extensions of match.";
 
     revision "2014-04-21" {
@@ -93,6 +94,18 @@ module nicira-match {
         base ofoxm:match-field;
     }
     identity nxm-nx-nshc-4 {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-tcp-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-tcp-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-udp-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-udp-dst {
         base ofoxm:match-field;
     }
 
@@ -223,6 +236,46 @@ module nicira-match {
             uses ofj-nxm-nx-match-nshc-grouping;
         }
     }
+    grouping ofj-nxm-of-match-tcp-src-grouping {
+        container tcp-src-values {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-tcp-dst-grouping {
+        container tcp-dst-values {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+     grouping ofj-nxm-of-match-udp-src-grouping {
+        container udp-src-values {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-udp-dst-grouping {
+        container udp-dst-values {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
@@ -280,6 +333,18 @@ module nicira-match {
         }
         case nshc-4-case-value {
             uses ofj-nxm-nx-match-nshc-4-grouping;
+        }
+        case tcp-src-case-value {
+            uses ofj-nxm-of-match-tcp-src-grouping;
+        }
+        case tcp-dst-case-value {
+            uses ofj-nxm-of-match-tcp-dst-grouping;
+        }
+        case udp-src-case-value {
+            uses ofj-nxm-of-match-udp-src-grouping;
+        }
+        case udp-dst-case-value {
+            uses ofj-nxm-of-match-udp-dst-grouping;
         }
 
     }

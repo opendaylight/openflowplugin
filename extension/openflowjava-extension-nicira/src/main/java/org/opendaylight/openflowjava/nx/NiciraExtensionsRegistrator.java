@@ -43,9 +43,13 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
 
 import com.google.common.base.Preconditions;
 
@@ -135,6 +139,14 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
         registrator.registerMatchEntrySerializer(TunIpv4SrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
         registrator.registerMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(TcpSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.TCP_SRC_CODEC);
+        registrator.registerMatchEntryDeserializer(TcpSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TCP_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(TcpDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.TCP_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(TcpDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TCP_DST_CODEC);
+        registrator.registerMatchEntrySerializer(UdpSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.UDP_SRC_CODEC);
+        registrator.registerMatchEntryDeserializer(UdpSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.UDP_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(UdpDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.UDP_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(UdpDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.UDP_DST_CODEC);
     }
 
     public void unregisterExtensions() {
@@ -211,6 +223,14 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(TunIpv4SrcCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(TcpSrcCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(TcpSrcCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(TcpDstCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(TcpDstCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(UdpSrcCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(UdpSrcCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(UdpDstCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(UdpDstCodec.DESERIALIZER_KEY);
     }
 
     @Override

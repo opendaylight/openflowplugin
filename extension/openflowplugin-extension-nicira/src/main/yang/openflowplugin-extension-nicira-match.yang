@@ -97,6 +97,18 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-nshc-4-key {
         base ext-gen:extension-key;
     }
+    identity nxm-of-tcp-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-tcp-dst-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-udp-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-udp-dst-key {
+        base ext-gen:extension-key;
+    }
     grouping ipv4-address-grouping {
         leaf ipv4-address {
             type inet:ipv4-address;
@@ -149,6 +161,46 @@ module openflowplugin-extension-nicira-match {
         container nxm-of-arp-spa {
             description "Prereqs: NXM_OF_ETH_TYPE must match either 0x0806 or 0x8035.";
             uses ipv4-address-grouping;
+        }
+    }
+    grouping nxm-of-tcp-src-grouping {
+        container nxm-of-tcp-src {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping nxm-of-tcp-dst-grouping {
+        container nxm-of-tcp-dst {
+            leaf port {
+                        type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping nxm-of-udp-src-grouping {
+        container nxm-of-udp-src {
+            leaf port {
+               type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping nxm-of-udp-dst-grouping {
+        container nxm-of-udp-dst {
+            leaf port {
+                        type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
         }
     }
     grouping nxm-of-arp-tpa-grouping {
@@ -247,8 +299,12 @@ module openflowplugin-extension-nicira-match {
         uses nxm-nx-nshc-2-grouping;
         uses nxm-nx-nshc-3-grouping;
         uses nxm-nx-nshc-4-grouping;
+        uses nxm-of-tcp-src-grouping;
+        uses nxm-of-tcp-dst-grouping;
+        uses nxm-of-udp-src-grouping;
+        uses nxm-of-udp-dst-grouping;
     }
-    
+
     // MATCH augmentations
     // RPCS
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {

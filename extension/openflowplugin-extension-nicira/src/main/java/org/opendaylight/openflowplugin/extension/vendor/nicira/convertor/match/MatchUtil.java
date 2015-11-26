@@ -48,6 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcGrouping;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
@@ -95,6 +99,15 @@ public class MatchUtil {
             NxmNxNshc3Grouping.class);
     public final static GroupingResolver<NxmNxNshc4Grouping, Extension> nsc4Resolver = new GroupingResolver<>(
             NxmNxNshc4Grouping.class);
+    public final static GroupingResolver<NxmOfTcpSrcGrouping, Extension> tcpSrcResolver = new GroupingResolver<>(
+            NxmOfTcpSrcGrouping.class);
+    public final static GroupingResolver<NxmOfTcpDstGrouping, Extension> tcpDstResolver = new GroupingResolver<>(
+            NxmOfTcpDstGrouping.class);
+    public final static GroupingResolver<NxmOfUdpSrcGrouping, Extension> udpSrcResolver = new GroupingResolver<>(
+            NxmOfUdpSrcGrouping.class);
+    public final static GroupingResolver<NxmOfUdpDstGrouping, Extension> udpDstResolver = new GroupingResolver<>(
+            NxmOfUdpDstGrouping.class);
+
 
     static {
         augmentationsOfExtension.add(NxAugMatchRpcAddFlow.class);
@@ -123,6 +136,10 @@ public class MatchUtil {
         nsc2Resolver.setAugmentations(augmentationsOfExtension);
         nsc3Resolver.setAugmentations(augmentationsOfExtension);
         nsc4Resolver.setAugmentations(augmentationsOfExtension);
+        tcpSrcResolver.setAugmentations(augmentationsOfExtension);
+        tcpDstResolver.setAugmentations(augmentationsOfExtension);
+        udpSrcResolver.setAugmentations(augmentationsOfExtension);
+        udpDstResolver.setAugmentations(augmentationsOfExtension);
 
     }
 
