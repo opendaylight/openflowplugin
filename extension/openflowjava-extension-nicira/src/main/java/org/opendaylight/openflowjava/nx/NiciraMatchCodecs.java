@@ -29,9 +29,13 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
 
 /**
  * @author msunal
@@ -64,4 +68,8 @@ public class NiciraMatchCodecs {
     public static final Nshc2Codec NSC2_CODEC = new Nshc2Codec();
     public static final Nshc3Codec NSC3_CODEC = new Nshc3Codec();
     public static final Nshc4Codec NSC4_CODEC = new Nshc4Codec();
+    public static final TcpSrcCodec TCP_SRC_CODEC = new TcpSrcCodec();
+    public static final TcpDstCodec TCP_DST_CODEC = new TcpDstCodec();
+    public static final UdpSrcCodec UDP_SRC_CODEC = new UdpSrcCodec();
+    public static final UdpDstCodec UDP_DST_CODEC = new UdpDstCodec();
 }
