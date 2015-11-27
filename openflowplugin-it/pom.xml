@@ -173,11 +173,6 @@
           <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
-            <artifactId>antlr4-runtime-osgi-nohead</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>logback-config</artifactId>
           <scope>test</scope>

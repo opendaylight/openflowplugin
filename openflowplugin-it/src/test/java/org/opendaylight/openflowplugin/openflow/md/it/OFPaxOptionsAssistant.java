@@ -126,7 +126,7 @@ public abstract class OFPaxOptionsAssistant {
 
                 mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
                 mavenBundle(OFPLUGIN_APPS, "topology-lldp-discovery").versionAsInProject(),
-                mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
+                mavenBundle("org.antlr", "antlr4-runtime").versionAsInProject());
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class OFPaxOptionsAssistant {
                 TestHelper.junitAndMockitoBundles(),
                 TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
-                mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
+                mavenBundle("org.antlr", "antlr4-runtime").versionAsInProject());
     }
 
     private static Option mdSalImplBundles() {
