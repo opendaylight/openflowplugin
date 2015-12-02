@@ -25,15 +25,15 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p/>
+ * <p>
  * DeviceState is builded from {@link FeaturesReply} and {@link NodeId}. Both values are inside
  * {@link org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext}
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p/>
+ *         <p>
  *         Created: Mar 29, 2015
  */
-class DeviceStateImpl implements DeviceState {
+public class DeviceStateImpl implements DeviceState {
 
     private final GetFeaturesOutput featuresOutput;
     private final NodeId nodeId;
