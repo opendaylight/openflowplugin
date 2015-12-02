@@ -45,6 +45,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
@@ -175,6 +176,7 @@ public class DeviceManagerImplTest {
     private DeviceManagerImpl prepareDeviceManager(boolean withException) {
         DataBroker mockedDataBroker = mock(DataBroker.class);
         WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
+        final ReadOnlyTransaction mockedReadOnlyTransaction = mock(ReadOnlyTransaction.class);
 
         BindingTransactionChain mockedTxChain = mock(BindingTransactionChain.class);
         WriteTransaction mockedWTx = mock(WriteTransaction.class);
@@ -182,6 +184,7 @@ public class DeviceManagerImplTest {
         when(mockedDataBroker.createTransactionChain(any(TransactionChainListener.class))).thenReturn
                 (mockedTxChain);
         when(mockedDataBroker.newWriteOnlyTransaction()).thenReturn(mockedWriteTransaction);
+        when(mockedDataBroker.newReadOnlyTransaction()).thenReturn(mockedReadOnlyTransaction);
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
