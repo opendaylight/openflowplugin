@@ -32,6 +32,12 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
 
 /**
  * @author msunal
@@ -64,4 +70,10 @@ public class NiciraMatchCodecs {
     public static final Nshc2Codec NSC2_CODEC = new Nshc2Codec();
     public static final Nshc3Codec NSC3_CODEC = new Nshc3Codec();
     public static final Nshc4Codec NSC4_CODEC = new Nshc4Codec();
+    public static final EncapEthTypeCodec ENCAP_ETH_TYPE_CODEC = new EncapEthTypeCodec();
+    public static final EncapEthSrcCodec ENCAP_ETH_SRC_CODEC = new EncapEthSrcCodec();
+    public static final EncapEthDstCodec ENCAP_ETH_DST_CODEC = new EncapEthDstCodec();
+    public static final NshMdtypeCodec NSH_MDTYPE_CODEC = new NshMdtypeCodec();
+    public static final NshNpCodec NSH_NP_CODEC = new NshNpCodec();
+    public static final TunGpeNpCodec TUN_GPE_NP_CODEC = new TunGpeNpCodec();
 }

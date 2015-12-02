@@ -97,6 +97,24 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-nshc-4-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-encap-eth-type-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-encap-eth-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-encap-eth-dst-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsh-mdtype-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsh-np-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-tun-gpe-np-key {
+        base ext-gen:extension-key;
+    }
     grouping ipv4-address-grouping {
         leaf ipv4-address {
             type inet:ipv4-address;
@@ -226,6 +244,44 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-encap-eth-type-grouping {
+        container nxm-nx-encap-eth-type {
+            leaf value {
+                type uint16;
+            }
+        }
+    }
+    grouping nxm-nx-encap-eth-src-grouping {
+        container nxm-nx-encap-eth-src {
+            uses mac-address-grouping;
+        }
+    }
+    grouping nxm-nx-encap-eth-dst-grouping {
+        container nxm-nx-encap-eth-dst {
+            uses mac-address-grouping;
+        }
+    }
+    grouping nxm-nx-nsh-mdtype-grouping {
+        container nxm-nx-nsh-mdtype {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
+    grouping nxm-nx-nsh-np-grouping {
+        container nxm-nx-nsh-np {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
+    grouping nxm-nx-tun-gpe-np-grouping {
+        container nxm-nx-tun-gpe-np {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
 
     
     grouping all-matches-grouping {
@@ -247,6 +303,12 @@ module openflowplugin-extension-nicira-match {
         uses nxm-nx-nshc-2-grouping;
         uses nxm-nx-nshc-3-grouping;
         uses nxm-nx-nshc-4-grouping;
+        uses nxm-nx-encap-eth-type-grouping;
+        uses nxm-nx-encap-eth-src-grouping;
+        uses nxm-nx-encap-eth-dst-grouping;
+        uses nxm-nx-nsh-mdtype-grouping;
+        uses nxm-nx-nsh-np-grouping;
+        uses nxm-nx-tun-gpe-np-grouping;
     }
     
     // MATCH augmentations

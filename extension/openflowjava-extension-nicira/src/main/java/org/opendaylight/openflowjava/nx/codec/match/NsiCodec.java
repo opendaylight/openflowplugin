@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 public class NsiCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 1;
-    private static final int NXM_FIELD_CODE = 38;
+    private static final int NXM_FIELD_CODE = 108;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNsi> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
             EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNsi.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(

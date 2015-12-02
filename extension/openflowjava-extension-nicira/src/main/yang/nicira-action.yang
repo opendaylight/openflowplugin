@@ -30,10 +30,16 @@ module nicira-action {
     identity nxm-nx-multipath {
         base ofaction:experimenter-action-sub-type;
     }
-    identity nxm-nx-set-nsp {
+    identity nxm-nx-push-nsh {
         base ofaction:experimenter-action-sub-type;
     }
-    identity nxm-nx-set-nsi {
+    identity nxm-nx-pop-nsh {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-push-eth {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-pop-eth {
         base ofaction:experimenter-action-sub-type;
     }
 
@@ -170,55 +176,32 @@ module nicira-action {
         }
     }
 
-    grouping ofj-nx-action-set-nsp-grouping {
-        container nx-action-set-nsp {
-            leaf nsp {
-                type uint32;
-            }
+    grouping ofj-nx-action-push-nsh-grouping {
+        container nx-action-push-nsh {
             leaf experimenter-id {
                 type oft:experimenter-id;
             }
         }
     }
-
-    grouping ofj-nx-action-set-nsi-grouping {
-        container nx-action-set-nsi {
-            leaf nsi {
-                type uint8;
-            }
+    grouping ofj-nx-action-pop-nsh-grouping {
+        container nx-action-pop-nsh {
             leaf experimenter-id {
                 type oft:experimenter-id;
             }
         }
     }
-    
-    grouping ofj-nx-action-set-nshc-grouping {
-        leaf nshc {
-            type uint32;
-        }
-        leaf experimenter-id {
-            type oft:experimenter-id;
+    grouping ofj-nx-action-push-eth-grouping {
+        container nx-action-push-eth {
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
-    
-    grouping ofj-nx-action-set-nshc-1-grouping {
-        container nx-action-set-nshc-1 {
-            uses ofj-nx-action-set-nshc-grouping;
-        }
-    }
-    grouping ofj-nx-action-set-nshc-2-grouping {
-        container nx-action-set-nshc-2 {
-            uses ofj-nx-action-set-nshc-grouping;
-        }
-    }
-    grouping ofj-nx-action-set-nshc-3-grouping {
-        container nx-action-set-nshc-3 {
-            uses ofj-nx-action-set-nshc-grouping;
-        }
-    }
-    grouping ofj-nx-action-set-nshc-4-grouping {
-        container nx-action-set-nshc-4 {
-            uses ofj-nx-action-set-nshc-grouping;
+    grouping ofj-nx-action-pop-eth-grouping {
+        container nx-action-pop-eth {
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
 
@@ -239,23 +222,17 @@ module nicira-action {
         case action-multipath {
             uses ofj-nx-action-multipath-grouping;
         }
-        case action-set-nsp {
-            uses ofj-nx-action-set-nsp-grouping;
+        case action-push-nsh {
+            uses ofj-nx-action-push-nsh-grouping;
         }
-        case action-set-nsi {
-            uses ofj-nx-action-set-nsi-grouping;
+        case action-pop-nsh {
+            uses ofj-nx-action-pop-nsh-grouping;
         }
-        case action-set-nshc-1 {
-            uses ofj-nx-action-set-nshc-1-grouping;
+        case action-push-eth {
+            uses ofj-nx-action-push-eth-grouping;
         }
-        case action-set-nshc-2 {
-            uses ofj-nx-action-set-nshc-2-grouping;
-        }
-        case action-set-nshc-3 {
-            uses ofj-nx-action-set-nshc-3-grouping;
-        }
-        case action-set-nshc-4 {
-            uses ofj-nx-action-set-nshc-4-grouping;
+        case action-pop-eth {
+            uses ofj-nx-action-pop-eth-grouping;
         }
     }
 }
