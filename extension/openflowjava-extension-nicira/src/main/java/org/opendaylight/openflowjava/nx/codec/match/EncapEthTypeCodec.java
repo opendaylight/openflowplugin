@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Red Hat, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Intel, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,33 +18,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxEncapEthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.encap.eth.type.grouping.EncapEthTypeValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EncapEthTypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EncapEthTypeCaseValueBuilder;
 
-public class NspCodec extends AbstractMatchCodec {
+public class EncapEthTypeCodec extends AbstractMatchCodec {
 
-    private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 107;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNsp> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNsp.class);
+    private static final int VALUE_LENGTH = 2;
+    private static final int NXM_FIELD_CODE = 117;
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxEncapEthType> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
+            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxEncapEthType.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        NspCaseValue nspCaseValue = ((NspCaseValue) input.getMatchEntryValue());
-        outBuffer.writeInt(nspCaseValue.getNspValues().getNsp().intValue());
+        EncapEthTypeCaseValue encapEthTypeCaseValue = ((EncapEthTypeCaseValue) input.getMatchEntryValue());
+        outBuffer.writeShort(encapEthTypeCaseValue.getEncapEthTypeValues().getEncapEthType().intValue());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
-        nspCaseValueBuilder.setNspValues(new NspValuesBuilder().setNsp(message.readUnsignedInt()).build());
-        matchEntryBuilder.setMatchEntryValue(nspCaseValueBuilder.build());
+        EncapEthTypeCaseValueBuilder encapEthTypeCaseValueBuilder= new EncapEthTypeCaseValueBuilder();
+        encapEthTypeCaseValueBuilder.setEncapEthTypeValues(new EncapEthTypeValuesBuilder().setEncapEthType(message.readUnsignedShort()).build());
+        matchEntryBuilder.setMatchEntryValue(encapEthTypeCaseValueBuilder.build());
 
         return matchEntryBuilder.build();
     }
@@ -66,7 +66,7 @@ public class NspCodec extends AbstractMatchCodec {
 
     @Override
     public Class<? extends MatchField> getNxmField() {
-        return NxmNxNsp.class;
+        return NxmNxEncapEthType.class;
     }
 
     @Override
