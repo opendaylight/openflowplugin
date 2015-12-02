@@ -33,7 +33,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  *         <p/>
  *         Created: Mar 29, 2015
  */
-class DeviceStateImpl implements DeviceState {
+public class DeviceStateImpl implements DeviceState {
 
     private final GetFeaturesOutput featuresOutput;
     private final NodeId nodeId;
