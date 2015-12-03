@@ -447,7 +447,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         itemLifeCycleSourceRegistry.clear();
 
-
+        LOG.trace("Calling close on deviceContextClosedHandlers:{}", closeHandlers.size());
         for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }

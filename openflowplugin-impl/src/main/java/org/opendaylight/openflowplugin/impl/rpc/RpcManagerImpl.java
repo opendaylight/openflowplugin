@@ -7,19 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RpcManagerImpl implements RpcManager {
 
@@ -76,9 +74,13 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void close() throws Exception {
-
+        if (contexts != null) {
+            LOG.debug("RpcManagerImpl close called, contexts to be closed:{}", contexts.size());
+            for (DeviceContext deviceContext : contexts.keySet()) {
+                onDeviceContextClosed(deviceContext);
+            }
+        }
     }
-
 
     @Override
     public void onDeviceContextClosed(DeviceContext deviceContext) {

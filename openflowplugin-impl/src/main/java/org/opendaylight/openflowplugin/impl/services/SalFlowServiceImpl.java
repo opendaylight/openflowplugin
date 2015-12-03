@@ -76,6 +76,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+        LOG.trace("Calling add flow for flow with ID ={}.", input.getFlowRef());
         final FlowId flowId;
         if (null != input.getFlowRef()) {
             flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
@@ -157,6 +158,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
+        LOG.trace("Calling updateFlow for flow with ID ={}.", input.getFlowRef());
         final UpdateFlowInput in = input;
         final UpdatedFlow updated = in.getUpdatedFlow();
         final OriginalFlow original = in.getOriginalFlow();

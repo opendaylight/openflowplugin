@@ -67,9 +67,10 @@ public class RpcContextImpl implements RpcContext {
     public void close() {
         for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
             rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
-            rpcRegistration.close();
             LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
                     deviceContext.getDeviceState().getNodeInstanceIdentifier());
+            rpcRegistration.close();
+
         }
     }
 
