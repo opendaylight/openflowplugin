@@ -167,7 +167,6 @@
             <type>xml</type>
         </dependency>
 
-        <!-- TEMPORARILY DISABLE TO BREAK CYCLIC DEPENDENCY
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>features-dlux</artifactId>
@@ -175,7 +174,6 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-        -->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-netconf-connector</artifactId>
