@@ -11,7 +11,6 @@ import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -20,8 +19,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -30,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
@@ -87,7 +87,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     public AbstractDropTest() {
         final ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE);
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
+        final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
                 TimeUnit.MILLISECONDS,
                 workQueue);
         threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
@@ -96,7 +96,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
                 try {
                     workQueue.put(r);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     throw new RejectedExecutionException("Interrupted while waiting on queue", e);
                 }
             }
@@ -137,15 +137,30 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                     processPacket(notification);
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
     }
 
+    private static final Instructions DROP_INSTRUCTIONS = makeStaticDropActionInstructions();
+
+    private static Instructions makeStaticDropActionInstructions() {
+        // Create an DropAction
+        final DropActionCase dropAction = new DropActionCaseBuilder().setDropAction(new DropActionBuilder().build()).build();
+        // Create an Action
+        final Action ab = new ActionBuilder().setOrder(0).setAction(dropAction).build();
+        // Create an Apply Action
+        final ApplyActions aab = new ApplyActionsBuilder().setAction(Collections.singletonList(ab)).build();
+        // Wrap our Apply Action in an Instruction
+        final Instruction ib = new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab).build()).setOrder(0).build();
+        // Put our Instruction in a list of Instructions
+        return new InstructionsBuilder().setInstruction(Collections.singletonList(ib)).build();
+    }
+
     private void processPacket(final PacketReceived notification) {
         try {
-            // TODO Auto-generated method stub
             final byte[] rawPacket = notification.getPayload();
             final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
 
@@ -160,39 +175,16 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             ethernetMatch.setEthernetSource(ethSourceBuilder.build());
             match.setEthernetMatch(ethernetMatch.build());
 
-            final DropActionBuilder dab = new DropActionBuilder();
-            final DropAction dropAction = dab.build();
-            final ActionBuilder ab = new ActionBuilder();
-            ab.setOrder(0);
-            ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
-
-            // Add our drop action to a list
-            final List<Action> actionList = Collections.singletonList(ab.build());
-
-            // Create an Apply Action
-            final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-            aab.setAction(actionList);
-
-            // Wrap our Apply Action in an Instruction
-            final InstructionBuilder ib = new InstructionBuilder();
-            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build()).setOrder(0);
-
-            // Put our Instruction in a list of Instructions
-            final InstructionsBuilder isb = new InstructionsBuilder();
-            final List<Instruction> instructions = Collections.singletonList(ib.build());
-            isb.setInstruction(instructions);
-
             // Get the Ingress nodeConnectorRef
             final NodeConnectorRef ncr = notification.getIngress();
 
             // Get the instance identifier for the nodeConnectorRef
             final InstanceIdentifier<?> ncri = ncr.getValue();
 
-            processPacket(ncri.firstIdentifierOf(Node.class), match.build(), isb.build());
+            processPacket(ncri.firstIdentifierOf(Node.class), match.build(), DROP_INSTRUCTIONS);
 
             SENT_UPDATER.incrementAndGet(this);
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
             LOG.warn("Failed to process packet: {}", e.getMessage());
             LOG.debug("Failed to process packet.. ", e);
             EXCS_UPDATER.incrementAndGet(this);
