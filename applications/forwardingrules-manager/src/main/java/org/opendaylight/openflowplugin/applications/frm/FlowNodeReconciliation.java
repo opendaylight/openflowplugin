@@ -32,7 +32,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
- * Created: Aug 26, 2014
+ *         Created: Aug 26, 2014
  */
 public interface FlowNodeReconciliation extends DataChangeListener, AutoCloseable {
 
@@ -44,9 +44,10 @@ public interface FlowNodeReconciliation extends DataChangeListener, AutoCloseabl
      * Second part of functionality is own reconciliation pre-configure
      * Flows, Meters and Groups.
      *
-     * @param connectedNode - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to new Node
+     * @param connectedNode   - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to new Node
+     * @param flowCapableNodeConfigured
      */
-    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode);
+    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, final FlowCapableNode flowCapableNodeConfigured);
 
     /**
      * Method contains functionality for registered Node {@link FlowCapableNode} removing
