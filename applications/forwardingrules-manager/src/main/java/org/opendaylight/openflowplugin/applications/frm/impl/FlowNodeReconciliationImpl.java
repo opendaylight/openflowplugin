@@ -10,7 +10,11 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
@@ -121,7 +125,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
                     .firstIdentifierOf(FlowCapableNode.class);
             if ( ! nodeIdent.isWildcarded()) {
-                flowNodeConnected(nodeIdent);
+                flowNodeConnected(nodeIdent, (FlowCapableNode) changeEvent.getCreatedData().get(entryKey));
             }
         }
     }
@@ -132,7 +136,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode) {
+    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, FlowCapableNode flowCapableNodeConfigured) {
         if ( ! provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
             reconciliation(connectedNode);
