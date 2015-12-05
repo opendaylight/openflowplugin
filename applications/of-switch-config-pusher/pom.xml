@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>applications</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opendaylight.openflowplugin.applications</groupId>
     <artifactId>of-switch-config-pusher</artifactId>
