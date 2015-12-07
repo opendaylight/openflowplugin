@@ -18,13 +18,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import java.math.BigInteger;
 
 public class MdSalRegistratorUtilsTest {
 
@@ -32,7 +32,7 @@ public class MdSalRegistratorUtilsTest {
      * Number of currently registrated services (can be changed) in {@link MdSalRegistratorUtils#registerServices
      * (RpcContext, DeviceContext)}
      */
-    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 10;
+    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 11;
 
     @Test
     public void registerServiceTest() {
