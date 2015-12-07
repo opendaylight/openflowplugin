@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPortBuilder;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,13 +56,16 @@ public class SalPortServiceImplTest extends ServiceMocking {
 
     @Test
     public void testUpdatePort() throws Exception {
-        UpdatePortInput dummyUpdatePortInput = new UpdatePortInputBuilder().build();
-        salPortService.updatePort(dummyUpdatePortInput);
+        salPortService.updatePort(dummyUpdatePortInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testBuildRequest() {
+        final OfHeader ofHeader = salPortService.buildRequest(new Xid(DUMMY_XID), dummyUpdatePortInput());
+    }
+
+    private UpdatePortInput dummyUpdatePortInput(){
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder concretePortBuilder
                 = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder();
         concretePortBuilder.setConfiguration(new PortConfig(true, true, true, true));
@@ -73,8 +77,6 @@ public class SalPortServiceImplTest extends ServiceMocking {
                 = Lists.newArrayList(concretePortBuilder.build());
         Port port = new PortBuilder().setPort(ports).build();
         UpdatedPort updatePort = new UpdatedPortBuilder().setPort(port).build();
-        UpdatePortInput dummyUpdatePortInput = new UpdatePortInputBuilder().setUpdatedPort(updatePort).build();
-
-        final OfHeader ofHeader = salPortService.buildRequest(new Xid(DUMMY_XID), dummyUpdatePortInput);
+        return new UpdatePortInputBuilder().setUpdatedPort(updatePort).build();
     }
 }
