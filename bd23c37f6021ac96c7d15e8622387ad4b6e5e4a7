@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3aa7f18b_a7baa408",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2015-12-07T05:23:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5aaae553_b80f01e1",
+      "revId": "bd23c37f6021ac96c7d15e8622387ad4b6e5e4a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5aaae553_d8143df7",
         "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
         "patchSetId": 2
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "3aa7f18b_473730b1",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2015-12-07T05:23:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5aaae553_d8143df7",
+      "range": {
+        "startLine": 13,
+        "startChar": 15,
+        "endLine": 13,
+        "endChar": 16
+      },
+      "revId": "bd23c37f6021ac96c7d15e8622387ad4b6e5e4a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5aaae553_98f6c5d6",
         "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/MatchUtil.java",
         "patchSetId": 2
@@ -53,6 +95,30 @@
       "writtenOn": "2015-12-05T18:29:24Z",
       "side": 1,
       "message": "remove TABS",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 33
+      },
+      "revId": "bd23c37f6021ac96c7d15e8622387ad4b6e5e4a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa7f18b_673cac94",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/MatchUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2015-12-07T05:23:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5aaae553_98f6c5d6",
       "range": {
         "startLine": 105,
         "startChar": 0,
@@ -99,6 +165,30 @@
       "writtenOn": "2015-12-05T18:29:24Z",
       "side": 1,
       "message": "extra spaces(was there already)",
+      "range": {
+        "startLine": 307,
+        "startChar": 0,
+        "endLine": 307,
+        "endChar": 4
+      },
+      "revId": "bd23c37f6021ac96c7d15e8622387ad4b6e5e4a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa7f18b_0741380b",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-match.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2015-12-07T05:23:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5aaae553_f8d33936",
       "range": {
         "startLine": 307,
         "startChar": 0,
