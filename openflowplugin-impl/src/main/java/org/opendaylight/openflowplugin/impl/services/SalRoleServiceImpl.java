@@ -25,10 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
@@ -40,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService  {
+public class SalRoleServiceImpl implements SalRoleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
 
@@ -56,7 +54,7 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
     private final Short version;
 
     public SalRoleServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext, SetRoleOutput.class);
+        //super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = deviceContext;
         this.roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
         nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
@@ -65,10 +63,10 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
 
     }
 
-    @Override
-    protected OfHeader buildRequest(Xid xid, SetRoleInput input) {
-        return null;
-    }
+//    @Override
+//    protected OfHeader buildRequest(Xid xid, SetRoleInput input) {
+//        return null;
+//    }
 
     public static BigInteger getNextGenerationId(BigInteger generationId) {
         BigInteger nextGenerationId = null;
