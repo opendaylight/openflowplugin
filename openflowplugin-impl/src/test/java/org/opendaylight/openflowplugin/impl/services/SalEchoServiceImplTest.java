@@ -1,38 +1,60 @@
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.mockito.Mockito.verify;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
+import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class SalEchoServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 100L;
     private static final byte[] DUMMY_DATA = "DUMMY DATA".getBytes();
     SalEchoServiceImpl salEchoService;
 
-    @Test
-    public void testSendEcho() throws Exception {
+    @Override
+    protected void setup() {
         salEchoService = new SalEchoServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        SendEchoInput sendEchoInput = new SendEchoInputBuilder().build();
-        salEchoService.sendEcho(sendEchoInput);
-        verify(mockedRequestContextStack).createRequestContext();;
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
-        salEchoService = new SalEchoServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        SendEchoInput sendEchoInput = new SendEchoInputBuilder().setData(DUMMY_DATA).build();
-        final OfHeader request = this.salEchoService.buildRequest(new Xid(DUMMY_XID_VALUE), sendEchoInput);
-        assertEquals(DUMMY_XID_VALUE, request.getXid());
-        assertTrue(request instanceof EchoInput);
-        final byte[] data = ((EchoInput) request).getData();
-        assertArrayEquals(DUMMY_DATA, data);
+    public void testSendEcho() throws Exception {
+        final EchoOutput echoOut = new EchoOutputBuilder()
+                .setData(DUMMY_DATA)
+                .build();
+        final RpcResult<EchoOutput> replyRpcResult = RpcResultBuilder.success(echoOut).build();
+        final ListenableFuture<RpcResult<EchoOutput>> replyFt = Futures.immediateFuture(replyRpcResult);
+        Mockito.when(mockedRequestContext.getFuture()).thenReturn(replyFt);
+        SendEchoInput sendEchoInput = new SendEchoInputBuilder()
+                .setData(DUMMY_DATA)
+                .build();
+
+        final Future<RpcResult<SendEchoOutput>> echoOutput = salEchoService.sendEcho(sendEchoInput);
+
+        Assert.assertNotNull(echoOutput);
+        Assert.assertTrue(echoOutput.isDone());
+        Assert.assertTrue(echoOutput.get().isSuccessful());
+        verify(mockedRequestContextStack).createRequestContext();
+        verify(mockedOutboundQueue).commitEntry(Matchers.eq(2121L), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
     }
 }
