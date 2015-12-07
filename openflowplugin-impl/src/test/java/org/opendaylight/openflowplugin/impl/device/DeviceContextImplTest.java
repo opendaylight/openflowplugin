@@ -16,9 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import java.math.BigInteger;
-import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,6 +94,9 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.math.BigInteger;
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceContextImplTest {
@@ -359,7 +359,7 @@ public class DeviceContextImplTest {
     @Test
     public void testClose() {
         ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
-        InetSocketAddress mockRemoteAddress = mock(InetSocketAddress.class);
+        InetSocketAddress mockRemoteAddress = InetSocketAddress.createUnresolved("odl-unit.example.org",999);
         when(mockedConnectionAdapter.getRemoteAddress()).thenReturn(mockRemoteAddress);
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
