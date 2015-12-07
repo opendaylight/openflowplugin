@@ -1,15 +1,15 @@
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
 
 public class NodeConfigServiceImplTest extends ServiceMocking{
 
