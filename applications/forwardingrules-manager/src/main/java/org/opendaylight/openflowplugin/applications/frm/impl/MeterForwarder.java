@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -21,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
@@ -28,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
  */
-public class MeterForwarder extends AbstractListeningCommiter<Meter> {
+public class MeterForwarder extends AbstractListeningCommiter<Meter, AddMeterOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
 
@@ -116,15 +119,15 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public void add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
-                    final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
+                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final AddMeterInputBuilder builder = new AddMeterInputBuilder(addDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalMeterService().addMeter(builder.build());
+        return this.provider.getSalMeterService().addMeter(builder.build());
     }
 }
 

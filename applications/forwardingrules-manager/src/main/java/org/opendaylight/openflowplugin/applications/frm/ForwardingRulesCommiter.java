@@ -8,10 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * forwardingrules-manager
@@ -26,7 +28,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * Created: Aug 25, 2014
  */
-public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, DataTreeChangeListener<D> {
+public interface ForwardingRulesCommiter <D extends DataObject, A extends DataObject> extends AutoCloseable, DataTreeChangeListener<D> {
 
     /**
      * Method removes DataObject which is identified by InstanceIdentifier
@@ -54,13 +56,12 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
     /**
      * Method adds the DataObject which is identified by InstanceIdentifier
      * to device.
-     *
-     * @param identifier - the whole path to new DataObject
+     *  @param identifier - the whole path to new DataObject
      * @param add - new DataObject
      * @param nodeIdent Node InstanceIdentifier
      */
-    void add(InstanceIdentifier<D> identifier, D add,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
+    Future<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add,
+                                          InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 }
 

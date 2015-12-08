@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * Created: Jun 13, 2014
  */
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
+    //TODO: extend AbstractFlowNodeReconciliator
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
 
