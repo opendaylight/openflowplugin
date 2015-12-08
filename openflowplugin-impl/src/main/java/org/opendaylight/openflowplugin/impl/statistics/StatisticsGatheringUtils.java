@@ -142,31 +142,46 @@ public final class StatisticsGatheringUtils {
                     if (null != rpcResult.getResult()) {
                         Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
                         DataObject multipartData = null;
-                        for (final MultipartReply singleReply : rpcResult.getResult()) {
-                            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
-                            multipartData = multipartDataList.get(0);
-                            allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+
+
+                        try {
+                            for (final MultipartReply singleReply : rpcResult.getResult()) {
+                                final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
+                                multipartData = multipartDataList.get(0);
+                                allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+                            }
+                        } catch (Exception e) {
+                            LOG.warn("stats processing of type {} for node {} failed during transfomation step",
+                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                            throw e;
                         }
 
-                        if (multipartData instanceof GroupStatisticsUpdated) {
-                            processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof MeterStatisticsUpdated) {
-                            processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
-                            processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof FlowTableStatisticsUpdate) {
-                            processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof QueueStatisticsUpdate) {
-                            processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof FlowsStatisticsUpdate) {
-                            processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
-                            EventsTimeCounter.markEnd(eventIdentifier);
-                        } else if (multipartData instanceof GroupDescStatsUpdated) {
-                            processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof MeterConfigStatsUpdated) {
-                            processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
-                        } else {
-                            isMultipartProcessed = Boolean.FALSE;
+
+                        try {
+                            if (multipartData instanceof GroupStatisticsUpdated) {
+                                processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof MeterStatisticsUpdated) {
+                                processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
+                                processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof FlowTableStatisticsUpdate) {
+                                processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof QueueStatisticsUpdate) {
+                                processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof FlowsStatisticsUpdate) {
+                                processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
+                                EventsTimeCounter.markEnd(eventIdentifier);
+                            } else if (multipartData instanceof GroupDescStatsUpdated) {
+                                processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof MeterConfigStatsUpdated) {
+                                processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
+                            } else {
+                                isMultipartProcessed = Boolean.FALSE;
+                            }
+                        } catch (Exception e) {
+                            LOG.warn("stats processing of type {} for node {} failed during write-to-tx step",
+                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                            throw e;
                         }
                         //TODO : implement experimenter
                     }
