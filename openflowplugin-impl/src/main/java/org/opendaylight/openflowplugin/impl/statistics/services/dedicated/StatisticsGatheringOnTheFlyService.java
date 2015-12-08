@@ -22,11 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * collects statistics and processes them on the fly
  */
 public class StatisticsGatheringOnTheFlyService extends AbstractMultipartOnTheFlyService<MultipartType> implements StatisticsGatherer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringOnTheFlyService.class);
 
     public StatisticsGatheringOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
@@ -34,6 +38,7 @@ public class StatisticsGatheringOnTheFlyService extends AbstractMultipartOnTheFl
 
     @Override
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
+        LOG.debug("Getting statistics (onTheFly) for node {} of type {}", getDeviceContext().getDeviceState().getNodeId(), type);
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
         return handleServiceCall(type);
