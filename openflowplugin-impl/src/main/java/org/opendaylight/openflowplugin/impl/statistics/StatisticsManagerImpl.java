@@ -18,9 +18,11 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -34,10 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +138,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void pollStatistics(final DeviceContext deviceContext,
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
+        LOG.debug("POLLING ALL STATS for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
         timeCounter.markStart();
         ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -155,12 +158,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             }
         });
+
+        final long STATS_TIMEOUT_SEC = 20L;
+        try {
+            deviceStatisticsCollectionFuture.get(STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Statistics collection for node {} failed", deviceContext.getDeviceState().getNodeId(), e);
+        } catch (TimeoutException e) {
+            LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceContext.getDeviceState().getNodeId(), STATS_TIMEOUT_SEC);
+        }
     }
 
     private void scheduleNextPolling(final DeviceContext deviceContext,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
         if (null != hashedWheelTimer) {
+            LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
             if (!shuttingDownStatisticsPolling) {
                 Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
                     @Override
@@ -170,6 +183,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 }, currentTimerDelay, TimeUnit.MILLISECONDS);
                 statisticsContext.setPollTimeout(pollTimeout);
             }
+        } else {
+            LOG.debug("#!NOT SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
         }
     }
 

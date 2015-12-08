@@ -120,6 +120,8 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(true);
 
+        when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
+
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
