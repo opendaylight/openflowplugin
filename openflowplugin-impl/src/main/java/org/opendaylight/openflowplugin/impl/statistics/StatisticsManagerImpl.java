@@ -33,10 +33,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +135,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void pollStatistics(final DeviceContext deviceContext,
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
+        LOG.debug("POLLING ALL STATS for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
         timeCounter.markStart();
         ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -160,6 +161,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
         if (null != hashedWheelTimer) {
+            LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
             if (!shuttingDownStatisticsPolling) {
                 Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
                     @Override
@@ -169,6 +171,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 }, currentTimerDelay, TimeUnit.MILLISECONDS);
                 statisticsContext.setPollTimeout(pollTimeout);
             }
+        } else {
+            LOG.debug("#!NOT SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
         }
     }
 
