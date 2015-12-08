@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -23,16 +24,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
+public class TableForwarder extends AbstractListeningCommiter<TableFeatures, UpdateTableOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
@@ -121,9 +124,10 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public void add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
-                    final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateTableOutput>> add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
+                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
        //DO NOthing
+        return null;
     }
 
 
