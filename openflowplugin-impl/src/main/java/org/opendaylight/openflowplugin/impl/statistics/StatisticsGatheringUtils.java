@@ -125,17 +125,18 @@ public final class StatisticsGatheringUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier);
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier, type);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
                                                                              final DeviceContext deviceContext,
-                                                                             final EventIdentifier eventIdentifier) {
+                                                                             final EventIdentifier eventIdentifier, final MultipartType type) {
         return Futures.transform(statisticsDataInFuture, new Function<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
             public Boolean apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 if (rpcResult.isSuccessful()) {
+                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
                     boolean isMultipartProcessed = Boolean.TRUE;
 
                     // TODO: in case the result value is null then multipart data probably got processed on the fly -
@@ -143,36 +144,58 @@ public final class StatisticsGatheringUtils {
                     if (null != rpcResult.getResult()) {
                         Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
                         DataObject multipartData = null;
-                        for (final MultipartReply singleReply : rpcResult.getResult()) {
-                            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
-                            multipartData = multipartDataList.get(0);
-                            allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+
+
+                        try {
+                            for (final MultipartReply singleReply : rpcResult.getResult()) {
+                                final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
+                                multipartData = multipartDataList.get(0);
+                                allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+                            }
+                        } catch (Exception e) {
+                            LOG.warn("stats processing of type {} for node {} failed during transfomation step",
+                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                            throw e;
                         }
 
-                        if (multipartData instanceof GroupStatisticsUpdated) {
-                            processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof MeterStatisticsUpdated) {
-                            processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
-                            processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof FlowTableStatisticsUpdate) {
-                            processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof QueueStatisticsUpdate) {
-                            processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof FlowsStatisticsUpdate) {
-                            processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
-                            EventsTimeCounter.markEnd(eventIdentifier);
-                        } else if (multipartData instanceof GroupDescStatsUpdated) {
-                            processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
-                        } else if (multipartData instanceof MeterConfigStatsUpdated) {
-                            processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
-                        } else {
-                            isMultipartProcessed = Boolean.FALSE;
+
+                        try {
+                            if (multipartData instanceof GroupStatisticsUpdated) {
+                                processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof MeterStatisticsUpdated) {
+                                processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
+                                processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof FlowTableStatisticsUpdate) {
+                                processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof QueueStatisticsUpdate) {
+                                processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof FlowsStatisticsUpdate) {
+                                processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
+                                EventsTimeCounter.markEnd(eventIdentifier);
+                            } else if (multipartData instanceof GroupDescStatsUpdated) {
+                                processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceContext);
+                            } else if (multipartData instanceof MeterConfigStatsUpdated) {
+                                processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceContext);
+                            } else {
+                                isMultipartProcessed = Boolean.FALSE;
+                            }
+                        } catch (Exception e) {
+                            LOG.warn("stats processing of type {} for node {} failed during write-to-tx step",
+                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                            throw e;
                         }
+
+                        LOG.debug("Stats reply added to transaction for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
+
                         //TODO : implement experimenter
+                    } else {
+                        LOG.debug("Stats reply was empty for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
                     }
 
                     return isMultipartProcessed;
+                } else {
+                    LOG.debug("Stats reply FAILED for node {} of type {}: {}", deviceContext.getDeviceState().getNodeId(), type, rpcResult.getErrors());
                 }
                 return Boolean.FALSE;
             }
