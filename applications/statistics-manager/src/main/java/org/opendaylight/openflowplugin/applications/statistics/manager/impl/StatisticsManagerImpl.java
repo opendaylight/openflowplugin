@@ -395,8 +395,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
         if (permCollectorUUIDPair != null) {
             return permCollectorUUIDPair.getRight();
         }
-        // we dont want to mark operations with null uuid and get NPEs later. So mark them with invalid ones
-        return UUID.fromString("invalid-uuid");
+        return null;
     }
 }
 
