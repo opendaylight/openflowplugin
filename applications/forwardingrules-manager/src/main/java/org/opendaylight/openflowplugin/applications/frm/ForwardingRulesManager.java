@@ -8,17 +8,21 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -109,28 +113,34 @@ public interface ForwardingRulesManager extends AutoCloseable {
     public SalTableService getSalTableService();
 
     /**
+     *
+     * @return FlowCapableTransaction RPC service
+     */
+    FlowCapableTransactionService getFlowCapableTransactionService();
+
+    /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Flow&gt;
      */
-    public ForwardingRulesCommiter<Flow> getFlowCommiter();
+    public ForwardingRulesCommiter<Flow, AddFlowOutput> getFlowCommiter();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Group&gt;
      */
-    public ForwardingRulesCommiter<Group> getGroupCommiter();
+    public ForwardingRulesCommiter<Group, AddGroupOutput> getGroupCommiter();
 
     /**
      * Content definition method and prevent code duplicity
      * @return ForwardingRulesCommiter&lt;Meter&gt;
      */
-    public ForwardingRulesCommiter<Meter> getMeterCommiter();
+    public ForwardingRulesCommiter<Meter, AddMeterOutput> getMeterCommiter();
 
     /**
      * Content definition method and prevent code duplicity
      * @return ForwardingRulesCommiter&lt;Table&gt;
      */
-    public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
+    public ForwardingRulesCommiter<TableFeatures, UpdateTableOutput> getTableFeaturesCommiter();
 
     /**
      * Content definition method
