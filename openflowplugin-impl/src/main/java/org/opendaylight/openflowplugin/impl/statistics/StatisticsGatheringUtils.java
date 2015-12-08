@@ -125,17 +125,18 @@ public final class StatisticsGatheringUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier);
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext, wholeProcessEventIdentifier, type);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
                                                                              final DeviceContext deviceContext,
-                                                                             final EventIdentifier eventIdentifier) {
+                                                                             final EventIdentifier eventIdentifier, final MultipartType type) {
         return Futures.transform(statisticsDataInFuture, new Function<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
             public Boolean apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 if (rpcResult.isSuccessful()) {
+                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
                     boolean isMultipartProcessed = Boolean.TRUE;
 
                     // TODO: in case the result value is null then multipart data probably got processed on the fly -
@@ -169,10 +170,17 @@ public final class StatisticsGatheringUtils {
                         } else {
                             isMultipartProcessed = Boolean.FALSE;
                         }
+
+                        LOG.debug("Stats reply added to transaction for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
+
                         //TODO : implement experimenter
+                    } else {
+                        LOG.debug("Stats reply was empty for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
                     }
 
                     return isMultipartProcessed;
+                } else {
+                    LOG.debug("Stats reply FAILED for node {} of type {}: {}", deviceContext.getDeviceState().getNodeId(), type, rpcResult.getErrors());
                 }
                 return Boolean.FALSE;
             }
