@@ -7,12 +7,9 @@
  */
 package test.mock;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
+import static org.junit.Assert.assertEquals;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
-import test.mock.util.SalTableServiceMock;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -25,11 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.rev140925.ReconcilEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
+import test.mock.util.SalTableServiceMock;
 
 public class TableFeaturesListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
@@ -39,14 +40,14 @@ public class TableFeaturesListenerTest extends FRMTest {
         NodeKey s1Key = new NodeKey(new NodeId("S1"));
         TableKey tableKey = new TableKey((short) 2);
         TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addTable(tableKey, s1Key);
 
         TableFeatures tableFeaturesData = new TableFeaturesBuilder().setKey(tableFeaturesKey).build();
         InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
-              .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(TableFeatures.class, tableFeaturesKey);
+                .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(TableFeatures.class, tableFeaturesKey);
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.submit());

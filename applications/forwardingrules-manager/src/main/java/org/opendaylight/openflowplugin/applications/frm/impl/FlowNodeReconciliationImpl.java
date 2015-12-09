@@ -137,7 +137,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, FlowCapableNode flowCapableNodeConfigured) {
+    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, FlowCapableNode flowCapableNodeOperational) {
         if ( ! provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
             reconciliation(connectedNode);

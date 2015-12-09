@@ -25,7 +25,8 @@ import java.util.Collection;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
  */
-public abstract class AbstractListeningCommiter <T extends DataObject, A extends  DataObject> implements ForwardingRulesCommiter<T, A> {
+public abstract class AbstractListeningCommiter<T extends DataObject, A extends DataObject, R extends DataObject, D extends DataObject>
+        implements ForwardingRulesCommiter<T, A, R, D> {
 
     protected ForwardingRulesManager provider;
 

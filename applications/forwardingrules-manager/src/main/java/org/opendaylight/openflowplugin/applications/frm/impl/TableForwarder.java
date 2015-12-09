@@ -30,12 +30,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TableForwarder extends AbstractListeningCommiter<TableFeatures, UpdateTableOutput> {
+public class TableForwarder extends AbstractListeningCommiter<TableFeatures, DataObject, DataObject, UpdateTableOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
@@ -82,15 +83,16 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures, Upd
     }
 
     @Override
-    public void remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-      // DO Nothing
+    public Future<RpcResult<DataObject>> remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
+                                                final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.warn("REMOVE - not supported for table-updater: {}", identifier);
+        return null;
     }
 
     @Override
-    public void update(final InstanceIdentifier<TableFeatures> identifier,
-                       final TableFeatures original, final TableFeatures update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
+                                                       final TableFeatures original, final TableFeatures update,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug( "Received the Table Update request [Tbl id, node Id, original, upd" +
                        " " + identifier + " " + nodeIdent + " " + original + " " + update );
 
@@ -117,16 +119,18 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures, Upd
                 Collections.singletonList(originalTableFeatures)).build());
         LOG.debug( "Invoking SalTableService " ) ;
 
-        if( this.provider.getSalTableService() != null )
-        	LOG.debug( " Handle to SalTableServices" + this.provider.getSalTableService()) ;
-        this.provider.getSalTableService().updateTable(builder.build());
+        if (this.provider.getSalTableService() != null) {
+            LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
+        }
+
+        return this.provider.getSalTableService().updateTable(builder.build());
 
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
-                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-       //DO NOthing
+    public Future<RpcResult<DataObject>> add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
+                                             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.warn("ADD - not supported for table-updater: {}", identifier);
         return null;
     }
 

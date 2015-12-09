@@ -8,12 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
-import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * forwardingrules-manager
@@ -28,40 +24,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  *
  * Created: Aug 25, 2014
  */
-public interface ForwardingRulesCommiter <D extends DataObject, A extends DataObject> extends AutoCloseable, DataTreeChangeListener<D> {
-
-    /**
-     * Method removes DataObject which is identified by InstanceIdentifier
-     * from device.
-     *
-     * @param identifier - the whole path to DataObject
-     * @param del - DataObject for removing
-     * @param nodeIdent Node InstanceIdentifier
-     */
-    void remove(InstanceIdentifier<D> identifier, D del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-    /**
-     * Method updates the original DataObject to the update DataObject
-     * in device. Both are identified by same InstanceIdentifier
-     *
-     * @param identifier - the whole path to DataObject
-     * @param original - original DataObject (for update)
-     * @param update - changed DataObject (contain updates)
-     * @param nodeIdent Node InstanceIdentifier
-     */
-    void update(InstanceIdentifier<D> identifier, D original, D update,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-    /**
-     * Method adds the DataObject which is identified by InstanceIdentifier
-     * to device.
-     *  @param identifier - the whole path to new DataObject
-     * @param add - new DataObject
-     * @param nodeIdent Node InstanceIdentifier
-     */
-    Future<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add,
-                                          InstanceIdentifier<FlowCapableNode> nodeIdent);
-
+public interface ForwardingRulesCommiter<D extends DataObject, A extends DataObject, R extends DataObject, U extends DataObject>
+        extends AutoCloseable, DataTreeChangeListener<D>,
+        ForwardingRulesAddCommiter<D, A>, ForwardingRulesRemoveCommiter<D, R>, ForwardingRulesUpdateCommiter<D, U> {
 }
 

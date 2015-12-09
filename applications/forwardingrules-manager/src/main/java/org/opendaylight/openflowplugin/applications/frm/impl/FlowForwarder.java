@@ -24,7 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
@@ -49,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
  */
-public class FlowForwarder extends AbstractListeningCommiter<Flow, AddFlowOutput> {
+public class FlowForwarder extends AbstractListeningCommiter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
 
@@ -93,10 +95,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow, AddFlowOutput
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Flow> identifier,
-                       final Flow removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<RemoveFlowOutput>> remove(final InstanceIdentifier<Flow> identifier,
+                                                      final Flow removeDataObj,
+                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
+        final Future<RpcResult<RemoveFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
@@ -110,15 +113,20 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow, AddFlowOutput
             // a given flow object is removed.
             builder.setTransactionUri(new Uri(provider.getNewTransactionId())).
                 setStrict(Boolean.TRUE);
-            provider.getSalFlowService().removeFlow(builder.build());
+            output = provider.getSalFlowService().removeFlow(builder.build());
+        } else {
+            output = RpcResultBuilder.<RemoveFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "tableId mismatch").buildFuture();
         }
+
+        return output;
     }
 
     @Override
-    public void update(final InstanceIdentifier<Flow> identifier,
-                       final Flow original, final Flow update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateFlowOutput>> update(final InstanceIdentifier<Flow> identifier,
+                                                      final Flow original, final Flow update,
+                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
+        final Future<RpcResult<UpdateFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
             final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
@@ -134,8 +142,12 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow, AddFlowOutput
             builder.setUpdatedFlow((new UpdatedFlowBuilder(update)).setStrict(Boolean.TRUE).build());
             builder.setOriginalFlow((new OriginalFlowBuilder(original)).setStrict(Boolean.TRUE).build());
 
-            provider.getSalFlowService().updateFlow(builder.build());
+            output = provider.getSalFlowService().updateFlow(builder.build());
+        } else {
+            output = RpcResultBuilder.<UpdateFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "tableId mismatch").buildFuture();
         }
+
+        return output;
     }
 
     @Override
