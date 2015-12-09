@@ -20,7 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
@@ -44,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
  */
-public class GroupForwarder extends AbstractListeningCommiter<Group, AddGroupOutput> {
+public class GroupForwarder extends AbstractListeningCommiter<Group, AddGroupOutput, RemoveGroupOutput, UpdateGroupOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
 
@@ -91,8 +93,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group, AddGroupOut
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group group = (removeDataObj);
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
@@ -100,13 +102,13 @@ public class GroupForwarder extends AbstractListeningCommiter<Group, AddGroupOut
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalGroupService().removeGroup(builder.build());
+        return this.provider.getSalGroupService().removeGroup(builder.build());
     }
 
     @Override
-    public void update(final InstanceIdentifier<Group> identifier,
-                       final Group original, final Group update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
+                                                       final Group original, final Group update,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group originalGroup = (original);
         final Group updatedGroup = (update);
@@ -118,7 +120,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group, AddGroupOut
         builder.setUpdatedGroup((new UpdatedGroupBuilder(updatedGroup)).build());
         builder.setOriginalGroup((new OriginalGroupBuilder(originalGroup)).build());
 
-        this.provider.getSalGroupService().updateGroup(builder.build());
+        return this.provider.getSalGroupService().updateGroup(builder.build());
     }
 
     @Override

@@ -9,6 +9,7 @@ package test.mock;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
@@ -17,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.rev140925.ReconcilEnum;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
@@ -28,7 +30,7 @@ public class NodeListenerTest extends FRMTest {
 
     @Test
     public void addRemoveNodeTest() throws Exception {
-        try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock)) {
+        try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT)) {
             forwardingRulesManager.start();
 
             addFlowCapableNode(s1Key);

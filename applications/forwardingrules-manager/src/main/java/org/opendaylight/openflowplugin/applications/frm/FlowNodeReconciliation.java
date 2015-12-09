@@ -45,9 +45,9 @@ public interface FlowNodeReconciliation extends DataChangeListener, AutoCloseabl
      * Flows, Meters and Groups.
      *
      * @param connectedNode   - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to new Node
-     * @param flowCapableNodeConfigured
+     * @param flowCapableNodeOperational
      */
-    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, final FlowCapableNode flowCapableNodeConfigured);
+    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, final FlowCapableNode flowCapableNodeOperational);
 
     /**
      * Method contains functionality for registered Node {@link FlowCapableNode} removing

@@ -7,6 +7,10 @@
  */
 package test.mock;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -32,16 +36,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.rev140925.ReconcilEnum;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalFlowServiceMock;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class FlowListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
@@ -50,7 +49,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void addTwoFlowsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -91,7 +90,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -133,7 +132,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void updateFlowScopeTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -144,7 +143,7 @@ public class FlowListenerTest extends FRMTest {
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
         Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
-        IpMatch ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short)4)).build();
+        IpMatch ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short) 4)).build();
         Match match = new MatchBuilder().setIpMatch(ipMatch).build();
         Flow flow = new FlowBuilder().setMatch(match).setKey(flowKey).setTableId((short) 2).build();
 
@@ -160,7 +159,7 @@ public class FlowListenerTest extends FRMTest {
         flowKey = new FlowKey(new FlowId("test_Flow"));
         flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short)5)).build();
+        ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short) 5)).build();
         match = new MatchBuilder().setIpMatch(ipMatch).build();
         flow = new FlowBuilder().setMatch(match).setKey(flowKey).setTableId((short) 2).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -177,7 +176,7 @@ public class FlowListenerTest extends FRMTest {
 
     @Test
     public void deleteFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);

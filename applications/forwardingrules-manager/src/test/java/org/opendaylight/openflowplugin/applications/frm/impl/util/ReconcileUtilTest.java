@@ -20,7 +20,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,8 +37,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class ReconcileUtilTest {
 
     private static final NodeId NODE_ID = new NodeId("unit-node-id");
-    private InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class);
+    private InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID));
     @Mock
     private FlowCapableTransactionService flowCapableService;
     @Captor

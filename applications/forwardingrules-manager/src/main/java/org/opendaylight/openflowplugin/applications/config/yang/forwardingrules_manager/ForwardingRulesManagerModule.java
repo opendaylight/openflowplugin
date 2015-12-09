@@ -25,7 +25,7 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
     public java.lang.AutoCloseable createInstance() {
         LOG.info("FRM module initialization.");
         final ForwardingRulesManagerImpl forwardingrulessManagerProvider =
-                new ForwardingRulesManagerImpl(getDataBrokerDependency(), getRpcRegistryDependency());
+                new ForwardingRulesManagerImpl(getDataBrokerDependency(), getRpcRegistryDependency(), getReconciliationStrategy());
         forwardingrulessManagerProvider.start();
         LOG.info("FRM module started successfully.");
         return new AutoCloseable() {

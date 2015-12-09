@@ -7,6 +7,9 @@
  */
 package test.mock;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,15 +27,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.rev140925.ReconcilEnum;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalGroupServiceMock;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class GroupListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
@@ -40,7 +39,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void addTwoGroupsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -75,7 +74,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void updateGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -107,7 +106,7 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void removeGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, ReconcilEnum.DEFAULT);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
