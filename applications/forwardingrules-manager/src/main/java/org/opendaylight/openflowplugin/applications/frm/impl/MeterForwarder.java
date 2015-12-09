@@ -24,7 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
@@ -44,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
  */
-public class MeterForwarder extends AbstractListeningCommiter<Meter, AddMeterOutput> {
+public class MeterForwarder extends AbstractListeningCommiter<Meter, AddMeterOutput, RemoveMeterOutput, UpdateMeterOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
 
@@ -91,21 +93,21 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter, AddMeterOut
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalMeterService().removeMeter(builder.build());
+        return this.provider.getSalMeterService().removeMeter(builder.build());
     }
 
     @Override
-    public void update(final InstanceIdentifier<Meter> identifier,
-                       final Meter original, final Meter update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateMeterOutput>> update(final InstanceIdentifier<Meter> identifier,
+                                                       final Meter original, final Meter update,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final UpdateMeterInputBuilder builder = new UpdateMeterInputBuilder();
 
@@ -115,7 +117,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter, AddMeterOut
         builder.setUpdatedMeter((new UpdatedMeterBuilder(update)).build());
         builder.setOriginalMeter((new OriginalMeterBuilder(original)).build());
 
-        this.provider.getSalMeterService().updateMeter(builder.build());
+        return this.provider.getSalMeterService().updateMeter(builder.build());
     }
 
     @Override

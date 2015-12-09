@@ -24,18 +24,25 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesUpdateCommiter;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -128,40 +135,40 @@ public abstract class AbstractFlowNodeReconciliator implements FlowNodeReconcili
     }
 
     @Override
-    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, FlowCapableNode flowCapableNodeConfigured) {
+    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, FlowCapableNode flowCapableNodeOperational) {
         if ( ! provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
-            reconciliation(connectedNode, flowCapableNodeConfigured);
+            reconciliation(connectedNode, flowCapableNodeOperational);
         }
     }
 
-    abstract void reconciliation(final InstanceIdentifier<FlowCapableNode> nodeIdent, final FlowCapableNode flowCapableNodeConfigured);
+    abstract void reconciliation(final InstanceIdentifier<FlowCapableNode> nodeIdent, final FlowCapableNode flowCapableNodeOperational);
 
     /**
      * @return delegated flow commiter
      */
-    public ForwardingRulesCommiter<Flow, AddFlowOutput> getFlowCommiter() {
+    public ForwardingRulesCommiter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> getFlowCommiter() {
         return provider.getFlowCommiter();
     }
 
     /**
      * @return delegated group commiter
      */
-    public ForwardingRulesCommiter<Group, AddGroupOutput> getGroupCommiter() {
+    public ForwardingRulesCommiter<Group, AddGroupOutput, RemoveGroupOutput, UpdateGroupOutput> getGroupCommiter() {
         return provider.getGroupCommiter();
     }
 
     /**
      * @return delegated meter commiter
      */
-    public ForwardingRulesCommiter<Meter, AddMeterOutput> getMeterCommiter() {
+    public ForwardingRulesCommiter<Meter, AddMeterOutput, RemoveMeterOutput, UpdateMeterOutput> getMeterCommiter() {
         return provider.getMeterCommiter();
     }
 
     /**
      * @return delegated table features commiter
      */
-    public ForwardingRulesCommiter<TableFeatures, UpdateTableOutput> getTableFeaturesCommiter() {
+    public ForwardingRulesUpdateCommiter<TableFeatures, UpdateTableOutput> getTableFeaturesCommiter() {
         return provider.getTableFeaturesCommiter();
     }
 
@@ -183,8 +190,8 @@ public abstract class AbstractFlowNodeReconciliator implements FlowNodeReconcili
      * @param nodeIdent path to target node
      * @return operational state of given node
      */
-    public CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readOperationalFlowCapableNode(
+    public CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readConfiguredFlowCapableNode(
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return getReadTransaction().read(LogicalDatastoreType.OPERATIONAL, nodeIdent);
+        return getReadTransaction().read(LogicalDatastoreType.CONFIGURATION, nodeIdent);
     }
 }

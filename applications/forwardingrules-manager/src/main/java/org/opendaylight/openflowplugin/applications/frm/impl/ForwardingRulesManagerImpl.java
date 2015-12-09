@@ -17,21 +17,14 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.impl.reconciliate.FlowCapableNodeReconciliatorStrictConfigLimitedImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.rev140925.ReconcilEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -46,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *
- * Created: Aug 25, 2014
+ *         Created: Aug 25, 2014
  */
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
@@ -56,6 +49,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     private final AtomicLong txNum = new AtomicLong();
     private final Object lockObj = new Object();
+    private final ReconcilEnum reconciliationStrategy;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
 
     private final DataBroker dataService;
@@ -65,14 +59,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalTableService salTableService;
     private final FlowCapableTransactionService flowCapableTransactionService;
 
-    private ForwardingRulesCommiter<Flow, AddFlowOutput> flowListener;
-    private ForwardingRulesCommiter<Group, AddGroupOutput> groupListener;
-    private ForwardingRulesCommiter<Meter, AddMeterOutput> meterListener;
-    private ForwardingRulesCommiter<TableFeatures, UpdateTableOutput> tableListener;
+    private FlowForwarder flowListener;
+    private GroupForwarder groupListener;
+    private MeterForwarder meterListener;
+    private TableForwarder tableListener;
     private FlowNodeReconciliation nodeListener;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-                                      final RpcConsumerRegistry rpcRegistry) {
+                                      final RpcConsumerRegistry rpcRegistry, final ReconcilEnum reconciliationStrategy) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
@@ -87,6 +81,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalTableService not found.");
         this.flowCapableTransactionService = Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
                 "RPC FlowCapableTransactionService not found.");
+        this.reconciliationStrategy = Preconditions.checkNotNull(reconciliationStrategy,
+                "reconciliation stategy can not be null");
     }
 
     @Override
@@ -98,9 +94,19 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.meterListener = new MeterForwarder(this, dataService);
 
         this.tableListener = new TableForwarder(this, dataService);
-        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
-        LOG.info("ForwardingRulesManager has started successfully.");
 
+        LOG.debug("applying reconciliation strategy: ", reconciliationStrategy);
+        switch (reconciliationStrategy) {
+            case DEFAULT:
+                this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
+                break;
+            case STRICTCONFIGLIMITED:
+                this.nodeListener = new FlowCapableNodeReconciliatorStrictConfigLimitedImpl(this, dataService);
+                break;
+            default:
+                throw new IllegalArgumentException("reconciliation strategy not supported: " + reconciliationStrategy);
+        }
+        LOG.info("ForwardingRulesManager has started successfully.");
     }
 
     @Override
@@ -196,22 +202,22 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ForwardingRulesCommiter<Flow, AddFlowOutput> getFlowCommiter() {
+    public FlowForwarder getFlowCommiter() {
         return flowListener;
     }
 
     @Override
-    public ForwardingRulesCommiter<Group, AddGroupOutput> getGroupCommiter() {
+    public GroupForwarder getGroupCommiter() {
         return groupListener;
     }
 
     @Override
-    public ForwardingRulesCommiter<Meter, AddMeterOutput> getMeterCommiter() {
+    public MeterForwarder getMeterCommiter() {
         return meterListener;
     }
 
     @Override
-    public ForwardingRulesCommiter<TableFeatures, UpdateTableOutput> getTableFeaturesCommiter() {
+    public TableForwarder getTableFeaturesCommiter() {
         return tableListener;
     }
 

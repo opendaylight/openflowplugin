@@ -21,6 +21,18 @@ module forwardingrules-manager {
             config:java-name-prefix ForwardingRulesManager;
     }
 
+    typedef reconcil-enum {
+        description "Reconciliation strategies.";
+        type enumeration {
+            enum DEFAULT {
+                description "Default strategy - push configured items to device.";
+            }
+            enum STRICT_CONFIG_LIMITED {
+                description "Add missing, remove redundant items, reuse existing";
+            }
+        }
+    }
+
     augment "/config:modules/config:module/config:configuration" {
         case forwardingrules-manager {
             when "/config:modules/config:module/config:type = 'forwardingrules-manager'";
@@ -41,6 +53,11 @@ module forwardingrules-manager {
                         config:required-identity mdsal:binding-async-data-broker;
                     }
                 }
+            }
+
+            leaf reconciliation-strategy {
+                type reconcil-enum;
+                default DEFAULT;
             }
         }
     }
