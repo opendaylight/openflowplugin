@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_a9cca736",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/listener/OpenflowProtocolListenerFullImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-12-11T18:14:11Z",
+      "side": 1,
+      "message": "Not sure if we should disconnect the connection here. Would it be possible for a man in the middle to impersonate a connected switch and send a hello and have a valid switch connection dropped. Will not happen on secure connection - but for insecure connection can happen \u0026 have the possibility of a denial of service attack.",
+      "range": {
+        "startLine": 73,
+        "startChar": 31,
+        "endLine": 73,
+        "endChar": 32
+      },
+      "revId": "c8b9c6dfd421a3cf4a40295b21f59384924fd8c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
