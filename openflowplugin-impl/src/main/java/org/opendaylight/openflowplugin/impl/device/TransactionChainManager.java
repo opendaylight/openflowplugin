@@ -62,7 +62,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-    private Registration managerRegistration;
+    private volatile Registration managerRegistration;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
                             @Nonnull final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
@@ -240,8 +240,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         }
         synchronized (this) {
             try {
-                LOG.debug("Closing registration in manager.");
-                managerRegistration.close();
+                if (managerRegistration != null) {
+                    LOG.debug("Closing registration in manager.");
+                    managerRegistration.close();
+                }
             } catch (Exception e) {
                 LOG.warn("Failed to close transaction chain manager's registration.", e);
             }

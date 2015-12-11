@@ -43,6 +43,7 @@ public class DeviceTransactionChainManagerProvider {
                 Registration registration = new Registration() {
                     @Override
                     public void close() throws Exception {
+                        LOG.trace("TransactionChainManagerRegistration Close called for {}", nodeId);
                         txChManagers.remove(nodeId);
                     }
                 };
