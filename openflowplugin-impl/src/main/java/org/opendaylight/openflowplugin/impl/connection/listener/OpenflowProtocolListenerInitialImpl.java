@@ -57,18 +57,17 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onErrorMessage(final ErrorMessage notification) {
-        // TODO: log
+        LOG.warn("NOOP: Error message received during handshake phase: {}", notification);
     }
 
     @Override
     public void onExperimenterMessage(final ExperimenterMessage notification) {
-        // NOOP
-
+        LOG.info("NOOP: Experimenter message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
-        // NOOP
+        LOG.info("NOOP: Flow-removed message during handshake phase not supported: {}", notification);
     }
 
     @Override
@@ -86,23 +85,24 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
             handshakeStepWrapper.run();
         } else {
             //TODO: consider disconnecting of bad behaving device
+            LOG.warn("Hello message received outside handshake phase: ", hello);
         }
 
     }
 
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
-        // NOOP
+        LOG.info("NOOP: Multipart-reply message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onPacketInMessage(final PacketInMessage notification) {
-        // NOOP
+        LOG.info("NOOP: Packet-in message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onPortStatusMessage(final PortStatusMessage notification) {
-        // NOOP
+        LOG.info("NOOP: Port-status message during handshake phase not supported: {}", notification);
     }
 
     /**

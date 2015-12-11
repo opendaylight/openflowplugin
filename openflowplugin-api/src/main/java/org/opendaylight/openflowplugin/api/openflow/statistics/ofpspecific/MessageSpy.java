@@ -34,6 +34,10 @@ public interface MessageSpy extends Runnable {
          */
         FROM_SWITCH_TRANSLATE_SRC_FAILURE,
         /**
+         * packetIn from switch reached processing limit and got dropped
+         */
+        FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED,
+        /**
          * message from switch to MD-SAL  - notification service rejected notfication
          */
         FROM_SWITCH_NOTIFICATION_REJECTED,
@@ -99,5 +103,5 @@ public interface MessageSpy extends Runnable {
      * @param statGroup
      */
     void spyMessage(Class<?> message, STATISTIC_GROUP statGroup);
-    
+
 }

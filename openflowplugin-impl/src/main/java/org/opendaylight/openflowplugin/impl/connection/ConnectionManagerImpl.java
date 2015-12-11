@@ -48,7 +48,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
         LOG.trace("preparing handshake: {}", connectionAdapter.getRemoteAddress());
 
-        final int handshakeThreadLimit = 1; //TODO: move to constants/parametrize
+        final int handshakeThreadLimit = 1;
         final ThreadPoolLoggingExecutor handshakePool = createHandshakePool(
                 connectionAdapter.getRemoteAddress().toString(), handshakeThreadLimit);
 

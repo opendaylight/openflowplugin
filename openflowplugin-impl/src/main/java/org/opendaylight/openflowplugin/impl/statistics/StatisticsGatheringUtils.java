@@ -114,7 +114,6 @@ public final class StatisticsGatheringUtils {
     public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer statisticsGatheringService,
                                                              final DeviceContext deviceContext,
                                                              final MultipartType type) {
-        //FIXME : anytype listener must not be send as parameter, it has to be extracted from device context inside service
         final String deviceId = deviceContext.getPrimaryConnectionContext().getNodeId().toString();
         EventIdentifier wholeProcessEventIdentifier = null;
         if (MultipartType.OFPMPFLOW.equals(type)) {

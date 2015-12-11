@@ -38,7 +38,6 @@ final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggr
         mprAggregateRequestBuilder.setTableId(tableId);
         long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
         mprAggregateRequestBuilder.setOutPort(outputPortValue);
-        // TODO: repeating code
 
         final short version = getVersion();
         if (version == OFConstants.OFP_VERSION_1_3) {

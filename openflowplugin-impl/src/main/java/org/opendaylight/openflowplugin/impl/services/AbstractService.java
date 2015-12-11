@@ -119,7 +119,7 @@ abstract class AbstractService<I, O> {
             Verify.verify(xid.getValue().equals(request.getXid()), "Expected XID %s got %s", xid.getValue(), request.getXid());
         } catch (Exception e) {
             LOG.error("Failed to build request for {}, forfeiting request {}", input, xid.getValue(), e);
-            // FIXME: complete the requestContext
+            RequestContextUtil.closeRequestContextWithRpcError(requestContext, "failed to build request input: " + e.getMessage());
         } finally {
             final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
             outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
