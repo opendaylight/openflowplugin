@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_1ef88f7b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalRoleServiceImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_3ef54b83",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/MdSalRegistratorUtils.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_feeed3b3",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_9e2b1feb",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/rpc/RpcManagerImplTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_de48b7ce",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/NodeConfigServiceImplTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_be17fba2",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/SalPortServiceImplTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_5e0cc794",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/util/MdSalRegistratorUtilsTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-12-11T13:24:17Z",
+      "side": 1,
+      "message": "please move to separate change",
+      "revId": "6d1f8f9a6a0f57c4354a6809ea538c50b83d5ff4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
