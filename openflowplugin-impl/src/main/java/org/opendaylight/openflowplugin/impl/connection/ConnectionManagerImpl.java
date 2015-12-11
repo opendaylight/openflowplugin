@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -124,11 +123,5 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void setDeviceConnectedHandler(final DeviceConnectedHandler deviceConnectedHandler) {
         this.deviceConnectedHandler = deviceConnectedHandler;
-    }
-
-    @Override
-    public void setMessageHandler(final MessageHandler arg0) {
-        // TODO Auto-generated method stub
-
     }
 }

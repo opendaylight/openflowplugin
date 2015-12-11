@@ -93,7 +93,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -199,11 +198,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public Long getReservedXid() {
         return outboundQueueProvider.reserveEntry();
-    }
-
-    @Override
-    public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext<?> requestContext) {
-        // TODO Auto-generated method stub
     }
 
     @Override

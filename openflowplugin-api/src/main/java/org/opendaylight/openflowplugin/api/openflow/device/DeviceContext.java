@@ -20,7 +20,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -51,7 +50,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
-        MessageHandler,
         DeviceReplyProcessor,
         DeviceDisconnectedHandler,
         PortNumberCache {
