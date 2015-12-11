@@ -1,15 +1,23 @@
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.openflowplugin.impl.services;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
 
 public class NodeConfigServiceImplTest extends ServiceMocking{
 
@@ -22,18 +30,14 @@ public class NodeConfigServiceImplTest extends ServiceMocking{
     @Test
     public void testSetConfig() throws Exception {
         nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        SetConfigInput setConfigInput = new SetConfigInputBuilder().build();
-        nodeConfigService.setConfig(setConfigInput);
+        nodeConfigService.setConfig(dummyConfigInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testBuildRequest() throws Exception {
         nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
-        setConfigInputBuilder.setFlag(DUMMY_FLAG_STR);
-        setConfigInputBuilder.setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH);
-        final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), setConfigInputBuilder.build());
+        final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
 
         assertTrue(request instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput
@@ -41,5 +45,12 @@ public class NodeConfigServiceImplTest extends ServiceMocking{
         assertEquals(DUMMY_FLAG,setConfigInput.getFlags());
         assertEquals(DUMMY_MISS_SEARCH_LENGTH, setConfigInput.getMissSendLen());
         assertEquals(DUMMY_XID_VALUE, setConfigInput.getXid());
+    }
+
+    private SetConfigInput dummyConfigInput(){
+        SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
+        setConfigInputBuilder.setFlag(DUMMY_FLAG_STR);
+        setConfigInputBuilder.setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH);
+        return setConfigInputBuilder.build();
     }
 }
