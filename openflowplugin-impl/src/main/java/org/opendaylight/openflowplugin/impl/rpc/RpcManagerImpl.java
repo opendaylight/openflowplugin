@@ -70,6 +70,11 @@ public class RpcManagerImpl implements RpcManager {
         } else {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
+
+            if (isStatisticsRpcEnabled) {
+                MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
+                        notificationPublishService, new AtomicLong());
+            }
         }
 
         deviceContext.addDeviceContextClosedHandler(this);
