@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -69,4 +70,15 @@ public interface ExtensionConverterProvider {
      * @return found converter
      */
     <F extends DataContainer, P extends AugmentationPath> ConvertorMessageFromOFJava<F, P> getMessageConverter(MessageTypeKey<?> key);
+
+    /**
+     * Convert from OFJava MatchField class to OFPlugin MatchField class
+     *
+     * This is going to be used during the table features processing in order to handle experimenter match fields.
+     *
+     * @param matchField the OFJava match field
+     * @return the OFPlugin match header type
+     */
+    Class<? extends MatchField> getMatchHeaderType(
+        Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> matchField);
 }

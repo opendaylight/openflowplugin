@@ -52,6 +52,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     private final Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
     private final Map<TypeVersionKey<?>, ConvertorMessageToOFJava<? extends ExperimenterMessageOfChoice, ? extends DataContainer>> registryMessageToOFJAva;
     private final Map<MessageTypeKey<?>, ConvertorMessageFromOFJava<? extends ExperimenterDataOfChoice, MessagePath>> registryMessageFromOFJAva;
+    private final Map<Class<? extends MatchField>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField>> registryMatchTypeToOFJava;
 
     /**
      * default ctor
@@ -63,6 +64,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
         registryActionFromOFJAva = new ConcurrentHashMap<>();
         registryMessageToOFJAva = new ConcurrentHashMap<>();
         registryMessageFromOFJAva = new ConcurrentHashMap<>();
+        registryMatchTypeToOFJava = new ConcurrentHashMap<>();
     }
 
     /**
@@ -314,5 +316,21 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     @Override
     public <F extends DataContainer, P extends AugmentationPath> ConvertorMessageFromOFJava<F, P> getMessageConverter(MessageTypeKey<?> key) {
         return (ConvertorMessageFromOFJava<F, P>) registryMessageFromOFJAva.get(key);
+    }
+
+    @Override
+    public void registerMatchTypeToOFJava(Class<? extends MatchField> ofJavaMatchFieldType,
+                                          Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> ofPluginMatchFieldType) {
+        registryMatchTypeToOFJava.put(ofJavaMatchFieldType, ofPluginMatchFieldType);
+    }
+
+    @Override
+    public void unregisterMatchTypeToOFJava(Class<? extends MatchField> ofJavaMatchFieldType) {
+        registryMatchTypeToOFJava.remove(ofJavaMatchFieldType);
+    }
+
+    @Override
+    public Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> getMatchHeaderType(Class<? extends MatchField> matchField) {
+        return registryMatchTypeToOFJava.get(matchField);
     }
 }

@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
@@ -576,6 +578,10 @@ public class TableFeaturesReplyConvertor {
                 setFieldMatchBuilder.setHasMask(currMatch.isHasMask());
             }
             setFieldMatchBuilder.setMatchType(OF_TO_SAL_TABLE_FEATURE_PROPERTIES.get(ofMatchField));
+            if (setFieldMatchBuilder.getMatchType() == null) {
+                ExtensionConverterProvider extensionConvertorProvider = OFSessionUtil.getExtensionConvertorProvider();
+                setFieldMatchBuilder.setMatchType(extensionConvertorProvider.getMatchHeaderType(ofMatchField));
+            }
             setFieldMatchList.add(setFieldMatchBuilder.build());
         }
         return setFieldMatchList;

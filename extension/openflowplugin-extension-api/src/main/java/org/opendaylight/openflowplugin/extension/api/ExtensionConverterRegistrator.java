@@ -69,4 +69,28 @@ public interface ExtensionConverterRegistrator {
      */
     <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>> registerMessageConvertor(
             MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor);
+
+    /**
+     * Register an OFJava match type to an OFPlugin match type
+     *
+     * This is necessary for table features processing. If your OFJava codec implements HeaderDeserializer
+     * you should also use this method to tell OFPlugin how to process the returned OFJava type.
+     *
+     * @see ExtensionConverterRegistrator#unregisterMatchTypeToOFJava
+     *
+     * @param ofJavaMatchFieldType   the OFJava MatchField type
+     * @param ofPluginMatchFieldType the OFPlugin MatchField type
+     */
+    void registerMatchTypeToOFJava(
+        Class<? extends MatchField> ofJavaMatchFieldType,
+        Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> ofPluginMatchFieldType);
+
+    /**
+     * Unregister the OFJava MatchField type from OFPlugin
+     *
+     * @see ExtensionConverterRegistrator#registerMatchTypeToOFJava
+     *
+     * @param ofJavaMatchFieldType the OFJava MatchField type
+     */
+    void unregisterMatchTypeToOFJava(Class<? extends MatchField> ofJavaMatchFieldType);
 }
