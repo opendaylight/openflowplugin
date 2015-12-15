@@ -37,6 +37,8 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         openflowPluginProvider.setSwitchFeaturesMandatory(getSwitchFeaturesMandatory());
         openflowPluginProvider.setIsStatisticsPollingOff(getIsStatisticsPollingOff());
         openflowPluginProvider.setEntityOwnershipService(getEntityOwnershipServiceDependency());
+        openflowPluginProvider.setIsStatisticsRpcEnabled(getIsStatisticsRpcEnabled());
+
         openflowPluginProvider.initialize();
 
         return openflowPluginProvider;

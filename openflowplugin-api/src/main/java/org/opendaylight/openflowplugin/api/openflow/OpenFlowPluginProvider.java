@@ -60,4 +60,11 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setEntityOwnershipService(EntityOwnershipService entityOwnershipService);
 
-    }
+
+    /**
+     * Backward compatibility feature - exposing rpc for statistics polling (result is provided in form of async notification)
+     *
+     * @param isStatisticsRpcEnabled
+     */
+    void setIsStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
+}

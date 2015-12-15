@@ -20,4 +20,6 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  */
 public interface RpcContext extends RequestContextStack, AutoCloseable {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
+
+    <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
 }

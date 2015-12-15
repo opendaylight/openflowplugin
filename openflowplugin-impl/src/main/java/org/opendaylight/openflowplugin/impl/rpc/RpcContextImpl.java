@@ -57,6 +57,18 @@ public class RpcContextImpl implements RpcContext {
         }
     }
 
+    @Override
+    public <S extends RpcService> S lookupRpcService(Class<S> serviceClass) {
+        S service = null;
+        for (RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
+            final RpcService rpcService = rpcRegistration.getInstance();
+            if (serviceClass.isInstance(rpcService)) {
+                service = (S) rpcService;
+                break;
+            }
+        }
+        return service;
+    }
     /**
      * Unregisters all services.
      *
