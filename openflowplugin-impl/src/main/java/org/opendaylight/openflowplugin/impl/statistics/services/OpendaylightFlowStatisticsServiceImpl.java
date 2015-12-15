@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -40,7 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author joe
  */
-public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowStatisticsService {
+public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowStatisticsService, Delegator<OpendaylightFlowStatisticsService> {
+
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceImpl.class);
 
     private final Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> matchingConvertor =
@@ -49,7 +51,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                 public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(final RpcResult<List<MultipartReply>> input) {
                     final DeviceContext deviceContext = matchingFlowsInTable.getDeviceContext();
                     TranslatorLibrary translatorLibrary = deviceContext.oook();
-                    RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;
+                    final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;
                     if (input.isSuccessful()) {
                         MultipartReply reply = input.getResult().get(0);
                         final TranslatorKey translatorKey = new TranslatorKey(reply.getVersion(), MultipartReplyAggregateCase.class.getName());
@@ -79,24 +81,30 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                 }
     };
 
-    private final AggregateFlowsInTableService aggregateFlowsInTable;
     private final MatchingFlowsInTableService matchingFlowsInTable;
-    private final AllFlowsInAllTablesService allFlowsInAllTables;
-    private final AllFlowsInTableService allFlowsInTable;
-    private final FlowsInTableService flowsInTable;
+    private OpendaylightFlowStatisticsService delegate;
 
     public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        aggregateFlowsInTable = new AggregateFlowsInTableService(requestContextStack, deviceContext);
-        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext);
-        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext);
-        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext);
         matchingFlowsInTable = new MatchingFlowsInTableService(requestContextStack, deviceContext);
     }
 
     @Override
+    public void setDelegate(OpendaylightFlowStatisticsService delegate) {
+        this.delegate = delegate;
+    }
+
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
+    @Override
+    @Deprecated
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
-        return aggregateFlowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
     @Override
@@ -105,21 +113,45 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
         return Futures.transform(matchingFlowsInTable.handleServiceCall(input), matchingConvertor);
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
-        return allFlowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAllFlowStatisticsFromFlowTable(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
-        return allFlowsInAllTables.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getAllFlowsStatisticsFromAllFlowTables(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 
+    /**
+     * @deprecated provided for Be-release as backward compatibility relic
+     */
     @Override
+    @Deprecated
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
-        return flowsInTable.handleServiceCall(input);
+        if (delegate != null) {
+            return delegate.getFlowStatisticsFromFlowTable(input);
+        } else {
+            throw new IllegalAccessError("no delegate available - service is currently out of order");
+        }
     }
 }

@@ -7,27 +7,36 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
-final class AllFlowsInAllTablesService extends AbstractSimpleService<GetAllFlowsStatisticsFromAllFlowTablesInput, GetAllFlowsStatisticsFromAllFlowTablesOutput> {
+public final class AllFlowsInAllTablesService extends AbstractCompatibleStatService<GetAllFlowsStatisticsFromAllFlowTablesInput,
+        GetAllFlowsStatisticsFromAllFlowTablesOutput, FlowsStatisticsUpdate> {
     private final MultipartRequestFlowCase flowCase;
 
-    AllFlowsInAllTablesService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext, GetAllFlowsStatisticsFromAllFlowTablesOutput.class);
+    public AllFlowsInAllTablesService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                                      final AtomicLong compatibilityXidSeed) {
+        super(requestContextStack, deviceContext, compatibilityXidSeed);
 
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
@@ -49,5 +58,15 @@ final class AllFlowsInAllTablesService extends AbstractSimpleService<GetAllFlows
         mprInput.setMultipartRequestBody(flowCase);
 
         return mprInput.build();
+    }
+
+    @Override
+    public GetAllFlowsStatisticsFromAllFlowTablesOutput buildTxCapableResult(TransactionId emulatedTxId) {
+        return new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder().setTransactionId(emulatedTxId).build();
+    }
+
+    @Override
+    public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext(), getOfVersion(), emulatedTxId);
     }
 }

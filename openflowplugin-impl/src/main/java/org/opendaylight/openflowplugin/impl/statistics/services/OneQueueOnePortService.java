@@ -7,24 +7,33 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
+import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.QueueStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 
-final class OneQueueOnePortService extends AbstractSimpleService<GetQueueStatisticsFromGivenPortInput, GetQueueStatisticsFromGivenPortOutput> {
-    OneQueueOnePortService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext, GetQueueStatisticsFromGivenPortOutput.class);
+final class OneQueueOnePortService
+        extends AbstractCompatibleStatService<GetQueueStatisticsFromGivenPortInput, GetQueueStatisticsFromGivenPortOutput, QueueStatisticsUpdate> {
+
+    public OneQueueOnePortService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+        super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
@@ -44,5 +53,15 @@ final class OneQueueOnePortService extends AbstractSimpleService<GetQueueStatist
                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
         mprInput.setMultipartRequestBody(caseBuilder.build());
         return mprInput.build();
+    }
+
+    @Override
+    public GetQueueStatisticsFromGivenPortOutput buildTxCapableResult(TransactionId emulatedTxId) {
+        return new GetQueueStatisticsFromGivenPortOutputBuilder().setTransactionId(emulatedTxId).build();
+    }
+
+    @Override
+    public QueueStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+        return QueueStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext(), getOfVersion(), emulatedTxId);
     }
 }

@@ -43,6 +43,7 @@ public class FlowStatisticsToNotificationTransformer {
                                                                 final TransactionId emulatedTxId) {
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
+        notification.setId(deviceContext.getDeviceState().getNodeId());
         notification.setFlowAndStatisticsMapList(statsList);
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
