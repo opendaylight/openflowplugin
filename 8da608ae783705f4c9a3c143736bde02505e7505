@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_4ae2b7a0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/config/yang/forwardingrules_manager/ForwardingRulesManagerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-12-16T02:31:17Z",
+      "side": 1,
+      "message": "How do you know this was contributed by Cisco and not Ericsson or someone else? Did you check who contributed the file? Same for other files.",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "8da608ae783705f4c9a3c143736bde02505e7505",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_ea95a3e4",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/config/yang/statistics_manager/StatisticsManagerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-12-16T02:31:17Z",
+      "side": 1,
+      "message": "Stats manager was contributed by Anil Vishnoi who at that time was with IBM. But of course its possible this was initially contributed by Cisco. Just not sure if you have got the info from the file history - if yes please resubmit (and will merge).",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "8da608ae783705f4c9a3c143736bde02505e7505",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
