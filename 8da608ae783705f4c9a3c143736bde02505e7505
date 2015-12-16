@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_0ac27fe9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/config/yang/forwardingrules_manager/ForwardingRulesManagerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-12-16T02:46:54Z",
+      "side": 1,
+      "message": "I checked the history of the module as well as looked at a few of the other files in this module to get a sense of who worked on it. Of course this isn\u0027t 100% positive way of checking if another dev checked it in on behalf of.\n\nThis was contributed by Martin Bobak on April 23rd 2015. I\u0027ll update the date.",
+      "parentUuid": "1aa4ed85_4ae2b7a0",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "8da608ae783705f4c9a3c143736bde02505e7505",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_ea95a3e4",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/config/yang/statistics_manager/StatisticsManagerModule.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2015-12-16T02:31:17Z",
       "side": 1,
       "message": "Stats manager was contributed by Anil Vishnoi who at that time was with IBM. But of course its possible this was initially contributed by Cisco. Just not sure if you have got the info from the file history - if yes please resubmit (and will merge).",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "8da608ae783705f4c9a3c143736bde02505e7505",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_aab6cb88",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/config/yang/statistics_manager/StatisticsManagerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-12-16T02:46:54Z",
+      "side": 1,
+      "message": "According to the file\u0027s history this was checked in by Michal Rehak on January 22nd 2015. Unless he checked it on on behalf of another Dev.\n\nI will update the date but let me know if it should be someone else.",
+      "parentUuid": "1aa4ed85_ea95a3e4",
       "range": {
         "startLine": 2,
         "startChar": 17,
