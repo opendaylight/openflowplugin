@@ -13,4 +13,10 @@
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira/{{VERSION}}</bundle>
     </feature>
 
+    <feature name="odl-openflowplugin-hpe-extensions-li" description="OpenDaylight :: Openflow Plugin :: HPE Extensions" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound-li</feature>
+        <configfile finalname="etc/opendaylight/karaf/43-openflowplugin-hpe-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-hpe/{{VERSION}}/xml/config</configfile>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-hpe/{{VERSION}}</bundle>
+    </feature>
+
 </features>

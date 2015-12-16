@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2015 Hewlett Packard Enterprise Development LP and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:hpe">prefix:hpe-extension-provider-impl</type>
+                    <name>hpe-extension-provider-impl</name>
+                    <openflow-plugin-extension-registry>
+                        <type xmlns:ofpExtProv="urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:api">ofpExtProv:openflow-extension-registry-provider</type>
+                        <name>openflow-ext-provider</name>
+                    </openflow-plugin-extension-registry>
+                    <openflow-switch-connection-provider>
+                        <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+                        <name>openflow-switch-connection-provider-default</name>
+                    </openflow-switch-connection-provider>
+                </module>
+            </modules>
+        </data>
+    </configuration>
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:api?module=openflowplugin-extension-registry&amp;revision=2015-04-25</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
+    </required-capabilities>
+</snapshot>

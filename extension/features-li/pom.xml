@@ -64,6 +64,18 @@
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowjava-extension-nicira</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-hpe</artifactId>
+      <version>0.2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-hpe</artifactId>
+      <version>0.2.0-SNAPSHOT</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
   </dependencies>
 
 </project>

@@ -1,0 +1,224 @@
+// Copyright (c) 2015 Hewlett Packard Enterprise Development LP and others.  All rights reserved.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License v1.0 which accompanies this distribution,
+// and is available at http://www.eclipse.org/legal/epl-v10.html
+
+module hpe-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extensions:hpe";
+    prefix "hpe-match";
+
+    import openflow-extensible-match {prefix ofoxm;}
+    import openflow-types {prefix oft;}
+    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import opendaylight-table-types { prefix table; revision-date "2013-10-26"; }
+    import openflow-augments { prefix ofaug; revision-date "2015-02-25"; }
+
+
+    description
+        "Hewlett Packard Enterprise openflow extensions of match.";
+
+    revision "2015-11-12" {
+        description "Initial revision";
+    }
+
+    // UDP Source Port Range
+    identity hpe-of-udp-src-range {
+        base ofoxm:match-field;
+    }
+
+    identity hpe-udp-src-range {
+        base table:match-field;
+    }
+
+    identity hpe-udp-src-range-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping ofj-hpe-of-match-udp-src-range-grouping {
+        container udp-src-range-values {
+            leaf begin {
+                type uint16;
+                mandatory true;
+            }
+            leaf end {
+                type uint16;
+                mandatory true;
+            }
+        }
+    }
+
+    // UDP Destination Port Range
+    identity hpe-of-udp-dst-range {
+        base ofoxm:match-field;
+    }
+
+    identity hpe-udp-dst-range {
+        base table:match-field;
+    }
+
+    identity hpe-udp-dst-range-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping ofj-hpe-of-match-udp-dst-range-grouping {
+        container udp-dst-range-values {
+            leaf begin {
+                type uint16;
+                mandatory true;
+            }
+            leaf end {
+                type uint16;
+                mandatory true;
+            }
+        }
+    }
+
+    // TCP Source Port Range
+    identity hpe-of-tcp-src-range {
+        base ofoxm:match-field;
+    }
+
+    identity hpe-tcp-src-range {
+        base table:match-field;
+    }
+
+    identity hpe-tcp-src-range-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping ofj-hpe-of-match-tcp-src-range-grouping {
+        container tcp-src-range-values {
+            leaf begin {
+                type uint16;
+                mandatory true;
+            }
+            leaf end {
+                type uint16;
+                mandatory true;
+            }
+        }
+    }
+
+    // TCP Destination Port Range
+    identity hpe-of-tcp-dst-range {
+        base ofoxm:match-field;
+    }
+
+    identity hpe-tcp-dst-range {
+        base table:match-field;
+    }
+
+    identity hpe-tcp-dst-range-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping ofj-hpe-of-match-tcp-dst-range-grouping {
+        container tcp-dst-range-values {
+            leaf begin {
+                type uint16;
+                mandatory true;
+            }
+            leaf end {
+                type uint16;
+                mandatory true;
+            }
+        }
+    }
+
+    // TCP Flags
+    identity hpe-of-tcp-flags {
+        base ofoxm:match-field;
+    }
+
+    identity hpe-tcp-flags {
+        base table:match-field;
+    }
+
+    identity hpe-tcp-flags-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping ofj-hpe-of-match-tcp-flags-grouping {
+        container tcp-flags-values {
+            leaf flags {
+                type uint16;
+                mandatory true;
+            }
+            leaf mask {
+                type uint16;
+                mandatory true;
+            }
+        }
+    }
+
+    // Augmentations
+    grouping all-matches-grouping {
+        uses ofj-hpe-of-match-udp-src-range-grouping;
+        uses ofj-hpe-of-match-udp-dst-range-grouping;
+        uses ofj-hpe-of-match-tcp-src-range-grouping;
+        uses ofj-hpe-of-match-tcp-dst-range-grouping;
+        uses ofj-hpe-of-match-tcp-flags-grouping;
+    }
+
+    augment "/ofoxm:oxm-container/ofoxm:match-entry-value/ofaug:experimenter-id-case/ofaug:experimenter" {
+        ext:augment-identifier "ofj-aug-hpe-match";
+        uses ofj-hpe-of-match-udp-src-range-grouping;
+        uses ofj-hpe-of-match-udp-dst-range-grouping;
+        uses ofj-hpe-of-match-tcp-src-range-grouping;
+        uses ofj-hpe-of-match-tcp-dst-range-grouping;
+        uses ofj-hpe-of-match-tcp-flags-grouping;
+    }
+
+    // OpenFlowPlugin
+    // MATCH augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-rpc-add-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-rpc-remove-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-rpc-update-flow-original";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-rpc-update-flow-updated";
+        uses all-matches-grouping;
+    }
+
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-nodes-node-table-flow";
+        uses all-matches-grouping;
+    }
+
+    // NOTIFICATIONS
+    augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-notif-switch-flow-removed";
+        uses all-matches-grouping;
+    }
+    augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-notif-packet-in";
+        uses all-matches-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "hpe-aug-match-notif-update-flow-stats";
+        uses all-matches-grouping;
+    }
+
+}

@@ -1,0 +1,51 @@
+// Copyright (c) 2015 Hewlett Packard Enterprise Development LP and others.  All rights reserved.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License v1.0 which accompanies this distribution,
+// and is available at http://www.eclipse.org/legal/epl-v10.html
+
+module hpe-extension {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:hpe";
+    prefix "hpe-extension";
+
+    import config {prefix config; revision-date 2013-04-05; }
+    import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
+    import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
+
+    description
+        "openflow extension for Hewlett Packard Enterprise - config";
+
+    revision "2015-11-12" {
+        description
+            "Initial revision";
+    }
+
+    identity hpe-extension-provider-impl {
+        base config:module-type;
+        config:java-name-prefix HpeExtensionProvider;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case hpe-extension-provider-impl {
+            when "/config:modules/config:module/config:type = 'hpe-extension-provider-impl'";
+
+            container openflow-plugin-extension-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity ofp-ext-reg:openflow-extension-registry-provider;
+                    }
+                }
+            }
+            list openflow-switch-connection-provider {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity openflow-switch-connection-provider:openflow-switch-connection-provider;
+                    }
+                }
+            }
+        }
+    }
+}
