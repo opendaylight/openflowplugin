@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
@@ -40,12 +41,36 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
                 connectionContext.getConnectionAdapter().getRemoteAddress());
 
         if (connectionContext.getConnectionState() == null) {
-            HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                    null, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
-            handshakeContext.getHandshakePool().execute(handshakeStepWrapper);
-            connectionContext.changeStateToHandshaking();
+            synchronized (connectionContext) {
+                if (connectionContext.getConnectionState() == null) {
+                    connectionContext.changeStateToHandshaking();
+                    HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
+                            null, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
+                    final Future<?> handshakeResult = handshakeContext.getHandshakePool().submit(handshakeStepWrapper);
+
+                    try {
+                        // as we run not in netty thread, need to remain in sync lock until initial handshake step processed
+                        handshakeResult.get();
+                    } catch (Exception e) {
+                        LOG.warn("failed to process onConnectionReady event on device {}",
+                                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                                e);
+                        connectionContext.closeConnection(false);
+                        try {
+                            handshakeContext.close();
+                        } catch (Exception e1) {
+                            LOG.info("failed to close handshake context for device {}",
+                                    connectionContext.getConnectionAdapter().getRemoteAddress(),
+                                    e1
+                            );
+                        }
+                    }
+                } else {
+                    LOG.debug("already touched by hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+                }
+            }
         } else {
-            LOG.debug("already touched by hello message");
+            LOG.debug("already touched by hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
     }
 

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionContextImpl implements ConnectionContext {
 
     private final ConnectionAdapter connectionAdapter;
-    private CONNECTION_STATE connectionState;
+    private volatile CONNECTION_STATE connectionState;
     private FeaturesReply featuresReply;
     private NodeId nodeId;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
@@ -175,17 +175,17 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void changeStateToHandshaking() {
+    public synchronized void changeStateToHandshaking() {
         connectionState = CONNECTION_STATE.HANDSHAKING;
     }
 
     @Override
-    public void changeStateToTimeouting() {
+    public synchronized void changeStateToTimeouting() {
         connectionState = CONNECTION_STATE.TIMEOUTING;
     }
 
     @Override
-    public void changeStateToWorking() {
+    public synchronized void changeStateToWorking() {
         connectionState = CONNECTION_STATE.WORKING;
     }
 
