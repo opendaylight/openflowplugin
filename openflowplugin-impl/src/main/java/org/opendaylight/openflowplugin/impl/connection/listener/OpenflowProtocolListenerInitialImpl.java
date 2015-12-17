@@ -73,21 +73,28 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onHelloMessage(final HelloMessage hello) {
-        LOG.debug("processing HELLO.xid: {}", hello.getXid());
-        if (connectionContext.getConnectionState() == null) {
-            connectionContext.changeStateToHandshaking();
-        }
+        LOG.debug("processing HELLO.xid: {} from device {}", hello.getXid(), connectionContext.getConnectionAdapter().getRemoteAddress());
+        final ConnectionContext.CONNECTION_STATE connectionState = connectionContext.getConnectionState();
+        if (connectionState == null
+                || ConnectionContext.CONNECTION_STATE.HANDSHAKING.equals(connectionState)) {
+            synchronized (connectionContext) {
+                if (connectionContext.getConnectionState() == null) {
+                    // got here before connection ready notification
+                    connectionContext.changeStateToHandshaking();
+                }
 
-        if (checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING)) {
-            final HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                    hello, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
-            //handshakeContext.getHandshakePool().submit(handshakeStepWrapper);
-            // use up netty thread
-            handshakeStepWrapper.run();
+                if (checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING)) {
+                    final HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
+                            hello, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
+                    // use up netty thread
+                    handshakeStepWrapper.run();
+                } else {
+                    LOG.debug("already out of handshake phase but still received hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+                }
+            }
         } else {
-            //TODO: consider disconnecting of bad behaving device
+            LOG.debug("already touched by onConnectionReady event from device {} (or finished handshake)", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
-
     }
 
     @Override
