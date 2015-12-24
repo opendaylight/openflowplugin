@@ -108,6 +108,12 @@ module nicira-match {
     identity nxm-of-udp-dst {
         base ofoxm:match-field;
     }
+    identity nxm-nx-ct-state {
+        base ofoxm:match-field;
+    }
+     identity nxm-nx-ct-zone {
+        base ofoxm:match-field;
+    }
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -209,13 +215,13 @@ module nicira-match {
             }
         }
     }
-    
+
     grouping ofj-nxm-nx-match-nshc-grouping {
         leaf nshc {
             type uint32;
         }
     }
-    
+
     grouping ofj-nxm-nx-match-nshc-1-grouping {
         container nshc-1-values {
             uses ofj-nxm-nx-match-nshc-grouping;
@@ -276,7 +282,23 @@ module nicira-match {
             }
         }
     }
-
+    grouping ofj-nxm-nx-match-ct-state-grouping{
+         container ct-state-values {
+            leaf ct-state {
+               type uint32;
+            }
+             leaf mask {
+               type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-ct-zone-grouping{
+         container ct-zone-values {
+            leaf ct-zone {
+               type uint16;
+            }
+        }
+    }
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
         case reg-case-value {
@@ -345,6 +367,12 @@ module nicira-match {
         }
         case udp-dst-case-value {
             uses ofj-nxm-of-match-udp-dst-grouping;
+        }
+        case ct-state-case-value {
+            uses ofj-nxm-nx-match-ct-state-grouping;
+        }
+        case ct-zone-case-value {
+            uses ofj-nxm-nx-match-ct-zone-grouping;
         }
 
     }
