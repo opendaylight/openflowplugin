@@ -8,13 +8,13 @@ module nicira-action {
     import openflow-types {prefix oft;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
 
-    description 
+    description
         "Nicira openflow extensions of action.";
 
     revision "2014-04-21" {
         description "Initial revision";
     }
-    
+
     identity nxm-nx-reg-load {
         base ofaction:experimenter-action-sub-type;
     }
@@ -34,6 +34,9 @@ module nicira-action {
         base ofaction:experimenter-action-sub-type;
     }
     identity nxm-nx-set-nsi {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-conntrack {
         base ofaction:experimenter-action-sub-type;
     }
 
@@ -191,7 +194,7 @@ module nicira-action {
             }
         }
     }
-    
+
     grouping ofj-nx-action-set-nshc-grouping {
         leaf nshc {
             type uint32;
@@ -200,7 +203,7 @@ module nicira-action {
             type oft:experimenter-id;
         }
     }
-    
+
     grouping ofj-nx-action-set-nshc-1-grouping {
         container nx-action-set-nshc-1 {
             uses ofj-nx-action-set-nshc-grouping;
@@ -219,6 +222,26 @@ module nicira-action {
     grouping ofj-nx-action-set-nshc-4-grouping {
         container nx-action-set-nshc-4 {
             uses ofj-nx-action-set-nshc-grouping;
+        }
+    }
+
+    grouping ofj-nx-action-conntrack-grouping {
+        container nx-action-conntrack {
+            leaf flags {
+                type uint16;
+            }
+            leaf zone-src {
+                type uint32;
+            }
+            leaf conntrack-zone {
+                type uint16;
+            }
+            leaf recirc-table {
+                type uint8;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
 
@@ -256,6 +279,9 @@ module nicira-action {
         }
         case action-set-nshc-4 {
             uses ofj-nx-action-set-nshc-4-grouping;
+        }
+        case action-conntrack {
+            uses ofj-nx-action-conntrack-grouping;
         }
     }
 }
