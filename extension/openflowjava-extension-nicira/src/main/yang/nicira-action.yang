@@ -36,6 +36,9 @@ module nicira-action {
     identity nxm-nx-set-nsi {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-conntrack {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container nx-action-reg-load {
@@ -222,6 +225,26 @@ module nicira-action {
         }
     }
 
+    grouping ofj-nx-action-conntrack-grouping {
+        container nx-action-conntrack {
+            leaf flags {
+                type uint16;
+            }
+            leaf zone-src {
+                type uint32;
+            }
+            leaf conntrack-zone {
+                type uint16;
+            }
+            leaf recirc-table {
+                type uint8;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
@@ -256,6 +279,9 @@ module nicira-action {
         }
         case action-set-nshc-4 {
             uses ofj-nx-action-set-nshc-4-grouping;
+        }
+        case action-conntrack {
+            uses ofj-nx-action-conntrack-grouping;
         }
     }
 }
