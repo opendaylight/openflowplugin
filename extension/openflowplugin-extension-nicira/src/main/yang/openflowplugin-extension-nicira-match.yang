@@ -15,13 +15,13 @@ module openflowplugin-extension-nicira-match {
     import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
     import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
 
-    description 
+    description
         "Nicira openflow match extensions.";
 
     revision "2014-07-14" {
         description "Initial revision";
     }
-    
+
     identity nxm-nx-reg0-key {
         base ext-gen:extension-key;
     }
@@ -118,6 +118,12 @@ module openflowplugin-extension-nicira-match {
     identity nxm-of-icmp-type-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-ct-state-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-ct-zone-key {
+        base ext-gen:extension-key;
+    }
     grouping ipv4-address-grouping {
         leaf ipv4-address {
             type inet:ipv4-address;
@@ -185,7 +191,7 @@ module openflowplugin-extension-nicira-match {
     grouping nxm-of-tcp-dst-grouping {
         container nxm-of-tcp-dst {
             leaf port {
-                        type inet:port-number;
+                type inet:port-number;
             }
             leaf mask {
                type uint16;
@@ -287,8 +293,25 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-ct-state-grouping {
+         container nxm-nx-ct-state {
+            leaf ct-state {
+               type uint32;
+            }
+             leaf mask {
+               type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-ct-zone-grouping {
+         container nxm-nx-ct-zone {
+            leaf ct-zone {
+               type uint16;
+            }
+        }
+    }
 
-    
+
     grouping all-matches-grouping {
         uses nxm-nx-reg-grouping;
         uses nxm-nx-tun-id-grouping;
@@ -315,6 +338,8 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-tcp-dst-grouping;
         uses nxm-of-udp-src-grouping;
         uses nxm-of-udp-dst-grouping;
+        uses nxm-nx-ct-state-grouping;
+        uses nxm-nx-ct-zone-grouping;
     }
 
     // MATCH augmentations
@@ -335,13 +360,13 @@ module openflowplugin-extension-nicira-match {
         ext:augment-identifier "nx-aug-match-rpc-update-flow-updated";
         uses all-matches-grouping;
     }
-    
+
     // DATA
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
         ext:augment-identifier "nx-aug-match-nodes-node-table-flow";
         uses all-matches-grouping;
     }
-    
+
     // NOTIFICATIONS
     augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
         ext:augment-identifier "nx-aug-match-notif-switch-flow-removed";

@@ -24,4 +24,5 @@ public class NiciraActionCodecs {
     public static final SetNshc2Codec SET_NSC2_CODEC = new SetNshc2Codec();
     public static final SetNshc3Codec SET_NSC3_CODEC = new SetNshc3Codec();
     public static final SetNshc4Codec SET_NSC4_CODEC = new SetNshc4Codec();
+    public static final ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
 }

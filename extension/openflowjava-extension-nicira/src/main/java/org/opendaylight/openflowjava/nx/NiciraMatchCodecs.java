@@ -12,6 +12,8 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
@@ -78,4 +80,6 @@ public class NiciraMatchCodecs {
     public static final IpSrcCodec IP_SRC_CODEC = new IpSrcCodec();
     public static final IpDstCodec IP_DST_CODEC = new IpDstCodec();
     public static final IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
+    public static final CtStateCodec CT_ST_CODEC = new CtStateCodec();
+    public static final CtZoneCodec CT_ZONE_CODEC = new CtZoneCodec();
 }
