@@ -12,6 +12,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import java.util.concurrent.Future;
 
 /**
  * forwardingrules-manager
@@ -61,6 +64,25 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      */
     void add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
+
+
+    /**
+     * Method creates stale-marked DataObject which is identified by InstanceIdentifier
+     * from device.
+     *
+     * @param identifier - the whole path to DataObject
+     * @param del - DataObject removed. Stale-Mark object to be created from this object
+     * @param nodeIdent Node InstanceIdentifier
+     */
+    void createStaleMarkEntity(InstanceIdentifier<D> identifier, D del,
+                InstanceIdentifier<FlowCapableNode> nodeIdent);
+
+
+
+    Future<? extends RpcResult> removeWithResult(InstanceIdentifier<D> identifier, D del,
+                                               InstanceIdentifier<FlowCapableNode> nodeIdent);
+
+
 
 }
 

@@ -241,6 +241,13 @@ module opendaylight-group-types {
         
             uses group;
         }
+
+        // BE-RECON: Modification for including stale-group for Reconciliation
+        list stale-group {
+            key "group-id";
+
+            uses group;
+        }
     }
     
 }

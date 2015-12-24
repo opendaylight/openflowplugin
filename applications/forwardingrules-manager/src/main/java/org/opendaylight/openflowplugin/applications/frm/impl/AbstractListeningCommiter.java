@@ -16,6 +16,9 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 
 /**
@@ -26,6 +29,8 @@ import java.util.Collection;
  *
  */
 public abstract class AbstractListeningCommiter <T extends DataObject> implements ForwardingRulesCommiter<T> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
 
     protected ForwardingRulesManager provider;
 
@@ -63,6 +68,24 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
                     break;
                 default:
                     throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                }
+            }
+            else{
+                if (provider.getConfiguration().isStaleMarkingEnabled()) {
+                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
+                            nodeIdent.toString());
+                    // Switch is NOT connected
+                    switch (mod.getModificationType()) {
+                        case DELETE:
+                            createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                            break;
+                        case SUBTREE_MODIFIED:
+                            break;
+                        case WRITE:
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                    }
                 }
             }
         }

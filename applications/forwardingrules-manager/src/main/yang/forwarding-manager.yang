@@ -42,6 +42,14 @@ module forwardingrules-manager {
                     }
                 }
             }
+
+            container forwarding-manager-settings {
+                leaf stale-marking-enabled {
+                    type boolean;
+                }
+
+            }
+
         }
     }
 

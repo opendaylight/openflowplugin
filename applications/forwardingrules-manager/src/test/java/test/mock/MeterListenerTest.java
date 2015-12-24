@@ -13,9 +13,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -40,7 +38,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void addTwoMetersTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -76,7 +77,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void updateMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -109,7 +113,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void removeMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -137,6 +144,21 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(meterII, removeMeterCalls.get(0).getMeterRef().getValue());
 
         forwardingRulesManager.close();
+    }
+
+
+    @Test
+    public void staleMeterCreationTest() throws Exception {
+        addFlowCapableNode(s1Key);
+
+        StaleMeterKey meterKey = new StaleMeterKey(new MeterId((long) 2000));
+        InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+                .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey);
+        StaleMeter meter = new StaleMeterBuilder().setKey(meterKey).setMeterName("stale_meter_one").build();
+
+        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
+        assertCommit(writeTx.submit());
     }
 
 }

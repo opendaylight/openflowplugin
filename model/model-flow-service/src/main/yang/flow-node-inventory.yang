@@ -118,12 +118,27 @@ module flow-node-inventory {
     
                 uses flow:flow;
             }
+            // BE-RECON: Modification for including stale-flow for Reconciliation
+            list stale-flow {
+                key "id";
+
+                leaf id {
+                    type flow-id;
+                }
+
+                uses flow:flow;
+            }
         }
     }
     
     grouping meters {
         description "Openflow meter list.";
         list meter {
+            key "meter-id";
+            uses meter:meter;
+        }
+        // BE-RECON: Modification for including stale-flow for Reconciliation
+        list stale-meter {
             key "meter-id";
             uses meter:meter;
         }

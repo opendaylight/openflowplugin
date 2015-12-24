@@ -1,5 +1,6 @@
 package test.mock.util;
 
+import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -52,5 +53,13 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         assertCommit(writeTx.submit());
+    }
+
+    public ForwardingRulesManagerConfig getConfig(){
+        ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder cfgBuilder =
+                new ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder();
+        cfgBuilder.setStaleMarkingEnabled(false);
+        return cfgBuilder.build();
+
     }
 }

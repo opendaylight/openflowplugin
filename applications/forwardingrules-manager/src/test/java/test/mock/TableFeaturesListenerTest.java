@@ -39,7 +39,10 @@ public class TableFeaturesListenerTest extends FRMTest {
         NodeKey s1Key = new NodeKey(new NodeId("S1"));
         TableKey tableKey = new TableKey((short) 2);
         TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addTable(tableKey, s1Key);

@@ -17,9 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -40,7 +38,8 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void addTwoGroupsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -75,7 +74,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void updateGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -107,7 +109,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void removeGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock);
+        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig());
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -134,5 +139,19 @@ public class GroupListenerTest extends FRMTest {
         assertEquals("DOM-1", removeGroupCalls.get(0).getTransactionUri().getValue());
 
         forwardingRulesManager.close();
+    }
+
+    @Test
+    public void staleGroupCreationTest() throws Exception {
+        addFlowCapableNode(s1Key);
+
+        StaleGroupKey groupKey = new StaleGroupKey(new GroupId((long) 255));
+        InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+                .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey);
+        StaleGroup group = new StaleGroupBuilder().setKey(groupKey).setGroupName("Stale_Group1").build();
+
+        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
+        assertCommit(writeTx.submit());
     }
 }

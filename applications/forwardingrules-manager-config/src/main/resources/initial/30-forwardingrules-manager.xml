@@ -30,6 +30,9 @@
                         </type>
                         <name>binding-rpc-broker</name>
                     </rpc-registry>
+                    <forwarding-manager-settings>
+                        <stale-marking-enabled>false</stale-marking-enabled>
+                    </forwarding-manager-settings>
                 </module>
             </modules>
         </data>

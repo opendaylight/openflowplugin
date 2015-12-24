@@ -28,7 +28,10 @@ public class NodeListenerTest extends FRMTest {
 
     @Test
     public void addRemoveNodeTest() throws Exception {
-        try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock)) {
+        try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig())) {
             forwardingRulesManager.start();
 
             addFlowCapableNode(s1Key);
