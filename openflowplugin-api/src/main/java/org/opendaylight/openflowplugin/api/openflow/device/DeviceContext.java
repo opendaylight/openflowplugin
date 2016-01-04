@@ -197,6 +197,6 @@ public interface DeviceContext extends AutoCloseable,
     /**
      * Callback when confirmed that device is disconnected from cluster
       */
-    void onDeviceDisconnectedFromCluster();
+    void onDeviceDisconnectedFromCluster(boolean removeNodeFromDS);
 }
 

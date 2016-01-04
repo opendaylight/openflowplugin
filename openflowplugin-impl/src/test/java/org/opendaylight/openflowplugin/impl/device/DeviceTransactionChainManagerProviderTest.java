@@ -122,10 +122,10 @@ public class DeviceTransactionChainManagerProviderTest {
         CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture = Futures.immediateCheckedFuture(null);
         Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
         txChainManager.close();
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WAITING_TO_BE_SHUT,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
         txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Mockito.verify(readyForNewTransactionChainHandler).onReadyForNewTransactionChain();
+        Mockito.verify(readyForNewTransactionChainHandler, Mockito.never()).onReadyForNewTransactionChain();
     }
 
 
@@ -154,7 +154,7 @@ public class DeviceTransactionChainManagerProviderTest {
                     }
                 });
         Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
-        txChainManager.cleanupPostClosure();
+        txChainManager.cleanupPostClosure(true);
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
         txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);

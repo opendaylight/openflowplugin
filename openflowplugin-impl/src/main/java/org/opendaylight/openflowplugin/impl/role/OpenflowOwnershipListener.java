@@ -33,6 +33,8 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowOwnershipListener.class);
 
+    public static boolean REMOVE_NODE_FROM_DS = true;
+
     private EntityOwnershipService entityOwnershipService;
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private Map<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
@@ -60,13 +62,17 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
                 // possible the last node to be disconnected from device.
                 // eligible for the device to get deleted from inventory.
                 LOG.debug("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
-                roleChangeListener.onDeviceDisconnectedFromCluster();
+                roleChangeListener.onDeviceDisconnectedFromCluster(REMOVE_NODE_FROM_DS);
 
             } else {
                 OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
                 OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
                 // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
                 roleChangeListener.onRoleChanged(oldRole, newRole);
+
+                // we dont know if this is disconnect or an ownership change from EntityOwnershipService
+                // so we will treat this as a disconnect if the txnChainMgr has a status WAITING_TO_BE_SHUT
+                roleChangeListener.onDeviceDisconnectedFromCluster(!REMOVE_NODE_FROM_DS);
             }
         }
     }
