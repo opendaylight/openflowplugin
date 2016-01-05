@@ -111,7 +111,16 @@ module nicira-match {
     identity nxm-nx-ct-state {
         base ofoxm:match-field;
     }
-     identity nxm-nx-ct-zone {
+    identity nxm-nx-ct-zone {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-ip-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-ip-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-icmp-type {
         base ofoxm:match-field;
     }
 
@@ -299,6 +308,28 @@ module nicira-match {
             }
         }
     }
+    grouping ofj-nxm-of-match-ip-dst-grouping {
+        container ip-dst-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-ip-src-grouping {
+        container ip-src-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-icmp-type-grouping {
+        container icmp-type-values {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
+
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
         case reg-case-value {
@@ -373,6 +404,15 @@ module nicira-match {
         }
         case ct-zone-case-value {
             uses ofj-nxm-nx-match-ct-zone-grouping;
+        }
+        case ip-dst-case-value {
+            uses ofj-nxm-of-match-ip-dst-grouping;
+        }
+        case ip-src-case-value {
+            uses ofj-nxm-of-match-ip-src-grouping;
+        }
+        case icmp-type-case-value {
+            uses ofj-nxm-of-match-icmp-type-grouping;
         }
 
     }
