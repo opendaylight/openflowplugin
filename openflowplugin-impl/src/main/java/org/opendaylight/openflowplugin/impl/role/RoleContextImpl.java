@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -115,6 +116,13 @@ public class RoleContextImpl implements RoleContext {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
+                if (OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
+                    deviceContext.onDeviceBecomeMaster();
+                } else {
+                    if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())) {
+                        deviceContext.onDeviceBecomeSlave();
+                    }
+                }
                 if (roleChangeCallback != null) {
                     roleChangeCallback.onSuccess(true);
                 }
@@ -130,6 +138,8 @@ public class RoleContextImpl implements RoleContext {
             }
         });
     }
+
+
 
     @Override
     public void close() throws Exception {
@@ -155,9 +165,21 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void onDeviceDisconnectedFromCluster(final EntityOwnershipChange entityOwnershipChange) {
         LOG.debug("Called onDeviceDisconnectedFromCluster in DeviceContext for entity:{}", entity);
-        deviceContext.onDeviceDisconnectedFromCluster();
+        deviceContext.onDeviceDisconnectedFromCluster(entityOwnershipChange);
+    }
+
+    @Override
+    public void onDeviceBecomeSlave() {
+        LOG.trace("Device become a slave, disabling transactions");
+        deviceContext.onDeviceBecomeSlave();
+    }
+
+    @Override
+    public void onDeviceBecomeMaster() {
+        LOG.trace("Device become a master, enabling transactions");
+        deviceContext.onDeviceBecomeMaster();
     }
 
     private boolean isDeviceConnected() {
