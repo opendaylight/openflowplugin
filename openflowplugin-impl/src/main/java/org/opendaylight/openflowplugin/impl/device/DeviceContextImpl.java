@@ -455,7 +455,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void onDeviceDisconnectedFromCluster() {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure();
+        //TODO:Call this only when we are sure if its the last node !!!
+        transactionChainManager.removeNodeFromOperationalAndClose();
     }
 
     @Override

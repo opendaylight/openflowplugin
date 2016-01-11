@@ -160,8 +160,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private void recreateTxChain() {
         txChainFactory.close();
-        createTxChain(dataBroker);
         synchronized (txLock) {
+            createTxChain(dataBroker);
             wTx = null;
         }
     }
@@ -183,92 +183,97 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitIsEnabled = true;
     }
 
+
     /**
-     * When a device disconnects from a node of the cluster, the device context gets closed. With that the txChainMgr
-     * status is set to SHUTTING_DOWN and is closed.
-     * When the EntityOwnershipService notifies and is derived that this was indeed the last node from which the device
-     * had disconnected, then we clean the inventory.
-     * Called from DeviceContext
+     * Closing the txChainManager without cleaning the operational
      */
-    public void cleanupPostClosure() {
-        LOG.debug("Removing node {} from operational DS.", nodeII);
-        synchronized (txLock) {
-            final WriteTransaction writeTx;
+    private void closeTransactionChainManager(){
+        LOG.info("closing txChainManager");
 
-            //TODO(Kamal): Fix this. This might cause two txChain Manager working on the same node.
-            if (txChainFactory == null) {
-                LOG.info("Creating new Txn Chain Factory for cleanup purposes - Race Condition Hazard, " +
-                        "Concurrent Modification Hazard, node:{}", nodeII);
-                createTxChain(dataBroker);
-            }
-
-            if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
-                // status is already shutdown. so get the tx directly
-                writeTx = txChainFactory.newWriteOnlyTransaction();
-            } else {
-                writeTx = getTransactionSafely();
-            }
+        synchronized (this) {
 
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-            writeTx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
-            LOG.debug("Delete node {} from operational DS put to write transaction.", nodeII);
 
-            CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
-            LOG.debug("Delete node {} from operational DS write transaction submitted.", nodeII);
+            if (null == txChainFactory) {
+                LOG.warn("txChainManager already closed for node {}", nodeII);
+                return;
+            }
+
+            if(managerRegistration == null){
+                LOG.warn("managerRegistration is null");
+                return;
+            }
+
+            try {
+                LOG.debug("Closing registration in manager.");
+                managerRegistration.close();
+            } catch (Exception e) {
+                LOG.error("Failed to close transaction chain manager's registration.", e);
+            }
+
+            managerRegistration = null;
+            if (null != readyForNewTransactionChainHandler) {
+                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
+            }
+
+            txChainFactory.close();
+            txChainFactory = null;
+            wTx = null;
+
+        }
+        LOG.debug("Transaction chain factory closed.");
+
+    }
+
+    /**
+     * Remove node from operational
+     * First we close the chain manager so it can be recreated
+     */
+    public void removeNodeFromOperationalAndClose(){
+        LOG.info("removing node from operational");
+
+        synchronized (txLock){
+            //Close the transaction chain manager
+            closeTransactionChainManager();
+
+            //Can this be ?
+            if (txChainFactory != null) {
+                LOG.warn("transaction chain factory is not null");
+                recreateTxChain();
+            }
+
+            createTxChain(dataBroker);
+
+            final WriteTransaction tx = getTransactionSafely();
+
+            tx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
+            CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = tx.submit();
 
             Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void aVoid) {
                     LOG.debug("Removing node {} from operational DS successful .", nodeII);
-                    notifyReadyForNewTransactionChainAndCloseFactory();
                 }
 
                 @Override
                 public void onFailure(final Throwable throwable) {
                     LOG.info("Attempt to close transaction chain factory failed.", throwable);
-                    notifyReadyForNewTransactionChainAndCloseFactory();
                 }
             });
-            wTx = null;
         }
-    }
 
-    private void notifyReadyForNewTransactionChainAndCloseFactory() {
-        if(managerRegistration == null){
-            LOG.warn("managerRegistration is null");
-            return;
-        }
-        synchronized (this) {
-            try {
-                if (managerRegistration != null) {
-                    LOG.debug("Closing registration in manager.");
-                    managerRegistration.close();
-                }
-            } catch (Exception e) {
-                LOG.warn("Failed to close transaction chain manager's registration.", e);
-            }
-            managerRegistration = null;
-            if (null != readyForNewTransactionChainHandler) {
-                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
-        }
-        txChainFactory.close();
-        txChainFactory = null;
-        LOG.debug("Transaction chain factory closed.");
     }
 
     @Override
     public void close() {
-        LOG.debug("closing txChainManager without cleanup of node {} from operational DS.", nodeII);
-        synchronized (txLock) {
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-            notifyReadyForNewTransactionChainAndCloseFactory();
-            wTx = null;
-        }
+        this.closeTransactionChainManager();
     }
 
     public enum TransactionChainManagerStatus {
-        WORKING, SHUTTING_DOWN;
+        //txChainManager is working
+        WORKING,
+        //txChainManager is trying to be closed
+        SHUTTING_DOWN;
     }
 
 }
