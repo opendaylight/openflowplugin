@@ -19,8 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @deprecated FIXME: this method has to be removed ASAP (probably in next patch in chain)
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.6.2015.
  */
+@Deprecated
 public class DeviceTransactionChainManagerProvider {
 
 
