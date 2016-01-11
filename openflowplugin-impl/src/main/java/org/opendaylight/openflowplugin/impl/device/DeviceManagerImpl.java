@@ -173,22 +173,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
+        LOG.trace("Entering method with node id: {}", deviceContext.getDeviceState().getNodeId());
+
+        //We don`t need to care about master/slave role the role context and chain manager take care about it, we just try to write into chain
         try {
 
-            if (deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
                 ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
                 deviceContext.onPublished();
 
-            } else {
-                //if role = slave
-                try {
-                    ((DeviceContextImpl) deviceContext).cancelTransaction();
-                } catch (Exception e) {
-                    //TODO: how can we avoid it. pingpong does not have cancel
-                    LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
-                }
-
-            }
 
         } catch (final Exception e) {
             LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
@@ -201,28 +193,24 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
+    /**
+     * @deprecated FIXME: this method has to be removed ASAP (probably in next patch in chain)
+     * @param connectionContext
+     */
+    @Deprecated
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
 
-        ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
+//        ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
         DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
         TransactionChainManager transactionChainManager = transactionChainManagerRegistration.getTransactionChainManager();
 
         if (transactionChainManagerRegistration.ownedByInvokingConnectionContext()) {
             //this actually is new registration for currently processed connection context
             initializeDeviceContext(connectionContext, transactionChainManager);
-        }
-        else if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
-            //this means there already exists connection described by same NodeId and it is not current connection contexts' registration
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false and  TransactionChainManagerStatus.WORKING. Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
-        else if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-            //previous connection is shutting down, we will try to register handler listening on new transaction chain ready
-            // new connection wil be closed if handler registration fails
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false, TransactionChainManagerStatus is not shutting down or readyForNewTransactionChainHandler is null. " +
-                    "Closing connection to device to start again.");
+        } else {
+            LOG.warn("Transaction chain already in progress. Closing current connection. {}", connectionContext.getConnectionAdapter().getRemoteAddress());
             connectionContext.closeConnection(false);
         }
     }
