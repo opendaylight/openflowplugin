@@ -396,7 +396,9 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
             return permCollectorUUIDPair.getRight();
         }
         // we dont want to mark operations with null uuid and get NPEs later. So mark them with invalid ones
-        return UUID.fromString("invalid-uuid");
+        String plain="696e76616c696420757569640d0a";
+		String uuid = plain.replaceFirst( "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5" );
+        return UUID.fromString(uuid);
     }
 }
 
