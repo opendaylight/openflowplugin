@@ -26,6 +26,6 @@ public class ReadyForNewTransactionChainHandlerImpl implements ReadyForNewTransa
 
     @Override
     public void onReadyForNewTransactionChain() {
-        deviceManager.deviceConnected(connectionContext);
+        deviceManager.initializeDeviceContext(connectionContext);
     }
 }

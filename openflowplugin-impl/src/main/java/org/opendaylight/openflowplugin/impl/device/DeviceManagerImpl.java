@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -101,7 +100,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -135,7 +133,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
     private final boolean switchFeaturesMandatory;
-    private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
@@ -160,7 +157,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
-        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
 
@@ -173,23 +169,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
+        LOG.trace("Entering method with node id: {}", deviceContext.getDeviceState().getNodeId());
+
+        //We don`t need to care about master/slave role the role context and chain manager take care about it, we just try to write into chain
         try {
-
-            if (deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
-                ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-                deviceContext.onPublished();
-
-            } else {
-                //if role = slave
-                try {
-                    ((DeviceContextImpl) deviceContext).cancelTransaction();
-                } catch (Exception e) {
-                    //TODO: how can we avoid it. pingpong does not have cancel
-                    LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
-                }
-
-            }
-
+            deviceContext.onPublished();
         } catch (final Exception e) {
             LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
             LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
@@ -201,33 +185,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
+
     @Override
-    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
-        Preconditions.checkArgument(connectionContext != null);
-
-        ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        TransactionChainManager transactionChainManager = transactionChainManagerRegistration.getTransactionChainManager();
-
-        if (transactionChainManagerRegistration.ownedByInvokingConnectionContext()) {
-            //this actually is new registration for currently processed connection context
-            initializeDeviceContext(connectionContext, transactionChainManager);
-        }
-        else if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
-            //this means there already exists connection described by same NodeId and it is not current connection contexts' registration
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false and  TransactionChainManagerStatus.WORKING. Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
-        else if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-            //previous connection is shutting down, we will try to register handler listening on new transaction chain ready
-            // new connection wil be closed if handler registration fails
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false, TransactionChainManagerStatus is not shutting down or readyForNewTransactionChainHandler is null. " +
-                    "Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
-    }
-
-    private void initializeDeviceContext(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
+    public void initializeDeviceContext(final ConnectionContext connectionContext) {
 
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
@@ -247,7 +207,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), nodeId);
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);

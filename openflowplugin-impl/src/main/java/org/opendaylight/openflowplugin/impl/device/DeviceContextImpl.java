@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -118,7 +119,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private final TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -147,14 +147,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      @Nonnull final TransactionChainManager transactionChainManager) {
+                      @Nonnull final TranslatorLibrary translatorLibrary) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = Preconditions.checkNotNull(transactionChainManager);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -178,21 +176,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-    }
-
-    /**
-     * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
-     * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
-     */
-    void initialSubmitTransaction() {
-        transactionChainManager.initialSubmitWriteTransaction();
-    }
-
-    /**
-     * This method is called fron
-     */
-    void cancelTransaction() {
-        transactionChainManager.cancelWriteTransaction();
     }
 
     @Override
@@ -228,16 +211,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path, final T data) {
+        //TODO:how do we get transaction chain ?
         transactionChainManager.writeToTransaction(store, path, data);
     }
 
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
+        //TODO:how do we get transaction chain ?
         transactionChainManager.addDeleteOperationTotTxChain(store, path);
     }
 
     @Override
     public boolean submitTransaction() {
+        //TODO:how do we get transaction chain ?
         return transactionChainManager.submitWriteTransaction();
     }
 
@@ -448,14 +434,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
 
-        LOG.info("Closing transaction chain manager without cleaning inventory operational");
-        transactionChainManager.close();
-    }
-
-    @Override
-    public void onDeviceDisconnectedFromCluster() {
-        LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure();
     }
 
     @Override

@@ -45,7 +45,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
-        deviceConnectedHandler.deviceConnected(connectionContext);
+        deviceConnectedHandler.initializeDeviceContext(connectionContext);
         SessionStatistics.countEvent(connectionContext.getNodeId().toString(), SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
     }
 

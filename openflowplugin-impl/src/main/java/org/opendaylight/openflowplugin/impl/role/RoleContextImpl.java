@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -49,6 +50,7 @@ public class RoleContextImpl implements RoleContext {
     private OpenflowOwnershipListener openflowOwnershipListener;
     private SalRoleService salRoleService;
     private FutureCallback<Boolean> roleChangeCallback;
+    private TransactionChainManager transactionChainManager;
 
 
     public RoleContextImpl(DeviceContext deviceContext, RpcProviderRegistry rpcProviderRegistry,
@@ -115,6 +117,16 @@ public class RoleContextImpl implements RoleContext {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
+
+                //TODO:Change it, now we have the transaction chain manager here ....
+                if (OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
+                    deviceContext.onDeviceBecomeMaster();
+                } else {
+                    if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())) {
+                        deviceContext.onDeviceBecomeSlave();
+                    }
+                }
+
                 if (roleChangeCallback != null) {
                     roleChangeCallback.onSuccess(true);
                 }
@@ -130,6 +142,8 @@ public class RoleContextImpl implements RoleContext {
             }
         });
     }
+
+
 
     @Override
     public void close() throws Exception {
@@ -155,9 +169,9 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void onDeviceDisconnectedFromCluster(final EntityOwnershipChange entityOwnershipChange) {
         LOG.debug("Called onDeviceDisconnectedFromCluster in DeviceContext for entity:{}", entity);
-        deviceContext.onDeviceDisconnectedFromCluster();
+        deviceContext.onDeviceDisconnectedFromCluster(entityOwnershipChange);
     }
 
     private boolean isDeviceConnected() {
