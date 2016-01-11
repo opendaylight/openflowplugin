@@ -88,7 +88,7 @@ public class TransactionChainManagerTest {
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING, txChainManager.getTransactionChainManagerStatus());
     }
 
     @After
@@ -166,7 +166,7 @@ public class TransactionChainManagerTest {
     public void testAttemptToRegisterHandler2() throws Exception {
         final InOrder inOrder = Mockito.inOrder(writeTx, txChain);
 
-        txChainManager.cleanupPostClosure();
+        txChainManager.close();
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, txChainManager.getTransactionChainManagerStatus());
 
         boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
