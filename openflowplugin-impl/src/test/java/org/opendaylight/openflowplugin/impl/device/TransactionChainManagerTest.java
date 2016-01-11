@@ -166,7 +166,7 @@ public class TransactionChainManagerTest {
     public void testAttemptToRegisterHandler2() throws Exception {
         final InOrder inOrder = Mockito.inOrder(writeTx, txChain);
 
-        txChainManager.cleanupPostClosure();
+        txChainManager.removeNodeFromOperationalAndClose();
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, txChainManager.getTransactionChainManagerStatus());
 
         boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);

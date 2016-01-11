@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -191,9 +192,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     /**
      * This method is called fron
      */
-    void cancelTransaction() {
-        transactionChainManager.cancelWriteTransaction();
-    }
+//    void cancelTransaction() {
+//        transactionChainManager.cancelWriteTransaction();
+//    }
 
     @Override
     public Long getReservedXid() {
@@ -453,9 +454,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void onDeviceDisconnectedFromCluster(EntityOwnershipChange entityOwnershipChange) {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure();
+        transactionChainManager.unregistrationTransactionChainManager(entityOwnershipChange, true);
+    }
+
+    @Override
+    public void onDeviceBecomeSlave() {
+        transactionChainManager.unactivateTransactionManager();
+    }
+
+    @Override
+    public void onDeviceBecomeMaster() {
+        transactionChainManager.activateTransactionManager();
     }
 
     @Override
