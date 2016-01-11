@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is listener for ownership change and it will change the status on txChainManager provided from
  * Created by kramesha on 9/14/15.
+ * Updated by bacigal on 1/11/16
  */
 public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoCloseable {
 
@@ -60,7 +62,7 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
                 // possible the last node to be disconnected from device.
                 // eligible for the device to get deleted from inventory.
                 LOG.debug("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
-                roleChangeListener.onDeviceDisconnectedFromCluster();
+                roleChangeListener.onDeviceDisconnectedFromCluster(ownershipChange);
 
             } else {
                 OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
@@ -72,6 +74,7 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
     }
 
     public void registerRoleChangeListener(final RoleChangeListener roleChangeListener) {
+        LOG.trace("Registering role change listener");
         roleChangeListenerMap.put(roleChangeListener.getEntity(), roleChangeListener);
 
         final Entity entity = roleChangeListener.getEntity();
@@ -104,7 +107,9 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
 
     @Override
     public void close() throws Exception {
+        LOG.trace("Close method invocated");
         if (entityOwnershipListenerRegistration != null) {
+            LOG.trace("entityOwnershipListenerRegistration is not null, closing");
             entityOwnershipListenerRegistration.close();
         }
     }
