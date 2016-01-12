@@ -82,6 +82,7 @@ public class DeviceTransactionChainManagerProviderTest {
      *
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testProvideTransactionChainManagerOrWaitForNotification1() throws Exception {
         final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
@@ -99,6 +100,7 @@ public class DeviceTransactionChainManagerProviderTest {
      *
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testProvideTransactionChainManagerOrWaitForNotification2() throws Exception {
         final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
@@ -152,6 +154,7 @@ public class DeviceTransactionChainManagerProviderTest {
      *
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testProvideTransactionChainManagerRecreate2() throws Exception {
         final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
