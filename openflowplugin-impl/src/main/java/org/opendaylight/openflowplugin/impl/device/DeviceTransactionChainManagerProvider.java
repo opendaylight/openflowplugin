@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
@@ -40,21 +39,20 @@ public class DeviceTransactionChainManagerProvider {
             transactionChainManager = txChManagers.get(nodeId);
             if (null == transactionChainManager) {
                 LOG.info("Creating new transaction chain for device {}", nodeId.toString());
-                Registration registration = new Registration() {
+                final Registration registration = new Registration() {
                     @Override
                     public void close() throws Exception {
                         LOG.trace("TransactionChainManagerRegistration Close called for {}", nodeId);
                         txChManagers.remove(nodeId);
                     }
                 };
-                transactionChainManager = new TransactionChainManager(dataBroker,
-                        DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()),
-                        registration);
+//                transactionChainManager = new TransactionChainManager(dataBroker,
+//                        DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()));
                 txChManagers.put(nodeId, transactionChainManager);
                 ownedByCurrentContext = true;
             }
         }
-        TransactionChainManagerRegistration transactionChainManagerRegistration = new TransactionChainManagerRegistration(ownedByCurrentContext, transactionChainManager);
+        final TransactionChainManagerRegistration transactionChainManagerRegistration = new TransactionChainManagerRegistration(ownedByCurrentContext, transactionChainManager);
         return transactionChainManagerRegistration;
     }
 
