@@ -31,12 +31,12 @@ public class RoleManagerImpl implements RoleManager {
     private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
 
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
-    private EntityOwnershipService entityOwnershipService;
+    private final EntityOwnershipService entityOwnershipService;
     private final RpcProviderRegistry rpcProviderRegistry;
     private final ConcurrentHashMap<DeviceContext, RoleContext> contexts = new ConcurrentHashMap<>();
     private final OpenflowOwnershipListener openflowOwnershipListener;
 
-    public RoleManagerImpl(RpcProviderRegistry rpcProviderRegistry, EntityOwnershipService entityOwnershipService) {
+    public RoleManagerImpl(final RpcProviderRegistry rpcProviderRegistry, final EntityOwnershipService entityOwnershipService) {
         this.entityOwnershipService = entityOwnershipService;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.openflowOwnershipListener = new OpenflowOwnershipListener(entityOwnershipService);
@@ -45,7 +45,7 @@ public class RoleManagerImpl implements RoleManager {
     }
 
     @Override
-    public void setDeviceInitializationPhaseHandler(DeviceInitializationPhaseHandler handler) {
+    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
         deviceInitializationPhaseHandler = handler;
     }
 
@@ -58,7 +58,7 @@ public class RoleManagerImpl implements RoleManager {
             return;
         }
 
-        RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
+        final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
         contexts.put(deviceContext, roleContext);
         LOG.debug("Created role context");
 
@@ -67,19 +67,19 @@ public class RoleManagerImpl implements RoleManager {
 
         roleContext.facilitateRoleChange(new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(Boolean aBoolean) {
+            public void onSuccess(final Boolean aBoolean) {
                 LOG.debug("roleChangeFuture success for device:{}. Moving to StatisticsManager", deviceContext.getDeviceState().getNodeId());
                 deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("RoleChange on device {} was not successful after several attempts. " +
                         "Closing the device Context, reconnect the device and start over",
                         deviceContext.getPrimaryConnectionContext().getNodeId().getValue(), throwable);
                 try {
                     deviceContext.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Error closing device context for device:{}",
                             deviceContext.getPrimaryConnectionContext().getNodeId().getValue(),  e);
                 }
@@ -89,7 +89,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void close() throws Exception {
-        for (Map.Entry<DeviceContext, RoleContext> roleContextEntry : contexts.entrySet()) {
+        for (final Map.Entry<DeviceContext, RoleContext> roleContextEntry : contexts.entrySet()) {
             roleContextEntry.getValue().close();
         }
         this.openflowOwnershipListener.close();

@@ -18,7 +18,6 @@ import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
@@ -26,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *         </p>
  *         Created: Apr 2, 2015
  */
-class TransactionChainManager implements TransactionChainListener, AutoCloseable {
+public class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
@@ -96,11 +96,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * transactions.
      * @param ownershipChange - marker to be sure it is used only for MASTER
      */
-    public void activateTransactionManager(final EntityOwnershipChange ownershipChange) {
+    public void activateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
         LOG.trace("Changing txChain manager status to WORKING");
-        Preconditions.checkArgument(ownershipChange != null);
-        Preconditions.checkState(ownershipChange.isOwner());
-        if ((!ownershipChange.wasOwner()) && ownershipChange.isOwner()) {
+        Preconditions.checkArgument(newRole != null);
+        Preconditions.checkState(OfpRole.BECOMEMASTER.equals(newRole));
+        if (!(newRole.equals(oldRole))) {
             synchronized (txLock) {
                 LOG.debug("Transaction Factory create");
                 Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
@@ -115,14 +115,16 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     /**
      * Method change status for TxChainManger to {@link TransactionChainManagerStatus#SLEEPING} and it unregisters
-     * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS
-     * @param ownershipChange - marker to be sure it is used only for SLAVE
+     * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS.
+     * Parameters are are used as markers to be sure it is used only for SLAVE
+     * @param oldRole - old role identifier
+     * @param newRole - new role identifier
      */
-    public void deactivateTransactionManager(final EntityOwnershipChange ownershipChange) {
+    public void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
         LOG.trace("Changing txChain manager status to SLEEPING");
-        Preconditions.checkArgument(ownershipChange != null);
-        Preconditions.checkState((!ownershipChange.isOwner()));
-        if (ownershipChange.wasOwner() && (!ownershipChange.isOwner())) {
+        Preconditions.checkArgument(newRole != null);
+        Preconditions.checkState(OfpRole.BECOMESLAVE.equals(newRole));
+        if (!(newRole.equals(oldRole))) {
             synchronized (txLock) {
                 if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                     LOG.debug("Submitting all transactions if we were in status WORKING");
