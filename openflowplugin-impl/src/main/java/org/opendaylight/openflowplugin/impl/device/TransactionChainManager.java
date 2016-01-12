@@ -53,6 +53,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
 
     private final DataBroker dataBroker;
+
+    private boolean lastNode;
     @GuardedBy("txLock")
     private WriteTransaction wTx;
     @GuardedBy("txLock")
@@ -76,6 +78,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         this.nodeII = Preconditions.checkNotNull(nodeII);
         this.managerRegistration = Preconditions.checkNotNull(managerRegistration);
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+        this.lastNode = false;
         LOG.trace("Initialization of txChainManager done");
     }
 
@@ -229,11 +232,33 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         }
     }
 
+
+    @VisibleForTesting
+    Boolean getLastNode() {
+        return this.lastNode;
+    }
+
+    /**
+     * this method provide posibbilyti to set the flag of last node, so when the
+     * txChainManager is closing, it will remove node from operational and its safe to close entity
+     * @param ownershipChange
+     */
+    public void setMarkLastNode(final EntityOwnershipChange ownershipChange) {
+        LOG.trace("setMarkLastNode method call");
+        Preconditions.checkArgument(ownershipChange != null);
+        Preconditions.checkState((!ownershipChange.isOwner()), "Node is still master");
+        Preconditions.checkState((!ownershipChange.hasOwner()), "Node has still an owner");
+        this.lastNode = true;
+    }
+
+
     /**
      * Method writes data identified by PATH from DS
      * @param store Operational or Configuration
      * @param path the new data identifier
      * @param data dataObject to add
+     * Method for testing purpose
+     * @return
      */
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                    final InstanceIdentifier<T> path, final T data) {
@@ -252,6 +277,52 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         } else {
             LOG.warn("You try to write data {} to {} DataStore, but you are not MASTER", path, store);
         }
+    }
+
+    /**
+     * Set the status of txChainManager to {@link TransactionChainManagerStatus#SHUTTING_DOWN}
+     * and flush transaction if in working state and transactiona are waiting
+     * if the flag last node is set, it will clear the node from operational
+     */
+    private void CloseTransactionChainManagerSafely() {
+        LOG.trace("closing transaction chain manager safely");
+        Preconditions.checkNotNull(nodeII);
+        if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus) && wTx != null) {
+            LOG.debug("We have still transaction, trying to submit");
+            submitWriteTransaction();
+        }
+        synchronized (txLock) {
+            transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
+            this.txChainFactory.close();
+            this.txChainFactory = null;
+            this.wTx = null;
+            if (lastNode) {
+                LOG.debug("I am the last node, removing me ({}) from operational", nodeII);
+
+                //Making local variable, we don't need to care about releasing from memory
+                final BindingTransactionChain localTxChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+                final WriteTransaction tx = localTxChainFactory.newWriteOnlyTransaction();
+
+                tx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
+                CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = tx.submit();
+
+                Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(final Void aVoid) {
+                        LOG.debug("Removing node {} from operational DS successful .", nodeII);
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        LOG.info("Attempt to close transaction chain factory failed.", throwable);
+                    }
+                });
+            } else {
+                LOG.debug("Not the last node, not touching the operational");
+            }
+
+        }
+
     }
 
     @Override
@@ -386,12 +457,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @Override
     public void close() {
-        LOG.debug("closing txChainManager without cleanup of node {} from operational DS.", nodeII);
+        LOG.debug("closing txChainManager");
+        CloseTransactionChainManagerSafely();
         Preconditions.checkState(wTx == null);
         Preconditions.checkState(txChainFactory == null);
-        synchronized (txLock) {
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-        }
         notifyReadyForNewTransactionChainAndCloseFactory(); // don't need anymore
     }
 

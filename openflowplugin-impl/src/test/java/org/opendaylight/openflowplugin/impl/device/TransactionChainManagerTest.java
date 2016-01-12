@@ -71,6 +71,8 @@ public class TransactionChainManagerTest {
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
 
+    private Entity entity;
+    private EntityOwnershipChange entityOwnershipChange;
     private TransactionChainManager txChainManager;
     private InstanceIdentifier<Node> path;
     private NodeId nodeId;
@@ -86,12 +88,17 @@ public class TransactionChainManagerTest {
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
-        txChainManager.activateTransactionManager(new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+        entity = new Entity("openflow", "openflow:1");
+        entityOwnershipChange = new EntityOwnershipChange(entity, false, true, true);
+        txChainManager.activateTransactionManager(entityOwnershipChange);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
+
+        Assert.assertEquals(txChainManager.getLastNode(), false);
     }
 
     @After
@@ -158,28 +165,44 @@ public class TransactionChainManagerTest {
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
     }
 
+
     @Test
-    public void testAttemptToRegisterHandler1() throws Exception {
-        final boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertFalse(attemptResult);
+    public void testActivateDeactivateTransactionManager() throws Exception {
+
+        //set master and activate
+        entityOwnershipChange = new EntityOwnershipChange(entity, false, true, true);
+        txChainManager.activateTransactionManager(entityOwnershipChange);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
+
+        //try deactivate master
+        txChainManager.deactivateTransactionManager(entityOwnershipChange);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
+
+        //set slave and deactivate
+        entityOwnershipChange = new EntityOwnershipChange(entity, true, false, true);
+        txChainManager.deactivateTransactionManager(entityOwnershipChange);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+
+        //try activate slave
+        txChainManager.deactivateTransactionManager(entityOwnershipChange);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+
     }
 
     @Test
-    public void testAttemptToRegisterHandler2() throws Exception {
-        final InOrder inOrder = Mockito.inOrder(writeTx, txChain);
+    public void testCloseTransactionChain() throws Exception {
+        //I am not the last entity
+        entityOwnershipChange = new EntityOwnershipChange(entity, true, false, true);
+        txChainManager.setMarkLastNode(entityOwnershipChange);
+        Assert.assertNotEquals(txChainManager.getLastNode(), false);
+        txChainManager.close();
 
-        txChainManager.cleanupPostClosure();
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, txChainManager.getTransactionChainManagerStatus());
+        //I am the last entity
+        entityOwnershipChange = new EntityOwnershipChange(entity, true, false, false);
+        txChainManager.setMarkLastNode(entityOwnershipChange);
+        Assert.assertNotEquals(txChainManager.getLastNode(), true);
+        txChainManager.close();
 
-        boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertTrue(attemptResult);
-
-        inOrder.verify(txChain).newWriteOnlyTransaction();
-        inOrder.verify(writeTx).delete(LogicalDatastoreType.OPERATIONAL, path);
-        inOrder.verify(writeTx).submit();
-        inOrder.verify(txChain).close();
-
-        attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertFalse(attemptResult);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN);
     }
 }
