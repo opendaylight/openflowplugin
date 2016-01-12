@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -147,14 +148,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      @Nonnull final TransactionChainManager transactionChainManager) {
+                      @Nonnull final TranslatorLibrary translatorLibrary) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = Preconditions.checkNotNull(transactionChainManager);
+
+        primaryConnectionContext.setDeviceDisconnectedHandler(DeviceContextImpl.this);
+
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -223,6 +226,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ReadTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
+    }
+
+    @Override
+    public void activateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
+        transactionChainManager.activateTransactionManager(oldRole, newRole);
+    }
+
+    @Override
+    public void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
+        transactionChainManager.deactivateTransactionManager(oldRole, newRole);
     }
 
     @Override
@@ -465,7 +478,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             try {
                 tearDown();
             } catch (final Exception e) {
-                LOG.trace("Error closing device context.");
+                LOG.warn("Error closing device context.", e);
             }
         } else {
             LOG.debug("auxiliary connection dropped: {}, nodeId:{}",
