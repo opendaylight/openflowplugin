@@ -25,6 +25,8 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -82,12 +84,13 @@ public class DeviceTransactionChainManagerProviderTest {
      */
     @Test
     public void testProvideTransactionChainManagerOrWaitForNotification1() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
         final TransactionChainManager txChainManager = transactionChainManagerRegistration.getTransactionChainManager();
 
         Assert.assertTrue(transactionChainManagerRegistration.ownedByInvokingConnectionContext());
         Assert.assertNotNull(txChainManager);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
+                txChainManager.getTransactionChainManagerStatus());
     }
 
     /**
@@ -98,9 +101,10 @@ public class DeviceTransactionChainManagerProviderTest {
      */
     @Test
     public void testProvideTransactionChainManagerOrWaitForNotification2() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, transactionChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_2 = deviceTransactionChainManagerProvider.provideTransactionChainManager(concurrentConnectionContex);
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
+                transactionChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_2 = deviceTransactionChainManagerProvider.provideTransactionChainManager(concurrentConnectionContex);
         Assert.assertFalse(transactionChainManagerRegistration_2.ownedByInvokingConnectionContext());
     }
 
@@ -112,18 +116,30 @@ public class DeviceTransactionChainManagerProviderTest {
      */
     @Test
     public void testProvideTransactionChainManagerRecreate1() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
         final TransactionChainManager txChainManager = txChainManagerRegistration_1.getTransactionChainManager();
         Assert.assertTrue(txChainManagerRegistration_1.ownedByInvokingConnectionContext());
         Assert.assertNotNull(txChainManager);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING,
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture = Futures.immediateCheckedFuture(null);
+        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(
+                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManagerRegistration_1
+                .getTransactionChainManager().getTransactionChainManagerStatus());
+
+        final CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture = Futures.immediateCheckedFuture(null);
         Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
+
+        txChainManagerRegistration_1.getTransactionChainManager().unactivateTransactionManager(
+                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), true, false, true));
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
+                txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
+
         txChainManager.close();
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
+
         txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
         Mockito.verify(readyForNewTransactionChainHandler).onReadyForNewTransactionChain();
     }
@@ -137,19 +153,24 @@ public class DeviceTransactionChainManagerProviderTest {
      */
     @Test
     public void testProvideTransactionChainManagerRecreate2() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
         final TransactionChainManager txChainManager = txChainManagerRegistration_1.getTransactionChainManager();
         Assert.assertTrue(txChainManagerRegistration_1.ownedByInvokingConnectionContext());
         Assert.assertNotNull(txChainManager);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING,
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        SettableFuture<Void> submitCleanFuture = SettableFuture.create();
-        CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture =
+        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(
+                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
+        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManagerRegistration_1
+                .getTransactionChainManager().getTransactionChainManagerStatus());
+
+        final SettableFuture<Void> submitCleanFuture = SettableFuture.create();
+        final CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture =
                 Futures.makeChecked(submitCleanFuture, new Function<Exception, TransactionCommitFailedException>() {
                     @Nullable
                     @Override
-                    public TransactionCommitFailedException apply(Exception input) {
+                    public TransactionCommitFailedException apply(final Exception input) {
                         return new TransactionCommitFailedException("tx failed..", input);
                     }
                 });
