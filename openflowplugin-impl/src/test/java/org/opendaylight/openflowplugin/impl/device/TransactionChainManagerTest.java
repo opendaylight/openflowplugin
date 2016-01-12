@@ -36,6 +36,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -69,7 +70,8 @@ public class TransactionChainManagerTest {
     Registration registration;
     @Mock
     private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
-
+    @Mock
+    private DeviceState deviceState;
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
 
@@ -89,17 +91,23 @@ public class TransactionChainManagerTest {
                 .thenReturn(txChainFactory);
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
-        txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
-        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
+        Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(writeTx);
+        Mockito.when(writeTx.submit()).thenReturn(
+                Futures.<Void, TransactionCommitFailedException> immediateCheckedFuture(null));
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Mockito.verify(txChainFactory).newWriteOnlyTransaction();
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
 
         Assert.assertEquals(txChainManager.getLastNode(), false);
 
         entity = new Entity("dummy-type", "dummy-name");
+        Mockito.verify(writeTx).merge(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(nodeKeyIdent),
+                Matchers.<Node> any());
     }
 
     @After
@@ -174,6 +182,7 @@ public class TransactionChainManagerTest {
         //init: switch to deactivated state
         txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
         Mockito.verify(txChainFactory).close();
+        Mockito.verify(writeTx).submit();
         Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
 
         //try to activate slave
@@ -188,6 +197,7 @@ public class TransactionChainManagerTest {
         Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(),
                 TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
         Mockito.verify(txChainFactory).close();
+        Mockito.verify(writeTx).submit();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -202,6 +212,7 @@ public class TransactionChainManagerTest {
         //init: switch to deactivated state
         txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
         Mockito.verify(txChainFactory).close();
+        Mockito.verify(writeTx).submit();
         Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
 
         //try to deactivate slave
@@ -216,8 +227,7 @@ public class TransactionChainManagerTest {
         txChainManager.activateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
         Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
     }
-
-    @Ignore
+    
     @Test
     //FIXME : choose for a last Node has to clean not finished wTx int TxChainManager
     public void testCloseTransactionChain_notLastMaster() throws Exception {

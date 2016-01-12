@@ -10,7 +10,11 @@ package org.opendaylight.openflowplugin.impl.role;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.CheckForNull;
+import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -59,6 +63,12 @@ public class RoleManagerImpl implements RoleManager {
         }
 
         final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
+        try {
+            roleContext.initialization().get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException | CandidateAlreadyRegisteredException e) {
+            LOG.warn("Unexpected exception by DeviceConection {}. Connection has to close.", deviceContext.getDeviceState().getNodeId(), e);
+            deviceContext.close();
+        }
         contexts.put(deviceContext, roleContext);
         LOG.debug("Created role context");
 
