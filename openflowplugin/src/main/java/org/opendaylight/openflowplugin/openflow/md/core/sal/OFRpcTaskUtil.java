@@ -86,10 +86,13 @@ public abstract class OFRpcTaskUtil {
     }
 
     /**
-     * @param task of rpc
-     * @param originalResult
-     * @param notificationProviderService
+     * @param task task
+     * @param originalResult original result
+     * @param notificationProviderService notification provider service
      * @param notificationComposer lazy notification composer
+     * @param <I> data container
+     * @param <N> notification
+     * @param <R> R
      */
     public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, I extends DataContainer>
     void hookFutureNotification(
@@ -130,8 +133,10 @@ public abstract class OFRpcTaskUtil {
     }
 
     /**
-     * @param task of rpcl
-     * @param originalResult
+     * @param task of rpc
+     * @param originalResult original result
+     * @param <T> R
+     * @param <I> I
      * @return chained result with barrier
      */
     public static <T extends TransactionAware, I extends DataContainer>
@@ -165,8 +170,10 @@ public abstract class OFRpcTaskUtil {
     }
 
     /**
-     * @param originalInput
-     * @return
+     * @param originalInput original input
+     * @param barrierInput barrier input
+     * @param <T> T
+     * @return result
      */
     protected static <T extends TransactionAware> Function<RpcResult<BarrierOutput>, RpcResult<T>> transformBarrierToTransactionAware(
             final RpcResult<T> originalInput, final BarrierInput barrierInput) {

@@ -39,9 +39,9 @@ public class ErrorV10Translator extends AbstractErrorTranslator {
     }
 
     /**
-     * @param message
-     * @param errorType
-     * @param node
+     * @param message error message
+     * @param errorType error type
+     * @param node reference to node, that sent the error message
      * @return translated error message of general type (OF-1.0)
      */
     @Override

@@ -29,9 +29,9 @@ public abstract class OFRpcTask<T, K> implements Callable<ListenableFuture<K>> {
     private SwitchConnectionDistinguisher cookie;
     
     /**
-     * @param taskContext
-     * @param input
-     * @param cookie 
+     * @param taskContext rpc task context
+     * @param input  task input
+     * @param cookie switch connection distinguisher cookie value
      */
     public OFRpcTask(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, T input) {
         this.taskContext = taskContext;

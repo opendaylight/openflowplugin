@@ -63,9 +63,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private boolean useVersionBitmap;
 
     /**
-     * @param connectionAdapter
-     * @param highestVersion
-     * @param versionOrder
+     * @param connectionAdapter connection adaptor for switch
+     * @param highestVersion highest openflow version
+     * @param versionOrder list of version in order for connection protocol negotiation
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion,
             List<Short> versionOrder) {
@@ -125,8 +125,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     /**
-     * @param remoteVersion
-     * @throws Exception
+     * @param remoteVersion remote version
+     * @throws Exception exception
      */
     private void handleStepByStepVersionNegotiation(final Short remoteVersion) throws Exception {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}",
@@ -178,8 +178,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     /**
-     * @param remoteVersion
-     * @throws Exception
+     * @param remoteVersion remote version
+     * @throws Exception exception
      */
     private void handleLowerVersionProposal(Short remoteVersion) throws Exception {
         Short proposedVersion;
@@ -197,8 +197,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     /**
-     * @param elements
-     * @throws Exception
+     * @param elements version elements
+     * @throws Exception exception
      */
     private void handleVersionBitmapNegotiation(List<Elements> elements) throws Exception {
         final Short proposedVersion = proposeCommonBitmapVersion(elements);
@@ -227,7 +227,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      *
-     * @return
+     * @return next tx id
      */
     private Long getNextXid() {
         activeXid += 1;
@@ -235,14 +235,14 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     /**
-     * @param xid
+     * @param xid tx id
      */
     private void setActiveXid(Long xid) {
         this.activeXid = xid;
     }
 
     /**
-     * @param remoteVersion
+     * @param remoteVersion remove version
      */
     private void checkNegotiationStalling(Short remoteVersion) {
         if (lastReceivedVersion != null && lastReceivedVersion.equals(remoteVersion)) {
@@ -258,8 +258,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * find common highest supported bitmap version
-     * @param list
-     * @return
+     * @param list bitmap list
+     * @return proposed bitmap value
      */
     protected Short proposeCommonBitmapVersion(List<Elements> list) {
         Short supportedHighestVersion = null;
@@ -287,8 +287,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * find supported version based on remoteVersion
-     * @param remoteVersion
-     * @return
+     * @param remoteVersion openflow version supported by remote entity
+     * @return openflow version
      */
     protected short proposeNextVersion(short remoteVersion) {
         Short proposal = null;
@@ -307,8 +307,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * send hello reply without versionBitmap
-     * @param helloVersion
-     * @param helloXid
+     * @param helloVersion initial hello version for openflow connection negotiation
+     * @param helloXid transaction id
      * @throws Exception
      */
     private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) throws Exception {
@@ -360,8 +360,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * after handshake set features, register to session
-     * @param proposedVersion
-     * @param xid
+     * @param proposedVersion proposed openflow version
+     * @param xid transaction id
      */
     protected void postHandshake(final Short proposedVersion, final Long xid) {
         // set version

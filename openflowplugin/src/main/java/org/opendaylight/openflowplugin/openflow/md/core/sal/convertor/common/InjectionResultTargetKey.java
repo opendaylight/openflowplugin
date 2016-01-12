@@ -19,9 +19,9 @@ public class InjectionResultTargetKey extends InjectionKey {
     private final Class<?> resultClazz;
 
     /**
-     * @param version
-     * @param targetClazz
-     * @param resultClazz
+     * @param version openflow version
+     * @param targetClazz target class
+     * @param resultClazz result class
      */
     public InjectionResultTargetKey(final int version, final Class<?> targetClazz, final Class<?> resultClazz) {
         super(version, targetClazz);

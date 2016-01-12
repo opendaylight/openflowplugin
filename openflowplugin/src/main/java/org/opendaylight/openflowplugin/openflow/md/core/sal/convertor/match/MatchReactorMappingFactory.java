@@ -32,7 +32,7 @@ import java.util.Map;
 public class MatchReactorMappingFactory {
 
     /**
-     * @param conversionMapping
+     * @param conversionMapping conversion mapping
      */
     public static void addMatchConvertors(final Map<Short, Convertor<Match, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new MatchConvertorImpl());
@@ -40,7 +40,7 @@ public class MatchReactorMappingFactory {
     }
 
     /**
-     * @param injectionMapping
+     * @param injectionMapping injection mapping
      */
     public static void addMatchIjectors(final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|List<MatchEntries> --> FlowModInputBuilder

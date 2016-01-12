@@ -20,8 +20,8 @@ public class MessageSourcePollRegistration<IN> implements AutoCloseable {
     private IN messageSource;
     
     /**
-     * @param messageSourceRegistry
-     * @param messageSource 
+     * @param messageSourceRegistry message source registry
+     * @param messageSource  message source
      */
     public MessageSourcePollRegistration(MessageSourcePollRegistrator<IN> messageSourceRegistry,
             IN messageSource) {

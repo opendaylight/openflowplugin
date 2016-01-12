@@ -169,6 +169,11 @@ public class FlowConvertor {
      * This method converts the SAL Flow to OF Flow.
      * It checks if there is a set-vlan-id (1.0) action made on OF1.3.
      * If yes its handled separately
+     *
+     * @param srcFlow source flow
+     * @param version openflow version
+     * @param datapathId datapath id
+     * @return list of flow mod build
      */
     public static List<FlowModInputBuilder> toFlowModInputs(Flow srcFlow, short version, BigInteger datapathId) {
         if (version >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(srcFlow)) {

@@ -17,8 +17,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 public interface ResultInjector<R, T> {
 
     /**
-     * @param result
-     * @param target
+     * @param result result
+     * @param target target
      */
     void inject(R result, T target);
     

@@ -30,9 +30,9 @@ public class HandshakeStepWrapper implements Runnable {
 
 
     /**
-     * @param helloMessage
-     * @param handshakeManager
-     * @param connectionAdapter
+     * @param helloMessage initial hello message
+     * @param handshakeManager connection handshake manager
+     * @param connectionAdapter connection adaptor fro switch
      */
     public HandshakeStepWrapper(HelloMessage helloMessage,
             HandshakeManager handshakeManager, ConnectionAdapter connectionAdapter) {

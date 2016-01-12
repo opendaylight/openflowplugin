@@ -20,7 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMo
 public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E> {
     
     /**
-     * @param source
+     * @param source flow mode flags
+     * @param datapathid  datapath id
      * @return converted match (into OF-API model)
      */
     @Override

@@ -34,17 +34,19 @@ public abstract class ConvertReactor<FROM> {
 
     /**
      * fill conversion and injection mappings
-     * @param conversions
-     * @param injections
+     * @param conversions convert from
+     * @param injections injection
      */
     protected abstract void initMappings(Map<Short, Convertor<FROM, ?>> conversions,
             Map<InjectionKey, ResultInjector<?, ?>> injections);
 
     /**
-     * @param source
-     * @param version
-     * @param target
-     * @param datapathid
+     * @param source convert from
+     * @param version openflow version
+     * @param target convert to
+     * @param datapathid datapath id
+     * @param <RESULT> result
+     * @param <TARGET> target
      */
     @SuppressWarnings("unchecked")
     public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target, final BigInteger datapathid) {
@@ -66,10 +68,10 @@ public abstract class ConvertReactor<FROM> {
     }
 
     /**
-     * @param version
+     * @param version openflow version
      * @param convertedItem to be injected
      * @param target object
-     * @return
+     * @return injection key
      */
     protected InjectionKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
         return new InjectionKey(version, target.getClass());

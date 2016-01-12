@@ -17,7 +17,7 @@ public abstract class MatchConvertorUtil {
     private static final String PREFIX_SEPARATOR = "/";
 
     /**
-     * @param pField
+     * @param pField ipv6 external header flag
      * @return integer containing lower 9 bits filled with corresponding flags
      */
     public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags pField) {

@@ -23,7 +23,7 @@ public final class PacketInUtil {
     }
 
     /**
-     * @param reason
+     * @param reason openflow java packet in reason
      * @return corresponding MD-SAL reason class for given OF-API reason
      */
     public static Class<? extends PacketInReason> getMdSalPacketInReason(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {

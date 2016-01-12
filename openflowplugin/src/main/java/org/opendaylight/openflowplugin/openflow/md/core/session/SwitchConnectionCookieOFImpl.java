@@ -23,7 +23,7 @@ public class SwitchConnectionCookieOFImpl implements SwitchConnectionDistinguish
     private long cookie;
 
     /**
-     * @param cookie
+     * @param cookie switch connection cookie
      */
     public SwitchConnectionCookieOFImpl(long cookie) {
         this.cookie = cookie;
@@ -37,8 +37,7 @@ public class SwitchConnectionCookieOFImpl implements SwitchConnectionDistinguish
     }
 
     /**
-     * @param auxiliaryId
-     *            the auxiliaryId to set
+     * @param auxiliaryId  the auxiliaryId to set
      */
     public void setAuxiliaryId(short auxiliaryId) {
         this.auxiliaryId = auxiliaryId;

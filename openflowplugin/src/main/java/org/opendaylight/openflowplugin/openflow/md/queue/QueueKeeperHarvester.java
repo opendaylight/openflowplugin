@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @param <IN>
+ * @param <IN> Type of queue keeper harvester
  *
  */
 public class QueueKeeperHarvester<IN> implements Runnable, HarvesterHandle {
@@ -29,8 +29,8 @@ public class QueueKeeperHarvester<IN> implements Runnable, HarvesterHandle {
     private volatile boolean wakeMe = false;
 
     /**
-     * @param enqueuer
-     * @param messageSources
+     * @param enqueuer queue enqueuer
+     * @param messageSources source of message
      */
     public QueueKeeperHarvester(final Enqueuer<QueueItem<IN>> enqueuer,
             final Collection<QueueKeeper<IN>> messageSources) {

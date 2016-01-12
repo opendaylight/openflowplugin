@@ -20,10 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public abstract class QueueKeeperFactory {
 
     /**
-     * @param sourceRegistrator
-     * @param capacity
-     *            blocking queue capacity
-     * @param waterMarkListener
+     * @param sourceRegistrator source registrator
+     * @param capacity blocking queue capacity
+     * @param waterMarkListener water mark listener
      * @return fair reading implementation of
      *         {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper}
      *         (not registered = not started yet)
@@ -45,8 +44,8 @@ public abstract class QueueKeeperFactory {
      * {@link QueueKeeperFairImpl#close()} to kill the queue and stop
      * processing.
      * 
-     * @param sourceRegistrator
-     * @param queueKeeper
+     * @param sourceRegistrator source registrator
+     * @param queueKeeper queue keeper
      */
     public static <V> void plugQueue(
             MessageSourcePollRegistrator<QueueKeeper<V>> sourceRegistrator,

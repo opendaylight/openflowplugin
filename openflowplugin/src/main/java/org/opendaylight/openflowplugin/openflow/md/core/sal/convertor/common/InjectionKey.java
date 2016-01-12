@@ -22,8 +22,8 @@ public class InjectionKey {
     private final Class<?> targetClazz;
 
     /**
-     * @param version
-     * @param targetClazz
+     * @param version openflow version
+     * @param targetClazz target class
      */
     public InjectionKey(final int version, final Class<?> targetClazz) {
         this.version = version;

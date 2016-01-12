@@ -203,7 +203,7 @@ public final class ActionConvertor {
      *
      * @param actions    SAL actions
      * @param version    Openflow protocol version used
-     * @param datapathid
+     * @param datapathid datapath id
      * @param flow       TODO
      * @return OF Library actions
      */
@@ -927,7 +927,7 @@ public final class ActionConvertor {
     /**
      * Method to convert OF actions associated with bucket to SAL Actions.
      *
-     * @param actionList
+     * @param actionList action list
      * @param ofVersion  current ofp version
      * @param actionPath TODO
      * @return List of converted SAL Actions.
@@ -1006,8 +1006,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF Output action object to SAL Output action object.
      *
-     * @param ofVersion
-     * @param ofVersion
+     * @param ofVersion openflow version
      * @param action    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.
      *                  action.rev130731.actions.actions.list.Action
      * @return OutputAction
@@ -1045,8 +1044,8 @@ public final class ActionConvertor {
     /**
      * Method converts OF GroupAction object to SAL GroupAction object
      *
-     * @param action
-     * @return GroupAction
+     * @param action action
+     * @return GroupAction group action
      */
     public static GroupActionCase ofToSALGroupAction(final Action action) {
         GroupCase actionCase = (GroupCase) action.getActionChoice();
@@ -1064,8 +1063,8 @@ public final class ActionConvertor {
      * Method converts OF SetMplsTTL action object to SAL SetMplsTTL action
      * object.
      *
-     * @param action
-     * @return
+     * @param action action
+     * @return set-mpls ttl action
      */
     public static SetMplsTtlActionCase ofToSALSetMplsTtl(final Action action) {
         SetMplsTtlCase actionCase = (SetMplsTtlCase) action.getActionChoice();
@@ -1081,7 +1080,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF Pushvlan action to SAL PushVlan action.
      *
-     * @param action
+     * @param action input actioj
      * @return PushVlanAction
      */
     public static PushVlanActionCase ofToSALPushVlanAction(final Action action) {
@@ -1100,7 +1099,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF PushMpls action to SAL PushMpls action.
      *
-     * @param action
+     * @param action action
      * @return PushMplsAction
      */
     public static PushMplsActionCase ofToSALPushMplsAction(final Action action) {
@@ -1116,7 +1115,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF PopMpls action to SAL PopMpls action.
      *
-     * @param action
+     * @param action action
      * @return PopMplsActionCase
      */
     public static PopMplsActionCase ofToSALPopMplsAction(final Action action) {
@@ -1132,7 +1131,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF SetQueue action to SAL SetQueue action.
      *
-     * @param action
+     * @param action action
      * @return SetQueueAction
      */
     public static SetQueueActionCase ofToSALSetQueue(final Action action) {
@@ -1149,7 +1148,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF SetNwTtl action to SAL SetNwTtl action.
      *
-     * @param action
+     * @param action action
      * @return SetNwTtlAction
      */
     public static SetNwTtlActionCase ofToSALSetNwTtl(final Action action) {
@@ -1165,7 +1164,7 @@ public final class ActionConvertor {
     /**
      * Method converts OF Pushvlan action to SAL PushVlan action.
      *
-     * @param action
+     * @param action action
      * @return PushVlanAction
      */
     public static PushPbbActionCase ofToSALPushPbbAction(final Action action) {

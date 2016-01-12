@@ -49,9 +49,10 @@ public final class MatchExtensionHelper {
     }
 
     /**
-     * @param matchEntries
-     * @param ofVersion
-     * @param matchPath
+     * @param matchEntries match entries
+     * @param ofVersion openflow version
+     * @param matchPath match path
+     * @param <EXT_POINT> extension point
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     @SuppressWarnings("unchecked")

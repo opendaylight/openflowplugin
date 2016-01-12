@@ -22,7 +22,7 @@ public interface TicketFinisher<OUT> extends Runnable {
     
     /**
      * notify popListeners
-     * @param processedMessages
+     * @param processedMessages processed message
      */
     void firePopNotification(List<OUT> processedMessages);
 }

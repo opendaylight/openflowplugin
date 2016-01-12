@@ -18,25 +18,25 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * @param <IN>
- * @param <OUT>
+ * @param <IN> type of DataObject
+ * @param <OUT> type of DataObject
  */
 public interface TicketProcessorFactory<IN extends DataObject, OUT extends DataObject> {
 
     /**
-     * @param ticket
+     * @param ticket ticket
      * @return runnable ticket processor
      */
     Runnable createProcessor(final Ticket<IN, OUT> ticket);
 
     /**
-     * @param ticket
+     * @param ticket ticket
      * @return runnable ticket processor
      */
     Runnable createSyncProcessor(final Ticket<IN, OUT> ticket);
 
     /**
-     * @param ticket
+     * @param ticket ticket
      * @return translated messages
      * 
      */

@@ -19,7 +19,7 @@ public interface IGetBandwith {
 
 	/**
 	 * 
-	 * @param port
+	 * @param port port group
 	 * @return port bandwidth
 	 */
     public boolean getBandwidth(PortGrouping port);

@@ -187,7 +187,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     /**
-     * @param dataPathId
+     * @param dataPathId datapath id in big interger value
      * @return string of size 16, padded with '0'
      */
     public static String bigIntegerToPaddedHex(final BigInteger dataPathId) {

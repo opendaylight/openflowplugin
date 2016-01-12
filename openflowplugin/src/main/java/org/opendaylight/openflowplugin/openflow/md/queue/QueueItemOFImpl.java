@@ -24,9 +24,9 @@ public class QueueItemOFImpl implements QueueItem<OfHeader> {
     
     
     /**
-     * @param message
-     * @param connectionConductor
-     * @param queueType
+     * @param message openflow message
+     * @param connectionConductor switch connection conductor
+     * @param queueType queue type
      */
     public QueueItemOFImpl(OfHeader message,
             ConnectionConductor connectionConductor, QueueType queueType) {

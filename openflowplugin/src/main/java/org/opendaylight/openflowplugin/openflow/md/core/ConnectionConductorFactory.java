@@ -29,8 +29,8 @@ public final class ConnectionConductorFactory {
     }
 
     /**
-     * @param connectionAdapter
-     * @param queueProcessor 
+     * @param connectionAdapter connection conductor adaptor
+     * @param queueProcessor  message queue process
      * @return conductor for given connection
      */
     public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter,

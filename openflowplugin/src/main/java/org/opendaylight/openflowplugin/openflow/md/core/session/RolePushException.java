@@ -17,15 +17,15 @@ public class RolePushException extends Exception {
     /**
      * default ctor
      *
-     * @param message
+     * @param message exception message
      */
     public RolePushException(String message) {
         super(message);
     }
 
     /**
-     * @param message
-     * @param cause
+     * @param message exception message
+     * @param cause exception cause
      */
     public RolePushException(String message, Throwable cause) {
         super(message, cause);

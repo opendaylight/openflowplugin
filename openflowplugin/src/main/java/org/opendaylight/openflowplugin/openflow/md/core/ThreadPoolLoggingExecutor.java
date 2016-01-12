@@ -22,11 +22,11 @@ public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolLoggingExecutor.class);
 
     /**
-     * @param corePoolSize
-     * @param maximumPoolSize
-     * @param keepAliveTime
-     * @param unit
-     * @param workQueue
+     * @param corePoolSize thread pool size
+     * @param maximumPoolSize maximum pool size
+     * @param keepAliveTime keep alive time
+     * @param unit time unit
+     * @param workQueue task queue
      * @param poolName thread name prefix
      */
     public ThreadPoolLoggingExecutor(int corePoolSize, int maximumPoolSize,

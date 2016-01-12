@@ -117,7 +117,7 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
     }
 
     /**
-     * @param harvesterHandle
+     * @param harvesterHandle harvester handle
      */
     public void setHarvesterHandle(HarvesterHandle harvesterHandle) {
         this.harvesterHandle = harvesterHandle;

@@ -17,8 +17,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public abstract class RpcUtil {
 
     /**
-     * @param result
-     * @throws Exception 
+     * @param result rpc result
+     * @throws Exception exception thrown by method if rpc fails
      */
     public static void smokeRpc(RpcResult<?> result) throws Exception {
         if (!result.isSuccessful()) {

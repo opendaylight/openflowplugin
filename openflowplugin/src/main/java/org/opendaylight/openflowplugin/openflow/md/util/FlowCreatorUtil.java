@@ -63,7 +63,7 @@ public final class FlowCreatorUtil {
     /**
      * Method creates openflow 1.0 format match, that can match all the flow entries.
      *
-     * @return
+     * @return V10 Match object
      */
     public static MatchV10 createWildcardedMatchV10() {
         MatchV10Builder builder = new MatchV10Builder();

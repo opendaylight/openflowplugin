@@ -19,8 +19,8 @@ import java.math.BigInteger;
 public interface Convertor<FROM, TO> {
     
     /**
-     * @param source
-     * @param datapathid 
+     * @param source source type
+     * @param datapathid  datapath id
      * @return converted match (into OF-API model)
      */
     TO convert(FROM source,BigInteger datapathid);
