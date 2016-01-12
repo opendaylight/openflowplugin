@@ -26,13 +26,12 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceTransactionChainManagerProviderTest {
@@ -125,16 +124,16 @@ public class DeviceTransactionChainManagerProviderTest {
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(
-                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
+        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(OfpRole.BECOMESLAVE,
+                OfpRole.BECOMEMASTER);
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManagerRegistration_1
                 .getTransactionChainManager().getTransactionChainManagerStatus());
 
         final CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture = Futures.immediateCheckedFuture(null);
         Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
 
-        txChainManagerRegistration_1.getTransactionChainManager().deactivateTransactionManager(
-                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), true, false, true));
+        txChainManagerRegistration_1.getTransactionChainManager().deactivateTransactionManager(OfpRole.BECOMEMASTER,
+                OfpRole.BECOMESLAVE);
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
@@ -162,8 +161,8 @@ public class DeviceTransactionChainManagerProviderTest {
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(
-                new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
+        txChainManagerRegistration_1.getTransactionChainManager().activateTransactionManager(OfpRole.BECOMESLAVE,
+                OfpRole.BECOMEMASTER);
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManagerRegistration_1
                 .getTransactionChainManager().getTransactionChainManagerStatus());
 

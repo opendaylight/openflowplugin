@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p/>
+ * <p>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *         </p>
  *         Created: Apr 2, 2015
  */
-class TransactionChainManager implements TransactionChainListener, AutoCloseable {
+public class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
@@ -97,13 +98,18 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * Method change status for TxChainManager to {@link TransactionChainManagerStatus#WORKING} and it has to make
      * registration for this class instance as {@link TransactionChainListener} to provide possibility a make DS
      * transactions.
-     * @param ownershipChange - marker to be sure it is used only for MASTER
+     * @param oldRole - old role identifier
+     * @param newRole - new role identifier
      */
-    public void activateTransactionManager(final EntityOwnershipChange ownershipChange) {
+    public void activateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
         LOG.trace("Changing txChain manager status to WORKING");
-        Preconditions.checkArgument(ownershipChange != null);
-        Preconditions.checkState(ownershipChange.isOwner());
-        if ((!ownershipChange.wasOwner()) && ownershipChange.isOwner()) {
+        Preconditions.checkArgument(newRole != null);
+        Preconditions.checkState(OfpRole.BECOMEMASTER.equals(newRole));
+        if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
+            LOG.debug("We are in WORKING mode for {} node. So we don't do anything");
+            return;
+        }
+        if (!(newRole.equals(oldRole))) {
             synchronized (txLock) {
                 LOG.debug("Transaction Factory create");
                 Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
@@ -118,25 +124,31 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     /**
      * Method change status for TxChainManger to {@link TransactionChainManagerStatus#SLEEPING} and it unregisters
-     * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS
-     * @param ownershipChange - marker to be sure it is used only for SLAVE
+     * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS.
+     * Parameters are are used as markers to be sure it is used only for SLAVE
+     * @param oldRole - old role identifier
+     * @param newRole - new role identifier
      */
-    public void deactivateTransactionManager(final EntityOwnershipChange ownershipChange) {
+    public void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
         LOG.trace("Changing txChain manager status to SLEEPING");
-        Preconditions.checkArgument(ownershipChange != null);
-        Preconditions.checkState((!ownershipChange.isOwner()));
-        if (ownershipChange.wasOwner() && (!ownershipChange.isOwner())) {
+        Preconditions.checkArgument(newRole != null);
+        Preconditions.checkState(OfpRole.BECOMESLAVE.equals(newRole));
+        if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
+            LOG.debug("We are in SLEEPING mode for {} node. So we don't do anything");
+            return;
+        }
+        if (!(newRole.equals(oldRole)) && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
             synchronized (txLock) {
                 if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                     LOG.debug("Submitting all transactions if we were in status WORKING");
                     submitWriteTransaction();
+                    Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
+                    LOG.debug("Transaction Factory delete");
+                    transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+                    txChainFactory.close();
+                    txChainFactory = null;
+                    wTx = null;
                 }
-                Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
-                LOG.debug("Transaction Factory delete");
-                transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-                txChainFactory.close();
-                txChainFactory = null;
-                wTx = null;
             }
         } else {
             LOG.debug("Ownership was not realy changed!");
@@ -304,7 +316,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 final WriteTransaction tx = localTxChainFactory.newWriteOnlyTransaction();
 
                 tx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
-                CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = tx.submit();
+                final CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = tx.submit();
 
                 Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
                     @Override
