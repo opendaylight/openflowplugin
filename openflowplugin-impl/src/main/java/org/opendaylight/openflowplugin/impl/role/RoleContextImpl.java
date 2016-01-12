@@ -25,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
-import org.opendaylight.openflowplugin.impl.device.TransactionChainManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -54,7 +53,6 @@ public class RoleContextImpl implements RoleContext {
     private FutureCallback<Boolean> roleChangeCallback;
 
     private final SettableFuture<Void> initRoleChangeFuture;
-    private final TransactionChainManager txChainManager;
 
 
     public RoleContextImpl(final DeviceContext deviceContext, final RpcProviderRegistry rpcProviderRegistry,
@@ -63,31 +61,20 @@ public class RoleContextImpl implements RoleContext {
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.openflowOwnershipListener = Preconditions.checkNotNull(openflowOwnershipListener);
-        this.txChainManager = null; // FIXME: it has to be input parameter for this class
 
         entity = new Entity(RoleManager.ENTITY_TYPE, deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
 
         initRoleChangeFuture = SettableFuture.create();
-        //make a call to entity ownership service and listen for notifications from the service
-        requestOpenflowEntityOwnership(); // FIXME: Initialization method has to be call instead but from creator caller not from constructor
     }
 
     @Override
-    public Future<Void> initialization() {
+    public Future<Void> initialization() throws CandidateAlreadyRegisteredException {
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-        try {
-            entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-
-            // The role change listener must be registered after registering a candidate
-            openflowOwnershipListener.registerRoleChangeListener(this);
-            LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}",
-                    deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
-        } catch (final CandidateAlreadyRegisteredException e) {
-            // we can log and move for this error, as listener is present and role changes will be served.
-            LOG.error("Candidate - Entity already registered with Openflow candidate ", entity, e );
-            return Futures.immediateCancelledFuture();
-        }
+        openflowOwnershipListener.registerRoleChangeListener(this);
+        entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
+        LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}",
+                deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
         return initRoleChangeFuture;
     }
 
@@ -138,9 +125,9 @@ public class RoleContextImpl implements RoleContext {
                 deviceContext.getPrimaryConnectionContext().getNodeId());
 
         if (OfpRole.BECOMEMASTER.equals(newRole)) {
-            txChainManager.activateTransactionManager(oldRole, newRole);
+            deviceContext.activateTransactionManager(oldRole, newRole);
         } else if (OfpRole.BECOMESLAVE.equals(newRole)) {
-            txChainManager.deactivateTransactionManager(oldRole, newRole);
+            deviceContext.deactivateTransactionManager(oldRole, newRole);
         } else {
             LOG.warn("Undefined role change from {} to {} for entity {}", oldRole, newRole, entity);
         }
