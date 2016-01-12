@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -88,7 +89,26 @@ public interface DeviceContext extends AutoCloseable,
     <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
 
     /**
+     * Method prepare possibility to write or delete Node subtree data for actual Controller Cluster Node.
+     * We are able to activate TxManager only if newRole is {@link OfpRole#BECOMEMASTER}.
+     * Parameters are used as marker to be sure it is change to MASTER from SLAVE
+     * @param oldRole - OldRole expect to be {@link OfpRole#BECOMESLAVE}
+     * @param newRole - NewRole expect to be {@link OfpRole#BECOMEMASTER}
+     */
+    void activateTransactionManager(final OfpRole oldRole, final OfpRole newRole);
+
+    /**
+     * Method prepare possibility to write or delete Node subtree data for actual Controller Cluster Node.
+     * We are able to activate TxManager only if newRole is {@link OfpRole#BECOMESLAVE}.
+     * Parameters are used as marker to be sure it is change to SLAVE from MASTER
+     * @param oldRole - OldRole expect to be {@link OfpRole#BECOMEMASTER}
+     * @param newRole - NewRole expect to be {@link OfpRole#BECOMESLAVE}
+     */
+    void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole);
+
+    /**
      * Method submits Transaction to DataStore.
+     *
      * @return transaction is submitted successfully
      */
     boolean submitTransaction();
@@ -198,5 +218,8 @@ public interface DeviceContext extends AutoCloseable,
      * Callback when confirmed that device is disconnected from cluster
       */
     void onDeviceDisconnectedFromCluster();
+
+    @Override
+    void close();
 }
 

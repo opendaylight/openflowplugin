@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -223,6 +224,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ReadTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
+    }
+
+    @Override
+    public void activateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
+        transactionChainManager.activateTransactionManager(oldRole, newRole);
+    }
+
+    @Override
+    public void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
+        transactionChainManager.deactivateTransactionManager(oldRole, newRole);
     }
 
     @Override

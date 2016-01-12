@@ -103,6 +103,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.F
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -183,7 +184,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 //if role = slave
                 try {
                     ((DeviceContextImpl) deviceContext).cancelTransaction();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     //TODO: how can we avoid it. pingpong does not have cancel
                     LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
                 }
@@ -203,28 +204,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
+        LOG.debug("deviceConnected for Node {}", connectionContext.getNodeId());
         Preconditions.checkArgument(connectionContext != null);
-
-        ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        TransactionChainManager transactionChainManager = transactionChainManagerRegistration.getTransactionChainManager();
-
-        if (transactionChainManagerRegistration.ownedByInvokingConnectionContext()) {
-            //this actually is new registration for currently processed connection context
-            initializeDeviceContext(connectionContext, transactionChainManager);
-        }
-        else if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
-            //this means there already exists connection described by same NodeId and it is not current connection contexts' registration
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false and  TransactionChainManagerStatus.WORKING. Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
-        else if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-            //previous connection is shutting down, we will try to register handler listening on new transaction chain ready
-            // new connection wil be closed if handler registration fails
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false, TransactionChainManagerStatus is not shutting down or readyForNewTransactionChainHandler is null. " +
-                    "Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
+        final TransactionChainManager txManager = new TransactionChainManager(dataBroker,
+                DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()), new Registration() {
+                    @Override
+                    public void close() throws Exception {
+                        LOG.debug("Registration for TxChain {} is closing", connectionContext.getNodeId());
+                    }
+                });
+        initializeDeviceContext(connectionContext, txManager);
     }
 
     private void initializeDeviceContext(final ConnectionContext connectionContext, final TransactionChainManager transactionChainManager) {
@@ -320,7 +309,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 LOG.trace("more info in exploration failure..", t);
                 try {
                     deviceContext.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Failed to close device context: {}", deviceContext.getDeviceState().getNodeId(), t);
                 }
             }
@@ -336,7 +325,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     freshNotificationLimit = 100;
                 }
                 LOG.debug("fresh notification limit = {}", freshNotificationLimit);
-                for (DeviceContext deviceContext : deviceContexts) {
+                for (final DeviceContext deviceContext : deviceContexts) {
                     deviceContext.updatePacketInRateLimit(freshNotificationLimit);
                 }
             }
@@ -557,7 +546,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static IpAddress getIpAddressOf(final DeviceContext deviceContext) {
 
-        InetSocketAddress remoteAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress();
+        final InetSocketAddress remoteAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress();
 
         if (remoteAddress == null) {
             LOG.warn("IP address of the node {} cannot be obtained. No connection with switch.", deviceContext.getDeviceState().getNodeId());
@@ -566,7 +555,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         LOG.info("IP address of switch is :"+remoteAddress);
 
         final InetAddress address = remoteAddress.getAddress();
-        String hostAddress = address.getHostAddress();
+        final String hostAddress = address.getHostAddress();
         if (address instanceof Inet4Address) {
             return new IpAddress(new Ipv4Address(hostAddress));
         }
@@ -696,7 +685,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
+    public void setExtensionConverterProvider(final ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
     }
 
