@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p/>
+ * <p>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
@@ -66,11 +66,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     private boolean submitIsEnabled = false;
 
     private volatile TransactionChainManagerStatus transactionChainManagerStatus;
-    @Deprecated
-    private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
 
-    @Deprecated
-    private volatile Registration managerRegistration;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final DeviceState deviceState) {
         LOG.debug("TxChainManager initialization");
@@ -91,6 +87,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             final WriteTransaction writeTx = getTransactionSafely();
             Preconditions.checkState(writeTx != null);
             writeTx.merge(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), nodeBuilder.build());
+            if (lastNode) {
+                LOG.trace("Marker of the last entity was set, resetting status to prevent removing from operational after close.");
+                this.lastNode = false;
+            }
             LOG.debug("New node {} was added to OPERTATIONAL DataStore.", deviceState.getNodeId());
         }
     }
@@ -131,7 +131,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 initMergeEmptyNode();
             }
         } else {
-            LOG.debug("Ownership was not realy changed!");
+            LOG.debug("Ownership was not really changed!");
         }
     }
 
@@ -174,20 +174,6 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     void initialSubmitWriteTransaction() {
         enableSubmit();
         submitWriteTransaction();
-    }
-
-    @Deprecated
-    public synchronized boolean attemptToRegisterHandler(final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
-        if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(this.transactionChainManagerStatus)
-                && null == this.readyForNewTransactionChainHandler) {
-            this.readyForNewTransactionChainHandler = readyForNewTransactionChainHandler;
-            if (managerRegistration == null) {
-                this.readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -260,21 +246,6 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
 
-    @VisibleForTesting
-    Boolean getLastNode() {
-        return this.lastNode;
-    }
-
-    /**
-     * this method provide posibbilyti to set the flag of last node, so when the
-     * txChainManager is closing, it will remove node from operational and its safe to close entity
-     */
-    void setMarkLastNode() {
-        LOG.trace("setMarkLastNode method call");
-        this.lastNode = true;
-    }
-
-
     /**
      * Method writes data identified by PATH from DS
      * @param store Operational or Configuration
@@ -304,8 +275,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     /**
      * Set the status of txChainManager to {@link TransactionChainManagerStatus#SHUTTING_DOWN}
-     * and flush transaction if in working state and transactiona are waiting
-     * if the flag last node is set, it will clear the node from operational
+     * and flush transaction if in working state and transactions are waiting.
+     * If the flag last node is set, it will clear the node from operational
      */
     private void closeTransactionChainManagerSafely() {
         LOG.trace("closing transaction chain manager safely");
@@ -315,8 +286,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
         synchronized (txLock) {
             transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-            this.txChainFactory.close();
-            this.txChainFactory = null;
+            if (txChainFactory == null) {
+                LOG.debug("txChainFactoy is already closed for node {}", deviceState.getNodeId());
+            } else {
+                this.txChainFactory.close();
+                this.txChainFactory = null;
+            }
             this.wTx = null;
             if (lastNode) {
                 LOG.debug("I am the last node, removing me ({}) from operational", deviceState.getNodeId());
@@ -337,7 +312,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        LOG.info("Attempt to close transaction chain factory failed.", throwable);
+                        LOG.warn("Attempt to close transaction chain factory failed.", throwable);
                         closeFactory();
                     }
                 });
@@ -348,11 +323,19 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
+    /**
+     * Method is only called after cleaning entity from operational, just to be sure its correctly close
+     */
     private void closeFactory() {
+        LOG.trace("Close factory method called after cleaning the node from operational.");
         synchronized (txLock) {
-            this.txChainFactory.close();
-            this.txChainFactory = null;
-            this.wTx = null;
+            if (txChainFactory != null) {
+                this.txChainFactory.close();
+                this.txChainFactory = null;
+                this.wTx = null;
+            } else {
+                LOG.debug("txChainFactory was already closed");
+            }
         }
     }
 
@@ -408,91 +391,41 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         submitIsEnabled = true;
     }
 
+
     /**
-     * When a device disconnects from a node of the cluster, the device context gets closed. With that the txChainMgr
-     * status is set to SHUTTING_DOWN and is closed.
-     * When the EntityOwnershipService notifies and is derived that this was indeed the last node from which the device
-     * had disconnected, then we clean the inventory.
-     * Called from DeviceContext
+     * Close method try to flush transactions if there still some, but don't take if we are master or slave, it should be checked by submit transactions
      */
-    @Deprecated
-    public void cleanupPostClosure() {
-        LOG.debug("Removing node {} from operational DS.", deviceState.getNodeId());
-        synchronized (txLock) {
-            final WriteTransaction writeTx;
-
-            //TODO(Kamal): Fix this. This might cause two txChain Manager working on the same node.
-            if (txChainFactory == null) {
-                LOG.info("Creating new Txn Chain Factory for cleanup purposes - Race Condition Hazard, " +
-                        "Concurrent Modification Hazard, node:{}", deviceState.getNodeId());
-                this.txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-            }
-
-            if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
-                // status is already shutdown. so get the tx directly
-                writeTx = txChainFactory.newWriteOnlyTransaction();
-            } else {
-                writeTx = getTransactionSafely();
-            }
-
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-            writeTx.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
-            LOG.debug("Delete node {} from operational DS put to write transaction.", deviceState.getNodeId());
-
-            final CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
-            LOG.debug("Delete node {} from operational DS write transaction submitted.", deviceState.getNodeId());
-
-            Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(final Void aVoid) {
-                    LOG.debug("Removing node {} from operational DS successful .", deviceState.getNodeId());
-                    notifyReadyForNewTransactionChainAndCloseFactory();
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.info("Attempt to close transaction chain factory failed.", throwable);
-                    notifyReadyForNewTransactionChainAndCloseFactory();
-                }
-            });
-            wTx = null;
-        }
-    }
-
-    @Deprecated
-    private void notifyReadyForNewTransactionChainAndCloseFactory() {
-        if(managerRegistration == null){
-            LOG.warn("managerRegistration is null");
-            return;
-        }
-        synchronized (this) {
-            try {
-                if (managerRegistration != null) {
-                    LOG.debug("Closing registration in manager.");
-                    managerRegistration.close();
-                }
-            } catch (final Exception e) {
-                LOG.warn("Failed to close transaction chain manager's registration.", e);
-            }
-            managerRegistration = null;
-            if (null != readyForNewTransactionChainHandler) {
-                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
-        }
-        if (txChainFactory != null) {
-            txChainFactory.close();
-            txChainFactory = null;
-        }
-        LOG.debug("Transaction chain factory closed.");
-    }
-
     @Override
     public void close() {
-        LOG.debug("closing txChainManager");
+        LOG.trace("closing txChainManager");
         closeTransactionChainManagerSafely();
-        Preconditions.checkState(wTx == null);
-        Preconditions.checkState(txChainFactory == null);
-        notifyReadyForNewTransactionChainAndCloseFactory(); // don't need anymore
+    }
+
+    /**
+     * Returning the switch state for closing. (Only for testing purpose
+     * @return
+     */
+    @VisibleForTesting
+    Boolean getLastNode() {
+        return this.lastNode;
+    }
+
+    /**
+     * this method provide possibility to set the flag of last node, so when the
+     * txChainManager is closing, it will remove node from operational and its safe to close entity
+     */
+    @VisibleForTesting
+    void setMarkLastNode() {
+        this.lastNode = true;
+    }
+
+    /**
+     * this method provide possibility to unset the flag of last node, so when the
+     * txChainManager is closing, it will not remove node from operational and its safe to close entity
+     */
+    @VisibleForTesting
+    void unsetMarkLastNode() {
+        this.lastNode = false;
     }
 
     public enum TransactionChainManagerStatus {

@@ -27,8 +27,6 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -75,8 +73,6 @@ public class TransactionChainManagerTest {
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
 
-    private Entity entity;
-    private EntityOwnershipChange entityOwnershipChange;
     private TransactionChainManager txChainManager;
     private InstanceIdentifier<Node> path;
     private NodeId nodeId;
@@ -103,9 +99,7 @@ public class TransactionChainManagerTest {
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
 
-        Assert.assertEquals(txChainManager.getLastNode(), false);
-
-        entity = new Entity("dummy-type", "dummy-name");
+        Assert.assertFalse(txChainManager.getLastNode());
         Mockito.verify(writeTx).merge(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(nodeKeyIdent),
                 Matchers.<Node> any());
     }
@@ -176,7 +170,6 @@ public class TransactionChainManagerTest {
     }
 
 
-    @Ignore
     @Test
     public void testActivateTransactionManager_activateSlave() throws Exception {
         //init: switch to deactivated state
@@ -229,21 +222,16 @@ public class TransactionChainManagerTest {
     }
     
     @Test
-//    @Ignore
-    //FIXME : choose for a last Node has to clean not finished wTx int TxChainManager
     public void testCloseTransactionChain_notLastMaster() throws Exception {
-        //I am not the last entity
+        txChainManager.unsetMarkLastNode();
         Assert.assertFalse(txChainManager.getLastNode());
         txChainManager.close();
-
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN);
         Mockito.verify(txChainFactory).close();
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN);
     }
 
     @Test
-//    @Ignore
     public void testCloseTransactionChain_lastMaster() throws Exception {
-        //I am the last entity
         txChainManager.setMarkLastNode();
         Assert.assertTrue(txChainManager.getLastNode());
         txChainManager.close();

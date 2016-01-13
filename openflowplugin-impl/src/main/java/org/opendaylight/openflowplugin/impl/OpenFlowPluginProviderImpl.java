@@ -41,6 +41,7 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrat
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
+import org.opendaylight.openflowplugin.impl.device.DeviceInfoCollertorManager;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -80,6 +81,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private DeviceInfoCollertorManager deviceInfoCollertorManager;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -120,15 +122,17 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         });
     }
 
+    @Override
     public boolean isSwitchFeaturesMandatory() {
         return switchFeaturesMandatory;
     }
 
     @Override
-    public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
+    public void setEntityOwnershipService(final EntityOwnershipService entityOwnershipService) {
         this.entityOwnershipService = entityOwnershipService;
     }
 
+    @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
@@ -168,17 +172,19 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService);
+        deviceInfoCollertorManager = new DeviceInfoCollertorManager(switchFeaturesMandatory);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
-        // CM -> DM -> Role -> SM -> RPC -> DM
+        // CM -> DM -> Role -> DICM -> SM -> RPC -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(roleManager);
-        roleManager.setDeviceInitializationPhaseHandler(statisticsManager);
+        roleManager.setDeviceInitializationPhaseHandler(deviceInfoCollertorManager);
+        deviceInfoCollertorManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
@@ -194,12 +200,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
-            String pathToMxBean = String.format("%s:type=%s",
+            final String pathToMxBean = String.format("%s:type=%s",
                     MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
                     MessageIntelligenceAgencyMXBean.class.getSimpleName());
-            ObjectName name = new ObjectName(pathToMxBean);
+            final ObjectName name = new ObjectName(pathToMxBean);
             mbs.registerMBean(messageIntelligenceAgency, name);
         } catch (MalformedObjectNameException
                 | NotCompliantMBeanException
@@ -232,6 +238,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void close() throws Exception {
         deviceManager.close();
+        deviceInfoCollertorManager.close();
         rpcManager.close();
         statisticsManager.close();
         roleManager.close();
