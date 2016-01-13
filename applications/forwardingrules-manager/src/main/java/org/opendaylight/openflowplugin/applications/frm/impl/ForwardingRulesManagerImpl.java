@@ -8,13 +8,18 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
@@ -25,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
@@ -132,6 +138,29 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident) {
         return activeNodes.contains(ident);
+    }
+
+    @Override
+    public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident) {
+        boolean result = false;
+        InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
+        final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction();
+        Optional<Node> optionalDataObject;
+        CheckedFuture<Optional<Node>, ReadFailedException> future = transaction.read(LogicalDatastoreType.OPERATIONAL, nodeIid);
+        try {
+            optionalDataObject = future.checkedGet();
+            if (optionalDataObject.isPresent()) {
+                result = true;
+            } else {
+                LOG.debug("{}: Failed to read {}",
+                        Thread.currentThread().getStackTrace()[1], nodeIid);
+            }
+        } catch (ReadFailedException e) {
+            LOG.warn("Failed to read {} ", nodeIid, e);
+        }
+        transaction.close();
+
+        return result;
     }
 
     @Override

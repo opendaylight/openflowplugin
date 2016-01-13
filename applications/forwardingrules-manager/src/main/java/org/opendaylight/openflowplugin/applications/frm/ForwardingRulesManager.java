@@ -48,6 +48,15 @@ public interface ForwardingRulesManager extends AutoCloseable {
     public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
+     * Method returns information :
+     * "is Node with send InstanceIdentifier present in operational data store"?
+     *
+     * @param ident - the key of the node
+     * @return boolean - true if device is present in operational data store
+     */
+    public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
+
+    /**
      * Method add new {@link FlowCapableNode} to active Node Holder.
      * ActiveNodeHolder prevent unnecessary Operational/DS read for identify
      * pre-configure and serious Configure/DS transactions.
