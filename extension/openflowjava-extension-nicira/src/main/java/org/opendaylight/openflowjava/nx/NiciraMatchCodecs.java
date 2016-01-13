@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,6 +15,9 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.IcmpTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.IpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.IpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
@@ -39,7 +42,7 @@ import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
 
 /**
  * @author msunal
- *
+ * @author Josh Hershberg (jhershbe@redhat.com)
  */
 public class NiciraMatchCodecs {
 
@@ -72,4 +75,7 @@ public class NiciraMatchCodecs {
     public static final TcpDstCodec TCP_DST_CODEC = new TcpDstCodec();
     public static final UdpSrcCodec UDP_SRC_CODEC = new UdpSrcCodec();
     public static final UdpDstCodec UDP_DST_CODEC = new UdpDstCodec();
+    public static final IpSrcCodec IP_SRC_CODEC = new IpSrcCodec();
+    public static final IpDstCodec IP_DST_CODEC = new IpDstCodec();
+    public static final IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
 }

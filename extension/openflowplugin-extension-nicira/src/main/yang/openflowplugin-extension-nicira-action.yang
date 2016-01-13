@@ -123,6 +123,21 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping nxm-of-ip-src-grouping {
+        leaf of-ip-src {
+            type empty;
+        }
+    }
+    grouping nxm-of-ip-dst-grouping {
+        leaf of-ip-dst {
+            type empty;
+        }
+    }
+    grouping nxm-of-icmp-type-grouping {
+        leaf of-icmp-type {
+            type empty;
+        }
+    }
 
     grouping dst-choice-grouping {
         choice dst-choice {
@@ -176,6 +191,15 @@ module openflowplugin-extension-nicira-action {
             }
             case dst-nx-nshc-4-case {
                 uses nxm-nx-nshc-4-grouping;
+            }
+            case dst-of-ip-src-case {
+                uses nxm-of-ip-src-grouping;
+            }
+            case dst-of-ip-dst-case {
+                uses nxm-of-ip-dst-grouping;
+            }
+            case dst-of-icmp-type-case {
+                uses nxm-of-icmp-type-grouping;
             }
         }
     }
@@ -235,6 +259,12 @@ module openflowplugin-extension-nicira-action {
             }
             case src-nx-nshc-4-case {
                 uses nxm-nx-nshc-4-grouping;
+            }
+            case src-of-ip-src-case {
+                uses nxm-of-ip-src-grouping;
+            }
+            case src-of-ip-dst-case {
+                uses nxm-of-ip-dst-grouping;
             }
         }
     }
