@@ -26,6 +26,8 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -84,6 +86,7 @@ public class TransactionChainManagerTest {
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
+        txChainManager.activateTransactionManager(new EntityOwnershipChange(new Entity("openflow", "openflow:1"), false, true, true));
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
@@ -158,7 +161,7 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testAttemptToRegisterHandler1() throws Exception {
-        boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
+        final boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
         Assert.assertFalse(attemptResult);
     }
 
