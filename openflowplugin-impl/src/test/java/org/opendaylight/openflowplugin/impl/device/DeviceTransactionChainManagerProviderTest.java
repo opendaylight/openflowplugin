@@ -135,11 +135,11 @@ public class DeviceTransactionChainManagerProviderTest {
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SLEEPING,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        txChainManager.close();
+        txChainManagerRegistration_1.getTransactionChainManager().close();
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
                 txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
 
-        txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
+        txChainManagerRegistration_1.getTransactionChainManager().attemptToRegisterHandler(readyForNewTransactionChainHandler);
         Mockito.verify(readyForNewTransactionChainHandler).onReadyForNewTransactionChain();
     }
 
