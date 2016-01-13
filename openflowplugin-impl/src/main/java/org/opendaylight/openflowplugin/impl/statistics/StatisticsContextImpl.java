@@ -160,9 +160,14 @@ public class StatisticsContextImpl implements StatisticsContext {
     void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
+            LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceState().getNodeId());
             return;
         }
-        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(iterator.next());
+
+        final MultipartType nextType = iterator.next();
+        LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceState().getNodeId(), nextType);
+
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType);
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean result) {

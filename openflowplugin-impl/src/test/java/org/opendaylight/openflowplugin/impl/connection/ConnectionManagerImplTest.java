@@ -25,6 +25,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyList
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
@@ -63,6 +65,8 @@ public class ConnectionManagerImplTest {
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
         Mockito.when(connection.isAlive()).thenReturn(true);
+        Mockito.when(connection.barrier(Matchers.<BarrierInput>any()))
+                .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
     }
 
     /**

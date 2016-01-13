@@ -28,8 +28,11 @@ import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Test for {@link HandshakeListenerImpl}.
@@ -55,6 +58,8 @@ public class HandshakeListenerImplTest {
 
     @Before
     public void setUp() throws Exception {
+        Mockito.when(connectionAdapter.barrier(Matchers.<BarrierInput>any()))
+                .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.TEN);
