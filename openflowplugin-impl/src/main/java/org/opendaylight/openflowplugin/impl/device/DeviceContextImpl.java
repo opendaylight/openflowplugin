@@ -466,10 +466,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void markForOperationalDelete() {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure();
-        // FIXME : change txChainManager.cleanupPostClosure to close
+        transactionChainManager.setMarkLastNode();
+        transactionChainManager.close();
     }
 
     @Override
