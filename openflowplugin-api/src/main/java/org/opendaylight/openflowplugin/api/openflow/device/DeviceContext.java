@@ -106,6 +106,14 @@ public interface DeviceContext extends AutoCloseable,
     void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole);
 
     /**
+     * The method has to check do we are holding MASTER flag from RoleChange manager.
+     * OF1.0 doesn't support role from device side so we have to check check this flag
+     * in TransactionManager instead of {@link DeviceState#isMetersAvailable()}
+     * @return boolean TransactionChangeManagerStatus.WORKING
+     */
+    boolean isContextMasterFlagHolder();
+
+    /**
      * Method submits Transaction to DataStore.
      *
      * @return transaction is submitted successfully

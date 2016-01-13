@@ -59,6 +59,7 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.device.TransactionChainManager.TransactionChainManagerStatus;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
@@ -236,6 +237,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void deactivateTransactionManager(final OfpRole oldRole, final OfpRole newRole) {
         transactionChainManager.deactivateTransactionManager(oldRole, newRole);
+    }
+
+    @Override
+    public boolean isContextMasterFlagHolder() {
+        return TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus());
     }
 
     @Override
