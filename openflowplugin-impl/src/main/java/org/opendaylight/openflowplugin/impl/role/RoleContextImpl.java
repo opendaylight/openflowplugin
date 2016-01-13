@@ -185,9 +185,9 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void markForOperationalDelete() {
         LOG.debug("Called onDeviceDisconnectedFromCluster in DeviceContext for entity:{}", entity);
-        deviceContext.onDeviceDisconnectedFromCluster();
+        deviceContext.markForOperationalDelete();
     }
 
     private boolean isDeviceConnected() {
