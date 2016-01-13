@@ -99,7 +99,25 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         Preconditions.checkNotNull(nodeIdent, "FlowCapableNode ident can not be null!");
-        return provider.isNodeActive(nodeIdent);
+        // In single node cluster, node should be in local cache before we get any flow/group/meter
+        // data change event from data store. So first check should pass.
+        // In case of 3-node cluster, when shard leader changes, clustering will send blob of data
+        // present in operational data store and config data store. So ideally local node cache
+        // should get populated. But to handle a scenario where flow request comes before the blob
+        // of config/operational data gets processes, it won't find node in local cache and it will
+        // skip the flow/group/meter operational. This requires an addition check, where it reads
+        // node from operational data store and if it's present it calls flowNodeConnected to explictly
+        // trigger the event of new node connected.
+
+        if (!provider.isNodeActive(nodeIdent)) {
+            if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
+                provider.getFlowNodeReconciliation().flowNodeConnected(nodeIdent);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
