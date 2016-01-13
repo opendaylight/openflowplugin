@@ -228,12 +228,10 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     //FIXME : choose for a last Node has to clean not finished wTx int TxChainManager
     public void testCloseTransactionChain_notLastMaster() throws Exception {
         //I am not the last entity
-        entityOwnershipChange = new EntityOwnershipChange(entity, true, false, true);
-        txChainManager.setMarkLastNode(entityOwnershipChange);
         Assert.assertFalse(txChainManager.getLastNode());
         txChainManager.close();
 
@@ -242,11 +240,10 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void testCloseTransactionChain_lastMaster() throws Exception {
         //I am the last entity
-        entityOwnershipChange = new EntityOwnershipChange(entity, true, false, false);
-        txChainManager.setMarkLastNode(entityOwnershipChange);
+        txChainManager.setMarkLastNode();
         Assert.assertTrue(txChainManager.getLastNode());
         txChainManager.close();
 
