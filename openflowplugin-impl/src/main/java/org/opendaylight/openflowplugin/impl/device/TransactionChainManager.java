@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- * <p/>
+ * <p>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
@@ -268,13 +268,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     /**
      * this method provide posibbilyti to set the flag of last node, so when the
      * txChainManager is closing, it will remove node from operational and its safe to close entity
-     * @param ownershipChange
      */
-    public void setMarkLastNode(final EntityOwnershipChange ownershipChange) {
+    void setMarkLastNode() {
         LOG.trace("setMarkLastNode method call");
-        Preconditions.checkArgument(ownershipChange != null);
-        Preconditions.checkState((!ownershipChange.isOwner()), "Node is still master");
-        Preconditions.checkState((!ownershipChange.hasOwner()), "Node has still an owner");
         this.lastNode = true;
     }
 
@@ -326,8 +322,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 LOG.debug("I am the last node, removing me ({}) from operational", deviceState.getNodeId());
 
                 //Making local variable, we don't need to care about releasing from memory
-                final BindingTransactionChain localTxChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-                final WriteTransaction tx = localTxChainFactory.newWriteOnlyTransaction();
+                this.txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+                final WriteTransaction tx = txChainFactory.newWriteOnlyTransaction();
 
                 tx.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
                 final CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = tx.submit();
@@ -336,11 +332,13 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     @Override
                     public void onSuccess(final Void aVoid) {
                         LOG.debug("Removing node {} from operational DS successful .", deviceState.getNodeId());
+                        closeFactory();
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
                         LOG.info("Attempt to close transaction chain factory failed.", throwable);
+                        closeFactory();
                     }
                 });
             } else {
@@ -348,7 +346,14 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             }
 
         }
+    }
 
+    private void closeFactory() {
+        synchronized (txLock) {
+            this.txChainFactory.close();
+            this.txChainFactory = null;
+            this.wTx = null;
+        }
     }
 
     @Override
