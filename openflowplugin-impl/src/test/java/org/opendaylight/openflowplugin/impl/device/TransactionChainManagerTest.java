@@ -86,11 +86,15 @@ public class TransactionChainManagerTest {
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
         txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
         Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING, txChainManager.getTransactionChainManagerStatus());
+
+        Assert.assertEquals(txChainManager.getLastNode(), false);
     }
 
     @After
@@ -157,28 +161,42 @@ public class TransactionChainManagerTest {
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
     }
 
+
     @Test
-    public void testAttemptToRegisterHandler1() throws Exception {
-        final boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertFalse(attemptResult);
+    public void testActivateDeactivateTransactionManager() throws Exception {
+
+        //set master and activate
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
+
+        //try deactivate master with no role change
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
+
+        //set slave and deactivate
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+
+        //Same role should not be changed
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
     }
 
     @Test
-    public void testAttemptToRegisterHandler2() throws Exception {
-        final InOrder inOrder = Mockito.inOrder(writeTx, txChain);
+    public void testCloseTransactionChain() throws Exception {
+        //I am not the last entity
+        txChainManager.setMarkLastNode();
+        Assert.assertNotEquals(txChainManager.getLastNode(), false);
+        txChainManager.close();
 
-        txChainManager.cleanupPostClosure();
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, txChainManager.getTransactionChainManagerStatus());
+        //I am the last entity
+        txChainManager.setMarkLastNode();
+        Assert.assertNotEquals(txChainManager.getLastNode(), true);
+        txChainManager.close();
 
-        boolean attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertTrue(attemptResult);
-
-        inOrder.verify(txChain).newWriteOnlyTransaction();
-        inOrder.verify(writeTx).delete(LogicalDatastoreType.OPERATIONAL, path);
-        inOrder.verify(writeTx).submit();
-        inOrder.verify(txChain).close();
-
-        attemptResult = txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Assert.assertFalse(attemptResult);
+        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN);
     }
 }
