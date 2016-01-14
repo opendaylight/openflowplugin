@@ -7,13 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -118,7 +119,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private final TransactionChainManager transactionChainManager;
+    private TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -147,14 +148,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      @Nonnull final TransactionChainManager transactionChainManager) {
+            @Nonnull final TranslatorLibrary translatorLibrary) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = Preconditions.checkNotNull(transactionChainManager);
+        primaryConnectionContext.setDeviceDisconnectedHandler(DeviceContextImpl.this);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -178,6 +178,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
+    }
+
+    void setTransactionChainManager(final TransactionChainManager txChainManager) {
+        this.transactionChainManager = Preconditions.checkNotNull(txChainManager);
     }
 
     /**
