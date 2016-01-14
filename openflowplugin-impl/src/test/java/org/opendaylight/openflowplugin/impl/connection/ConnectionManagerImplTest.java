@@ -90,7 +90,7 @@ public class ConnectionManagerImplTest {
      * @throws InterruptedException
      */
     @Test
-    public void testOnSwitchConnected1() throws InterruptedException {
+    public void testOnSwitchConnected1() throws Exception {
         connectionManagerImpl.onSwitchConnected(connection);
         Mockito.verify(connection).setConnectionReadyListener(connectionReadyListenerAC.capture());
         Mockito.verify(connection).setMessageListener(ofpListenerAC.capture());
@@ -141,7 +141,7 @@ public class ConnectionManagerImplTest {
      * @throws InterruptedException
      */
     @Test
-    public void testOnSwitchConnected2() throws InterruptedException {
+    public void testOnSwitchConnected2() throws Exception {
         connectionManagerImpl.onSwitchConnected(connection);
         Mockito.verify(connection).setConnectionReadyListener(connectionReadyListenerAC.capture());
         Mockito.verify(connection).setMessageListener(ofpListenerAC.capture());

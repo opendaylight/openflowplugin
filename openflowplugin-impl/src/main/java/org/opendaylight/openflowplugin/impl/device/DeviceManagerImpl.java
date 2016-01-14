@@ -10,13 +10,12 @@ package org.opendaylight.openflowplugin.impl.device;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.util.Collections;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import io.netty.util.HashedWheelTimer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -65,18 +64,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
 
-    private final Set<DeviceContext> deviceContexts = Sets.newConcurrentHashSet();
+    private final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
-    private final boolean switchFeaturesMandatory;
     private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
-                             final boolean switchFeaturesMandatory,
                              final long globalNotificationQuota) {
         this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -95,7 +92,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
         deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
@@ -138,17 +134,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
+    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
-        try {
-            initializeDeviceContext(connectionContext);
-        } catch (Exception e) {
-            LOG.warn("Exception during initialization phase.", e);
-        }
-    }
+        Preconditions.checkState(!deviceContexts.containsKey(connectionContext.getNodeId()),
+                "Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
+                connectionContext.getNodeId()
+        );
+        LOG.info("Initializing New Connection DeviceContext for node:{}", connectionContext.getNodeId());
 
-    private void initializeDeviceContext(final ConnectionContext connectionContext) throws Exception{
-        LOG.info("Initializing New Connection DeviceContext for node:{}",  connectionContext.getNodeId());
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
 
@@ -163,13 +156,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final NodeId nodeId = connectionContext.getNodeId();
-        final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), nodeId);
-
+        final DeviceState deviceState = createDeviceState(connectionContext);
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
 
         deviceContext.addDeviceContextClosedHandler(this);
+        deviceContexts.put(connectionContext.getNodeId(), deviceContext);
+
         // We would like to crete/register TxChainManager after
         final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
                 .provideTransactionChainManager(connectionContext);
@@ -181,11 +174,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             deviceContext.close();
             return;
         }
+
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
 
-        deviceContexts.add(deviceContext);
 
         updatePacketInRateLimiters();
 
@@ -194,6 +187,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
 
         deviceCtxLevelUp(deviceContext);
+    }
+
+    private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
+        return new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
     }
 
     private void updatePacketInRateLimiters() {
@@ -205,7 +202,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     freshNotificationLimit = 100;
                 }
                 LOG.debug("fresh notification limit = {}", freshNotificationLimit);
-                for (DeviceContext deviceContext : deviceContexts) {
+                for (final DeviceContext deviceContext : deviceContexts.values()) {
                     deviceContext.updatePacketInRateLimit(freshNotificationLimit);
                 }
             }
@@ -240,14 +237,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void close() throws Exception {
-        for (final DeviceContext deviceContext : deviceContexts) {
+        for (final DeviceContext deviceContext : deviceContexts.values()) {
             deviceContext.close();
         }
     }
 
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        deviceContexts.remove(deviceContext);
+        LOG.trace("onDeviceContextClosed for Node {}", deviceContext.getDeviceState().getNodeId());
+        deviceContexts.remove(deviceContext.getPrimaryConnectionContext().getNodeId());
         updatePacketInRateLimiters();
     }
 
