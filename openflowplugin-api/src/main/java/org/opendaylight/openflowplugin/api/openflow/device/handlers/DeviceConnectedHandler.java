@@ -19,6 +19,6 @@ public interface DeviceConnectedHandler {
      * Method is used to propagate information about established connection with device.
      * It propagates connected device's connection context.
      */
-    void deviceConnected(ConnectionContext connectionContext);
+    void deviceConnected(ConnectionContext connectionContext) throws Exception;
 
 }
