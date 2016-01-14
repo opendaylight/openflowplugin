@@ -61,9 +61,16 @@ public class HandshakeListenerImpl implements HandshakeListener {
             @Override
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 LOG.debug("succeeded by getting sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
-                deviceConnectedHandler.deviceConnected(connectionContext);
-                SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
-                        SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
+                try {
+                    deviceConnectedHandler.deviceConnected(connectionContext);
+                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                            SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
+                } catch (Exception e) {
+                    LOG.info("ConnectionContext initial processing failed: {}", e.getMessage());
+                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                            SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
+                    connectionContext.closeConnection(false);
+                }
             }
 
             @Override
