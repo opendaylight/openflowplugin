@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -98,6 +98,8 @@ public class DeviceManagerImplTest {
     private ConnectionAdapter mockedConnectionAdapter;
     @Mock
     private DeviceContextImpl mockedDeviceContext;
+    @Mock
+    private NodeId mockedNodeId;
 
     @Before
     public void setUp() throws Exception {
@@ -143,7 +145,7 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_SWITCH_FEATURE_MANDATORY,
+        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
@@ -170,7 +172,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void deviceConnectedTest() {
+    public void deviceConnectedTest() throws Exception{
         DeviceManagerImpl deviceManager = prepareDeviceManager();
         injectMockTranslatorLibrary(deviceManager);
         ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
@@ -187,7 +189,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void deviceConnectedV10Test() {
+    public void deviceConnectedV10Test() throws Exception{
         DeviceManagerImpl deviceManager = prepareDeviceManager();
         injectMockTranslatorLibrary(deviceManager);
         ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
@@ -247,8 +249,8 @@ public class DeviceManagerImplTest {
     public void testClose() throws Exception {
         DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
         final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        final Set<DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.add(deviceContext);
+        final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.put(mockedNodeId, deviceContext);
         Assert.assertEquals(1, deviceContexts.size());
 
         deviceManager.close();
@@ -256,12 +258,12 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceContext).close();
     }
 
-    private static Set<DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);
         contextsField.setAccessible(true);
-        return (Set<DeviceContext>) contextsField.get(deviceManager);
+        return (ConcurrentHashMap<NodeId, DeviceContext>) contextsField.get(deviceManager);
     }
 
 }
