@@ -120,15 +120,17 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         });
     }
 
+    @Override
     public boolean isSwitchFeaturesMandatory() {
         return switchFeaturesMandatory;
     }
 
     @Override
-    public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
+    public void setEntityOwnershipService(final EntityOwnershipService entityOwnershipService) {
         this.entityOwnershipService = entityOwnershipService;
     }
 
+    @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
@@ -170,8 +172,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, switchFeaturesMandatory, globalNotificationQuota);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
-
-        roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService);
+        roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService, switchFeaturesMandatory);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
@@ -194,12 +195,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
-            String pathToMxBean = String.format("%s:type=%s",
+            final String pathToMxBean = String.format("%s:type=%s",
                     MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
                     MessageIntelligenceAgencyMXBean.class.getSimpleName());
-            ObjectName name = new ObjectName(pathToMxBean);
+            final ObjectName name = new ObjectName(pathToMxBean);
             mbs.registerMBean(messageIntelligenceAgency, name);
         } catch (MalformedObjectNameException
                 | NotCompliantMBeanException
