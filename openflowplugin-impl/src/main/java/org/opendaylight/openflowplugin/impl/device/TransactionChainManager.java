@@ -87,11 +87,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             final WriteTransaction writeTx = getTransactionSafely();
             Preconditions.checkState(writeTx != null);
             writeTx.merge(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), nodeBuilder.build());
-            if (lastNode) {
-                LOG.trace("Marker of the last entity was set, resetting status to prevent removing from operational after close.");
-                this.lastNode = false;
-            }
-            LOG.debug("New node {} was added to OPERTATIONAL DataStore.", deviceState.getNodeId());
+            LOG.debug("New node {} was added to OPERATIONAL DataStore.", deviceState.getNodeId());
         }
     }
 
@@ -117,6 +113,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         LOG.trace("Changing txChain manager status to WORKING for Node {}", deviceState.getNodeId());
         Preconditions.checkArgument(newRole != null);
         Preconditions.checkState(OfpRole.BECOMEMASTER.equals(newRole));
+        if (lastNode) {
+            LOG.trace("Marker of the last entity was set, resetting status to prevent removing from OPERATIONAL after close.");
+            this.lastNode = false;
+        }
         if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
             LOG.debug("We are in WORKING mode for {} node. So we don't do anything");
             return;
@@ -166,7 +166,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 }
             }
         } else {
-            LOG.debug("Ownership was not realy changed!");
+            LOG.debug("Ownership was not really changed!");
         }
     }
 
@@ -238,7 +238,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             if (writeTx != null) {
                 writeTx.delete(store, path);
             } else {
-                LOG.info("You are not MASTER and Delete {} was not writen to {} DS", path, store);
+                LOG.info("You are not MASTER and Delete {} was not written to {} DS", path, store);
             }
         } else {
             LOG.warn("You try to delete {} from {} DataStore, but you are not MASTER", path, store);
@@ -266,7 +266,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             if (writeTx != null) {
                 writeTx.put(store, path, data);
             } else {
-                LOG.info("You are not MASTER and Write data to {} was not writen to {} DS", path, store);
+                LOG.info("You are not MASTER and Write data to {} was not written to {} DS", path, store);
             }
         } else {
             LOG.warn("You try to write data {} to {} DataStore, but you are not MASTER", path, store);
@@ -287,7 +287,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             if (txChainFactory == null) {
-                LOG.debug("txChainFactoy is already closed for node {}", deviceState.getNodeId());
+                LOG.debug("txChainFactory is already closed for node {}", deviceState.getNodeId());
             } else {
                 this.txChainFactory.close();
                 this.txChainFactory = null;
@@ -342,7 +342,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
-        LOG.warn("Submited TxChain for node {} Failed -> recreating", deviceState.getNodeId(), cause);
+        LOG.warn("Submitted TxChain for node {} Failed -> recreating", deviceState.getNodeId(), cause);
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                 this.txChainFactory.close();
@@ -354,7 +354,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @Override
     public void onTransactionChainSuccessful(final TransactionChain<?, ?> chain) {
-        LOG.trace("Submited TxChain for node {} finish Successful", deviceState.getNodeId());
+        LOG.trace("Submitted TxChain for node {} finish Successful", deviceState.getNodeId());
         // NOOP - only yet, here is probably place for notification to get new WriteTransaction
     }
 

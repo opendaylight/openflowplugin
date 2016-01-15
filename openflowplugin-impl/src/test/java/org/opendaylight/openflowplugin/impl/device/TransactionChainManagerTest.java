@@ -170,57 +170,78 @@ public class TransactionChainManagerTest {
     }
 
 
+    //==================== Set of Activate and Deactivate tests ===================================
+
     @Test
-    public void testActivateTransactionManager_activateSlave() throws Exception {
-        //init: switch to deactivated state
+    public void testDeactivateTransactionManager_activateSlave() throws Exception {
         txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
         Mockito.verify(txChainFactory).close();
         Mockito.verify(writeTx).submit();
         Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
-
-        //try to activate slave
-        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
-    }
-
-    @Test
-    public void testDeactivateTransactionManager_deactivateMaster() throws Exception {
-        // try deactivate master
-        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(),
-                TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
-        Mockito.verify(txChainFactory).close();
-        Mockito.verify(writeTx).submit();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testDeactivateTransactionManager_deactivateMasterSwitchedImpParam() throws Exception {
-        // try deactivate master
+    public void testDeactivateTransactionManager_activateSlave_switchedParams() throws Exception {
         txChainManager.deactivateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.WORKING);
-    }
-
-    @Test
-    public void testDeactivateTransactionManager_deactivateSlave() throws Exception {
-        //init: switch to deactivated state
-        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
-        Mockito.verify(txChainFactory).close();
-        Mockito.verify(writeTx).submit();
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
-
-        //try to deactivate slave
-        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
-        Mockito.verify(txChainFactory).close();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testActivateTransactionManager_activateMaster() throws Exception {
-        //try to activate master
-        txChainManager.activateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
-        Assert.assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+    public void testDeactivateTransactionManager_activateSlave_sameMasterParams() throws Exception {
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
     }
-    
+
+    @Test
+    public void testDeactivateTransactionManager_activateSlave_sameSlaveParams() throws Exception {
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+        Mockito.verify(txChainFactory, Mockito.never()).close();
+        Mockito.verify(writeTx, Mockito.never()).submit();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeactivateTransactionManager_activateSlave_nullParams() throws Exception {
+        txChainManager.deactivateTransactionManager(null, null);
+    }
+
+    @Test
+    public void testActivateTransactionManager_activateMaster() throws Exception {
+        //Deactivate first, that we are not in state working
+        txChainManager.deactivateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SLEEPING.equals(txChainManager.getTransactionChainManagerStatus()));
+        Mockito.verify(txChainFactory).close();
+        Mockito.verify(writeTx).submit();
+        //Now test the activate method
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test
+    public void testActivateTransactionManager_activateMaster_withoutResetTheStateToSleeping() throws Exception {
+        //Just test the method
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testActivateTransactionManager_activateMaster_switchedParams() throws Exception {
+        txChainManager.activateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testActivateTransactionManager_activateMaster_sameSlaveParams() throws Exception {
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+    }
+
+    @Test
+    public void testActivateTransactionManager_activateMaster_sameMasterParams() throws Exception {
+        txChainManager.activateTransactionManager(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testActivateTransactionManager_activateMaster_nullParams() throws Exception {
+        txChainManager.activateTransactionManager(null, null);
+    }
+
     @Test
     public void testCloseTransactionChain_notLastMaster() throws Exception {
         txChainManager.unsetMarkLastNode();
@@ -243,5 +264,14 @@ public class TransactionChainManagerTest {
         inOrder.verify(writeTx).delete(LogicalDatastoreType.OPERATIONAL, path);
         inOrder.verify(writeTx).submit();
         inOrder.verify(txChainFactory).close();
+    }
+
+    @Test
+    public void testUnsetMarkLastNodeAfterBecomeMaster() throws Exception {
+        txChainManager.setMarkLastNode();
+        Assert.assertTrue(txChainManager.getLastNode());
+        //Reactivate master
+        txChainManager.activateTransactionManager(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+        Assert.assertFalse(txChainManager.getLastNode());
     }
 }
