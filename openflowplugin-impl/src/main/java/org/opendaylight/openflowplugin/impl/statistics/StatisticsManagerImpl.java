@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
@@ -62,7 +61,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
-    private Semaphore workModeGuard = new Semaphore(1, true);
+    private final Semaphore workModeGuard = new Semaphore(1, true);
     private boolean shuttingDownStatisticsPolling;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
@@ -71,12 +70,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry) {
+    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
         this(rpcProviderRegistry);
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
     }
@@ -231,7 +230,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
+    public Future<RpcResult<Void>> changeStatisticsWorkMode(final ChangeStatisticsWorkModeInput input) {
         final Future<RpcResult<Void>> result;
         // acquire exclusive access
         if (workModeGuard.tryAcquire()) {

@@ -15,7 +15,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -24,6 +23,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
+import java.math.BigInteger;
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,9 +104,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceContextImplTest {
@@ -265,7 +264,7 @@ public class DeviceContextImplTest {
         return mockedConnectionContext;
     }
 
-    private ConnectionContext prepareConnectionContext() {
+    private static ConnectionContext prepareConnectionContext() {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
@@ -332,7 +331,7 @@ public class DeviceContextImplTest {
     public void testProcessPacketInMessageFutureSuccess() {
         PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
         NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-        final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
+        final ListenableFuture stringListenableFuture = Futures.immediateFuture("dummy value");
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);

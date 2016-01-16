@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
+import com.google.common.base.Optional;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
@@ -33,12 +32,12 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowOwnershipListener.class);
 
-    private EntityOwnershipService entityOwnershipService;
+    private final EntityOwnershipService entityOwnershipService;
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
-    private Map<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
+    private final Map<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
     private final ExecutorService roleChangeExecutor = Executors.newSingleThreadExecutor();
 
-    public OpenflowOwnershipListener(EntityOwnershipService entityOwnershipService) {
+    public OpenflowOwnershipListener(final EntityOwnershipService entityOwnershipService) {
         this.entityOwnershipService = entityOwnershipService;
     }
 
@@ -47,7 +46,7 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
     }
 
     @Override
-    public void ownershipChanged(EntityOwnershipChange ownershipChange) {
+    public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
         LOG.debug("Received EntityOwnershipChange:{}", ownershipChange);
 
         RoleChangeListener roleChangeListener = roleChangeListenerMap.get(ownershipChange.getEntity());
@@ -75,7 +74,6 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
         roleChangeListenerMap.put(roleChangeListener.getEntity(), roleChangeListener);
 
         final Entity entity = roleChangeListener.getEntity();
-        final OpenflowOwnershipListener self = this;
 
         Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(entity);
 
