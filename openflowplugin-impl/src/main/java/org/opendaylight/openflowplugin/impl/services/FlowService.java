@@ -54,7 +54,7 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<O>>>() {
             @Override
             public void onSuccess(final List<RpcResult<O>> results) {
-                final ArrayList<RpcError> errors = new ArrayList();
+                final ArrayList<RpcError> errors = new ArrayList<>();
                 for (RpcResult<O> flowModResult : results) {
                     if (flowModResult == null) {
                         errors.add(RpcResultBuilder.newError(
