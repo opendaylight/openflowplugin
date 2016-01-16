@@ -27,12 +27,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
-<<<<<<< HEAD
-=======
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
->>>>>>> 405732a... RoleContext updated with initialization
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +74,7 @@ public class RoleManagerImpl implements RoleManager {
         }
 
         final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
-        contexts.put(deviceContext.getDeviceState().getNodeId(), roleContext);
+        contexts.put(deviceContext, roleContext);
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(roleContext);
         OfpRole role = null;
@@ -122,7 +119,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void close() throws Exception {
-        for (final Map.Entry<NodeId, RoleContext> roleContextEntry : contexts.entrySet()) {
+        for (final Map.Entry<DeviceContext, RoleContext> roleContextEntry : contexts.entrySet()) {
             if (roleContextEntry.getValue() != null) {
                 roleContextEntry.getValue().close();
             }

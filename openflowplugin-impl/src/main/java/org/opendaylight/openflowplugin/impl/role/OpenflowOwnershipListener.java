@@ -60,7 +60,7 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
                 // possible the last node to be disconnected from device.
                 // eligible for the device to get deleted from inventory.
                 LOG.debug("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
-                roleChangeListener.onDeviceDisconnectedFromCluster();
+                roleChangeListener.onDeviceDisconnectedFromCluster(true);
 
             } else {
                 OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
