@@ -8,8 +8,14 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import javax.annotation.CheckForNull;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -74,9 +80,9 @@ public class RoleManagerImpl implements RoleManager {
         }
 
         final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
-        contexts.put(deviceContext, roleContext);
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(roleContext);
+        Verify.verify(contexts.putIfAbsent(deviceContext, roleContext) == null);
         OfpRole role = null;
         try {
             role = roleContext.initialization().get(5, TimeUnit.SECONDS);
@@ -84,6 +90,7 @@ public class RoleManagerImpl implements RoleManager {
             LOG.warn("Unexpected exception by DeviceConection {}. Connection has to close.", deviceContext.getDeviceState().getNodeId(), e);
             final Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(roleContext.getEntity());
             if (entityOwnershipStateOptional.isPresent()) {
+                // TODO : check again who will call RoleCtx.onRoleChanged
                 role = entityOwnershipStateOptional.get().isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
             } else {
                 try {
@@ -133,5 +140,23 @@ public class RoleManagerImpl implements RoleManager {
             }
         }
         this.openflowOwnershipListener.close();
+    }
+
+    @Override
+    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+        LOG.debug("onDeviceContextClosed for node {}", deviceContext.getDeviceState().getNodeId());
+        final RoleContext removedContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
+        if (removedContext != null) {
+            try {
+                LOG.info("Unregistering rpcs for device context closure");
+                removedContext.close();
+            } catch (final Exception e) {
+                LOG.error(
+                        "Exception while unregistering rpcs onDeviceContextClosed handler for node:{}. But continuing.",
+                        deviceContext.getDeviceState().getNodeId(), e);
+            }
+        } else {
+            LOG.info("No RpcContext to close , for device:{}", deviceContext.getDeviceState().getNodeId());
+        }
     }
 }

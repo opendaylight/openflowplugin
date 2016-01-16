@@ -7,12 +7,14 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
 /**
  * Created by kramesha on 8/31/15.
  */
-public interface RoleManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable {
+public interface RoleManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable,
+        DeviceContextClosedHandler {
     public static final String ENTITY_TYPE = "openflow";
 }
