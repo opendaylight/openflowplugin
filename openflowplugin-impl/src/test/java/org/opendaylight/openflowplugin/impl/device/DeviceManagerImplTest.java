@@ -12,14 +12,13 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -172,7 +171,7 @@ public class DeviceManagerImplTest {
         return prepareDeviceManager(false);
     }
 
-    private DeviceManagerImpl prepareDeviceManager(boolean withException) {
+    private DeviceManagerImpl prepareDeviceManager(final boolean withException) {
         DataBroker mockedDataBroker = mock(DataBroker.class);
         WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
 
@@ -193,7 +192,7 @@ public class DeviceManagerImplTest {
         return deviceManager;
     }
 
-    public void onDeviceContextLevelUp(boolean withException) {
+    public void onDeviceContextLevelUp(final boolean withException) {
         DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
@@ -258,12 +257,12 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
     }
 
-    protected ConnectionContext buildMockConnectionContext(short ofpVersion) {
+    protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {
         when(mockFeatures.getVersion()).thenReturn(ofpVersion);
         when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(final InvocationOnMock invocation) throws Throwable {
                 final FutureCallback<OfHeader> callBack = (FutureCallback<OfHeader>) invocation.getArguments()[2];
                 callBack.onSuccess(null);
                 return null;
@@ -275,7 +274,7 @@ public class DeviceManagerImplTest {
         when(mockedConnectionAdapter.registerOutboundQueueHandler(Matchers.<OutboundQueueHandler>any(), Matchers.anyInt(), Matchers.anyLong()))
                 .thenAnswer(new Answer<OutboundQueueHandlerRegistration<OutboundQueueHandler>>() {
                     @Override
-                    public OutboundQueueHandlerRegistration<OutboundQueueHandler> answer(InvocationOnMock invocation) throws Throwable {
+                    public OutboundQueueHandlerRegistration<OutboundQueueHandler> answer(final InvocationOnMock invocation) throws Throwable {
                         OutboundQueueHandler handler = (OutboundQueueHandler) invocation.getArguments()[0];
                         handler.onConnectionQueueChanged(outboundQueueProvider);
                         return null;
@@ -286,7 +285,7 @@ public class DeviceManagerImplTest {
         return mockConnectionContext;
     }
 
-    private void injectMockTranslatorLibrary(DeviceManagerImpl deviceManager) {
+    private void injectMockTranslatorLibrary(final DeviceManagerImpl deviceManager) {
         deviceManager.setTranslatorLibrary(translatorLibrary);
     }
 
@@ -326,15 +325,14 @@ public class DeviceManagerImplTest {
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
     }
 
-    private Collection<MultipartReply> prepareDataforTypeDesc(final DeviceContext mockedDeviceContext) {
+    private static Collection<MultipartReply> prepareDataforTypeDesc(final DeviceContext mockedDeviceContext) {
         MultipartReplyDesc multipartReplyDesc = new MultipartReplyDescBuilder().build();
 
         MultipartReplyDescCaseBuilder multipartReplyDescCaseBuilder = new MultipartReplyDescCaseBuilder();
         multipartReplyDescCaseBuilder.setMultipartReplyDesc(multipartReplyDesc);
 
-        MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyDescCaseBuilder.build()).build();
-        return Collections.<MultipartReply>singleton(multipartReplyMessage);
-
+        MultipartReply multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyDescCaseBuilder.build()).build();
+        return Collections.singleton(multipartReplyMessage);
     }
 
     @Test
@@ -466,7 +464,7 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceContext).close();
     }
 
-    private static Set<DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static Set<DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);
