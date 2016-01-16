@@ -65,6 +65,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -134,8 +135,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
-    private Map<Long, NodeConnectorRef> nodeConnectorCache;
-    private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
+    private final Map<Long, NodeConnectorRef> nodeConnectorCache;
+    private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private RpcContext rpcContext;
     private ExtensionConverterProvider extensionConverterProvider;
 
@@ -342,7 +343,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
         } else {
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
@@ -350,7 +351,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (!packetInLimiter.acquirePermit()) {
             LOG.debug("Packet limited");
-            // TODO: save packet into emergency slot if possible
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
             return;
         }
@@ -382,7 +382,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void processExperimenterMessage(ExperimenterMessage notification) {
+    public void processExperimenterMessage(final ExperimenterMessage notification) {
         // lookup converter
         ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
         MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
@@ -399,14 +399,37 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ExperimenterMessageOfChoice messageOfChoice;
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
-            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
-                .setNode(new NodeRef(deviceState.getNodeInstanceIdentifier()))
-                    .setExperimenterMessageOfChoice(messageOfChoice);
-            // publish
-            notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
         } catch (ConversionException e) {
-            LOG.warn("Conversion of experimenter notification failed", e);
+            LOG.warn("Conversion of experimenter notification {} failed", vendorData, e);
+            return;
         }
+
+        final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
+                .setNode(new NodeRef(deviceState.getNodeInstanceIdentifier()))
+                .setExperimenterMessageOfChoice(messageOfChoice);
+
+        // publish
+        final ExperimenterMessageFromDev msg = experimenterMessageFromDevBld.build();
+        final ListenableFuture<? extends Object> f = notificationPublishService.offerNotification(msg);
+        if (NotificationPublishService.REJECTED.equals(f)) {
+            // FIXME: BUG-4985: we should try harder to deliver the message
+            LOG.info("Failed to publish experimenter message {}", msg);
+            messageSpy.spyMessage(msg.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+            return;
+        }
+
+        Futures.addCallback(f, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(final Object result) {
+                messageSpy.spyMessage(msg.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                messageSpy.spyMessage(msg.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                LOG.warn("notification offer failed: {}", t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -519,7 +542,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public NodeConnectorRef lookupNodeConnectorRef(Long portNumber) {
+    public NodeConnectorRef lookupNodeConnectorRef(final Long portNumber) {
         return nodeConnectorCache.get(portNumber);
     }
 
@@ -531,7 +554,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void updatePacketInRateLimit(long upperBound) {
+    public void updatePacketInRateLimit(final long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 
@@ -541,7 +564,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setRpcContext(RpcContext rpcContext) {
+    public void setRpcContext(final RpcContext rpcContext) {
         this.rpcContext = rpcContext;
     }
 
@@ -551,7 +574,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
+    public void setExtensionConverterProvider(final ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
     }
 
