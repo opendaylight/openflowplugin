@@ -169,7 +169,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
         deviceContext.addDeviceContextClosedHandler(this);
         // We would like to crete/register TxChainManager after
-        final TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
                 .provideTransactionChainManager(connectionContext);
         if (txChainManagerReg.ownedByInvokingConnectionContext()) {
             //this actually is new registration for currently processed connection context
