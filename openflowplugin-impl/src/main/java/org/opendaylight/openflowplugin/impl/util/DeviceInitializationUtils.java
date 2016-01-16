@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -244,7 +245,7 @@ public class DeviceInitializationUtils {
 
     }
 
-    private static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
+    static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
             final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
         try {
             for (final MultipartReply reply : result) {
@@ -396,7 +397,7 @@ public class DeviceInitializationUtils {
         }
     }
 
-    private static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext,
+    static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext,
             final InstanceIdentifier<Node> nodeII,
             final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
         Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
@@ -481,7 +482,8 @@ public class DeviceInitializationUtils {
         return requestContext.getFuture();
     }
 
-    private static void chainTableTrunkWriteOF10(final DeviceContext deviceContext,
+    @VisibleForTesting
+    static void chainTableTrunkWriteOF10(final DeviceContext deviceContext,
             final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override

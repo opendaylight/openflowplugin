@@ -1,15 +1,12 @@
 /*
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
- *  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *  *
- *  * This program and the accompanying materials are made available under the
- *  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- *  * and is available at http://www.eclipse.org/legal/epl-v10.html
- *
- *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.device;
+package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -25,13 +22,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +53,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
+import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
+import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -113,9 +104,16 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeviceManagerImplTest {
+public class DeviceInitializationUtilsTest {
 
     private static final boolean TEST_VALUE_SWITCH_FEATURE_MANDATORY = true;
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
@@ -161,16 +159,6 @@ public class DeviceManagerImplTest {
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
 
-    @Test
-    public void onDeviceContextLevelUpFailTest() {
-        onDeviceContextLevelUp(true);
-    }
-
-    @Test
-    public void onDeviceContextLevelUpSuccessTest() {
-        onDeviceContextLevelUp(false);
-    }
-
     private DeviceManagerImpl prepareDeviceManager() {
         return prepareDeviceManager(false);
     }
@@ -194,69 +182,6 @@ public class DeviceManagerImplTest {
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
-    }
-
-    public void onDeviceContextLevelUp(boolean withException) {
-        DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
-        DeviceState mockedDeviceState = mock(DeviceState.class);
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
-
-        if (withException) {
-            doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
-        }
-
-        deviceManager.onDeviceContextLevelUp(mockedDeviceContext);
-        if (withException) {
-            verify(mockedDeviceContext).close();
-        } else {
-            verify(mockedDeviceContext).initialSubmitTransaction();
-            verify(mockedDeviceContext).onPublished();
-        }
-    }
-
-    @Test
-    public void deviceConnectedTest() {
-        DeviceManagerImpl deviceManager = prepareDeviceManager();
-        injectMockTranslatorLibrary(deviceManager);
-        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
-
-        deviceManager.deviceConnected(mockConnectionContext);
-
-        InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).getFeatures();
-        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
-        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
-                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
-
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
-    }
-
-    @Test
-    public void deviceConnectedV10Test() {
-        DeviceManagerImpl deviceManager = prepareDeviceManager();
-        injectMockTranslatorLibrary(deviceManager);
-        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
-
-        PhyPortBuilder phyPort = new PhyPortBuilder()
-                .setPortNo(41L);
-        when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
-        MessageTranslator<Object, Object> mockedTranslator = Mockito.mock(MessageTranslator.class);
-        when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceContext>any(), Matchers.any()))
-                .thenReturn(null);
-        when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
-
-        deviceManager.deviceConnected(mockConnectionContext);
-
-        InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).getFeatures();
-        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
-        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
-                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
-
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
     }
 
     protected ConnectionContext buildMockConnectionContext(short ofpVersion) {
@@ -291,6 +216,42 @@ public class DeviceManagerImplTest {
         deviceManager.setTranslatorLibrary(translatorLibrary);
     }
 
+    @Test
+    public void chainTableTrunkWriteOF10Test() {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+
+        GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
+        when(mockedFeatures.getTables()).thenReturn((short) 2);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
+
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        RpcResult<List<MultipartReply>> mockedRpcResult = mock(RpcResult.class);
+        when(mockedRpcResult.isSuccessful()).thenReturn(true);
+        List<RpcResult<List<MultipartReply>>> data = new ArrayList<RpcResult<List<MultipartReply>>>();
+        data.add(mockedRpcResult);
+        data.add(mockedRpcResult);
+
+        DeviceInitializationUtils.chainTableTrunkWriteOF10(mockedDeviceContext, Futures.immediateFuture(data));
+        verify(mockedDeviceContext, times(3))
+                .writeToTransaction(any(LogicalDatastoreType.class), any(InstanceIdentifier.class), any(FlowCapableNode.class));
+    }
+
+    @Test
+    public void testTranslateAndWriteReplyTypeDesc() {
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        DeviceState deviceState = Mockito.mock(DeviceState.class);
+        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(deviceState);
+
+        Collection<MultipartReply> multipartReplyMessages = prepareDataforTypeDesc(mockedDeviceContext);
+
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        verify(mockedDeviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
+    }
+
     private Collection<MultipartReply> prepareDataforTypeDesc(final DeviceContext mockedDeviceContext) {
         MultipartReplyDesc multipartReplyDesc = new MultipartReplyDescBuilder().build();
 
@@ -300,6 +261,122 @@ public class DeviceManagerImplTest {
         MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyDescCaseBuilder.build()).build();
         return Collections.<MultipartReply>singleton(multipartReplyMessage);
 
+    }
+
+    @Test
+    public void translateAndWriteReplyTypeTableFeatures() {
+        TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
+        tableFeature.setTableId(DUMMY_TABLE_ID);
+        List<TableFeatures> tableFeatures = new ArrayList<>();
+        tableFeatures.add(tableFeature.build());
+
+        MultipartReplyTableFeatures multipartReplyTableFeatures = new MultipartReplyTableFeaturesBuilder().setTableFeatures(tableFeatures).build();
+        MultipartReplyTableFeaturesCaseBuilder multipartReplyTableFeaturesCaseBuilder = new MultipartReplyTableFeaturesCaseBuilder();
+        multipartReplyTableFeaturesCaseBuilder.setMultipartReplyTableFeatures(multipartReplyTableFeatures);
+
+        MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyTableFeaturesCaseBuilder.build()).build();
+        Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPTABLEFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        verify(mockedDeviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                        eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID))), any(Table.class));
+
+    }
+
+    @Test
+    public void translateAndWriteReplyTypeMeterFeatures() {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        MultipartReplyMeterFeaturesBuilder multipartReplyMeterFeaturesBuilder = new MultipartReplyMeterFeaturesBuilder();
+        multipartReplyMeterFeaturesBuilder.setBandTypes(new MeterBandTypeBitmap(true, true));
+        multipartReplyMeterFeaturesBuilder.setCapabilities(new MeterFlags(true, true, true, true));
+        multipartReplyMeterFeaturesBuilder.setMaxMeter(DUMMY_MAX_METER);
+
+        MultipartReplyMeterFeaturesCaseBuilder multipartReplyMeterFeaturesCaseBuilder = new MultipartReplyMeterFeaturesCaseBuilder();
+        multipartReplyMeterFeaturesCaseBuilder.setMultipartReplyMeterFeatures(multipartReplyMeterFeaturesBuilder.build());
+
+        MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyMeterFeaturesCaseBuilder.build()).build();
+        Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPMETERFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        verify(mockedDeviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(NodeMeterFeatures.class)), any(NodeMeterFeatures.class));
+        verify(mockedDeviceState).setMeterAvailable(eq(true));
+    }
+
+    @Test
+    public void translateAndWriteReplyTypeGroupFeatures() {
+        MultipartReplyGroupFeaturesBuilder multipartReplyGroupFeaturesBuilder = new MultipartReplyGroupFeaturesBuilder();
+        multipartReplyGroupFeaturesBuilder.setTypes(new GroupTypes(true, true, true, true));
+        multipartReplyGroupFeaturesBuilder.setCapabilities(new GroupCapabilities(true, true, true, true));
+        ActionType actionType = new ActionType(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+        multipartReplyGroupFeaturesBuilder.setActionsBitmap(Lists.newArrayList(actionType));
+
+        MultipartReplyGroupFeatures multipartReplyGroupFeatures = multipartReplyGroupFeaturesBuilder.build();
+
+        MultipartReplyGroupFeaturesCaseBuilder multipartReplyGroupFeaturesCaseBuilder = new MultipartReplyGroupFeaturesCaseBuilder();
+        multipartReplyGroupFeaturesCaseBuilder.setMultipartReplyGroupFeatures(multipartReplyGroupFeatures);
+
+        MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyGroupFeaturesCaseBuilder.build()).build();
+        Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
+
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPGROUPFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        verify(mockedDeviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(NodeGroupFeatures.class)), any(NodeGroupFeatures.class));
+    }
+
+
+    @Test
+    public void translateAndWriteReplyTypePortDesc() {
+        ConnectionContext mockedPrimaryConnectionContext = mock(ConnectionContext.class);
+        FeaturesReply mockedFeatures = mock(FeaturesReply.class);
+        when(mockedFeatures.getDatapathId()).thenReturn(new BigInteger(DUMMY_DATAPATH_ID));
+        when(mockedPrimaryConnectionContext.getFeatures()).thenReturn(mockedFeatures);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnectionContext);
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        MessageTranslator mockedTranslator = mock(MessageTranslator.class);
+        when(translatorLibrary.lookupTranslator(any(TranslatorKey.class))).thenReturn(mockedTranslator);
+        when(mockedDeviceContext.oook()).thenReturn(translatorLibrary);
+
+        MultipartReplyPortDescBuilder multipartReplyPortDescBuilder = new MultipartReplyPortDescBuilder();
+
+        PortsBuilder portsBuilder = new PortsBuilder();
+        portsBuilder.setPortNo(DUMMY_PORT_NUMBER);
+
+        multipartReplyPortDescBuilder.setPorts(Lists.newArrayList(portsBuilder.build()));
+
+        MultipartReplyPortDescCaseBuilder multipartReplyPortDescCaseBuilder = new MultipartReplyPortDescCaseBuilder();
+        multipartReplyPortDescCaseBuilder.setMultipartReplyPortDesc(multipartReplyPortDescBuilder.build());
+
+        MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyPortDescCaseBuilder.build()).build();
+        Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
+
+        OpenflowPortsUtil.init();
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPPORTDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        verify(mockedDeviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class), any(NodeConnector.class));
+    }
+
+    @Test
+    public void createSuccessProcessingCallbackTest() {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+
+        List<MultipartReply> multipartReplies = new ArrayList<>(prepareDataforTypeDesc(mockedDeviceContext));
+        RpcResult<List<MultipartReply>> result = RpcResultBuilder.<List<MultipartReply>>success(multipartReplies).build();
+        ListenableFuture<RpcResult<List<MultipartReply>>> mockedRequestContextFuture = Futures.immediateFuture(result);
+
+        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
+        verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
+
+        RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.PROTOCOL, "dummy error").build();
+        mockedRequestContextFuture = Futures.immediateFuture(rpcResult);
+        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
+        verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
     }
 
     @Test
