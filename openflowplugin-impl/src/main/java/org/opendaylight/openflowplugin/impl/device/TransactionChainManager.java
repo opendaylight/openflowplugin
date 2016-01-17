@@ -28,7 +28,6 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -69,15 +68,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-    @Deprecated
-    private volatile Registration managerRegistration;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
                             @Nonnull final DeviceState deviceState) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
-        this.managerRegistration = null;
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
         LOG.debug("created txChainManager");
     }
@@ -170,13 +166,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return true;
     }
 
-    @Deprecated
-    public void cancelWriteTransaction() {
-        // there is no cancel txn in ping-pong broker. So we need to drop the chain and recreate it.
-        // since the chain is created per device, there won't be any other txns other than ones we created.
-        recreateTxChain();
-    }
-
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path) {
         final WriteTransaction writeTx = getTransactionSafely();
@@ -233,72 +222,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @VisibleForTesting
     void enableSubmit() {
         submitIsEnabled = true;
-    }
-
-    /**
-     * @deprecated will be removed
-     * @param removeDSNode
-     */
-    @Deprecated
-    public void cleanupPostClosure(final boolean removeDSNode) {
-        synchronized (txLock) {
-            if (removeDSNode) {
-                LOG.info("Removing from operational DS, node {} ", nodeII);
-                final WriteTransaction writeTx = getTransactionSafely();
-                this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-                writeTx.delete(LogicalDatastoreType.OPERATIONAL, nodeII);
-                LOG.debug("Delete from operational DS put to write transaction. node {} ", nodeII);
-                final CheckedFuture<Void, TransactionCommitFailedException> submitsFuture = writeTx.submit();
-                LOG.info("Delete from operational DS write transaction submitted. node {} ", nodeII);
-                Futures.addCallback(submitsFuture, new FutureCallback<Void>() {
-                    @Override
-                    public void onSuccess(final Void aVoid) {
-                        LOG.debug("Removing from operational DS successful . node {} ", nodeII);
-                        notifyReadyForNewTransactionChainAndCloseFactory();
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        LOG.info("Attempt to close transaction chain factory failed.", throwable);
-                        notifyReadyForNewTransactionChainAndCloseFactory();
-                    }
-                });
-                wTx = null;
-            } else {
-                if (transactionChainManagerStatus.equals(TransactionChainManagerStatus.WAITING_TO_BE_SHUT)) {
-                    LOG.info("This is a disconnect, but not the last node,transactionChainManagerStatus={}, node:{}",
-                            transactionChainManagerStatus, nodeII);
-                    // a disconnect has happened, but this is not the last node in the cluster, so just close the chain
-                    this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-                    notifyReadyForNewTransactionChainAndCloseFactory();
-                    wTx = null;
-                } else {
-                    LOG.trace("This is not a disconnect, hence we are not closing txnChainMgr,transactionChainManagerStatus={}, node:{}",
-                            transactionChainManagerStatus, nodeII);
-                }
-
-            }
-        }
-    }
-
-    /**
-     * @deprecated will be removed
-     */
-    @Deprecated
-    private void notifyReadyForNewTransactionChainAndCloseFactory() {
-        synchronized (this) {
-            try {
-                LOG.info("Closing registration in manager.node:{} ", nodeII);
-                if (managerRegistration != null) {
-                    managerRegistration.close();
-                }
-            } catch (final Exception e) {
-                LOG.warn("Failed to close transaction chain manager's registration..node:{} ", nodeII, e);
-            }
-            managerRegistration = null;
-        }
-        txChainFactory.close();
-        LOG.info("Transaction chain factory closed. node:{} ", nodeII);
     }
 
     @Override
