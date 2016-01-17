@@ -152,20 +152,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceContext.addDeviceContextClosedHandler(this);
         Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
 
-        // FIXME : txChainManager has to be propagate by Cluster MasterShip Election (remove this couple of lines)
-        // We would like to crete/register TxChainManager after
-        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
-                .provideTransactionChainManager(connectionContext);
-        if (txChainManagerReg.ownedByInvokingConnectionContext()) {
-            //this actually is new registration for currently processed connection context
-            ((DeviceContextImpl) deviceContext).setTransactionChainManager(txChainManagerReg.getTransactionChainManager());
-        } else {
-            LOG.info("In deviceConnected {}, ownedByInvokingConnectionContext is false", connectionContext.getNodeId());
-            deviceContext.close();
-            return;
-        }
-        // --- remove end ----
-
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
