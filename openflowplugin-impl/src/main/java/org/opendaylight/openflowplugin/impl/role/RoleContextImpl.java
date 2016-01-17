@@ -50,7 +50,6 @@ public class RoleContextImpl implements RoleContext {
     private final Entity entity;
     private final OpenflowOwnershipListener openflowOwnershipListener;
     private SalRoleService salRoleService;
-    private FutureCallback<Boolean> roleChangeCallback;
 
     private final SettableFuture<OfpRole> initRoleChangeFuture;
 
@@ -75,40 +74,6 @@ public class RoleContextImpl implements RoleContext {
         LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
                 .getPrimaryConnectionContext().getNodeId().getValue());
         return initRoleChangeFuture;
-    }
-
-    /**
-     * @deprecated not used but we are able to add here extra call for get EntityOwnershipState from
-     *             OpenflowOwnershipListener instead call it directly from RoleManager (here could be
-     *             add call salRoleService.setRole(setRoleInput);
-     */
-    @Override
-    @Deprecated
-    public void facilitateRoleChange(final FutureCallback<Boolean> roleChangeCallback) {
-        this.roleChangeCallback = roleChangeCallback;
-        if (!isDeviceConnected()) {
-            throw new IllegalStateException(
-                    "Device is disconnected. Giving up on Role Change:" + deviceContext.getDeviceState().getNodeId());
-        }
-    }
-
-    /**
-     * @deprecated not used
-     */
-    @Deprecated
-    private void requestOpenflowEntityOwnership() {
-
-        LOG.debug("requestOpenflowEntityOwnership for entity {}", entity);
-        try {
-            entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-
-            // The role change listener must be registered after registering a candidate
-            openflowOwnershipListener.registerRoleChangeListener(this);
-            LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
-        } catch (final CandidateAlreadyRegisteredException e) {
-            // we can log and move for this error, as listener is present and role changes will be served.
-            LOG.error("Candidate - Entity already registered with Openflow candidate ", entity, e );
-        }
     }
 
     @Override
@@ -148,19 +113,13 @@ public class RoleContextImpl implements RoleContext {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
-                        deviceContext.onClusterRoleChange(newRole);
-                if (roleChangeCallback != null) {
-                    roleChangeCallback.onSuccess(true);
-                }
+                deviceContext.onClusterRoleChange(newRole);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("Error in setRole {} for device {} ", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId(), throwable);
-                if (roleChangeCallback != null) {
-                    roleChangeCallback.onFailure(throwable);
-                }
             }
         });
     }
@@ -219,7 +178,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @VisibleForTesting
-    public void setSalRoleService(final SalRoleService salRoleService) {
+    void setSalRoleService(final SalRoleService salRoleService) {
         this.salRoleService = salRoleService;
     }
 }
