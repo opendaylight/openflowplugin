@@ -70,7 +70,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
-    private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
@@ -93,7 +92,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
-        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
 
