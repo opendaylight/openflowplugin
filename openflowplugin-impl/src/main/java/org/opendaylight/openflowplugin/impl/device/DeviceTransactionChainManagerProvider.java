@@ -47,9 +47,6 @@ public class DeviceTransactionChainManagerProvider {
                         txChManagers.remove(nodeId);
                     }
                 };
-                transactionChainManager = new TransactionChainManager(dataBroker,
-                        DeviceStateUtil.createNodeInstanceIdentifier(connectionContext.getNodeId()),
-                        registration);
                 txChManagers.put(nodeId, transactionChainManager);
                 ownedByCurrentContext = true;
             }
