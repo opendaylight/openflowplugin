@@ -177,8 +177,7 @@ public class DeviceInitializationUtilsTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_SWITCH_FEATURE_MANDATORY,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
@@ -377,27 +376,6 @@ public class DeviceInitializationUtilsTest {
         mockedRequestContextFuture = Futures.immediateFuture(rpcResult);
         DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
-    }
-
-    @Test
-    public void testClose() throws Exception {
-        DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
-        final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        final Set<DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.add(deviceContext);
-        Assert.assertEquals(1, deviceContexts.size());
-
-        deviceManager.close();
-
-        Mockito.verify(deviceContext).close();
-    }
-
-    private static Set<DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
-        // HACK: contexts collection for testing shall be accessed in some more civilized way
-        final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
-        Assert.assertNotNull(contextsField);
-        contextsField.setAccessible(true);
-        return (Set<DeviceContext>) contextsField.get(deviceManager);
     }
 
 }

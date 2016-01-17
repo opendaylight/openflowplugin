@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -189,8 +190,7 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_SWITCH_FEATURE_MANDATORY,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency, TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
@@ -216,7 +216,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void deviceConnectedTest() {
+    public void deviceConnectedTest() throws Exception {
         DeviceManagerImpl deviceManager = prepareDeviceManager();
         injectMockTranslatorLibrary(deviceManager);
         ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
@@ -246,9 +246,29 @@ public class DeviceManagerImplTest {
         when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceContext>any(), Matchers.any()))
                 .thenReturn(null);
         when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
-    @Ignore // FIXME : fix the test ASAP
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeviceConnectionWithNullContext() throws Exception {
+        DeviceManagerImpl deviceManager = prepareDeviceManager();
+        deviceManager.setTranslatorLibrary(translatorLibrary);
+        deviceManager.deviceConnected(null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDeviceTwiceConnectionOnTheSameContextgRejecting() throws Exception {
+        DeviceManagerImpl deviceManager = prepareDeviceManager();
+
+        deviceManager.setTranslatorLibrary(translatorLibrary);
+        deviceManager.deviceConnected(mockConnectionContext);
+        deviceManager.deviceConnected(mockConnectionContext);
+    }
+
+    @Test
     public void testDeviceConnected() throws Exception {
-        deviceManager.deviceConnected(connectionContext);
+        DeviceManagerImpl deviceManager = prepareDeviceManager();
+
+        deviceManager.setTranslatorLibrary(translatorLibrary);
 
         deviceManager.deviceConnected(mockConnectionContext);
 
@@ -309,8 +329,8 @@ public class DeviceManagerImplTest {
     public void testClose() throws Exception {
         DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
         final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        final Set<DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.add(deviceContext);
+        final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.put(new NodeId("dummyNodeId"), deviceContext);
         Assert.assertEquals(1, deviceContexts.size());
 
         deviceManager.close();
@@ -318,12 +338,12 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceContext).close();
     }
 
-    private static Set<DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);
         contextsField.setAccessible(true);
-        return (Set<DeviceContext>) contextsField.get(deviceManager);
+        return (ConcurrentHashMap<NodeId, DeviceContext>) contextsField.get(deviceManager);
     }
 
 }

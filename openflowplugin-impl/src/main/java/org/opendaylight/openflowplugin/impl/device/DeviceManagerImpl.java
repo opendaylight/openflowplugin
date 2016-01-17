@@ -8,14 +8,11 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
-<<<<<<< HEAD
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-=======
->>>>>>> 8090bfd... TxChainManager lifecycle startup cleaning
 import io.netty.util.HashedWheelTimer;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;

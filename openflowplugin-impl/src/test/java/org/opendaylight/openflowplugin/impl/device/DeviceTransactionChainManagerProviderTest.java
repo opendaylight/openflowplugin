@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -47,8 +48,6 @@ public class DeviceTransactionChainManagerProviderTest {
     DeviceManager deviceManager;
     @Mock
     private WriteTransaction writeTx;
-    @Mock
-    private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
 
     private static final NodeId nodeId = new NodeId("OPF:TEST");
     private DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
@@ -103,65 +102,5 @@ public class DeviceTransactionChainManagerProviderTest {
         DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration_2 = deviceTransactionChainManagerProvider.provideTransactionChainManager(concurrentConnectionContex);
         Assert.assertFalse(transactionChainManagerRegistration_2.ownedByInvokingConnectionContext());
     }
-
-    /**
-     * This test verifies code path for registering new connection when {@link org.opendaylight.openflowplugin.impl.device.TransactionChainManager}
-     * is present in registry and in SHUTTING_DOWN state (finished).
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testProvideTransactionChainManagerRecreate1() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        final TransactionChainManager txChainManager = txChainManagerRegistration_1.getTransactionChainManager();
-        Assert.assertTrue(txChainManagerRegistration_1.ownedByInvokingConnectionContext());
-        Assert.assertNotNull(txChainManager);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING,
-                txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
-
-        CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture = Futures.immediateCheckedFuture(null);
-        Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
-        txChainManager.close();
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
-                txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
-        txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Mockito.verify(readyForNewTransactionChainHandler).onReadyForNewTransactionChain();
-    }
-
-
-    /**
-     * This test verifies code path for registering new connection when {@link org.opendaylight.openflowplugin.impl.device.TransactionChainManager}
-     * is present in registry and in SHUTTING_DOWN state (unfinished).
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testProvideTransactionChainManagerRecreate2() throws Exception {
-        DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerRegistration_1 = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        final TransactionChainManager txChainManager = txChainManagerRegistration_1.getTransactionChainManager();
-        Assert.assertTrue(txChainManagerRegistration_1.ownedByInvokingConnectionContext());
-        Assert.assertNotNull(txChainManager);
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.WORKING,
-                txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
-
-        SettableFuture<Void> submitCleanFuture = SettableFuture.create();
-        CheckedFuture<Void, TransactionCommitFailedException> checkedSubmitCleanFuture =
-                Futures.makeChecked(submitCleanFuture, new Function<Exception, TransactionCommitFailedException>() {
-                    @Nullable
-                    @Override
-                    public TransactionCommitFailedException apply(Exception input) {
-                        return new TransactionCommitFailedException("tx failed..", input);
-                    }
-                });
-        Mockito.when(writeTx.submit()).thenReturn(checkedSubmitCleanFuture);
-        txChainManager.cleanupPostClosure();
-        Assert.assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN,
-                txChainManagerRegistration_1.getTransactionChainManager().getTransactionChainManagerStatus());
-        txChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler);
-        Mockito.verify(readyForNewTransactionChainHandler, Mockito.never()).onReadyForNewTransactionChain();
-
-        submitCleanFuture.set(null);
-        Mockito.verify(readyForNewTransactionChainHandler).onReadyForNewTransactionChain();
-    }
-
+    
 }
