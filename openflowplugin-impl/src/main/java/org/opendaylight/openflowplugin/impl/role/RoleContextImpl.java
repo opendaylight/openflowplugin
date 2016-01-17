@@ -129,6 +129,7 @@ public class RoleContextImpl implements RoleContext {
         if (!initRoleChangeFuture.isDone()) {
             LOG.debug("Initialization Role for entity {} is chosed {}", entity, newRole);
             initRoleChangeFuture.set(newRole);
+            deviceContext.onInitClusterRoleChange(newRole);
         }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
@@ -147,6 +148,7 @@ public class RoleContextImpl implements RoleContext {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
+                        deviceContext.onClusterRoleChange(newRole);
                 if (roleChangeCallback != null) {
                     roleChangeCallback.onSuccess(true);
                 }
@@ -168,6 +170,14 @@ public class RoleContextImpl implements RoleContext {
         if (entityOwnershipCandidateRegistration != null) {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
+        }
+        if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())
+                || deviceContext.getDeviceState() == null) {
+            // FIXME : there still stay small time window when we can unregistered
+            //         master DeviceCtx (RoleCtx) without the DS clean action
+            //         - RoleCtx doasn't send/receive RpcResult<SetRoleOutput> for
+            //           Master change role for/from Device
+            openflowOwnershipListener.unregisterRoleChangeListener(this);
         }
     }
 
