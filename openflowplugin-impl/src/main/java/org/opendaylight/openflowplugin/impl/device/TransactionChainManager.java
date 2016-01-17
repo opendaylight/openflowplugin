@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.Registration;
@@ -54,7 +55,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
 
     private final DataBroker dataBroker;
-//    private final DeviceState deviceState;
+    private final DeviceState deviceState;
     @GuardedBy("txLock")
     private WriteTransaction wTx;
     @GuardedBy("txLock")
@@ -68,16 +69,16 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+    @Deprecated
     private volatile Registration managerRegistration;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
-                            @Nonnull final Registration managerRegistration) {
+                            @Nonnull final DeviceState deviceState) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.nodeII = Preconditions.checkNotNull(nodeII);
-        this.managerRegistration = Preconditions.checkNotNull(managerRegistration);
+        this.deviceState = Preconditions.checkNotNull(deviceState);
+        this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
+        this.managerRegistration = null;
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-        createTxChain();
         LOG.debug("created txChainManager");
     }
 
@@ -102,17 +103,17 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      *            (Blocking write is used for initialization part only)
      */
     public void activateTransactionManager(final boolean enableSubmit) {
-//        LOG.trace("activetTransactionManager for node {} transaction submit is set to {}", deviceState.getNodeId(), enableSubmit);
+        LOG.trace("activetTransactionManager for node {} transaction submit is set to {}", deviceState.getNodeId(), enableSubmit);
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
-//                LOG.debug("Transaction Factory create {}", deviceState.getNodeId());
+                LOG.debug("Transaction Factory create {}", deviceState.getNodeId());
                 Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 createTxChain();
                 this.submitIsEnabled = enableSubmit;
             } else {
-//                LOG.debug("Transaction is active {}", deviceState.getNodeId());
+                LOG.debug("Transaction is active {}", deviceState.getNodeId());
             }
         }
     }
@@ -125,10 +126,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     public void deactivateTransactionManager() {
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-//                LOG.debug("Submitting all transactions if we were in status WORKING for Node", deviceState.getNodeId());
+                LOG.debug("Submitting all transactions if we were in status WORKING for Node", deviceState.getNodeId());
                 submitWriteTransaction();
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
-//                LOG.debug("Transaction Factory delete for Node {}", deviceState.getNodeId());
+                LOG.debug("Transaction Factory delete for Node {}", deviceState.getNodeId());
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 txChainFactory.close();
                 txChainFactory = null;
