@@ -7,13 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
+import javax.annotation.Nullable;
+import java.util.concurrent.Future;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.concurrent.Future;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
@@ -186,9 +187,9 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS) {
         LOG.debug("Called onDeviceDisconnectedFromCluster in DeviceContext for entity:{}", entity);
-        deviceContext.onDeviceDisconnectedFromCluster();
+        deviceContext.onDeviceDisconnectedFromCluster(removeNodeFromDS);
     }
 
     private boolean isDeviceConnected() {
