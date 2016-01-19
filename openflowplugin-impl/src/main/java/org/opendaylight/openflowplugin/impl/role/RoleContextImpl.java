@@ -93,8 +93,9 @@ public class RoleContextImpl implements RoleContext {
 
         if (!initRoleChangeFuture.isDone()) {
             LOG.debug("Initialization Role for entity {} is chosed {}", entity, newRole);
+            // we don't want to wait for Device RoleChangeResponse in initial phase
+            deviceContext.onClusterRoleChange(newRole);
             initRoleChangeFuture.set(newRole);
-            deviceContext.onInitClusterRoleChange(newRole);
         }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
@@ -137,16 +138,6 @@ public class RoleContextImpl implements RoleContext {
             //         - RoleCtx doasn't send/receive RpcResult<SetRoleOutput> for
             //           Master change role for/from Device
             openflowOwnershipListener.unregisterRoleChangeListener(this);
-        }
-    }
-
-    @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        try {
-            LOG.debug("onDeviceContextClosed called");
-            this.close();
-        } catch (final Exception e) {
-            LOG.error("Exception in onDeviceContextClosed of RoleContext", e);
         }
     }
 
