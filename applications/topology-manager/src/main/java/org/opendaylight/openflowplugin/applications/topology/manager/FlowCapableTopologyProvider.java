@@ -8,9 +8,13 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.ExecutionException;
+
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -54,12 +58,14 @@ public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCl
         this.terminationPointChangeListener = new TerminationPointChangeListenerImpl(dataBroker, processor);
         nodeChangeListener = new NodeChangeListenerImpl(dataBroker, processor);
 
-        final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, path, new TopologyBuilder().setKey(key).build(), true);
-        try {
-            tx.submit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("Initial topology export failed, continuing anyway", e);
+        if(!isFlowTopologyExist(dataBroker, path)){
+            final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
+            tx.put(LogicalDatastoreType.OPERATIONAL, path, new TopologyBuilder().setKey(key).build(), true);
+            try {
+                tx.submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("Initial topology export failed, continuing anyway", e);
+            }
         }
 
         thread = new Thread(processor);
@@ -98,5 +104,20 @@ public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCl
                 LOG.debug("Failed to close listener registration.. ", e);
             }
         }
+    }
+
+    private boolean isFlowTopologyExist(final DataBroker dataBroker,
+                                        final InstanceIdentifier<Topology> path) {
+        final ReadTransaction tx = dataBroker.newReadOnlyTransaction();
+        try {
+            Optional<Topology> ofTopology = tx.read(LogicalDatastoreType.OPERATIONAL, path).checkedGet();
+            LOG.debug("OpenFlow topology exist in the operational data store at {}",path);
+            if(ofTopology.isPresent()){
+                return true;
+            }
+        } catch (ReadFailedException e) {
+            LOG.warn("OpenFlow topology read operation failed!", e);
+        }
+        return false;
     }
 }
