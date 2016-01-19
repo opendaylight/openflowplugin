@@ -76,7 +76,7 @@ public class RoleManagerImpl implements RoleManager {
 
         final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
         // if the device context gets closed (mostly on connection close), we would need to cleanup
-        deviceContext.addDeviceContextClosedHandler(roleContext);
+        deviceContext.addDeviceContextClosedHandler(this);
         Verify.verify(contexts.putIfAbsent(deviceContext, roleContext) == null,
                 "RoleCtx for master Node {} is still not close.", deviceContext.getDeviceState().getNodeId());
         OfpRole role = null;
