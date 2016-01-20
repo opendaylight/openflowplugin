@@ -232,6 +232,13 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>features-openflowplugin-he</artifactId>
+                <version>${project.version}</version>
+                <classifier>features</classifier>
+                <type>xml</type>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>features-openflowplugin</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
@@ -239,7 +246,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-li</artifactId>
+                <artifactId>features-openflowplugin-extension-he</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
@@ -247,13 +254,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>features-openflowplugin-extension</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-extension-li</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
