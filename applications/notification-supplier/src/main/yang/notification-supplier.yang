@@ -1,0 +1,83 @@
+module notification-supplier {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:notification-supplier";
+    prefix "notif-sup";
+    import config {prefix config; revision-date 2013-04-05;}
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+
+    description
+        "Translator tool for relevant wildcard path DataChangeEvent to Notifications.";
+
+    revision "2015-08-20" {
+        description
+            "Initial revision";
+    }
+
+    identity notification-supplier {
+        base "config:module-type";
+        config:java-name-prefix NotifSup;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case notification-supplier {
+            when "/config:modules/config:module/config:type = 'notification-supplier'";
+
+            container notification-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-notification-service;
+                    }
+                }
+            }
+
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory false;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+
+            container notification-supplier-settings {
+                leaf flow-support {
+                    type boolean;
+                    default true;
+                }
+                leaf meter-support {
+                    type boolean;
+                    default true;
+                }
+                leaf group-support {
+                    type boolean;
+                    default true;
+                }
+                leaf node-connector-stat-support {
+                    type boolean;
+                    default false;
+                }
+                leaf flow-table-stat-support {
+                    type boolean;
+                    default false;
+                }
+                leaf group-stat-support {
+                    type boolean;
+                    default false;
+                }
+                leaf meter-stat-support {
+                    type boolean;
+                    default false;
+                }
+                leaf queue-stat-support {
+                    type boolean;
+                    default false;
+                }
+                leaf flow-stat-support {
+                    type boolean;
+                    default false;
+                }
+            }
+        }
+    }
+}

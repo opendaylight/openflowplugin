@@ -272,14 +272,14 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>old-notification-supplier</artifactId>
+                <artifactId>notification-supplier</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>config</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>old-notification-supplier</artifactId>
+                <artifactId>notification-supplier</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
