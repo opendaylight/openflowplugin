@@ -19,13 +19,18 @@ import java.util.concurrent.TimeoutException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
@@ -91,47 +96,36 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         deviceContext.addDeviceContextClosedHandler(this);
         Verify.verify(contexts.putIfAbsent(roleContext.getEntity(), roleContext) == null,
                 "RoleCtx for master Node {} is still not close.", deviceContext.getDeviceState().getNodeId());
-        OfpRole role = null;
-        try {
-            role = roleContext.initialization().get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException | CandidateAlreadyRegisteredException e) {
-            LOG.warn("Unexpected exception by DeviceConection {}. Connection has to close.", deviceContext.getDeviceState().getNodeId(), e);
-            final Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(roleContext.getEntity());
-            if (entityOwnershipStateOptional.isPresent()) {
-                // TODO : check again who will call RoleCtx.onRoleChanged but who will call DeviceCtx#onClusterRoleChange
-                role = entityOwnershipStateOptional.get().isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
-            } else {
-                try {
-                    deviceContext.close();
-                } catch (Exception e1) {
-                    LOG.warn("Exception during device context close. ", e);
+
+        final ListenableFuture<OfpRole> roleChangeFuture = roleContext.initialization();
+        final ListenableFuture<Void> initDeviceFuture = Futures.transform(roleChangeFuture, new AsyncFunction<OfpRole, Void>() {
+            @Override
+            public ListenableFuture<Void> apply(final OfpRole input) throws Exception {
+                final ListenableFuture<Void> nextFuture;
+                if (OfpRole.BECOMEMASTER.equals(input)) {
+                    LOG.debug("Node {} was initialized", deviceContext.getDeviceState().getNodeId());
+                    nextFuture = DeviceInitializationUtils.initializeNodeInformation(deviceContext, switchFeaturesMandatory);
+                } else {
+                    LOG.debug("Node {} we are not Master so we are going to finish.", deviceContext.getDeviceState().getNodeId());
+                    nextFuture = Futures.immediateFuture(null);
                 }
-                return;
+                return nextFuture;
             }
-        }
-        if (OfpRole.BECOMEMASTER.equals(role)) {
-            final ListenableFuture<Void> initNodeFuture = DeviceInitializationUtils.initializeNodeInformation(deviceContext, switchFeaturesMandatory);
-            Futures.addCallback(initNodeFuture, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(final Void result) {
-                    LOG.trace("Node {} was initialized", deviceContext.getDeviceState().getNodeId());
-                    getRoleContextLevelUp(deviceContext);
-                }
+        });
 
-                @Override
-                public void onFailure(final Throwable t) {
-                    LOG.warn("Node {} Initialization fail", deviceContext.getDeviceState().getNodeId(), t);
-                    try {
-                        deviceContext.close();
-                    } catch (Exception e) {
-                        LOG.warn("Exception during device context close. ", e);
-                    }
-                }
-            });
-        } else {
-            getRoleContextLevelUp(deviceContext);
-        }
+        Futures.addCallback(initDeviceFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                LOG.debug("Initialization Node {} is done.", deviceContext.getDeviceState().getNodeId());
+                getRoleContextLevelUp(deviceContext);
+            }
 
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("Unexpected error for Node {} initialization", deviceContext.getDeviceState().getNodeId(), t);
+                deviceContext.close();
+            }
+        });
     }
 
     void getRoleContextLevelUp(final DeviceContext deviceContext) {
