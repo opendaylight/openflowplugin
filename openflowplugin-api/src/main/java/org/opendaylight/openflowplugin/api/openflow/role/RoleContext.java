@@ -30,4 +30,6 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      */
     Future<OfpRole> initialization() throws CandidateAlreadyRegisteredException;
 
+    @Override
+    void close();
 }
