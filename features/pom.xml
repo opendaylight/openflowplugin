@@ -25,7 +25,6 @@
 
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
         <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
-        <config.inventory.manager.configfile>40-inventory-manager.xml</config.inventory.manager.configfile>
         <restconf.version>1.4.0-SNAPSHOT</restconf.version>
         <mdsal.model.version>0.9.0-SNAPSHOT</mdsal.model.version>
     </properties>
@@ -97,7 +96,6 @@
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-mdsal</artifactId>
@@ -161,12 +159,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>inventory-manager</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>lldp-speaker</artifactId>
         </dependency>
         <dependency>
@@ -226,6 +218,7 @@
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
+
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-manager</artifactId>
@@ -273,7 +266,7 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-controller-config</artifactId>
             <type>xml</type>
-            <classifier>config-He</classifier>
+            <classifier>config-Li</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
@@ -300,12 +293,15 @@
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
+        </dependency>
     </dependencies>
-
-    <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
-    </scm>
 </project>
