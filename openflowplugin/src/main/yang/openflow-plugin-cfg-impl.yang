@@ -69,15 +69,15 @@ module openflow-provider-impl {
                 }
             }
 
-	    container ownership-service {
+            container ownership-service {
                 uses config:service-ref {
                     refine type {
-                        mandatory false;
-			config:required-identity entity-ownership-service:entity-ownership-service;
-		    }
-		}
-	    }
-		
+                        mandatory true;
+                        config:required-identity entity-ownership-service:entity-ownership-service;
+                    }
+                }
+            }
+
             container rpc-registry {
                 uses config:service-ref {
                     refine type {

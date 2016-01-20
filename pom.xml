@@ -31,7 +31,9 @@
       <module>extension</module>
       <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
+      <!--
       <module>openflowplugin-it</module>
+      -->
       <module>test-provider</module>
       <module>drop-test</module>
       <module>drop-test-karaf</module>
