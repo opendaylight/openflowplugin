@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -62,11 +63,15 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public Future<OfpRole> initialization() throws CandidateAlreadyRegisteredException {
+    public ListenableFuture<OfpRole> initialization() {
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-        entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-        LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
-                .getPrimaryConnectionContext().getNodeId().getValue());
+        try {
+            entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
+            LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
+                    .getPrimaryConnectionContext().getNodeId().getValue());
+        } catch (final CandidateAlreadyRegisteredException e) {
+            completeInitRoleChangeFuture(null, e);
+        }
         return initRoleChangeFuture;
     }
 
@@ -78,18 +83,8 @@ public class RoleContextImpl implements RoleContext {
             // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
             LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
                     deviceContext.getPrimaryConnectionContext().getNodeId());
-            if (!initRoleChangeFuture.isDone()) {
-                LOG.debug("RoleChange is not valid for initialization Entity {} anymore - Device is disconnected", entity);
-                initRoleChangeFuture.cancel(true);
-            }
+            completeInitRoleChangeFuture(null, null);
             return;
-        }
-
-        if (!initRoleChangeFuture.isDone()) {
-            LOG.debug("Initialization Role for entity {} is chosed {}", entity, newRole);
-            // we don't want to wait for Device RoleChangeResponse in initial phase
-            deviceContext.onClusterRoleChange(newRole);
-            initRoleChangeFuture.set(newRole);
         }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
@@ -109,14 +104,38 @@ public class RoleContextImpl implements RoleContext {
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
                 deviceContext.onClusterRoleChange(newRole);
+                completeInitRoleChangeFuture(newRole, null);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("Error in setRole {} for device {} ", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId(), throwable);
+                completeInitRoleChangeFuture(null, throwable);
             }
         });
+    }
+
+    void completeInitRoleChangeFuture(@Nullable final OfpRole role, @Nullable final Throwable throwable) {
+        if (initRoleChangeFuture.isDone()) {
+            return;
+        }
+        if (!isDeviceConnected()) {
+            LOG.debug("Device {} is disconnected from this node. Hence not attempting a role change.", deviceContext
+                    .getPrimaryConnectionContext().getNodeId());
+            initRoleChangeFuture.cancel(true);
+            return;
+        }
+        if (throwable != null) {
+            LOG.warn("Connection Role change fail for entity {}", entity);
+            initRoleChangeFuture.setException(throwable);
+        } else if (role != null) {
+            LOG.debug("Initialization Role for entity {} is chosed {}", entity, role);
+            initRoleChangeFuture.set(role);
+        } else {
+            LOG.debug("Unexpected initialization Role Change close for entity {}", entity);
+            initRoleChangeFuture.cancel(true);
+        }
     }
 
     @Override
