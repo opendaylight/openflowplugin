@@ -22,7 +22,6 @@
         <openflowplugin.version>0.3.0-SNAPSHOT</openflowplugin.version>
         <dlux.version>0.4.0-SNAPSHOT</dlux.version>
         <lldp.version>0.11.0-SNAPSHOT</lldp.version>
-
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
         <restconf.version>1.4.0-SNAPSHOT</restconf.version>
         <mdsal.model.version>0.9.0-SNAPSHOT</mdsal.model.version>
@@ -149,7 +148,17 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>forwardingrules-sync</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>inventory-manager</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -158,6 +167,17 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>statistics-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>statistics-manager-config</artifactId>
+            <classifier>config</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -186,11 +206,6 @@
             <artifactId>openflowplugin-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-blueprint-config-he</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>table-miss-enforcer</artifactId>
         </dependency>
@@ -199,6 +214,7 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-lldp-discovery</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-manager</artifactId>
@@ -221,7 +237,7 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-controller-config</artifactId>
             <type>xml</type>
-            <classifier>config-He</classifier>
+            <classifier>config-Li</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
@@ -247,6 +263,16 @@
             <artifactId>bulk-o-matic</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
         </dependency>
     </dependencies>
 
