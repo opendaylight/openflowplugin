@@ -355,6 +355,7 @@ public class OfEntityManager implements TransactionChainListener{
         if (null != registration) {
             registration.close();
             entityMetadata.getContext().setProviderRegistration(null);
+            entityMetadata.setIsRPCRegistrationDone(false);
         }
         LOG.info("deregisterRoutedRPCForSwitch: De-registered routed rpc for ModelDrivenSwitch {}",
                 entityMetadata.getOfSwitch().getNodeId().getValue());
