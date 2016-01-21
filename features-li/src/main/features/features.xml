@@ -65,7 +65,7 @@
     <feature name='odl-openflowplugin-nsf-model-li' version='${project.version}'
              description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
         <!-- general models -->
-        <feature version='${yangtools.version}'>odl-mdsal-models</feature>
+        <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
 	<bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
 	<bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
         <!-- openflow specific models -->
