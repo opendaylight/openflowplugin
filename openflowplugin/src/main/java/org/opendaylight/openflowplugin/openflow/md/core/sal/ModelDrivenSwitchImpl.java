@@ -7,10 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -70,7 +74,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
@@ -483,4 +492,30 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> task = OFRpcTaskFactory.createSetNodeConfigTask(rpcTaskContext, input, null);
         return task.submit();
     }
+
+    @Override
+    public Optional<BigInteger> sendEmptyTableFeatureRequest() {
+        LOG.debug("Send table feature request to {}",nodeId);
+
+        final Long xid = rpcTaskContext.getSession().getNextXid();
+
+        MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
+        MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
+        caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
+
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPTABLEFEATURES);
+        mprInput.setVersion(rpcTaskContext.getSession().getPrimaryConductor().getVersion());
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        mprInput.setMultipartRequestBody(caseBuilder.build());
+
+        Future<RpcResult<Void>> resultFromOFLib = rpcTaskContext.getMessageService()
+                .multipartRequest(mprInput.build(), null);
+
+        return Optional.of(BigInteger.valueOf(xid));
+
+    }
+
 }
