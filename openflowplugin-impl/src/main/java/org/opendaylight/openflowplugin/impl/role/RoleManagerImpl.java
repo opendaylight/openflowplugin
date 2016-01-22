@@ -7,15 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -142,17 +133,17 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             final Entity entity = roleContextEntry.getKey();
             final Optional<EntityOwnershipState> ownershipState = entityOwnershipService.getOwnershipState(entity);
             final NodeId nodeId = roleContextEntry.getValue().getDeviceState().getNodeId();
-            if (ownershipState.isPresent())
+            if (ownershipState.isPresent()) {
                 if ((!ownershipState.get().hasOwner())) {
                     LOG.trace("Last role is LEADER and ownershipService returned hasOwner=false for node: {}; " +
                             "cleaning DS as being probably the last owner", nodeId);
                     removeDeviceFromOperDS(roleContextEntry.getValue());
                 } else {
                     // NOOP - there is another owner
-                    LOG.trace("Last role is LEADER and ownershipService returned hasOwner=true for node: {}; " +
+                    LOG.debug("Last role is LEADER and ownershipService returned hasOwner=true for node: {}; " +
                             "leaving DS untouched", nodeId);
                 }
-            else {
+            } else {
                 // TODO: is this safe? When could this happen?
                 LOG.warn("Last role is LEADER but ownershipService returned empty ownership info for node: {}; " +
                         "cleaning DS ANYWAY!", nodeId);
@@ -165,18 +156,21 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final OfpRole role = deviceContext.getDeviceState().getRole();
         LOG.debug("onDeviceContextClosed for node {}", nodeId);
-
         final Entity entity = makeEntity(nodeId);
         final RoleContext roleContext = contexts.get(entity);
         if (roleContext != null) {
             LOG.debug("Found roleContext associated to deviceContext: {}, now closing the roleContext", nodeId);
-            roleContext.close();
-            if (role == null || OfpRole.BECOMESLAVE.equals(role)) {
-                LOG.debug("No DS commitment for device {} - LEADER is somewhere else", nodeId);
-                contexts.remove(entity, roleContext);
+            final Optional<EntityOwnershipState> actState = entityOwnershipService.getOwnershipState(entity);
+            if (actState.isPresent()) {
+                if (!actState.get().isOwner()) {
+                    LOG.debug("No DS commitment for device {} - LEADER is somewhere else", nodeId);
+                    contexts.remove(entity, roleContext);
+                }
+            } else {
+                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close proces", entity);
             }
+            roleContext.close();
         }
     }
 
@@ -184,7 +178,53 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         return new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
     }
 
-    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(final RoleChangeListener roleChangeListener) {
+    @Override
+    public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
+        Preconditions.checkArgument(ownershipChange != null);
+        final RoleChangeListener roleChangeListener = contexts.get(ownershipChange.getEntity());
+
+        LOG.info("Received EntityOwnershipChange:{}, roleChangeListener-present={}", ownershipChange, (roleChangeListener != null));
+
+        if (roleChangeListener != null) {
+            if (roleChangeListener.getDeviceState().isValid()) {
+                LOG.debug("RoleChange for entity {}", ownershipChange.getEntity());
+                final OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
+                final OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
+                // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
+                roleChangeListener.onRoleChanged(oldRole, newRole);
+            } else {
+                LOG.debug("We are closing connection for entity {}", ownershipChange.getEntity());
+                if (!ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
+                    unregistrationHelper(ownershipChange, roleChangeListener);
+                } else if (ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
+                    contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                } else {
+                    LOG.debug("Unexpected role change msg {} for entity {}", ownershipChange, ownershipChange.getEntity());
+                }
+            }
+        }
+    }
+
+    private void unregistrationHelper(final EntityOwnershipChange ownershipChange, final RoleChangeListener roleChangeListener) {
+        LOG.info("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
+        Futures.addCallback(removeDeviceFromOperDS(roleChangeListener), new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable final Void aVoid) {
+                LOG.debug("Freeing roleContext slot for device: {}", roleChangeListener.getDeviceState().getNodeId());
+                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("NOT freeing roleContext slot for device: {}, {}", roleChangeListener.getDeviceState()
+                        .getNodeId(), throwable.getMessage());
+                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+            }
+        });
+    }
+
+    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(
+            final RoleChangeListener roleChangeListener) {
         Preconditions.checkArgument(roleChangeListener != null);
         final DeviceState deviceState = roleChangeListener.getDeviceState();
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
@@ -203,40 +243,5 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             }
         });
         return delFuture;
-    }
-
-    @Override
-    public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
-        Preconditions.checkArgument(ownershipChange != null);
-        final RoleChangeListener roleChangeListener = contexts.get(ownershipChange.getEntity());
-
-        LOG.info("Received EntityOwnershipChange:{}, roleChangeListener-present={}", ownershipChange, (roleChangeListener != null));
-
-        if (roleChangeListener != null) {
-            LOG.debug("Found roleChangeListener for local entity:{}", ownershipChange.getEntity());
-            // if this was the master and entity does not have a master
-            if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && !ownershipChange.hasOwner()) {
-                LOG.info("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
-                Futures.addCallback(removeDeviceFromOperDS(roleChangeListener),
-                        new FutureCallback<Void>() {
-                            @Override
-                            public void onSuccess(@Nullable final Void aVoid) {
-                                LOG.debug("Freeing roleContext slot for device: {}", roleChangeListener.getDeviceState().getNodeId());
-                                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
-                            }
-
-                            @Override
-                            public void onFailure(final Throwable throwable) {
-                                LOG.warn("NOT freeing roleContext slot for device: {}, {}",
-                                        roleChangeListener.getDeviceState().getNodeId(), throwable.getMessage());
-                            }
-                        });
-            } else {
-                final OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
-                final OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
-                // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
-                roleChangeListener.onRoleChanged(oldRole, newRole);
-            }
-        }
     }
 }
