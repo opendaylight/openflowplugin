@@ -39,7 +39,7 @@ class DeviceStateImpl implements DeviceState {
     private final NodeId nodeId;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final short version;
-    private boolean valid;
+    private volatile boolean valid;
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
     private boolean deviceSynchronized;
@@ -164,7 +164,7 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void setRole(OfpRole role) {
+    public void setRole(final OfpRole role) {
         this.role = role;
     }
 }
