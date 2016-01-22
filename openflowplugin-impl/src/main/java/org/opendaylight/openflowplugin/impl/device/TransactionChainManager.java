@@ -186,8 +186,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
-        LOG.warn("txChain failed -> recreating", cause);
         if (transactionChainManagerStatus.equals(TransactionChainManagerStatus.WORKING)) {
+            LOG.warn("txChain failed -> recreating", cause);
             recreateTxChain();
         }
     }
@@ -226,21 +226,26 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @Override
     public void close() {
         LOG.info("Setting transactionChainManagerStatus to WAITING_TO_BE_SHUT, will wait for ownershipservice to notify", nodeII);
-        // we can finish in initial phase
-        initialSubmitWriteTransaction();
         synchronized (txLock) {
+            // we can finish in initial phase
+            initialSubmitWriteTransaction();
+            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             if (txChainFactory != null) {
                 txChainFactory.close();
                 txChainFactory = null;
             }
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.WAITING_TO_BE_SHUT;
         }
         Preconditions.checkState(wTx == null);
         Preconditions.checkState(txChainFactory == null);
     }
 
     public enum TransactionChainManagerStatus {
-        WORKING, SLEEPING, WAITING_TO_BE_SHUT, SHUTTING_DOWN;
+        /** txChainManager is sleeping - is not active (SLAVE or default init value) */
+        WORKING,
+        /** txChainManager is working - is active (MASTER) */
+        SLEEPING,
+        /** txChainManager is trying to be closed - device disconnecting */
+        SHUTTING_DOWN;
     }
 
 
