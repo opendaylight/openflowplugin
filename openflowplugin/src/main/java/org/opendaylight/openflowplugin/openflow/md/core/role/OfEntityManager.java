@@ -271,7 +271,7 @@ public class OfEntityManager implements TransactionChainListener{
 
         }
         if (sessionContext != null) {
-            //Register the RPC, give then *this* controller instance is going to be master owner.
+            //Register the RPC, given *this* controller instance is going to be master owner.
             //If role registration fails for this node, it will deregister as a candidate for
             //ownership and that will make this controller non-owner and it will deregister the
             // router rpc.
@@ -289,6 +289,7 @@ public class OfEntityManager implements TransactionChainListener{
                     LOG.info("onDeviceOwnershipChanged: Controller is successfully set as a " +
                             "MASTER controller for {}", targetSwitchDPId);
                     entsession.get(entity).getOfSwitch().setEntityOwnership(newRole==OfpRole.BECOMEMASTER);
+                    entsession.get(entity).getOfSwitch().sendEmptyTableFeatureRequest();
                     sendNodeAddedNotification(entsession.get(entity));
 
                 }
@@ -403,6 +404,7 @@ public class OfEntityManager implements TransactionChainListener{
         entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(
                 entityMetadata.getWrappedNotification());
     }
+
     private class MDSwitchMetaData {
 
         final private ModelDrivenSwitch ofSwitch;

@@ -35,6 +35,7 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     private final DataBroker dataBroker;
     private BindingTransactionChain txChain;
     private ListenerRegistration<?> listenerRegistration;
+    private ListenerRegistration<?> tableFeatureListenerRegistration;
     private Thread thread;
 
     FlowCapableInventoryProvider(final DataBroker dataBroker, final NotificationProviderService notificationService) {
@@ -45,6 +46,11 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     void start() {
         final NodeChangeCommiter changeCommiter = new NodeChangeCommiter(FlowCapableInventoryProvider.this);
         this.listenerRegistration = this.notificationService.registerNotificationListener(changeCommiter);
+
+        final NodeTablesFeatureCommitter nodeTablesFeatureCommitter =
+                new NodeTablesFeatureCommitter(FlowCapableInventoryProvider.this);
+        this.tableFeatureListenerRegistration = this.notificationService.registerNotificationListener(nodeTablesFeatureCommitter);
+
 
         this.txChain = (dataBroker.createTransactionChain(this));
         thread = new Thread(this);
@@ -201,6 +207,15 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
                 LOG.error("Failed to stop inventory provider", e);
             }
             listenerRegistration = null;
+        }
+
+        if (this.tableFeatureListenerRegistration != null) {
+            try {
+                this.tableFeatureListenerRegistration.close();
+            } catch (final Exception e) {
+                LOG.error("Failed to stop inventory provider", e);
+            }
+            tableFeatureListenerRegistration = null;
         }
 
         if (thread != null) {

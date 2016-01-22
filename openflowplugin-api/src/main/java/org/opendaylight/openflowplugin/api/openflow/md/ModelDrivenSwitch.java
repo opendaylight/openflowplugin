@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md;
 
+import com.google.common.base.Optional;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -27,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Sal
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.Identifiable;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import java.math.BigInteger;
 
 /**
  * interface concatenating all md-sal services provided by OF-switch
@@ -69,5 +72,11 @@ public interface ModelDrivenSwitch
      * @param isOwner
      */
     void setEntityOwnership(boolean isOwner);
+
+    /**
+     * Send table feature to the switch to get tables features for all the tables.
+     * @return Transaction id
+     */
+    Optional<BigInteger> sendEmptyTableFeatureRequest();
 
 }
