@@ -25,4 +25,7 @@ public interface RoleChangeListener extends AutoCloseable {
     Entity getEntity();
 
     DeviceState getDeviceState();
+
+    @Override
+    void close();
 }
