@@ -13,8 +13,8 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -107,15 +107,10 @@ public class TransactionChainManagerTest {
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
     }
 
-    /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
-     * @throws Exception
-     */
-    @Ignore
     @Test
     public void testSubmitTransaction() throws Exception {
         final Node data = new NodeBuilder().setId(nodeId).build();
-        txChainManager.enableSubmit();
+        txChainManager.setSubmit(true);
         txChainManager.activateTransactionManager();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.activateTransactionManager();
@@ -127,7 +122,7 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * test of {@link TransactionChainManager#enableSubmit()}: no submit - counter is not active
+     * test of {@link TransactionChainManager#setSubmit(Boolean)}: no submit - counter is not active
      *
      * @throws Exception
      */
@@ -142,21 +137,15 @@ public class TransactionChainManagerTest {
         Mockito.verify(writeTx, Mockito.never()).submit();
     }
 
-    /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
-     * @throws Exception
-     */
-    @Ignore
     @Test
     public void testOnTransactionChainFailed() throws Exception {
         txChainManager.onTransactionChainFailed(transactionChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
-        Mockito.verify(dataBroker, Mockito.times(2)).createTransactionChain(txChainManager);
+        Mockito.verify(txChain).close();
     }
 
     @Test
     public void testOnTransactionChainSuccessful() throws Exception {
         txChainManager.onTransactionChainSuccessful(transactionChain);
-        // NOOP
         Mockito.verifyZeroInteractions(transactionChain);
     }
 
@@ -166,5 +155,35 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
+    }
+
+    @Test
+    public void testDeActivateTransactionChainManager() throws Exception {
+        txChainManager.deactivateTransactionManager();
+        Mockito.verify(txChain).close();
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SLEEPING.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test
+    public void testTransactionChainManagerClose() throws Exception {
+        txChainManager.close();
+        Mockito.verify(txChain).close();
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test
+    public void testTransactionChainManagerDeactivateAndClose() throws Exception {
+        txChainManager.deactivateTransactionManager();
+        txChainManager.close();
+        Mockito.verify(txChain, Mockito.atMost(1)).close();
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN.equals(txChainManager.getTransactionChainManagerStatus()));
+    }
+
+    @Test
+    public void testTransactionChainManagerDeactivateAndSubmit() throws Exception {
+        txChainManager.deactivateTransactionManager();
+        txChainManager.submitWriteTransaction();
+        Mockito.verify(txChain).close();
+        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SLEEPING.equals(txChainManager.getTransactionChainManagerStatus()));
     }
 }

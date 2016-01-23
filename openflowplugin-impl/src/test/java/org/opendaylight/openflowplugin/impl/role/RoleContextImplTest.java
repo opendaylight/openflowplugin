@@ -7,14 +7,18 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.SettableFuture;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -72,6 +76,8 @@ public class RoleContextImplTest {
     @Mock
     private FeaturesReply featuresReply;
 
+    RoleContextImpl roleContext;
+
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     private final Entity entity = new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
@@ -88,25 +94,30 @@ public class RoleContextImplTest {
         when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceContext.getPrimaryConnectionContext().getFeatures()).thenReturn(featuresReply);
         when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
+        roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity);
     }
 
-    @Test
-    public void testOnRoleChanged() {
-        final OfpRole newRole = OfpRole.BECOMEMASTER;
+    @After
+    public void tearDown() throws Exception {
+        Mockito.verifyNoMoreInteractions(entityOwnershipService);
+    }
 
+
+    @Test
+    public void testOnRoleChanged() throws Exception {
+        roleChange();
+    }
+
+
+    private void roleChange() throws Exception {
+        final OfpRole newRole = OfpRole.BECOMEMASTER;
         final SettableFuture<RpcResult<SetRoleOutput>> future = SettableFuture.create();
         future.set(RpcResultBuilder.<SetRoleOutput>success().build());
         when(salRoleService.setRole(Matchers.argThat(new SetRoleInputMatcher(newRole, instanceIdentifier))))
                 .thenReturn(future);
-
-        final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity);
         roleContext.setSalRoleService(salRoleService);
-
         roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole);
-
-        verify(deviceState).setRole(newRole);
     }
-
 
     private class SetRoleInputMatcher extends ArgumentMatcher<SetRoleInput> {
 
@@ -127,5 +138,22 @@ public class RoleContextImplTest {
             }
             return false;
         }
+    }
+
+    @Test
+    public void testInitialization() throws Exception {
+        roleContext.initialization();
+        verify(entityOwnershipService).registerCandidate(eq(entity));
+    }
+
+    @Test
+    public void testOnRoleChangeDeviceStateRIP() throws Exception {
+        when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
+        roleChange();
+    }
+
+    @Test
+    public void testClose() throws Exception {
+        roleContext.close();
     }
 }
