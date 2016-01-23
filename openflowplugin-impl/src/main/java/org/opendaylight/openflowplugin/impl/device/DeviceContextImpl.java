@@ -7,10 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -25,20 +24,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -148,7 +141,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
-    private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
+    private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private RpcContext rpcContext;
     private ExtensionConverterProvider extensionConverterProvider;
 
@@ -309,13 +302,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                     flowRemovedTranslator.translate(flowRemoved, this, null);
             //2. create registry key
-            FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
+            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
             //3. lookup flowId
             final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowRegKey);
             //4. if flowId present:
             if (flowDescriptor != null) {
                 // a) construct flow path
-                KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceState().getNodeInstanceIdentifier()
+                final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceState().getNodeInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)
                         .child(Table.class, flowDescriptor.getTableKey())
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
@@ -401,10 +394,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void processExperimenterMessage(ExperimenterMessage notification) {
+    public void processExperimenterMessage(final ExperimenterMessage notification) {
         // lookup converter
-        ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
-        MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
+        final ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
+        final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                 deviceState.getVersion(),
                 (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
         final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter = extensionConverterProvider.getMessageConverter(key);
@@ -423,7 +416,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
-        } catch (ConversionException e) {
+        } catch (final ConversionException e) {
             LOG.warn("Conversion of experimenter notification failed", e);
         }
     }
@@ -450,6 +443,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private synchronized void tearDown() {
+        LOG.trace("tearDown method for node {}", deviceState.getNodeId());
         if (deviceState.isValid()) {
             deviceState.setValid(false);
 
@@ -457,20 +451,37 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 connectionContext.closeConnection(false);
             }
 
-            LOG.info("Closing transaction chain manager without cleaning inventory operational");
-            transactionChainManager.close();
-
             deviceGroupRegistry.close();
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
-            Collections.reverse(reversedCloseHandlers);
-            for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
-                deviceContextClosedHandler.onDeviceContextClosed(this);
-            }
-            closeHandlers.clear();
+            final CheckedFuture<Void, TransactionCommitFailedException> future = transactionChainManager.shuttingDown();
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    tearDownClean();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    tearDownClean();
+                }
+            });
         }
+    }
+
+    private void tearDownClean() {
+        LOG.info("Closing transaction chain manager without cleaning inventory operational");
+        Preconditions.checkState(!deviceState.isValid());
+        transactionChainManager.close();
+
+        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+        Collections.reverse(reversedCloseHandlers);
+        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
+            deviceContextClosedHandler.onDeviceContextClosed(this);
+        }
+        closeHandlers.clear();
     }
 
     @Override
@@ -534,7 +545,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public NodeConnectorRef lookupNodeConnectorRef(Long portNumber) {
+    public NodeConnectorRef lookupNodeConnectorRef(final Long portNumber) {
         return nodeConnectorCache.get(portNumber);
     }
 
@@ -546,7 +557,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void updatePacketInRateLimit(long upperBound) {
+    public void updatePacketInRateLimit(final long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 
@@ -556,7 +567,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setRpcContext(RpcContext rpcContext) {
+    public void setRpcContext(final RpcContext rpcContext) {
         this.rpcContext = rpcContext;
     }
 
@@ -566,7 +577,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
+    public void setExtensionConverterProvider(final ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
     }
 
