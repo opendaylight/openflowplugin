@@ -8,15 +8,14 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -27,6 +26,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -141,16 +141,16 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 return true;
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus),
-                    "we have here Uncompleted Transaction for node {} and we are not MASTER", nodeII);	    
+                    "we have here Uncompleted Transaction for node {} and we are not MASTER", nodeII);
             final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
             Futures.addCallback(submitFuture, new FutureCallback<Void>() {
                 @Override
-                public void onSuccess(Void result) {
+                public void onSuccess(final Void result) {
                     //no action required
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(final Throwable t) {
                     if (t instanceof TransactionCommitFailedException) {
                         LOG.error("Transaction commit failed. {}", t);
                     } else {
@@ -223,19 +223,39 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitIsEnabled = true;
     }
 
+    CheckedFuture<Void, TransactionCommitFailedException> shuttingDown() {
+        LOG.debug("TxManager is going SUTTING_DOWN for node {}", nodeII);
+        CheckedFuture<Void, TransactionCommitFailedException> future;
+        synchronized (txLock) {
+            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
+            if (txChainFactory == null) {
+                // stay with actual thread
+                future = Futures.immediateCheckedFuture(null);
+            } else {
+                // hijack md-sal thread
+                if (wTx == null) {
+                    wTx = txChainFactory.newWriteOnlyTransaction();
+                }
+                final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId());
+                wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
+                future = wTx.submit();
+                wTx = null;
+            }
+        }
+        return future;
+    }
+
     @Override
     public void close() {
-        LOG.info("Setting transactionChainManagerStatus to WAITING_TO_BE_SHUT, will wait for ownershipservice to notify", nodeII);
+        LOG.debug("Setting transactionChainManagerStatus to SHUTTING_DOWN, will wait for ownershipservice to notify", nodeII);
+        Preconditions.checkState(TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus));
+        Preconditions.checkState(wTx == null);
         synchronized (txLock) {
-            // we can finish in initial phase
-            initialSubmitWriteTransaction();
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             if (txChainFactory != null) {
                 txChainFactory.close();
                 txChainFactory = null;
             }
         }
-        Preconditions.checkState(wTx == null);
         Preconditions.checkState(txChainFactory == null);
     }
 
@@ -247,7 +267,4 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         /** txChainManager is trying to be closed - device disconnecting */
         SHUTTING_DOWN;
     }
-
-
-
 }
