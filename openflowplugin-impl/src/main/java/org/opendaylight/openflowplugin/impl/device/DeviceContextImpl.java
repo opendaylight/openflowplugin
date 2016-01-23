@@ -7,10 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,6 +31,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -118,7 +118,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
-//    private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private RpcContext rpcContext;
 
 
@@ -364,6 +363,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     private synchronized void tearDown() {
+        LOG.trace("tearDown method for node {}", deviceState.getNodeId());
         if (deviceState.isValid()) {
             deviceState.setValid(false);
 
@@ -371,20 +371,39 @@ public class DeviceContextImpl implements DeviceContext {
                 connectionContext.closeConnection(false);
             }
 
-            LOG.info("Closing transaction chain manager without cleaning inventory operational");
-            transactionChainManager.close();
-
             deviceGroupRegistry.close();
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
-            Collections.reverse(reversedCloseHandlers);
-            for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
-                deviceContextClosedHandler.onDeviceContextClosed(this);
-            }
-            closeHandlers.clear();
+            final CheckedFuture<Void, TransactionCommitFailedException> future = transactionChainManager.shuttingDown();
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.info("Delete Node {} was successfull.", deviceState.getNodeId());
+                    tearDownClean();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
+                    tearDownClean();
+                }
+            });
         }
+    }
+
+    synchronized void tearDownClean() {
+        LOG.info("Closing transaction chain manager without cleaning inventory operational");
+        Preconditions.checkState(!deviceState.isValid());
+        transactionChainManager.close();
+
+        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+        Collections.reverse(reversedCloseHandlers);
+        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
+            deviceContextClosedHandler.onDeviceContextClosed(this);
+        }
+        closeHandlers.clear();
     }
 
     @Override
