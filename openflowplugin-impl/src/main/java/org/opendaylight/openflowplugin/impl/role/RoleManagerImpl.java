@@ -223,10 +223,44 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                 final OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
                 // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
                 roleChangeListener.onRoleChanged(oldRole, newRole);
+            } else {
+                LOG.debug("We are closing connection for entity {}", ownershipChange.getEntity());
+                if (!ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
+                    unregistrationHelper(ownershipChange, roleChangeListener);
+                } else if (ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
+                    contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                } else {
+                    LOG.info("Unexpected role change msg {} for entity {}", ownershipChange, ownershipChange.getEntity());
+                }
             }
         }
     }
 
+<<<<<<< HEAD
+=======
+    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(
+            final RoleChangeListener roleChangeListener) {
+        Preconditions.checkArgument(roleChangeListener != null);
+        final DeviceState deviceState = roleChangeListener.getDeviceState();
+        final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
+        final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
+        Futures.addCallback(delFuture, new FutureCallback<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                LOG.debug("Delete Node {} was successful", deviceState.getNodeId());
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
+            }
+        });
+        return delFuture;
+    }
+
+>>>>>>> a4e070e... Bug 4957 Add async shuttingDown method for TransactionChainManager
     private void unregistrationHelper(final EntityOwnershipChange ownershipChange, final RoleChangeListener roleChangeListener) {
         LOG.info("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
         Futures.addCallback(removeDeviceFromOperDS(roleChangeListener), new FutureCallback<Void>() {
