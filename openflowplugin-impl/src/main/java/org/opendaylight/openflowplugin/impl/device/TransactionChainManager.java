@@ -75,11 +75,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-        LOG.debug("created txChainManager");
+        LOG.trace("created txChainManager");
     }
 
+    @VisibleForTesting
     @GuardedBy("txLock")
-    private void createTxChain() {
+    void createTxChain() {
         if (txChainFactory != null) {
             txChainFactory.close();
         }
@@ -87,7 +88,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     void initialSubmitWriteTransaction() {
-        enableSubmit();
+        setSubmit(true);
         submitWriteTransaction();
     }
 
@@ -97,7 +98,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * transactions. Call this method for MASTER role only.
      */
     public void activateTransactionManager() {
-        LOG.trace("activetTransactionManaager for node {} transaction submit is set to {}", deviceState.getNodeId());
+        LOG.trace("activeTransactionManager for node {} transaction submit is set to {}", deviceState.getNodeId());
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
                 LOG.debug("Transaction Factory create {}", deviceState.getNodeId());
@@ -219,13 +220,15 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     @VisibleForTesting
-    void enableSubmit() {
-        submitIsEnabled = true;
+    void setSubmit(Boolean value) {
+        submitIsEnabled = value;
     }
 
     @Override
     public void close() {
-        LOG.info("Setting transactionChainManagerStatus to WAITING_TO_BE_SHUT, will wait for ownershipservice to notify", nodeII);
+        LOG.info("Setting transactionChainManagerStatus to SHUTTING_DOWN, will wait for ownership service to notify", nodeII);
+        // we can finish in initial phase
+        initialSubmitWriteTransaction();
         synchronized (txLock) {
             // we can finish in initial phase
             initialSubmitWriteTransaction();
@@ -234,18 +237,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 txChainFactory.close();
                 txChainFactory = null;
             }
+            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
         }
         Preconditions.checkState(wTx == null);
         Preconditions.checkState(txChainFactory == null);
     }
 
     public enum TransactionChainManagerStatus {
-        /** txChainManager is sleeping - is not active (SLAVE or default init value) */
-        WORKING,
-        /** txChainManager is working - is active (MASTER) */
-        SLEEPING,
-        /** txChainManager is trying to be closed - device disconnecting */
-        SHUTTING_DOWN;
+        WORKING, SLEEPING, SHUTTING_DOWN;
     }
 
 

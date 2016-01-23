@@ -7,6 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -15,11 +22,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -175,7 +177,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         return new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
     }
 
-    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(final RoleChangeListener roleChangeListener) {
+    @VisibleForTesting
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(final RoleChangeListener roleChangeListener) {
         Preconditions.checkArgument(roleChangeListener != null);
         final DeviceState deviceState = roleChangeListener.getDeviceState();
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
@@ -243,5 +246,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                 contexts.remove(ownershipChange.getEntity(), roleChangeListener);
             }
         });
+    }
+
+    @VisibleForTesting
+    ConcurrentMap<Entity, RoleContext> getContexts() {
+        return this.contexts;
     }
 }
