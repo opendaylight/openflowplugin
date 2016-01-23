@@ -58,7 +58,6 @@ public class RoleContextImpl implements RoleContext {
         this.entity = Preconditions.checkNotNull(entity);
 
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
-
         initRoleChangeFuture = SettableFuture.create();
     }
 
