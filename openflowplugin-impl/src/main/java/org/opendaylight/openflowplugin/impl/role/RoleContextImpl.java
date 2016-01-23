@@ -64,7 +64,7 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public ListenableFuture<OfpRole> initialization() {
-        LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
+        LOG.debug("Initialization request OpenflowEntityOwnership for entity {}", entity);
         try {
             entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
             LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext

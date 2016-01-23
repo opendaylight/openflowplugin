@@ -9,13 +9,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -131,7 +123,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private final TransactionChainManager transactionChainManager;
+    private TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -167,7 +159,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
         primaryConnectionContext.setDeviceDisconnectedHandler(DeviceContextImpl.this);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
+        createAdnSetTransactionChainManager(this.dataBroker, this.deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -240,7 +232,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             transactionChainManager.deactivateTransactionManager();
         } else {
-            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
         }
     }
 
@@ -355,6 +347,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
+        Preconditions.checkNotNull(packetInMessage);
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
         final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, this, null);
@@ -475,6 +468,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        Preconditions.checkNotNull(connectionContext);
         if (getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 tearDown();
@@ -573,5 +567,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ExtensionConverterProvider getExtensionConverterProvider() {
         return extensionConverterProvider;
+    }
+
+    @VisibleForTesting
+    TransactionChainManager getTransactionChainManager() {
+        return this.transactionChainManager;
+    }
+
+    @VisibleForTesting
+    void createAdnSetTransactionChainManager(DataBroker dataBroker, DeviceState deviceState) {
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
+    }
+
+    @VisibleForTesting
+    void setTransactionChainManager(TransactionChainManager transactionChainManager){
+        this.transactionChainManager = transactionChainManager;
     }
 }
