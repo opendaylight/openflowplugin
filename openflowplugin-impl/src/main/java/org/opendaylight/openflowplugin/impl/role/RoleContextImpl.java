@@ -50,7 +50,7 @@ public class RoleContextImpl implements RoleContext {
     private final Entity entity;
     private SalRoleService salRoleService;
 
-    private SettableFuture<OfpRole> initRoleChangeFuture;
+    private final SettableFuture<OfpRole> initRoleChangeFuture;
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService, final Entity entity) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
@@ -58,12 +58,12 @@ public class RoleContextImpl implements RoleContext {
         this.entity = Preconditions.checkNotNull(entity);
 
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
+        initRoleChangeFuture = SettableFuture.create();
     }
 
     @Override
     public ListenableFuture<OfpRole> initialization() {
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-        initRoleChangeFuture = SettableFuture.create();
         try {
             entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
             LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
