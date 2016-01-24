@@ -193,7 +193,7 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
                 TableBuilder tableBuilder = new TableBuilder();
                 Table table0 = tableBuilder.setId((short) 0).build();
                 LOG.debug("writing table :{} ", tableIdentifier);
-                tx.put(LogicalDatastoreType.OPERATIONAL, tableIdentifier, table0, true);
+                tx.merge(LogicalDatastoreType.OPERATIONAL, tableIdentifier, table0, true);
             }
         });
     }
