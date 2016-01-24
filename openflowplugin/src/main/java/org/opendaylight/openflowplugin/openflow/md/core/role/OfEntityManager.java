@@ -13,10 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -27,14 +24,8 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.QName;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
@@ -53,7 +44,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.CheckedFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Map;
 
 public class OfEntityManager implements TransactionChainListener{
     private static final Logger LOG = LoggerFactory.getLogger(OfEntityManager.class);
@@ -139,8 +129,6 @@ public class OfEntityManager implements TransactionChainListener{
                         LOG.info("requestOpenflowEntityOwnership: Controller is now {} of the {}",
                                 newRole == OfpRole.BECOMEMASTER?"MASTER":"SLAVE",ofSwitch.getNodeId() );
 
-//                        entsession.get(entity).getOfSwitch().setEntityOwnership(newRole==OfpRole.BECOMEMASTER);
-//                        registerRoutedRPCForSwitch(entsession.get(entity));
                         sendNodeAddedNotification(entsession.get(entity));
                     }
                     @Override
@@ -223,38 +211,6 @@ public class OfEntityManager implements TransactionChainListener{
         else {
 
             newRole =  OfpRole.BECOMESLAVE;
-            if(sessionContext == null && !ownershipChange.hasOwner()) {
-                LOG.info("onDeviceOwnershipChanged: {} don't have any owner, explicitly " +
-                        "clean up the operational data store",entity);
-
-                BindingTransactionChain txChain =  dataBroker.createTransactionChain(this);
-                YangInstanceIdentifier yId = entity.getId();
-                ReadWriteTransaction tx = txChain.newReadWriteTransaction();
-                NodeIdentifierWithPredicates niWPredicates = (NodeIdentifierWithPredicates)yId.getLastPathArgument();
-                Map<QName, Object> keyValMap = niWPredicates.getKeyValues();
-                String nodeIdStr = (String)(keyValMap.get(ENTITY_NAME));
-                BigInteger dpId = new BigInteger(nodeIdStr.split(":")[1]);
-                NodeKey nodeKey = new NodeKey(new NodeId(nodeIdStr));
-                InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
-
-                Optional<Node> flowNode = Optional.absent();
-
-                try {
-                    flowNode = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
-                    if (flowNode.isPresent()) {
-                        //final NodeRef ref = flowNode.getNodeRef();
-                        LOG.info("onDeviceOwnershipChanged: Removing data from operational " +
-                                "datastore for node: {}", path);
-                        tx.delete(LogicalDatastoreType.OPERATIONAL, path);
-                        tx.submit();
-                    }
-                }
-                catch (Exception e) {
-                    LOG.error("onDeviceOwnershipChanged: Operational datastore " +
-                            "clean up failed for Node {}", entity, e);
-                }
-            }
-
             if(sessionContext != null && ownershipChange.hasOwner()) {
                 LOG.info("onDeviceOwnershipChanged: Set controller as a SLAVE controller because " +
                         "it's not the OWNER of the {}", entity);
