@@ -41,18 +41,17 @@ import org.slf4j.LoggerFactory;
 public class RoleContextImpl implements RoleContext {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
 
-    private EntityOwnershipService entityOwnershipService;
-    private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
+    private final EntityOwnershipService entityOwnershipService;
     private final RpcProviderRegistry rpcProviderRegistry;
-    private DeviceContext deviceContext;
-    private Entity entity;
-    private OpenflowOwnershipListener openflowOwnershipListener;
+    private final DeviceContext deviceContext;
+    private final Entity entity;
+    private final OpenflowOwnershipListener openflowOwnershipListener;
+    private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
     private SalRoleService salRoleService;
     private FutureCallback<Boolean> roleChangeCallback;
 
-
-    public RoleContextImpl(DeviceContext deviceContext, RpcProviderRegistry rpcProviderRegistry,
-                           EntityOwnershipService entityOwnershipService, OpenflowOwnershipListener openflowOwnershipListener) {
+    public RoleContextImpl(final DeviceContext deviceContext, final RpcProviderRegistry rpcProviderRegistry,
+                           final EntityOwnershipService entityOwnershipService, final OpenflowOwnershipListener openflowOwnershipListener) {
         this.entityOwnershipService = entityOwnershipService;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.deviceContext = deviceContext;
@@ -66,7 +65,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void facilitateRoleChange(FutureCallback<Boolean> roleChangeCallback) {
+    public void facilitateRoleChange(final FutureCallback<Boolean> roleChangeCallback) {
         this.roleChangeCallback = roleChangeCallback;
         if (!isDeviceConnected()) {
             throw new IllegalStateException(
@@ -111,7 +110,7 @@ public class RoleContextImpl implements RoleContext {
 
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), new FutureCallback<RpcResult<SetRoleOutput>>() {
             @Override
-            public void onSuccess(RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            public void onSuccess(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
@@ -121,7 +120,7 @@ public class RoleContextImpl implements RoleContext {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Error in setRole {} for device {} ", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId(), throwable);
                 if (roleChangeCallback != null) {
@@ -137,10 +136,15 @@ public class RoleContextImpl implements RoleContext {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
         }
+
+        // Tests are injecting a mock, hence we need to make an instanceof check
+        if (salRoleService instanceof SalRoleServiceImpl) {
+            ((SalRoleServiceImpl) salRoleService).close();
+        }
     }
 
     @Override
-    public void onDeviceContextClosed(DeviceContext deviceContext) {
+    public void onDeviceContextClosed(final DeviceContext deviceContext) {
         try {
             LOG.debug("onDeviceContextClosed called");
             this.close();
@@ -177,7 +181,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @VisibleForTesting
-    public void setSalRoleService(SalRoleService salRoleService) {
+    void setSalRoleService(final SalRoleService salRoleService) {
         this.salRoleService = salRoleService;
     }
 }

@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -39,8 +40,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService  {
+public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService,
+    AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
 
@@ -66,11 +67,11 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
     }
 
     @Override
-    protected OfHeader buildRequest(Xid xid, SetRoleInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SetRoleInput input) {
         return null;
     }
 
-    public static BigInteger getNextGenerationId(BigInteger generationId) {
+    public static BigInteger getNextGenerationId(final BigInteger generationId) {
         BigInteger nextGenerationId = null;
         if (generationId.compareTo(MAX_GENERATION_ID) < 0) {
             nextGenerationId = generationId.add(BigInteger.ONE);
@@ -146,7 +147,7 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
         return null;
     }
 
-    class RoleChangeTask implements Callable<SetRoleOutput> {
+    static class RoleChangeTask implements Callable<SetRoleOutput> {
 
         private final NodeId nodeId;
         private final OfpRole ofpRole;
@@ -154,7 +155,7 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
         private final RoleService roleService;
         private int retryCounter = 0;
 
-        public RoleChangeTask(NodeId nodeId, OfpRole ofpRole, Short version, RoleService roleService) {
+        public RoleChangeTask(final NodeId nodeId, final OfpRole ofpRole, final Short version, final RoleService roleService) {
             this.nodeId = nodeId;
             this.ofpRole = ofpRole;
             this.version = version;
@@ -207,11 +208,11 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
         }
     }
 
-    public static CheckedFuture<SetRoleOutput, RoleChangeException> makeCheckedFuture(ListenableFuture<SetRoleOutput> rolePushResult) {
+    public static CheckedFuture<SetRoleOutput, RoleChangeException> makeCheckedFuture(final ListenableFuture<SetRoleOutput> rolePushResult) {
         return Futures.makeChecked(rolePushResult,
                 new Function<Exception, RoleChangeException>() {
                     @Override
-                    public RoleChangeException apply(Exception input) {
+                    public RoleChangeException apply(final Exception input) {
                         RoleChangeException output = null;
                         if (input instanceof ExecutionException) {
                             if (input.getCause() instanceof RoleChangeException) {
@@ -226,5 +227,14 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
                         return output;
                     }
                 });
+    }
+
+    @Override
+    public void close() {
+        final List<Runnable> tasks = listeningExecutorService.shutdownNow();
+        for (Runnable t : tasks) {
+            LOG.debug("Running task {}", t);
+            t.run();
+        }
     }
 }
