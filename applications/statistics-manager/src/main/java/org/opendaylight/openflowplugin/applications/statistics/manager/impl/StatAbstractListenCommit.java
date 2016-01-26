@@ -21,7 +21,9 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatListeningCommiter;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -55,18 +57,21 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
 
     private final DataBroker dataBroker;
 
+    protected final StatNodeRegistration nodeRegistrationManager;
+
     private ReadOnlyTransaction currentReadTx;
     private volatile boolean currentReadTxStale;
 
     /* Constructor has to make a registration */
     public StatAbstractListenCommit(final StatisticsManager manager, final DataBroker db,
-            final NotificationProviderService nps, final Class<T> clazz) {
-        super(manager,nps);
+            final NotificationProviderService nps, final Class<T> clazz, final StatNodeRegistration nodeRegistrationManager) {
+        super(manager,nps, nodeRegistrationManager);
         this.clazz = Preconditions.checkNotNull(clazz, "Referenced Class can not be null");
         Preconditions.checkArgument(db != null, "DataBroker can not be null!");
         listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                 getWildCardedRegistrationPath(), this, DataChangeScope.BASE);
         this.dataBroker = db;
+        this.nodeRegistrationManager = nodeRegistrationManager;
     }
 
     /**
@@ -160,5 +165,6 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
 
         return Optional.absent();
     }
+
 }
 

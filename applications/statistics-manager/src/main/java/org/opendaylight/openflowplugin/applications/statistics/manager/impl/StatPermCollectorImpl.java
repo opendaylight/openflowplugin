@@ -311,11 +311,11 @@ public class StatPermCollectorImpl implements StatPermCollector {
                         LOG.trace("STAT-MANAGER-collecting FLOW-STATS-ALL_FLOWS for NodeRef {}", actualNodeRef);
                         setActualTransactionId(manager.getRpcMsgManager().getAllFlowsStat(actualNodeRef).get());
                         waitingForNotification();
-                        LOG.trace("STAT-MANAGER-collecting FLOW-AGGREGATE-STATS for NodeRef {}", actualNodeRef);
+                        /*LOG.trace("STAT-MANAGER-collecting FLOW-AGGREGATE-STATS for NodeRef {}", actualNodeRef);
                         for (short i = 0; i < maxTables; i++) {
                             final TableId tableId = new TableId(i);
                             manager.getRpcMsgManager().getAggregateFlowStat(actualNodeRef, tableId);
-                        }
+                        }*/
                         break;
                     default:
                         /* Exception for programmers in implementation cycle */
@@ -330,21 +330,7 @@ public class StatPermCollectorImpl implements StatPermCollector {
     }
 
     private boolean isThisInstanceNodeOwner(NodeId nodeId) {
-        final Entity deviceEntity = new Entity("openflow",nodeId.getValue());
-        if(manager.getOwnershipService().isCandidateRegistered(deviceEntity)) {
-            Optional<EntityOwnershipState> deviceOwnershipState = manager.getOwnershipService()
-                    .getOwnershipState(deviceEntity);
-
-            if(deviceOwnershipState.isPresent()) {
-                return deviceOwnershipState.get().isOwner();
-            } else {
-                LOG.error("Node {} is connected to the controller but ownership state is missing.");
-            }
-        } else {
-            LOG.warn("Node {} is connected to the controller but it did not" +
-                    "registered for the device ownership.",nodeId);
-        }
-        return false;
+        return manager.getNodeRegistrator().isFlowCapableNodeOwner(nodeId);
     }
 
     private class StatNodeInfoHolder {

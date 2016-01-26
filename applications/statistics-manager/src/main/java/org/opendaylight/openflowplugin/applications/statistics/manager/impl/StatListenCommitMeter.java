@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector.StatCapabTypes;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
@@ -74,8 +75,9 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
     private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitMeter.class);
 
     public StatListenCommitMeter(final StatisticsManager manager, final DataBroker db,
-            final NotificationProviderService nps) {
-        super(manager, db, nps, Meter.class);
+            final NotificationProviderService nps,
+                                 final StatNodeRegistration nrm) {
+        super(manager, db, nps, Meter.class,nrm);
     }
 
     @Override
@@ -127,6 +129,9 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 if ( ! isTransactionCacheContainerValid(txContainer)) {
                     return;
                 }
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 /* Prepare List actual Meters and not updated Meters will be removed */
                 final List<Meter> existMeters = fNode.get().getMeter() != null
                         ? fNode.get().getMeter() : Collections.<Meter> emptyList();
@@ -171,6 +176,8 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 if ( ! isTransactionCacheContainerValid(txContainer)) {
                     return;
                 }
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
 
                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
                         .create(Nodes.class).child(Node.class, new NodeKey(nodeId));
@@ -245,6 +252,8 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 if ( ! isTransactionCacheContainerValid(txContainer)) {
                     return;
                 }
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 final List<? extends TransactionAware> cacheNotifs = txContainer.get().getNotifications();
 
                 Optional<Meter> notifMeter = Optional.absent();
