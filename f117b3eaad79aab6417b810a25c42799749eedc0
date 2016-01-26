@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_99cad84d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-01-26T13:40:48Z",
+      "side": 1,
+      "message": "why throwing away javadoc comment?",
+      "range": {
+        "startLine": 247,
+        "startChar": 8,
+        "endLine": 247,
+        "endChar": 41
+      },
+      "revId": "f117b3eaad79aab6417b810a25c42799749eedc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_b9c19c30",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-01-26T13:40:48Z",
+      "side": 1,
+      "message": "this is redundand when using annotation @RunEith(MockitoJUnitRunner.class)",
+      "range": {
+        "startLine": 184,
+        "startChar": 8,
+        "endLine": 184,
+        "endChar": 66
+      },
+      "revId": "f117b3eaad79aab6417b810a25c42799749eedc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_39ed8cc4",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-01-26T13:40:48Z",
+      "side": 1,
+      "message": "what for do we have code commented out here?",
+      "revId": "f117b3eaad79aab6417b810a25c42799749eedc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_99d138fe",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-01-26T13:40:48Z",
+      "side": 1,
+      "message": "why do we use 2 similar deviceContexts?",
+      "range": {
+        "startLine": 234,
+        "startChar": 8,
+        "endLine": 234,
+        "endChar": 21
+      },
+      "revId": "f117b3eaad79aab6417b810a25c42799749eedc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
