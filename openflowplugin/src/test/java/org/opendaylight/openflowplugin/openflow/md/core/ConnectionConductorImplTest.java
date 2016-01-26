@@ -263,8 +263,6 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -288,10 +286,6 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-
-        int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
 
         executeNow();
 
@@ -327,9 +321,6 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 (short) 0x01, getFeatureResponseMsg()));
 
-        int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
-
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -364,9 +355,6 @@ public class ConnectionConductorImplTest {
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 (short) 0x01, getFeatureResponseMsg()));
-
-        int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
 
         executeNow();
 

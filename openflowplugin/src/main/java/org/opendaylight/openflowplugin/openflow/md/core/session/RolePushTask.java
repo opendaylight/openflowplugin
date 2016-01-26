@@ -157,6 +157,8 @@ public class RolePushTask implements Callable<Boolean> {
         }
 
         // here we expect that role on device is successfully possessed
+        LOG.info("Successfully pushing {} role to the device openflow:{}",
+                role==OfpRole.BECOMEMASTER?"MASTER":"SLAVE", dpId);
         return true;
     }
 }

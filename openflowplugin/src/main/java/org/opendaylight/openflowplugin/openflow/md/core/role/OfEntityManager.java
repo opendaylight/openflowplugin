@@ -177,7 +177,7 @@ public class OfEntityManager implements TransactionChainListener{
         newRole = OfpRole.BECOMESLAVE;
         if (sessionContext != null) {
             final BigInteger targetSwitchDPId = sessionContext.getFeatures().getDatapathId();
-            LOG.info("setSlaveRole: Set controller as a SLAVE controller for {}", targetSwitchDPId.toString());
+            LOG.debug("setSlaveRole: Set controller as a SLAVE controller for {}", targetSwitchDPId.toString());
 
             RolePushTask task = new RolePushTask(newRole, sessionContext);
             ListenableFuture<Boolean> rolePushResult = pool.submit(task);
@@ -186,7 +186,7 @@ public class OfEntityManager implements TransactionChainListener{
             Futures.addCallback(rolePushResult, new FutureCallback<Boolean>(){
                 @Override
                 public void onSuccess(Boolean result){
-                    LOG.info("setSlaveRole: Controller is set as a SLAVE for {}", targetSwitchDPId.toString());
+                    LOG.debug("setSlaveRole: Controller is set as a SLAVE for {}", targetSwitchDPId.toString());
                 }
                 @Override
                 public void onFailure(Throwable e){
@@ -195,7 +195,7 @@ public class OfEntityManager implements TransactionChainListener{
                 }
             });
         } else {
-            LOG.warn("setSlaveRole: sessionContext is not set. Session might have been removed");
+            LOG.warn("setSlaveRole: sessionContext is not set. Device is not connected anymore");
         }
     }
 
@@ -218,13 +218,12 @@ public class OfEntityManager implements TransactionChainListener{
                 sendNodeAddedNotification(entsession.get(entity));
                 if(ownershipChange.wasOwner()) {
                     deregisterRoutedRPCForSwitch(entsession.get(entity));
-                    // You don't have to explictly set role to Slave in this case,
+                    // You don't have to explicitly set role to Slave in this case,
                     // because other controller will be taking over the master role
                     // and that will force other controller to become slave.
                 }
-                return;
             }
-
+            return;
         }
         if (sessionContext != null) {
             //Register the RPC, given *this* controller instance is going to be master owner.
@@ -292,8 +291,11 @@ public class OfEntityManager implements TransactionChainListener{
                 }
             });
         } else {
-            LOG.warn("onDeviceOwnershipChanged: sessionContext is not set. " +
-                    "Session might have been removed {}", entity);
+            LOG.warn("onDeviceOwnershipChanged: sessionContext is not available. Releasing ownership of the device");
+            EntityOwnershipCandidateRegistration ownershipRegistrent = entRegistrationMap.get(entity);
+            if (ownershipRegistrent != null) {
+                ownershipRegistrent.close();
+            }
         }
     }
 
@@ -360,6 +362,9 @@ public class OfEntityManager implements TransactionChainListener{
 
         entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(
                 entityMetadata.getWrappedNotification());
+
+        //Send multipart request to get other details of the switch.
+        entityMetadata.getOfSwitch().requestSwitchDetails();
     }
 
     private class MDSwitchMetaData {
