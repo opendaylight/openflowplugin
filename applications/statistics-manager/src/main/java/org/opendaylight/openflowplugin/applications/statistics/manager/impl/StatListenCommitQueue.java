@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
@@ -67,8 +68,9 @@ public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, Opend
     private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitQueue.class);
 
     public StatListenCommitQueue(final StatisticsManager manager, final DataBroker db,
-            final NotificationProviderService nps) {
-        super(manager, db, nps, Queue.class);
+            final NotificationProviderService nps,
+                                 final StatNodeRegistration nrm) {
+        super(manager, db, nps, Queue.class,nrm);
     }
 
     @Override
@@ -121,6 +123,9 @@ public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, Opend
                 if ( ! isTransactionCacheContainerValid(txContainer)) {
                     return;
                 }
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 /* Prepare List actual Queues and not updated Queues will be removed */
                 final List<NodeConnector> existConnectors = fNode.get().getNodeConnector() != null
                         ? fNode.get().getNodeConnector() : Collections.<NodeConnector> emptyList();

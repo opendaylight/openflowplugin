@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
@@ -92,8 +93,9 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
     private final AtomicInteger unaccountedFlowsCounter = new AtomicInteger(0);
 
     public StatListenCommitFlow (final StatisticsManager manager, final DataBroker db,
-            final NotificationProviderService nps){
-        super(manager, db, nps, Flow.class);
+            final NotificationProviderService nps,
+                                 final StatNodeRegistration nrm){
+        super(manager, db, nps, Flow.class,nrm);
     }
 
     @Override
@@ -132,6 +134,9 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                 if (( ! inputObj.isPresent()) || ( ! (inputObj.get() instanceof Table))) {
                     return;
                 }
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 final Table table = (Table) inputObj.get();
                 final List<? extends TransactionAware> cacheNotifs = txContainer.get().getNotifications();
                 for (final TransactionAware notif : cacheNotifs) {
@@ -191,6 +196,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                 if (( ! txContainer.isPresent()) || txContainer.get().getNotifications() == null) {
                     return;
                 }
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 final List<FlowAndStatisticsMapList> flowStats = new ArrayList<FlowAndStatisticsMapList>(10);
                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, new NodeKey(nodeId));

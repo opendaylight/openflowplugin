@@ -30,6 +30,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -54,6 +55,10 @@ public class StatAbstractListenCommitTest {
     @Mock
     private NotificationListener mockNotificationListener;
 
+    @Mock
+    private StatNodeRegistration statsNodeRegistration;
+
+
     @SuppressWarnings("rawtypes")
     private StatAbstractListenCommit statCommit;
 
@@ -63,7 +68,7 @@ public class StatAbstractListenCommitTest {
         MockitoAnnotations.initMocks(this);
 
         statCommit = new StatAbstractListenCommit(mockStatisticsManager, mockDataBroker,
-                mockNotificationProviderService, DataObject.class) {
+                mockNotificationProviderService, DataObject.class, statsNodeRegistration) {
             @Override
             protected InstanceIdentifier getWildCardedRegistrationPath() {
                 return InstanceIdentifier.create(DataObject.class);
