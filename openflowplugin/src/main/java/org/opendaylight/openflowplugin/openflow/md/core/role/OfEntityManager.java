@@ -360,6 +360,9 @@ public class OfEntityManager implements TransactionChainListener{
 
         entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(
                 entityMetadata.getWrappedNotification());
+
+        //Send multipart request to get other details of the switch.
+        entityMetadata.getOfSwitch().requestSwitchDetails();
     }
 
     private class MDSwitchMetaData {
