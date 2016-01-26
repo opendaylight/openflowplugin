@@ -35,8 +35,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.queue.WaterMarkListenerIm
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -47,17 +45,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -466,13 +459,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
                                        Short negotiatedVersion) {
         postHandshakeBasic(featureOutput, negotiatedVersion);
-
-        // post-handshake actions
-        if (version == OFConstants.OFP_VERSION_1_3) {
-            requestPorts();
-        }
-
-        requestDesc();
     }
 
     @Override
@@ -507,63 +493,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
         OFSessionUtil.setRole(sessionContext);
-    }
-
-    /*
-     * Send an OFPMP_DESC request message to the switch
-     */
-    private void requestDesc() {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPDESC);
-        builder.setVersion(getVersion());
-        builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder()
-                .build());
-        builder.setXid(getSessionContext().getNextXid());
-        getConnectionAdapter().multipartRequest(builder.build());
-    }
-
-    private void requestPorts() {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPPORTDESC);
-        builder.setVersion(getVersion());
-        builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder()
-                .build());
-        builder.setXid(getSessionContext().getNextXid());
-        getConnectionAdapter().multipartRequest(builder.build());
-    }
-
-    private void requestGroupFeatures() {
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
-        mprInput.setVersion(getVersion());
-        mprInput.setFlags(new MultipartRequestFlags(false));
-        mprInput.setXid(getSessionContext().getNextXid());
-
-        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
-        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-
-        LOG.debug("Send group features statistics request :{}",
-                mprGroupFeaturesBuild);
-        getConnectionAdapter().multipartRequest(mprInput.build());
-
-    }
-
-    private void requestMeterFeatures() {
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETERFEATURES);
-        mprInput.setVersion(getVersion());
-        mprInput.setFlags(new MultipartRequestFlags(false));
-        mprInput.setXid(getSessionContext().getNextXid());
-
-        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesCaseBuilder();
-        mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
-
-        LOG.debug("Send meter features statistics request :{}",
-                mprMeterFeaturesBuild);
-        getConnectionAdapter().multipartRequest(mprInput.build());
-
     }
 
     /**

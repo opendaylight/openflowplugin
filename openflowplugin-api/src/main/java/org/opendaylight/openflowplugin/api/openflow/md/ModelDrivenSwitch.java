@@ -79,4 +79,10 @@ public interface ModelDrivenSwitch
      */
     Optional<BigInteger> sendEmptyTableFeatureRequest();
 
+    /**
+     * Method send port/desc multipart request to the switch to fetch the initial details.
+     */
+
+    public abstract void requestSwitchDetails();
+
 }
