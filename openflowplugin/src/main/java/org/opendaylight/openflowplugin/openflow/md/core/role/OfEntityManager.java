@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.role;
 
 import java.math.BigInteger;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import com.google.common.base.Optional;
@@ -68,7 +69,7 @@ public class OfEntityManager implements TransactionChainListener{
         entsession = new ConcurrentHashMap<>();
         entRegistrationMap = new ConcurrentHashMap<>();
         ThreadPoolLoggingExecutor delegate = new ThreadPoolLoggingExecutor(
-            1, 5, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(5), "ofEntity");
+            20, 20, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), "ofEntity");
         pool =  MoreExecutors.listeningDecorator(delegate);
     }
 

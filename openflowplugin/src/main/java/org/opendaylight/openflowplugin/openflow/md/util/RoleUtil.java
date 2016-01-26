@@ -123,7 +123,9 @@ public final class RoleUtil {
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(roleReply), new FutureCallback<RpcResult<RoleRequestOutput>>() {
             @Override
             public void onSuccess(RpcResult<RoleRequestOutput> input) {
-                result.set(input.getResult().getGenerationId());
+                if(input != null && input.getResult() != null) {
+                    result.set(input.getResult().getGenerationId());
+                }
             }
             @Override
             public void onFailure(Throwable t) {

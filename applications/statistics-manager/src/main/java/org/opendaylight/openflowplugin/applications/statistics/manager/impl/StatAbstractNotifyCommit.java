@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNotifyCommiter;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
@@ -46,12 +47,16 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
 
     protected final StatisticsManager manager;
     private ListenerRegistration<NotificationListener> notifyListenerRegistration;
+    protected final StatNodeRegistration nodeRegistrationManager;
+
 
     public StatAbstractNotifyCommit(final StatisticsManager manager,
-            final NotificationProviderService nps) {
+            final NotificationProviderService nps,
+                                    final StatNodeRegistration nodeRegistrationManager) {
         Preconditions.checkArgument(nps != null, "NotificationProviderService can not be null!");
         this.manager = Preconditions.checkNotNull(manager, "StatisticManager can not be null!");
         notifyListenerRegistration = nps.registerNotificationListener(getStatNotificationListener());
+        this.nodeRegistrationManager = nodeRegistrationManager;
     }
 
     @Override

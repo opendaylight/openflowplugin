@@ -492,7 +492,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
-        OFSessionUtil.setRole(sessionContext);
     }
 
     /**
