@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -72,6 +73,9 @@ public class StatListenCommitFlowTest {
     @Mock
     private DataBroker mockDataBroker;
 
+    @Mock
+    private StatNodeRegistration statsNodeRegistration;
+
     private StatListenCommitFlow statCommitFlow;
     private TableKey tableKey = new TableKey((short) 12);
 
@@ -79,7 +83,7 @@ public class StatListenCommitFlowTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         statCommitFlow = new StatListenCommitFlow(mockStatisticsManager, mockDataBroker,
-                mockNotificationProviderService);
+                mockNotificationProviderService, statsNodeRegistration);
     }
 
     @Test
