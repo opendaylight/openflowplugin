@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Abhijit Kumbhare <abhijit.kumbhare@ericsson.com>
+Submitted-by: Abhijit Kumbhare <abhijit.kumbhare@ericsson.com>
+Submitted-at: Tue, 26 Jan 2016 06:21:14 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/33529
+Project: openflowplugin
+Branch: refs/heads/stable/beryllium
