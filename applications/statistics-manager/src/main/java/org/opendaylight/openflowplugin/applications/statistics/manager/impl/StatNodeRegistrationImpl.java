@@ -10,9 +10,14 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -42,6 +47,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +65,16 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
 
     private static final Logger LOG = LoggerFactory.getLogger(StatNodeRegistrationImpl.class);
 
+    private static final QName ENTITY_QNAME =
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.md.sal.core.general.entity.rev150820.Entity.QNAME;
+    private static final QName ENTITY_NAME = QName.create(ENTITY_QNAME, "name");
+
     private final StatisticsManager manager;
     private ListenerRegistration<?> notifListenerRegistration;
     //private DataBroker db;
     private EntityOwnershipListenerRegistration ofListenerRegistration = null;
+    private final Map<NodeId, Boolean> nodeOwnershipState = new ConcurrentHashMap();
+
 
     public StatNodeRegistrationImpl(final StatisticsManager manager, final DataBroker db,
             final NotificationProviderService notificationService) {
@@ -138,10 +152,9 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
         manager.disconnectedNodeUnregistration(nodeIdent);
     }
 
-    private boolean preConfigurationCheck(final InstanceIdentifier<Node> nodeIdent) {
-        Preconditions.checkNotNull(nodeIdent, "Node Instance Identifier can not be null!");
-        NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
-        final Entity entity = new Entity("openflow", nodeId.getValue());
+    private boolean preConfigurationCheck(final NodeId nodeId) {
+        Preconditions.checkNotNull(nodeId, "Node Instance Identifier can not be null!");
+        final Entity entity = getEntity(nodeId);
         EntityOwnershipService ownershipService = manager.getOwnershipService();
         if(ownershipService == null) {
             LOG.error("preConfigurationCheck: EntityOwnershipService is null");
@@ -179,6 +192,7 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
                 nodeRefIdent.firstIdentifierOf(Node.class);
         if (nodeIdent != null) {
             LOG.debug("Received onNodeRemoved for node:{} ", nodeIdent);
+            removeOwnership(InstanceIdentifier.keyOf(nodeIdent).getId());
             disconnectFlowCapableNode(nodeIdent);
         }
     }
@@ -201,7 +215,10 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
             connectFlowCapableNode(swichFeaturesIdent, switchFeatures, nodeIdent);
 
             //Send group/meter request to get addition details not present in switch feature response.
-            if(preConfigurationCheck(nodeIdent)) {
+            NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
+            boolean ownershipState = preConfigurationCheck(nodeId);
+            setNodeOwnership(nodeId, ownershipState);
+            if(ownershipState) {
                 LOG.info("onNodeUpdated: Send group/meter feature request to the device {}",nodeIdent);
                 manager.getRpcMsgManager().getGroupFeaturesStat(nodeRef);
                 manager.getRpcMsgManager().getMeterFeaturesStat(nodeRef);
@@ -210,13 +227,37 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
     }
 
     @Override
+    public boolean isFlowCapableNodeOwner(NodeId node) {
+        if(this.nodeOwnershipState.containsKey(node)){
+            return this.nodeOwnershipState.get(node).booleanValue();
+        }
+        return false;
+    }
+
+
+    @Override
     public void ownershipChanged(EntityOwnershipChange ownershipChange) {
-        //I believe the only scenario we need to handle here is
-        // isOwner=false && hasOwner=false. E.g switch is connected to only
-        // one controller and that goes down, all other controller will get
-        // notification about ownership change with the flag set as above.
-        // In this scenario, topology manager should remove the node from
-        // operational data store, so no explict action is required here.
+
+        YangInstanceIdentifier yId = ownershipChange.getEntity().getId();
+        NodeIdentifierWithPredicates niWPredicates = (NodeIdentifierWithPredicates)yId.getLastPathArgument();
+        Map<QName, Object> keyValMap = niWPredicates.getKeyValues();
+        String nodeIdStr = (String)(keyValMap.get(ENTITY_NAME));
+        BigInteger dpId = new BigInteger(nodeIdStr.split(":")[1]);
+        NodeId nodeId = new NodeId(nodeIdStr);
+        LOG.info("ANILVISHNOI: {}, ownership change to {}",nodeId,ownershipChange.isOwner());
+        setNodeOwnership(nodeId, ownershipChange.isOwner());
+    }
+
+    private void setNodeOwnership(NodeId node, boolean ownership) {
+        this.nodeOwnershipState.put(node,ownership);
+    }
+
+    private void removeOwnership(NodeId node) {
+        this.nodeOwnershipState.remove(node);
+    }
+
+    private Entity getEntity(NodeId nodeId) {
+        return new Entity("openflow", nodeId.getValue());
     }
 
 }

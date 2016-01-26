@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -47,4 +48,11 @@ public interface StatNodeRegistration extends OpendaylightInventoryListener, Aut
      * @param keyIdent
      */
     void disconnectFlowCapableNode(InstanceIdentifier<Node> keyIdent);
+
+    /**
+     * Method returns if *this* instance of the stats-manager is owner of the node
+     * @param node Given Node
+     * @return true if owner, else false
+     */
+    boolean isFlowCapableNodeOwner(NodeId node);
 }
