@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
@@ -61,8 +62,9 @@ public class StatNotifyCommitTable extends StatAbstractNotifyCommit<Opendaylight
     private static final Logger LOG = LoggerFactory.getLogger(StatNotifyCommitTable.class);
 
     public StatNotifyCommitTable(final StatisticsManager manager,
-            final NotificationProviderService nps) {
-        super(manager, nps);
+            final NotificationProviderService nps,
+                                 final StatNodeRegistration nrm) {
+        super(manager, nps, nrm);
     }
 
     @Override
@@ -93,6 +95,9 @@ public class StatNotifyCommitTable extends StatAbstractNotifyCommit<Opendaylight
                 if (( ! txContainer.isPresent()) || txContainer.get().getNodeId() == null) {
                     return;
                 }
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
+
                 final List<? extends TransactionAware> cachedNotifs = txContainer.get().getNotifications();
                 for (final TransactionAware notif : cachedNotifs) {
                     if (notif instanceof FlowTableStatisticsUpdate) {
