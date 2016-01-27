@@ -24,8 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -83,7 +81,7 @@ public class RpcManagerImplTest {
         final Xid mockedXid = mock(Xid.class);
         final Long dummyXid = 1l;
         when(mockedXid.getValue()).thenReturn(dummyXid);
-        when(mockedDeviceContext.getReservedXid()).thenReturn(dummyXid);
+        when(mockedDeviceContext.reservedXidForDeviceMessage()).thenReturn(dummyXid);
 
         invokeRpcTestExistsCapacity(10, true);
         invokeRpcTestExistsCapacity(0, false);

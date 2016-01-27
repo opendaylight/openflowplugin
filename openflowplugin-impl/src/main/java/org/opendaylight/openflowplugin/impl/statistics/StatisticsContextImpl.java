@@ -122,7 +122,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceContext.getReservedXid()) {
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceContext.reservedXidForDeviceMessage()) {
             @Override
             public void close() {
                 requestContexts.remove(this);

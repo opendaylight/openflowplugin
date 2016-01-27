@@ -8,11 +8,10 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import javax.annotation.CheckForNull;
+import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
-
-import io.netty.util.Timeout;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -186,7 +185,12 @@ public interface DeviceContext extends AutoCloseable,
 
     MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
 
-    Long getReservedXid();
+    /**
+     * Method is reserved unique XID for Device Message.
+     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
+     * @return Reserved XID
+     */
+    Long reservedXidForDeviceMessage();
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)

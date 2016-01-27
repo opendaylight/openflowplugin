@@ -1,8 +1,12 @@
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
@@ -11,6 +15,7 @@ import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,8 +45,10 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
@@ -105,15 +112,15 @@ public class DeviceContextImplTest {
     @Before
     public void setUp() {
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
-        Mockito.when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
+        when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
+        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
+        when(deviceState.getNodeId()).thenReturn(nodeId);
         txChainManager = new TransactionChainManager(dataBroker, deviceState);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
-        Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
+        when(requestContext.getFuture()).thenReturn(settableFuture);
         Mockito.doAnswer(new Answer<Object>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -123,7 +130,7 @@ public class DeviceContextImplTest {
             }
         }).when(requestContext).setResult(any(RpcResult.class));
 
-        Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
+        when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
         Mockito.doAnswer(new Answer<Object>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -132,17 +139,17 @@ public class DeviceContextImplTest {
                 return null;
             }
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
-        Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
+        when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
+        when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
 
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
-        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
-        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
-        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
+        when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
+        when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
+        when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
+        when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
+        when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved.class.getName()))))
                 .thenReturn(messageTranslatorFlowRemoved);
 

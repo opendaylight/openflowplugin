@@ -48,7 +48,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     @Before
     public void setUp() throws Exception {
-        when(mockedDeviceContext.getReservedXid()).thenReturn(TEST_XID);
+        when(mockedDeviceContext.reservedXidForDeviceMessage()).thenReturn(TEST_XID);
         initStatisticsContext();
     }
 
