@@ -17,4 +17,5 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 public interface RoleManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable,
         DeviceContextClosedHandler {
     public static final String ENTITY_TYPE = "openflow";
+    public static final String TX_ENTITY_TYPE = "ofTransaction";
 }

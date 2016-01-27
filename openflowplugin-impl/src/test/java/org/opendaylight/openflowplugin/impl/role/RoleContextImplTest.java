@@ -75,6 +75,7 @@ public class RoleContextImplTest {
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     private final Entity entity = new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
+    private final Entity txEntity = new Entity(RoleManager.TX_ENTITY_TYPE, nodeId.getValue());
 
     @Before
     public void setup() {
@@ -99,10 +100,10 @@ public class RoleContextImplTest {
         when(salRoleService.setRole(Matchers.argThat(new SetRoleInputMatcher(newRole, instanceIdentifier))))
                 .thenReturn(future);
 
-        final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity);
+        final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.setSalRoleService(salRoleService);
 
-        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole);
+        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole, null);
 
         verify(deviceState).setRole(newRole);
     }
