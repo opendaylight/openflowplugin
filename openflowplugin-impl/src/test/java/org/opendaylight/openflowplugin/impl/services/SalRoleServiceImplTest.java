@@ -10,11 +10,17 @@ package org.opendaylight.openflowplugin.impl.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import com.google.common.util.concurrent.ListenableFuture;
+
 import java.math.BigInteger;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -44,11 +50,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by kramesha on 8/27/15.
  */
 public class SalRoleServiceImplTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImplTest.class);
 
     @Mock
     private RequestContextStack mockRequestContextStack;
@@ -74,6 +84,9 @@ public class SalRoleServiceImplTest {
     @Mock
     private OutboundQueue mockOutboundQueue;
 
+    @Mock
+    private RoleService roleService;
+
     private NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
 
     private static short testVersion = 4;
@@ -81,6 +94,8 @@ public class SalRoleServiceImplTest {
     private static long testXid = 100L;
 
     private NodeRef nodeRef;
+
+    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
 
     @Before
     public void setup() {
@@ -96,11 +111,10 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
 
         NodeKey key = new NodeKey(testNodeId);
-        InstanceIdentifier<Node> path = InstanceIdentifier.<Nodes>builder(Nodes.class)
-                .<Node, NodeKey>child(Node.class, key)
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, key)
                 .build();
         nodeRef = new NodeRef(path);
-
     }
 
     @Test
@@ -130,6 +144,90 @@ public class SalRoleServiceImplTest {
         assertNotNull(setRoleOutput);
         assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
+    }
+
+    private static class SleeperThread implements Runnable
+    {
+        private final int i;
+
+        private SleeperThread(final int i)
+        {
+            this.i = i;
+        }
+
+        public void run()
+        {
+            try
+            {
+                if ((i % 1000) == 0) {
+                    LOG.debug("Thread {} about to sleep", this.i);
+                }
+                Thread.sleep(1000 * 60 * 60);
+            }
+            catch (final InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * First if we want to be able to run this test on different environment, we need to:
+     * - create maximum possible threads
+     * - stop the last two threads
+     * - a try to run tested method more times than two
+     * - if there is an Runtime exception we call at the end of catch clause, its ok and there was no java.lang.OutOfMemoryError: unable to create new native thread
+     * -----------------------------------
+     * - this test is very unsafe and should be use only on local machine
+     *      because is working with OS or VM threads and cause fail in asynchronous testing environment
+     *      for this reason is this test on ignore
+     * @throws Exception
+     */
+    @Ignore
+    @Test(expected = RuntimeException.class)
+    public synchronized void howManyThreads() throws Exception {
+        Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(final Thread t, final Throwable e)
+            {
+                LOG.debug(e.getMessage());
+                System.exit(1);
+            }
+        });
+        int numThreads = 100000;
+        Thread [] thread = new Thread[100000];
+        for (int i = 0; i < numThreads; i++)
+        {
+            thread[i] = null;
+            try
+            {
+                thread[i] = new Thread(new SleeperThread(i));
+                thread[i].start();
+            }
+            catch (final OutOfMemoryError e)
+            {
+                LOG.debug("Threads are out of memory on thread {}", i);
+                thread[i].interrupt();
+                thread[i-1].interrupt();
+                LOG.debug("Stopped last 2 threads");
+                LOG.debug("============================================");
+                LOG.debug("Running first time setRole");
+                testSetRole();
+                LOG.debug("FIRST RUN OK ....");
+                LOG.debug("============================================");
+                LOG.debug("Running second time setRole");
+                testSetRole();
+                LOG.debug("SECOND RUN OK ....");
+                LOG.debug("============================================");
+                LOG.debug("Running third time setRole");
+                testSetRole();
+                LOG.debug("THIRD RUN OK ....");
+                LOG.debug("============================================");
+                LOG.debug("Running fourth time setRole");
+                testSetRole();
+                LOG.debug("FOURTH RUN OK ...");
+                throw new RuntimeException(String.format("Out of Memory Error on Thread %d", i), e);
+            }
+        }
     }
 
     @Test
