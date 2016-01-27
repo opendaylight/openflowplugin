@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
@@ -22,4 +21,5 @@ public interface RpcContext extends RequestContextStack, AutoCloseable {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
     <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
+    <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
 }
