@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.reflect.TypeToken;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.CheckForNull;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import com.google.common.reflect.TypeToken;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -43,9 +45,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
 public class MdSalRegistratorUtils {
@@ -60,9 +63,23 @@ public class MdSalRegistratorUtils {
     }
 
 
-    public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
+
+    /**
+     * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
+     * @param rpcContext - registration processing is implemented in {@link RpcContext}
+     * @param deviceContext - every service needs {@link DeviceContext} as input parameter
+     * @param newRole - role validation for {@link OfpRole#BECOMEMASTER}
+     */
+    public static void registerMasterServices(@CheckForNull final RpcContext rpcContext,
+            @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+        Preconditions.checkArgument(rpcContext != null);
+        Preconditions.checkArgument(deviceContext != null);
+        Preconditions.checkArgument(newRole != null);
+        Verify.verify(OfpRole.BECOMEMASTER.equals(newRole), "Service call with bad Role {} we expect role BECOMEMASTER", newRole);
+
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
+        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
@@ -72,12 +89,52 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
         // TODO: experimenter symmetric and multipart message services
-        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
-                new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
     }
 
-    public static void unregisterServices(final RpcContext rpcContext) throws Exception {
-        rpcContext.close();
+    /**
+     * Method unregisters all services in first step. So we don't need to call {@link MdSalRegistratorUtils#unregisterServices(RpcContext)}
+     * directly before by change role from {@link OfpRole#BECOMEMASTER} to {@link OfpRole#BECOMESLAVE}.
+     * Method registers {@link SalEchoService} in next step only because we would like to have SalEchoService as local service for all apps
+     * to be able actively check connection status for slave connection too.
+     * @param rpcContext - registration/unregistration processing is implemented in {@link RpcContext}
+     * @param deviceContext - every service needs {@link DeviceContext} as input parameter
+     * @param newRole - role validation for {@link OfpRole#BECOMESLAVE}
+     */
+    public static void registerSlaveServices(@CheckForNull final RpcContext rpcContext,
+            @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+        Preconditions.checkArgument(rpcContext != null);
+        Preconditions.checkArgument(newRole != null);
+        Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
+        
+        unregisterServices(rpcContext);
+
+        // TODO: why we would like to have Echo Service for every cluster RPC instance (check if it is not problem)
+        rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
+    }
+
+    /**
+     * Method unregisters all OF services.
+     * @param rpcContext - unregistration processing is implemented in {@link RpcContext}
+     */
+    public static void unregisterServices(@CheckForNull final RpcContext rpcContext) {
+        Preconditions.checkArgument(rpcContext != null);
+
+        // TODO: why we would like to have Echo Service for every cluster RPC instance (check if it is not problem)
+        rpcContext.unregisterRpcServiceImplementation(SalEchoService.class);
+
+        rpcContext.unregisterRpcServiceImplementation(SalFlowService.class);
+        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
+        rpcContext.unregisterRpcServiceImplementation(FlowCapableTransactionService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalMeterService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalGroupService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalTableService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalPortService.class);
+        rpcContext.unregisterRpcServiceImplementation(PacketProcessingService.class);
+        rpcContext.unregisterRpcServiceImplementation(NodeConfigService.class);
+        rpcContext.unregisterRpcServiceImplementation(OpendaylightFlowStatisticsService.class);
+        // TODO: experimenter symmetric and multipart message services
+        rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
     }
 
     /**
