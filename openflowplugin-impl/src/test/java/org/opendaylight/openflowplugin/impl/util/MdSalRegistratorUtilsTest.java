@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 public class MdSalRegistratorUtilsTest {
@@ -48,7 +49,7 @@ public class MdSalRegistratorUtilsTest {
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        MdSalRegistratorUtils.registerServices(mockedRpcContext,mockedDeviceContext);
+        MdSalRegistratorUtils.registerServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(any
                         (RpcService.class.getClass()), any(RpcService.class));
     }
