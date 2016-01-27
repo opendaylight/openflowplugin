@@ -85,13 +85,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", deviceContext.getDeviceState().getNodeId(),
                 deviceContext.getDeviceState().getRole());
-        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
-            // if slave, we dont poll for statistics and jump to rpc initialization
-            LOG.info("Skipping Statistics for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-            return;
-        }
-
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
@@ -101,6 +94,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
+
+        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
+            // if slave, we dont poll for statistics and jump to rpc initialization
+            LOG.info("Skipping Statistics for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
+            scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+            return;
+        }
+
         final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
@@ -139,6 +141,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
         LOG.debug("POLLING ALL STATS for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())) {
+            LOG.debug("Role is SLAVE so we don't want to poll any stat for device: {}", deviceContext.getDeviceState().getNodeId());
+            scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+            return;
+        }
         timeCounter.markStart();
         ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -164,7 +171,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             deviceStatisticsCollectionFuture.get(STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Statistics collection for node {} failed", deviceContext.getDeviceState().getNodeId(), e);
-        } catch (TimeoutException e) {
+        } catch (final TimeoutException e) {
             LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceContext.getDeviceState().getNodeId(), STATS_TIMEOUT_SEC);
         }
     }
