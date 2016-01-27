@@ -29,6 +29,19 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      */
     ListenableFuture<OfpRole> initialization();
 
+    /**
+     * Transaction Candidate will provide safe way to correctly finish TxChainManager from
+     * last Node Master. It means only Master of TxEntity could hold TxChainFactory and
+     * active TransactionChain to write Data to Distributed DataStore.
+     * @return TransactionChainManager could take new TransactionFactory for writing Data
+     */
+    ListenableFuture<Void> setupTxCandidate();
+
+    /**
+     * UnregistrationTxCandidate from OwnershipService
+     */
+    void suspendTxCandidate();
+
     @Override
     void close();
 }
