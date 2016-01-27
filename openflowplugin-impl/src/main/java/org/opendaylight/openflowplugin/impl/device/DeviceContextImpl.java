@@ -224,16 +224,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void onClusterRoleChange(@CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            transactionChainManager.deactivateTransactionManager();
+            return transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
         }
+        return Futures.immediateCheckedFuture(null);
     }
 
     @Override

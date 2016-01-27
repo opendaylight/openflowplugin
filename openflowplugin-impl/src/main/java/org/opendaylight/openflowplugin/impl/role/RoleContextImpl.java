@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -52,10 +53,16 @@ public class RoleContextImpl implements RoleContext {
 
     private final SettableFuture<OfpRole> initRoleChangeFuture;
 
-    public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService, final Entity entity) {
+    private EntityOwnershipCandidateRegistration txEntityOwnershipCandidateRegistration;
+    private SettableFuture<Void> txRoleChangeFuture;
+    private final Entity txEntity;
+
+    public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
+            final Entity entity, final Entity txEnitity) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.entity = Preconditions.checkNotNull(entity);
+        this.txEntity = Preconditions.checkNotNull(txEnitity);
 
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
 
@@ -76,7 +83,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onRoleChanged(final OfpRole oldRole, final OfpRole newRole) {
+    public void onRoleChanged(final OfpRole oldRole, final OfpRole newRole, final FutureCallback<Void> callback) {
         LOG.trace("onRoleChanged method call for Entity {}", entity);
 
         if (!isDeviceConnected()) {
@@ -100,10 +107,12 @@ public class RoleContextImpl implements RoleContext {
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), new FutureCallback<RpcResult<SetRoleOutput>>() {
             @Override
             public void onSuccess(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                LOG.debug("Rolechange {} successful made on switch :{}", newRole,
-                        deviceContext.getPrimaryConnectionContext().getNodeId());
+                LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
-                deviceContext.onClusterRoleChange(newRole);
+                final ListenableFuture<Void> future = deviceContext.onClusterRoleChange(newRole);
+                if (callback != null) {
+                    Futures.addCallback(future, callback);
+                }
                 completeInitRoleChangeFuture(newRole, null);
             }
 
@@ -139,6 +148,49 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
+    public ListenableFuture<Void> setupTxCandidate() {
+        LOG.debug("setupTxCandidate for entity {} and Transaction entity {}", entity, txEntity);
+        Verify.verify(txEntity != null);
+
+        try {
+            txEntityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(txEntity);
+            txRoleChangeFuture = SettableFuture.<Void> create();
+        } catch (final CandidateAlreadyRegisteredException e) {
+            return Futures.<Void> immediateFailedFuture(e);
+        }
+
+        return txRoleChangeFuture;
+    }
+
+    @Override
+    public void onTxRoleChange(final OfpRole oldRole, final OfpRole newRole) {
+        LOG.trace("onTxRoleChange method call for Entity {}", entity);
+
+        Verify.verify(txRoleChangeFuture != null, "TxRoleChangeFuture for entity {} is null", entity);
+
+        if (!isDeviceConnected()) {
+            // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
+            LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.", deviceContext
+                    .getPrimaryConnectionContext().getNodeId());
+            if (!txRoleChangeFuture.isDone()) {
+                txRoleChangeFuture.cancel(true);
+            }
+            return;
+        }
+
+        Verify.verify(txEntity != null, "TxEntity for Entity {} is null", entity);
+        if (OfpRole.BECOMEMASTER.equals(newRole)) {
+            if (!txRoleChangeFuture.isDone()) {
+                txRoleChangeFuture.set(null);
+            }
+        } else if (OfpRole.BECOMESLAVE.equals(newRole)) {
+            // NOOP
+        } else {
+            LOG.warn("Unexpected Role for entity {} TxEntity {}", entity, txEntity);
+        }
+    }
+
+    @Override
     public void close() {
         if (entityOwnershipCandidateRegistration != null) {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
@@ -149,6 +201,11 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public Entity getEntity() {
         return entity;
+    }
+
+    @Override
+    public Entity getTxEntity() {
+        return txEntity;
     }
 
     private boolean isDeviceConnected() {
@@ -175,5 +232,13 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public DeviceState getDeviceState() {
         return deviceContext.getDeviceState();
+    }
+
+    @Override
+    public void suspendTxCandidate() {
+        if (txEntityOwnershipCandidateRegistration != null) {
+            txEntityOwnershipCandidateRegistration.close();
+            txEntityOwnershipCandidateRegistration = null;
+        }
     }
 }

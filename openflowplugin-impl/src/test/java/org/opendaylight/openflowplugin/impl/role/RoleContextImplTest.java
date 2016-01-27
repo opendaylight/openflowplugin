@@ -81,6 +81,7 @@ public class RoleContextImplTest {
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     private final Entity entity = new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
+    private final Entity txEntity = new Entity(RoleManager.TX_ENTITY_TYPE, nodeId.getValue());
 
     @Before
     public void setup() {
@@ -94,7 +95,7 @@ public class RoleContextImplTest {
         when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceContext.getPrimaryConnectionContext().getFeatures()).thenReturn(featuresReply);
         when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity);
+        roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
     }
 
     @After
@@ -105,18 +106,27 @@ public class RoleContextImplTest {
 
     @Test
     public void testOnRoleChanged() throws Exception {
-        roleChange();
+        roleChange(false);
     }
 
 
-    private void roleChange() throws Exception {
+    private void roleChange(Boolean noInteractionsAwaited) throws Exception {
         final OfpRole newRole = OfpRole.BECOMEMASTER;
         final SettableFuture<RpcResult<SetRoleOutput>> future = SettableFuture.create();
         future.set(RpcResultBuilder.<SetRoleOutput>success().build());
         when(salRoleService.setRole(Matchers.argThat(new SetRoleInputMatcher(newRole, instanceIdentifier))))
                 .thenReturn(future);
+
+        final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.setSalRoleService(salRoleService);
-        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole);
+
+        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole, null);
+
+        if (!noInteractionsAwaited) {
+            verify(deviceState).setRole(newRole);
+        } else {
+            Mockito.verifyNoMoreInteractions(deviceState);
+        }
     }
 
     private class SetRoleInputMatcher extends ArgumentMatcher<SetRoleInput> {
@@ -149,7 +159,7 @@ public class RoleContextImplTest {
     @Test
     public void testOnRoleChangeDeviceStateRIP() throws Exception {
         when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
-        roleChange();
+        roleChange(true);
     }
 
     @Test

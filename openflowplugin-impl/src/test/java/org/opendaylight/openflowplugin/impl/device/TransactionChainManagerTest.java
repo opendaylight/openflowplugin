@@ -157,33 +157,4 @@ public class TransactionChainManagerTest {
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
     }
 
-    @Test
-    public void testDeActivateTransactionChainManager() throws Exception {
-        txChainManager.deactivateTransactionManager();
-        Mockito.verify(txChain).close();
-        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SLEEPING.equals(txChainManager.getTransactionChainManagerStatus()));
-    }
-
-    @Test
-    public void testTransactionChainManagerClose() throws Exception {
-        txChainManager.close();
-        Mockito.verify(txChain).close();
-        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN.equals(txChainManager.getTransactionChainManagerStatus()));
-    }
-
-    @Test
-    public void testTransactionChainManagerDeactivateAndClose() throws Exception {
-        txChainManager.deactivateTransactionManager();
-        txChainManager.close();
-        Mockito.verify(txChain, Mockito.atMost(1)).close();
-        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN.equals(txChainManager.getTransactionChainManagerStatus()));
-    }
-
-    @Test
-    public void testTransactionChainManagerDeactivateAndSubmit() throws Exception {
-        txChainManager.deactivateTransactionManager();
-        txChainManager.submitWriteTransaction();
-        Mockito.verify(txChain).close();
-        Assert.assertTrue(TransactionChainManager.TransactionChainManagerStatus.SLEEPING.equals(txChainManager.getTransactionChainManagerStatus()));
-    }
 }

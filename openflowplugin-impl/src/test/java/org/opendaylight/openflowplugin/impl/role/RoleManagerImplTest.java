@@ -195,8 +195,9 @@ public class RoleManagerImplTest {
     public void testOnDeviceContextClosedRoleMaster() throws Exception {
         when(deviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
         roleManager.onDeviceContextLevelUp(deviceContext);
-        roleManager.onDeviceContextClosed(deviceContext);
         Assert.assertTrue(roleManager.getContexts().size() == 1);
+        roleManager.onDeviceContextClosed(deviceContext);
+        Assert.assertTrue(roleManager.getContexts().size() == 0);
     }
 
     @Test

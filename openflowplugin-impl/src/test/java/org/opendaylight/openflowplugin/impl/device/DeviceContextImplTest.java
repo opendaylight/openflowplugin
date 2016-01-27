@@ -585,15 +585,6 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testOnClusterRoleChangeBecomeShuttingDown() throws Exception {
-        /** Setting not null (not mocked) transaction manager */
-        mockDeviceContext.createAdnSetTransactionChainManager(dataBroker, deviceState);
-        mockDeviceContext.getDeviceState().setValid(true);
-        mockDeviceContext.close();
-        assertEquals(TransactionChainManager.TransactionChainManagerStatus.SHUTTING_DOWN, mockDeviceContext.getTransactionChainManager().getTransactionChainManagerStatus());
-    }
-
-    @Test
     public void testOnClusterRoleChangeBecomeMasterAfterMaster() throws Exception {
         /** Setting not null (not mocked) transaction manager */
         mockDeviceContext.createAdnSetTransactionChainManager(dataBroker, deviceState);
