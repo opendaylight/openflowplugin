@@ -25,23 +25,23 @@
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>    
-	    <dependency>
-	      <groupId>org.opendaylight.openflowplugin.model</groupId>
-	      <artifactId>model-flow-base</artifactId>
-	    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
-         <dependency>
-	        <groupId>equinoxSDK381</groupId>
-	        <artifactId>org.eclipse.osgi</artifactId>
-	      </dependency>
-	      <dependency>
+        <dependency>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
           </dependency>
