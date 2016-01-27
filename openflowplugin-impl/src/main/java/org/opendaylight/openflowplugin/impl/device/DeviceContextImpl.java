@@ -56,6 +56,7 @@ import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImp
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -162,7 +163,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public Long getReservedXid() {
+    public Long reservedXidForDeviceMessage() {
         return outboundQueueProvider.reserveEntry();
     }
 
@@ -202,10 +203,19 @@ public class DeviceContextImpl implements DeviceContext {
         Preconditions.checkArgument(role != null);
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
+            if (rpcContext != null) {
+                MdSalRegistratorUtils.registerMasterServices(rpcContext, DeviceContextImpl.this, role);
+            }
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             transactionChainManager.deactivateTransactionManager();
+            if (rpcContext != null) {
+                MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
+            }
         } else {
             LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            if (rpcContext != null) {
+                MdSalRegistratorUtils.unregisterServices(rpcContext);
+            }
         }
     }
 
