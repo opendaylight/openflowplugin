@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.mockito.Mockito.times;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -54,6 +55,8 @@ public class RpcManagerImplTest {
     private DeviceState deviceState;
     @Mock
     private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Mock
+    private MessageSpy mockMsgSpy;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
@@ -62,13 +65,15 @@ public class RpcManagerImplTest {
         nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow-junit:1")));
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
-        FeaturesReply features = new GetFeaturesOutputBuilder()
+        final FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
                 .build();
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(mockMsgSpy);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
     }
 

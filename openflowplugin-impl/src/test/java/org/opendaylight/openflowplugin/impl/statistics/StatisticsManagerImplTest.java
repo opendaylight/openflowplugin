@@ -163,7 +163,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
 
         verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
-        verify(mockedDeviceContext, Mockito.times(8)).getReservedXid();
+        verify(mockedDeviceContext, Mockito.times(8)).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
         verify(hashedWheelTimer).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
@@ -188,7 +188,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
 
         verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
-        verify(mockedDeviceContext, Mockito.times(8)).getReservedXid();
+        verify(mockedDeviceContext, Mockito.times(8)).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
         verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
