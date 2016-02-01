@@ -162,7 +162,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        // we don't need to block anything - next statistics come soon
        final boolean success = dataStoreOperQueue.offer(op);
        if ( ! success) {
-           LOG.debug("Stat DS/Operational submiter Queue is full!");
+           LOG.debug("Stat DS/Operational submitter Queue is full!");
        }
    }
 
@@ -170,8 +170,9 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
    public void run() {
        /* Neverending cyle - wait for finishing */
        while ( ! finishing) {
+           StatDataStoreOperation op = null;
            try {
-               StatDataStoreOperation op = dataStoreOperQueue.take();
+               op = dataStoreOperQueue.take();
                final ReadWriteTransaction tx = txChain.newReadWriteTransaction();
                LOG.trace("New operations available, starting transaction {}", tx.getIdentifier());
 
@@ -200,10 +201,12 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
 
                tx.submit().checkedGet();
            } catch (final InterruptedException e) {
-               LOG.warn("Stat Manager DS Operation thread interupted!", e);
+               LOG.warn("Stat Manager DS Operation thread interrupted, while " +
+                       "waiting for StatDataStore Operation task!", e);
                finishing = true;
            } catch (final Exception e) {
-               LOG.warn("Unhandled exception during processing statistics. Restarting transaction chain.", e);
+               LOG.warn("Unhandled exception during processing statistics for {}. " +
+                       "Restarting transaction chain.",op != null?op.getNodeId().getValue():"",e);
                txChain.close();
                txChain = dataBroker.createTransactionChain(StatisticsManagerImpl.this);
                cleanDataStoreOperQueue();
