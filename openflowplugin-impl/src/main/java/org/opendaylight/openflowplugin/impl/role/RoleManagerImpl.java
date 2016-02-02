@@ -153,9 +153,22 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             LOG.debug("Found roleContext associated to deviceContext: {}, now closing the roleContext", nodeId);
             final Optional<EntityOwnershipState> actState = entityOwnershipService.getOwnershipState(entity);
             if (actState.isPresent()) {
-                if (!actState.get().isOwner()) {
+                if (actState.get().isOwner()) {
+                    if (!txContexts.containsKey(roleContext.getTxEntity())) {
+                        try {
+                            txContexts.putIfAbsent(roleContext.getTxEntity(), roleContext);
+                            roleContext.setPropagatingRole(OfpRole.BECOMEMASTER);
+                            roleContext.setupTxCandidate();
+                            // we'd like to wait for registration response
+                            return;
+                        } catch (final CandidateAlreadyRegisteredException e) {
+                            // NOOP
+                        }
+                    }
+                } else {
                     LOG.debug("No DS commitment for device {} - LEADER is somewhere else", nodeId);
                     contexts.remove(entity, roleContext);
+                    // TODO : is there a chance to have TxEntity ?
                 }
             } else {
                 LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close proces", entity);
@@ -206,6 +219,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         ListenableFuture<Void> processingClosure;
         final DeviceContext deviceContext = roleContext.getDeviceContext();
         final NodeId nodeId = roleContext.getDeviceState().getNodeId();
+
+        if (!roleContext.getDeviceState().isValid()
+                && RoleContext.ROLE_CONTEXT_STATE.WORKING.equals(roleContext.getState())) {
+            LOG.debug("Node {} ownership changed during closing process", roleContext.getDeviceState().getNodeId());
+            roleContext.close();
+            txCandidateGuard.release();
+            return;
+        }
 
         if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
             // SLAVE -> MASTER - acquired transition lock
