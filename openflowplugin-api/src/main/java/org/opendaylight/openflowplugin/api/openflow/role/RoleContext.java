@@ -9,12 +9,41 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * Created by kramesha on 9/12/15.
  */
 public interface RoleContext extends RoleChangeListener, RequestContextStack {
+
+    void setTxLockOwned(boolean txLockOwned);
+
+    void promoteStateToWorking();
+
+    OfpRole getPropagatingRole();
+
+    void setPropagatingRole(OfpRole propagatingRole);
+
+    /** available states the {@link RoleContext} can exist in */
+    enum ROLE_CONTEXT_STATE {
+        /**
+         * before consequences of first entity ownership election are completely settled
+         * (lock acquired, data written, role propagated onto device)
+         */
+        STARTING,
+        /**
+         * state between
+         * <ul>
+         * <li>first entity ownership election settled</li>
+         * <li>and device disconnected or {@link DeviceContext#close()} invoked</li>
+         * </ul>
+         */
+        WORKING,
+        /** after {@link DeviceContext#close()} invoked */
+        TEARING_DOWN
+    }
 
     /**
      * Initialization method is responsible for a registration of
@@ -46,4 +75,9 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
     @Override
     void close();
 
+    DeviceContext getDeviceContext();
+
+    ROLE_CONTEXT_STATE getState();
+
+    boolean isTxLockOwned();
 }

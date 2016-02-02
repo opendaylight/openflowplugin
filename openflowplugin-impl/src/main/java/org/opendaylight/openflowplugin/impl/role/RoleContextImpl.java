@@ -58,6 +58,9 @@ public class RoleContextImpl implements RoleContext {
 
     private final Semaphore mainCandidateGuard = new Semaphore(1, true);
     private final Semaphore txCandidateGuard = new Semaphore(1, true);
+    private volatile ROLE_CONTEXT_STATE state;
+    private volatile boolean txLockOwned;
+    private volatile OfpRole propagatingRole;
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
                            final Entity entity, final Entity txEnitity) {
@@ -71,6 +74,7 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public void initialization() throws CandidateAlreadyRegisteredException {
+        state = ROLE_CONTEXT_STATE.STARTING;
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
             entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
             LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
@@ -106,8 +110,29 @@ public class RoleContextImpl implements RoleContext {
                     @Override
                     public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
                         LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
-                        deviceContext.getDeviceState().setRole(newRole);
-                        return deviceContext.onClusterRoleChange(newRole);
+                        final ListenableFuture<Void> nextStepFuture;
+                        switch (state) {
+                            case STARTING:
+                                if (OfpRole.BECOMESLAVE.equals(newRole)) {
+                                    getDeviceState().setRole(newRole);
+                                    nextStepFuture = Futures.immediateFuture(null);
+                                } else if (OfpRole.BECOMEMASTER.equals(newRole)) {
+                                    nextStepFuture = deviceContext.onClusterRoleChange(newRole);
+                                } else {
+                                    nextStepFuture = Futures.immediateFuture(null);
+                                }
+
+                                break;
+                            case WORKING:
+                                nextStepFuture = deviceContext.onClusterRoleChange(newRole);
+                                break;
+                            //case TEARING_DOWN:
+                            default:
+                                nextStepFuture = Futures.immediateFuture(null);
+                                break;
+                        }
+
+                        return nextStepFuture;
                     }
                 });
     }
@@ -173,6 +198,11 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
+    public DeviceContext getDeviceContext() {
+        return deviceContext;
+    }
+
+    @Override
     public Semaphore getMainCandidateGuard() {
         return mainCandidateGuard;
     }
@@ -180,5 +210,35 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public Semaphore getTxCandidateGuard() {
         return txCandidateGuard;
+    }
+
+    @Override
+    public ROLE_CONTEXT_STATE getState() {
+        return state;
+    }
+
+    @Override
+    public boolean isTxLockOwned() {
+        return txLockOwned;
+    }
+
+    @Override
+    public void setTxLockOwned(final boolean txLockOwned) {
+        this.txLockOwned = txLockOwned;
+    }
+
+    @Override
+    public void promoteStateToWorking() {
+        state = ROLE_CONTEXT_STATE.WORKING;
+    }
+
+    @Override
+    public OfpRole getPropagatingRole() {
+        return propagatingRole;
+    }
+
+    @Override
+    public void setPropagatingRole(final OfpRole propagatingRole) {
+        this.propagatingRole = propagatingRole;
     }
 }
