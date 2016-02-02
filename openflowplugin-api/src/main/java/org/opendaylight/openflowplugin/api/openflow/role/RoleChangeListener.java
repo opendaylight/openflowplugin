@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
-import com.google.common.util.concurrent.FutureCallback;
-import javax.annotation.Nullable;
+import java.util.concurrent.Semaphore;
+
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -19,13 +20,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
 public interface RoleChangeListener extends AutoCloseable {
     /**
      * Gets called by the EntityOwnershipCandidate after role change received from EntityOwnershipService
-     * @param oldRole
+     *  @param oldRole
      * @param newRole
-     * @param callback
      */
-    void onRoleChanged(OfpRole oldRole, OfpRole newRole, @Nullable FutureCallback<Void> callback);
-
-    void onTxRoleChange(OfpRole oldRole, OfpRole newRole);
+    ListenableFuture<Void> onRoleChanged(OfpRole oldRole, OfpRole newRole);
 
     Entity getEntity();
 
@@ -35,4 +33,8 @@ public interface RoleChangeListener extends AutoCloseable {
 
     @Override
     void close();
+
+    Semaphore getMainCandidateGuard();
+
+    Semaphore getTxCandidateGuard();
 }

@@ -120,7 +120,7 @@ public class RoleContextImplTest {
         final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.setSalRoleService(salRoleService);
 
-        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole, null);
+        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole);
 
         if (!noInteractionsAwaited) {
             verify(deviceState).setRole(newRole);
@@ -133,6 +133,7 @@ public class RoleContextImplTest {
 
         private final OfpRole ofpRole;
         private final NodeRef nodeRef;
+
         public SetRoleInputMatcher(final OfpRole ofpRole, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
             this.ofpRole = ofpRole;
             nodeRef = new NodeRef(instanceIdentifier);

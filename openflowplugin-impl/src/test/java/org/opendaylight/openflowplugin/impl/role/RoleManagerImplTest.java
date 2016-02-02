@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.role;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -169,7 +170,7 @@ public class RoleManagerImplTest {
         when(entityOwnershipState.hasOwner()).thenReturn(true);
         roleManager.onDeviceContextLevelUp(deviceContext);
         roleManager.close();
-        verify(entityOwnershipListenerRegistration).close();
+        verify(entityOwnershipListenerRegistration, atLeastOnce()).close();
         verify(dataBroker, never()).newWriteOnlyTransaction();
         Assert.assertTrue(roleManager.getContexts().size() == 0);
     }
@@ -179,7 +180,7 @@ public class RoleManagerImplTest {
         when(entityOwnershipState.hasOwner()).thenReturn(false);
         roleManager.onDeviceContextLevelUp(deviceContext);
         roleManager.close();
-        verify(entityOwnershipListenerRegistration).close();
+        verify(entityOwnershipListenerRegistration, atLeastOnce()).close();
         verify(dataBroker).newWriteOnlyTransaction();
         Assert.assertTrue(roleManager.getContexts().size() == 0);
     }
