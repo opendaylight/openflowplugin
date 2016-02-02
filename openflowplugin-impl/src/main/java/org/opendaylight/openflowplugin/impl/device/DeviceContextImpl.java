@@ -9,6 +9,17 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +42,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -68,6 +80,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -227,14 +240,32 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
+        if (rpcContext != null) {
+            // TODO : implement interface for onClusterRoleChange method
+            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
+        }
+
+        final ListenableFuture<Void> nextStepFuture;
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
+            nextStepFuture = Futures.immediateCheckedFuture(null);
+            getDeviceState().setRole(role);
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            return transactionChainManager.deactivateTransactionManager();
+            nextStepFuture = transactionChainManager.deactivateTransactionManager();
+            Futures.transform(nextStepFuture, new Function<Void, Void>() {
+                @Nullable
+                @Override
+                public Void apply(@Nullable final Void aVoid) {
+                    getDeviceState().setRole(role);
+                    return null;
+                }
+            });
         } else {
-            LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            nextStepFuture = Futures.immediateCheckedFuture(null);
         }
-        return Futures.immediateCheckedFuture(null);
+
+        return nextStepFuture;
     }
 
     @Override
@@ -458,6 +489,29 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
+            final CheckedFuture<Void, TransactionCommitFailedException> future = transactionChainManager.shuttingDown();
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.info("Delete Node {} was successfull.", deviceState.getNodeId());
+                    tearDownClean();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
+                    tearDownClean();
+                }
+            });
+        }
+    }
+
+    synchronized void tearDownClean() {
+        LOG.info("Closing transaction chain manager without cleaning inventory operational");
+        Preconditions.checkState(!deviceState.isValid());
+        transactionChainManager.close();
+
             final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
             Collections.reverse(reversedCloseHandlers);
             for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
@@ -465,7 +519,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             closeHandlers.clear();
         }
-    }
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
