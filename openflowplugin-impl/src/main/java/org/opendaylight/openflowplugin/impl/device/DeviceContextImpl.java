@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -233,14 +235,28 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             // TODO : implement interface for onClusterRoleChange method
             MdSalRegistratorUtils.registerServices(rpcContext, this, role);
         }
+
+        final ListenableFuture<Void> nextStepFuture;
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
+            nextStepFuture = Futures.immediateCheckedFuture(null);
+            getDeviceState().setRole(role);
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            return transactionChainManager.deactivateTransactionManager();
+            nextStepFuture = transactionChainManager.deactivateTransactionManager();
+            Futures.transform(nextStepFuture, new Function<Void, Void>() {
+                @Nullable
+                @Override
+                public Void apply(@Nullable final Void aVoid) {
+                    getDeviceState().setRole(role);
+                    return null;
+                }
+            });
         } else {
             LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            nextStepFuture = Futures.immediateCheckedFuture(null);
         }
-        return Futures.immediateCheckedFuture(null);
+
+        return nextStepFuture;
     }
 
     @Override
