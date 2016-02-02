@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -108,6 +109,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         /* All DataObjects for remove */
         final Set<InstanceIdentifier<?>> removeData = changeEvent.getRemovedPaths() != null
                 ? changeEvent.getRemovedPaths() : Collections.<InstanceIdentifier<?>> emptySet();
+        /* All updated DataObjects */
+        final Map<InstanceIdentifier<?>, DataObject> updateData = changeEvent.getUpdatedData() != null
+                ? changeEvent.getUpdatedData() : Collections.<InstanceIdentifier<?>, DataObject>emptyMap();
 
         for (InstanceIdentifier<?> entryKey : removeData) {
             final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
@@ -123,6 +127,22 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 flowNodeConnected(nodeIdent);
             }
         }
+
+        // FIXME: just a hack to cover DS/operational dirty start
+        // if all conventional ways failed and there is update
+        if (removeData.isEmpty() && createdData.isEmpty() && updateData.size() == 1) {
+            for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : updateData.entrySet()) {
+                // and only if this update covers top element (flow-capable-node)
+                if (FlowCapableNode.class.equals(entry.getKey().getTargetType())) {
+                    final InstanceIdentifier<FlowCapableNode> nodeIdent = entry.getKey()
+                            .firstIdentifierOf(FlowCapableNode.class);
+                    if (!nodeIdent.isWildcarded()) {
+                        // then force registration to local node cache and reconcile
+                        flowNodeConnected(nodeIdent, true);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -132,7 +152,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode) {
-        if ( ! provider.isNodeActive(connectedNode)) {
+        flowNodeConnected(connectedNode, false);
+    }
+
+    private void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean force) {
+        if (force || !provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
             reconciliation(connectedNode);
         }
