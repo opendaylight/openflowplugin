@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Submitted-by: michal rehak <mirehak@cisco.com>
+Submitted-at: Wed, 03 Feb 2016 10:40:28 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/33948
+Project: openflowplugin
+Branch: refs/heads/stable/lithium
