@@ -18,7 +18,7 @@ public class InventoryManagerImplModule extends org.opendaylight.yang.gen.v1.urn
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        InventoryActivator provider = new InventoryActivator();
+        InventoryActivator provider = new InventoryActivator(getEntityOwnershipServiceDependency());
         getBrokerDependency().registerProvider(provider);
         return provider;
     }

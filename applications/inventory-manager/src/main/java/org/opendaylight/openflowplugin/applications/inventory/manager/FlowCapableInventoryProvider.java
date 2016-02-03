@@ -11,13 +11,18 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +36,7 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
 
     private final BlockingQueue<InventoryOperation> queue = new LinkedBlockingDeque<>(QUEUE_DEPTH);
     private final NotificationProviderService notificationService;
+    private final EntityOwnershipService eos;
 
     private final DataBroker dataBroker;
     private BindingTransactionChain txChain;
@@ -38,9 +44,10 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     private ListenerRegistration<?> tableFeatureListenerRegistration;
     private Thread thread;
 
-    FlowCapableInventoryProvider(final DataBroker dataBroker, final NotificationProviderService notificationService) {
+    FlowCapableInventoryProvider(final DataBroker dataBroker, final NotificationProviderService notificationService, EntityOwnershipService eos) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.notificationService = Preconditions.checkNotNull(notificationService);
+        this.eos = eos;
     }
 
     void start() {
@@ -232,5 +239,17 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
             }
             txChain = null;
         }
+    }
+
+    public boolean deleteDeviceData(NodeId nodeId) {
+        Entity device = new Entity("openflow",nodeId.getValue());
+        Optional<EntityOwnershipState> entityOwnershipState =  eos.getOwnershipState(device);
+        if(entityOwnershipState.isPresent()){
+            EntityOwnershipState eState = entityOwnershipState.get();
+            if(eState.isOwner()) { return true; }
+
+            return !eState.hasOwner();
+        }
+        return true;
     }
 }

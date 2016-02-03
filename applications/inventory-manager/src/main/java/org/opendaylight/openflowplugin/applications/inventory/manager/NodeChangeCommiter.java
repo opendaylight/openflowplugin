@@ -24,13 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -68,6 +62,8 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
                     connector.getNodeConnectorRef().getValue());
             return;
         }
+
+        if(!manager.deleteDeviceData(getNodeId(connector.getNodeConnectorRef().getValue()))) { return; }
 
         LOG.debug("Node connector removed notification received, {}", connector.getNodeConnectorRef().getValue());
         manager.enqueue(new InventoryOperation() {
@@ -120,6 +116,8 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
                     node.getNodeRef().getValue());
             return;
         }
+
+        if(!manager.deleteDeviceData(getNodeId(node.getNodeRef().getValue()))) { return; }
 
         LOG.debug("Node removed notification received, {}", node.getNodeRef().getValue());
         manager.enqueue(new InventoryOperation() {
@@ -196,5 +194,9 @@ class NodeChangeCommiter implements OpendaylightInventoryListener {
                 tx.merge(LogicalDatastoreType.OPERATIONAL, tableIdentifier, table0, true);
             }
         });
+    }
+
+    private NodeId getNodeId(InstanceIdentifier<?> iid) {
+        return iid.firstKeyOf(Node.class).getId();
     }
 }
