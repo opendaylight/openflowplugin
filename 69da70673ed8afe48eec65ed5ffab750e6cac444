@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_bdd16dfd",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/FlowCapableInventoryProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2016-02-03T15:25:14Z",
+      "side": 1,
+      "message": "When is this returning false: when the hasOwner returns true (will return true when hasOwner returns false). Just wanted to confirm with you if that is what you want to do.",
+      "range": {
+        "startLine": 251,
+        "startChar": 20,
+        "endLine": 251,
+        "endChar": 26
+      },
+      "revId": "69da70673ed8afe48eec65ed5ffab750e6cac444",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
