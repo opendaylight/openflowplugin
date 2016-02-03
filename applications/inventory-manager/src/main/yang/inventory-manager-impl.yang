@@ -5,6 +5,7 @@ module inventory-manager-impl {
 
     import config { prefix config; revision-date 2013-04-05; }
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-entity-ownership-service { prefix eos; }
 
     description
         "Service definition for inventory manager";
@@ -27,6 +28,15 @@ module inventory-manager-impl {
                     refine type {
                         mandatory true;
                         config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+
+            container entity-ownership-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity eos:entity-ownership-service;
                     }
                 }
             }
