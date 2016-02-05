@@ -9,6 +9,7 @@ package test.mock;
 
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
@@ -33,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalFlowServiceMock;
@@ -44,6 +46,8 @@ import static org.junit.Assert.assertEquals;
 
 public class FlowListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+
     NodeKey s1Key = new NodeKey(new NodeId("S1"));
     TableKey tableKey = new TableKey((short) 2);
 
@@ -52,7 +56,8 @@ public class FlowListenerTest extends FRMTest {
         ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig());
+                getConfig(),
+                eos);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -96,7 +101,8 @@ public class FlowListenerTest extends FRMTest {
         ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig());
+                getConfig(),
+                eos);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -141,7 +147,8 @@ public class FlowListenerTest extends FRMTest {
         ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig());
+                getConfig(),
+                eos);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);
@@ -188,7 +195,8 @@ public class FlowListenerTest extends FRMTest {
         ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig());
+                getConfig(),
+                eos);
         forwardingRulesManager.start();
 
         addFlowCapableNode(s1Key);

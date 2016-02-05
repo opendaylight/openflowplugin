@@ -109,6 +109,8 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         // node from operational data store and if it's present it calls flowNodeConnected to explictly
         // trigger the event of new node connected.
 
+        if(!provider.isNodeOwner(nodeIdent)) { return false; }
+
         if (!provider.isNodeActive(nodeIdent)) {
             if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
                 provider.getFlowNodeReconciliation().flowNodeConnected(nodeIdent);
