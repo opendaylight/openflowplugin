@@ -36,7 +36,7 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
         LOG.info("FRM module initialization.");
         final ForwardingRulesManagerConfig config = readConfig();
         final ForwardingRulesManagerImpl forwardingrulessManagerProvider =
-                new ForwardingRulesManagerImpl(getDataBrokerDependency(), getRpcRegistryDependency(), config);
+                new ForwardingRulesManagerImpl(getDataBrokerDependency(), getRpcRegistryDependency(), config, getEntityOwnershipServiceDependency());
         forwardingrulessManagerProvider.start();
         LOG.info("FRM module started successfully.");
         return new AutoCloseable() {

@@ -185,6 +185,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean force) {
         if (force || !provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
+
+            if(!provider.isNodeOwner(connectedNode)) { return; }
+
             if (provider.getConfiguration().isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
                         connectedNode.toString());

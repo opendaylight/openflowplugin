@@ -10,6 +10,7 @@ package test.mock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -18,12 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 
 public class NodeListenerTest extends FRMTest {
 
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+
     NodeKey s1Key = new NodeKey(new NodeId("S1"));
 
     @Test
@@ -31,7 +35,8 @@ public class NodeListenerTest extends FRMTest {
         try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig())) {
+                getConfig(),
+                eos)) {
             forwardingRulesManager.start();
 
             addFlowCapableNode(s1Key);

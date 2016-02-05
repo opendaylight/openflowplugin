@@ -7,9 +7,11 @@
  */
 package test.mock;
 
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
+import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.SalTableServiceMock;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -33,6 +35,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TableFeaturesListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+
 
     @Test
     public void updateFlowTest() throws Exception {
@@ -42,7 +46,8 @@ public class TableFeaturesListenerTest extends FRMTest {
         ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
-                getConfig());
+                getConfig(),
+                eos);
         forwardingRulesManager.start();
 
         addTable(tableKey, s1Key);
