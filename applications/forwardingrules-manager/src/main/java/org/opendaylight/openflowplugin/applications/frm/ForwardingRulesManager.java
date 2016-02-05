@@ -154,5 +154,12 @@ public interface ForwardingRulesManager extends AutoCloseable {
      */
     public ForwardingRulesManagerConfig getConfiguration();
 
+    /**
+     * Method checks if *this* instance of openflowplugin is owner of
+     * the given openflow node.
+     * @return True if owner, else false
+     */
+    public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident);
+
 }
 
