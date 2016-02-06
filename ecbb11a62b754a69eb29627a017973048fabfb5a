@@ -22,6 +22,30 @@
       "revId": "ecbb11a62b754a69eb29627a017973048fabfb5a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_f67dcae8",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/util/EntityOwnershipServiceMock.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-02-06T05:04:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a3d3df0_d621a6fc",
+      "range": {
+        "startLine": 9,
+        "startChar": 31,
+        "endLine": 9,
+        "endChar": 32
+      },
+      "revId": "ecbb11a62b754a69eb29627a017973048fabfb5a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
