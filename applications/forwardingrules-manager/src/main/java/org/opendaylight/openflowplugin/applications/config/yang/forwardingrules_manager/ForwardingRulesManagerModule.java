@@ -17,6 +17,7 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerModule.class);
     private static final boolean ENABLE_FGM_STALE_MARKING = false;
+    private static final int RECONCILIATION_RETRY_COUNT = 5;
 
     public ForwardingRulesManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
@@ -55,6 +56,7 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
     private ForwardingRulesManagerConfig readConfig(){
 
         final ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder fwdRulesMgrCfgBuilder = ForwardingRulesManagerConfig.builder();
+
         if (getForwardingManagerSettings() != null && getForwardingManagerSettings().getStaleMarkingEnabled() != null){
             fwdRulesMgrCfgBuilder.setStaleMarkingEnabled(getForwardingManagerSettings().getStaleMarkingEnabled());
         }
@@ -62,6 +64,17 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
             LOG.warn("Could not load XML configuration file via ConfigSubsystem! Fallback to default config value(s)");
             fwdRulesMgrCfgBuilder.setStaleMarkingEnabled(ENABLE_FGM_STALE_MARKING);
         }
+
+	if(getForwardingManagerSettings() != null && getForwardingManagerSettings().getReconciliationRetryCount()>0){
+	            fwdRulesMgrCfgBuilder.setReconciliationRetryCount(getForwardingManagerSettings().getReconciliationRetryCount());
+	}
+	else{
+	      LOG.warn("Could not load XML configuration file via ConfigSubsystem for reconciliation retry! " +
+	      "Fallback to default config value(s)");
+	      fwdRulesMgrCfgBuilder.setReconciliationRetryCount(RECONCILIATION_RETRY_COUNT);
+	     }
+
+
 
         return fwdRulesMgrCfgBuilder.build();
 

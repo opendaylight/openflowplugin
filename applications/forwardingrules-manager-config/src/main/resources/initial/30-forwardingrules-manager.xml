@@ -32,6 +32,7 @@
                     </rpc-registry>
                     <forwarding-manager-settings>
                         <stale-marking-enabled>false</stale-marking-enabled>
+                        <reconciliation-retry-count>5</reconciliation-retry-count>
                     </forwarding-manager-settings>
                     <entity-ownership-service>
                         <type xmlns:entity-ownership="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:entity-ownership-service">entity-ownership:entity-ownership-service</type>
