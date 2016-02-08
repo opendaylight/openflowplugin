@@ -76,6 +76,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
 
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
+    private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private final EntityOwnershipService entityOwnershipService;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
@@ -108,6 +109,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
         this.tableListener = new TableForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
+	flowNodeConnectorInventoryTranslatorImpl = 
+	                    new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
 
     }
@@ -250,6 +253,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesManagerConfig getConfiguration() {
         return forwardingRulesManagerConfig;
+    }
+
+    @Override
+    public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
+        return flowNodeConnectorInventoryTranslatorImpl;
     }
 
     @Override
