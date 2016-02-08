@@ -15,6 +15,13 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -61,8 +68,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * forwardingrules-manager
@@ -131,6 +136,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         /* All DataObjects for remove */
         final Set<InstanceIdentifier<?>> removeData = changeEvent.getRemovedPaths() != null
                 ? changeEvent.getRemovedPaths() : Collections.<InstanceIdentifier<?>> emptySet();
+        /* All updated DataObjects */
+        final Map<InstanceIdentifier<?>, DataObject> updateData = changeEvent.getUpdatedData() != null
+                ? changeEvent.getUpdatedData() : Collections.<InstanceIdentifier<?>, DataObject>emptyMap();
 
         for (InstanceIdentifier<?> entryKey : removeData) {
             final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
@@ -146,6 +154,22 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 flowNodeConnected(nodeIdent);
             }
         }
+
+        // FIXME: just a hack to cover DS/operational dirty start
+        // if all conventional ways failed and there is update
+        if (removeData.isEmpty() && createdData.isEmpty() && updateData.size() == 1) {
+            for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : updateData.entrySet()) {
+                // and only if this update covers top element (flow-capable-node)
+                if (FlowCapableNode.class.equals(entry.getKey().getTargetType())) {
+                    final InstanceIdentifier<FlowCapableNode> nodeIdent = entry.getKey()
+                            .firstIdentifierOf(FlowCapableNode.class);
+                    if (!nodeIdent.isWildcarded()) {
+                        // then force registration to local node cache and reconcile
+                        flowNodeConnected(nodeIdent, true);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -155,7 +179,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode) {
-        if ( ! provider.isNodeActive(connectedNode)) {
+        flowNodeConnected(connectedNode, false);
+    }
+
+    private void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean force) {
+        if (force || !provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
 
             if(!provider.isNodeOwner(connectedNode)) { return; }
