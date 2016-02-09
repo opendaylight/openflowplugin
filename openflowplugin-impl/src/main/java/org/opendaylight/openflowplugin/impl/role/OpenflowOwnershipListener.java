@@ -7,13 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
@@ -27,30 +27,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Class strictly separates {@link EntityOwnershipService} and OpenflowPlugin. So internal OpenflowPlugin
+ * implementation will stay without change for all {@link EntityOwnershipService} API changes.
+ *
  * Created by kramesha on 9/14/15.
  */
 public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowOwnershipListener.class);
 
-    private EntityOwnershipService entityOwnershipService;
-    private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
-    private Map<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
-    private final ExecutorService roleChangeExecutor = Executors.newSingleThreadExecutor();
+    public static boolean REMOVE_NODE_FROM_DS = true;
 
-    public OpenflowOwnershipListener(EntityOwnershipService entityOwnershipService) {
-        this.entityOwnershipService = entityOwnershipService;
+    private final EntityOwnershipService entityOwnershipService;
+    private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
+    private final ConcurrentMap<Entity, RoleChangeListener> roleChangeListenerMap = new ConcurrentHashMap<>();
+
+    /**
+     * Initialization method has to be call from {@link org.opendaylight.openflowplugin.api.openflow.role.RoleManager}
+     * @param entityOwnershipService
+     */
+    public OpenflowOwnershipListener(@Nonnull final EntityOwnershipService entityOwnershipService) {
+        LOG.debug("New instance of OpenflowOwnershipListener is created");
+        this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
     }
 
+    /**
+     * Initialization method is register {@link OpenflowOwnershipListener} as listener
+     * for EntityType = {@link RoleManager#ENTITY_TYPE}
+     */
     public void init() {
+        LOG.debug("OpenflowOwnershipListener is registred as EntityOwnershipListener for {} type", RoleManager.ENTITY_TYPE);
         entityOwnershipListenerRegistration = entityOwnershipService.registerListener(RoleManager.ENTITY_TYPE, this);
     }
 
     @Override
-    public void ownershipChanged(EntityOwnershipChange ownershipChange) {
-        LOG.debug("Received EntityOwnershipChange:{}", ownershipChange);
+    public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
+        Preconditions.checkArgument(ownershipChange != null);
+        final RoleChangeListener roleChangeListener = roleChangeListenerMap.get(ownershipChange.getEntity());
 
-        RoleChangeListener roleChangeListener = roleChangeListenerMap.get(ownershipChange.getEntity());
 
         if (roleChangeListener != null) {
             LOG.debug("Found local entity:{}", ownershipChange.getEntity());
@@ -63,43 +77,53 @@ public class OpenflowOwnershipListener implements EntityOwnershipListener, AutoC
                 roleChangeListener.onDeviceDisconnectedFromCluster();
 
             } else {
-                OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
-                OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
+                final OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
+                final OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
                 // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
                 roleChangeListener.onRoleChanged(oldRole, newRole);
             }
         }
     }
 
-    public void registerRoleChangeListener(final RoleChangeListener roleChangeListener) {
-        roleChangeListenerMap.put(roleChangeListener.getEntity(), roleChangeListener);
+    /**
+     * Candidate registration process doesn't send Event about actual {@link EntityOwnershipState} for
+     * Candidate. So we have to ask {@link EntityOwnershipService#getOwnershipState(Entity)} directly
+     * for every new instance. Call this method from RoleManager after candidateRegistration.
+     * @param roleChangeListener - new {@link RoleChangeListener} RoleContext
+     */
+    public void registerRoleChangeListener(@CheckForNull final RoleChangeListener roleChangeListener) {
+        LOG.debug("registerRoleChangeListener {}", roleChangeListener);
+        Preconditions.checkArgument(roleChangeListener != null);
+        Verify.verify(roleChangeListenerMap.putIfAbsent(roleChangeListener.getEntity(), roleChangeListener) == null);
 
         final Entity entity = roleChangeListener.getEntity();
-        final OpenflowOwnershipListener self = this;
 
-        Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(entity);
+        final Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(entity);
 
         if (entityOwnershipStateOptional != null && entityOwnershipStateOptional.isPresent()) {
             final EntityOwnershipState entityOwnershipState = entityOwnershipStateOptional.get();
             if (entityOwnershipState.hasOwner()) {
                 LOG.debug("An owner exist for entity {}", entity);
-                roleChangeExecutor.submit(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        if (entityOwnershipState.isOwner()) {
-                            LOG.debug("Ownership is here for entity {} becoming master", entity);
-                            roleChangeListener.onRoleChanged(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
-                        } else {
-                            LOG.debug("Ownership is NOT here for entity {} becoming alave", entity);
-                            roleChangeListener.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
-
-                        }
-
-                        return null;
-                    }
-                });
+                if (entityOwnershipState.isOwner()) {
+                    LOG.debug("Ownership is here for entity {} becoming master", entity);
+                    roleChangeListener.onRoleChanged(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER);
+                } else {
+                    LOG.debug("Ownership is NOT here for entity {} becoming alave", entity);
+                    roleChangeListener.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMESLAVE);
+                }
             }
         }
+    }
+
+    /**
+     * Unregistration process has to remove {@link RoleChangeListener} from internal map, so
+     * we will not get anymore Events for this listener.
+     * @param roleChangeListener - RoleContext
+     */
+    public void unregisterRoleChangeListener(@CheckForNull final RoleChangeListener roleChangeListener) {
+        LOG.debug("unregisterroleChangeListener {}", roleChangeListener);
+        Preconditions.checkArgument(roleChangeListener != null);
+        roleChangeListenerMap.remove(roleChangeListener.getEntity(), roleChangeListener);
     }
 
     @Override
