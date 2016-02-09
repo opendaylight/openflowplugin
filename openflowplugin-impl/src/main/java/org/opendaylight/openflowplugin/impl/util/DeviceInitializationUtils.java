@@ -98,7 +98,7 @@ public class DeviceInitializationUtils {
      * @param switchFeaturesMandatory
      * @return future - recommended to have blocking call for this future
      */
-    public static Future<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
+    public static ListenableFuture<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
@@ -165,7 +165,7 @@ public class DeviceInitializationUtils {
                 LOG.trace("Device capabilities gathering future failed.");
                 LOG.trace("more info in exploration failure..", t);
                 LOG.debug("All init data for node {} was not submited correctly - connection has to go down.", deviceState.getNodeId());
-                returnFuture.cancel(true);
+                returnFuture.setException(t);
             }
         });
         return returnFuture;
