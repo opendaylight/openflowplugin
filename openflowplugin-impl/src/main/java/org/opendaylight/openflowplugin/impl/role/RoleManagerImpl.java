@@ -8,20 +8,15 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import javax.annotation.CheckForNull;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -82,7 +77,8 @@ public class RoleManagerImpl implements RoleManager {
         final RoleContext roleContext = new RoleContextImpl(deviceContext, rpcProviderRegistry, entityOwnershipService, openflowOwnershipListener);
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(roleContext);
-        Verify.verify(contexts.putIfAbsent(deviceContext, roleContext) == null);
+        Verify.verify(contexts.putIfAbsent(deviceContext, roleContext) == null,
+                "RoleCtx for master Node {} is still not close.", deviceContext.getDeviceState().getNodeId());
         OfpRole role = null;
         try {
             role = roleContext.initialization().get(5, TimeUnit.SECONDS);
@@ -90,7 +86,7 @@ public class RoleManagerImpl implements RoleManager {
             LOG.warn("Unexpected exception by DeviceConection {}. Connection has to close.", deviceContext.getDeviceState().getNodeId(), e);
             final Optional<EntityOwnershipState> entityOwnershipStateOptional = entityOwnershipService.getOwnershipState(roleContext.getEntity());
             if (entityOwnershipStateOptional.isPresent()) {
-                // TODO : check again who will call RoleCtx.onRoleChanged
+                // TODO : check again who will call RoleCtx.onRoleChanged but who will call DeviceCtx#onClusterRoleChange
                 role = entityOwnershipStateOptional.get().isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
             } else {
                 try {
