@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper, AutoCloseable {
+public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
@@ -70,7 +70,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
-    private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
@@ -93,7 +92,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
-        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
 
@@ -151,20 +149,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         deviceContext.addDeviceContextClosedHandler(this);
         Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
-
-        // FIXME : txChainManager has to be propagate by Cluster MasterShip Election (remove this couple of lines)
-        // We would like to crete/register TxChainManager after
-        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
-                .provideTransactionChainManager(connectionContext);
-        if (txChainManagerReg.ownedByInvokingConnectionContext()) {
-            //this actually is new registration for currently processed connection context
-            ((DeviceContextImpl) deviceContext).setTransactionChainManager(txChainManagerReg.getTransactionChainManager());
-        } else {
-            LOG.info("In deviceConnected {}, ownedByInvokingConnectionContext is false", connectionContext.getNodeId());
-            deviceContext.close();
-            return;
-        }
-        // --- remove end ----
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);

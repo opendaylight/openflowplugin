@@ -92,13 +92,6 @@ public interface DeviceContext extends AutoCloseable,
     void onClusterRoleChange(@CheckForNull OfpRole role);
 
     /**
-     * Same as {@link DeviceContext#onClusterRoleChange(OfpRole)} but it should be call for new
-     * connection initialization only, because submit transaction is not active in this time.
-     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
-     */
-    void onInitClusterRoleChange(@CheckForNull final OfpRole role);
-
-    /**
      * Method creates put operation using provided data in underlying transaction chain.
      */
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
@@ -215,9 +208,7 @@ public interface DeviceContext extends AutoCloseable,
 
     RpcContext getRpcContext();
 
-    /**
-     * Callback when confirmed that device is disconnected from cluster
-      */
-    void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS);
+    @Override
+    void close();
 }
 

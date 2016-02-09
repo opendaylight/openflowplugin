@@ -11,20 +11,21 @@ import javax.annotation.Nullable;
 import java.util.concurrent.Future;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -45,70 +46,32 @@ public class RoleContextImpl implements RoleContext {
 
     private final EntityOwnershipService entityOwnershipService;
     private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
-    private final RpcProviderRegistry rpcProviderRegistry;
     private final DeviceContext deviceContext;
     private final Entity entity;
-    private final OpenflowOwnershipListener openflowOwnershipListener;
     private SalRoleService salRoleService;
-    private FutureCallback<Boolean> roleChangeCallback;
 
     private final SettableFuture<OfpRole> initRoleChangeFuture;
 
-    public RoleContextImpl(final DeviceContext deviceContext, final RpcProviderRegistry rpcProviderRegistry,
-                           final EntityOwnershipService entityOwnershipService, final OpenflowOwnershipListener openflowOwnershipListener) {
-        this.entityOwnershipService = entityOwnershipService;
-        this.rpcProviderRegistry = rpcProviderRegistry;
-        this.deviceContext = deviceContext;
-        entity = new Entity(RoleManager.ENTITY_TYPE, deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
+    public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService, final Entity entity) {
+        this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
+        this.deviceContext = Preconditions.checkNotNull(deviceContext);
+        this.entity = Preconditions.checkNotNull(entity);
 
-        this.openflowOwnershipListener =  openflowOwnershipListener;
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
-
         initRoleChangeFuture = SettableFuture.create();
     }
 
     @Override
-    public Future<OfpRole> initialization() throws CandidateAlreadyRegisteredException {
+    public ListenableFuture<OfpRole> initialization() {
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-        openflowOwnershipListener.registerRoleChangeListener(this);
-        entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-        LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
-                .getPrimaryConnectionContext().getNodeId().getValue());
-        return initRoleChangeFuture;
-    }
-
-    /**
-     * @deprecated not used but we are able to add here extra call for get EntityOwnershipState from
-     *             OpenflowOwnershipListener instead call it directly from RoleManager (here could be
-     *             add call salRoleService.setRole(setRoleInput);
-     */
-    @Override
-    @Deprecated
-    public void facilitateRoleChange(final FutureCallback<Boolean> roleChangeCallback) {
-        this.roleChangeCallback = roleChangeCallback;
-        if (!isDeviceConnected()) {
-            throw new IllegalStateException(
-                    "Device is disconnected. Giving up on Role Change:" + deviceContext.getDeviceState().getNodeId());
-        }
-    }
-
-    /**
-     * @deprecated not used
-     */
-    @Deprecated
-    private void requestOpenflowEntityOwnership() {
-
-        LOG.debug("requestOpenflowEntityOwnership for entity {}", entity);
         try {
             entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-
-            // The role change listener must be registered after registering a candidate
-            openflowOwnershipListener.registerRoleChangeListener(this);
-            LOG.info("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
+            LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
+                    .getPrimaryConnectionContext().getNodeId().getValue());
         } catch (final CandidateAlreadyRegisteredException e) {
-            // we can log and move for this error, as listener is present and role changes will be served.
-            LOG.error("Candidate - Entity already registered with Openflow candidate ", entity, e );
+            completeInitRoleChangeFuture(null, e);
         }
+        return initRoleChangeFuture;
     }
 
     @Override
@@ -119,16 +82,8 @@ public class RoleContextImpl implements RoleContext {
             // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
             LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
                     deviceContext.getPrimaryConnectionContext().getNodeId());
-            if (!initRoleChangeFuture.isDone()) {
-                LOG.debug("RoleChange is not valid for initialization Entity {} anymore - Device is disconnected", entity);
-                initRoleChangeFuture.cancel(true);
-            }
+            completeInitRoleChangeFuture(null, null);
             return;
-        }
-
-        if (!initRoleChangeFuture.isDone()) {
-            LOG.debug("Initialization Role for entity {} is chosed {}", entity, newRole);
-            initRoleChangeFuture.set(newRole);
         }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
@@ -147,24 +102,43 @@ public class RoleContextImpl implements RoleContext {
                 LOG.debug("Rolechange {} successful made on switch :{}", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId());
                 deviceContext.getDeviceState().setRole(newRole);
-                if (roleChangeCallback != null) {
-                    roleChangeCallback.onSuccess(true);
-                }
+                deviceContext.onClusterRoleChange(newRole);
+                completeInitRoleChangeFuture(newRole, null);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("Error in setRole {} for device {} ", newRole,
                         deviceContext.getPrimaryConnectionContext().getNodeId(), throwable);
-                if (roleChangeCallback != null) {
-                    roleChangeCallback.onFailure(throwable);
-                }
+                completeInitRoleChangeFuture(null, throwable);
             }
         });
     }
 
+    void completeInitRoleChangeFuture(@Nullable final OfpRole role, @Nullable final Throwable throwable) {
+        if (initRoleChangeFuture.isDone()) {
+            return;
+        }
+        if (!isDeviceConnected()) {
+            LOG.debug("Device {} is disconnected from this node. Hence not attempting a role change.", deviceContext
+                    .getPrimaryConnectionContext().getNodeId());
+            initRoleChangeFuture.cancel(true);
+            return;
+        }
+        if (throwable != null) {
+            LOG.warn("Connection Role change fail for entity {}", entity);
+            initRoleChangeFuture.setException(throwable);
+        } else if (role != null) {
+            LOG.debug("Initialization Role for entity {} is chosed {}", entity, role);
+            initRoleChangeFuture.set(role);
+        } else {
+            LOG.debug("Unexpected initialization Role Change close for entity {}", entity);
+            initRoleChangeFuture.cancel(true);
+        }
+    }
+
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (entityOwnershipCandidateRegistration != null) {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
@@ -172,24 +146,8 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        try {
-            LOG.debug("onDeviceContextClosed called");
-            this.close();
-        } catch (final Exception e) {
-            LOG.error("Exception in onDeviceContextClosed of RoleContext", e);
-        }
-    }
-
-    @Override
     public Entity getEntity() {
         return entity;
-    }
-
-    @Override
-    public void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS) {
-        LOG.debug("Called onDeviceDisconnectedFromCluster in DeviceContext for entity:{}", entity);
-        deviceContext.onDeviceDisconnectedFromCluster(removeNodeFromDS);
     }
 
     private boolean isDeviceConnected() {
@@ -209,7 +167,12 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @VisibleForTesting
-    public void setSalRoleService(final SalRoleService salRoleService) {
+    void setSalRoleService(final SalRoleService salRoleService) {
         this.salRoleService = salRoleService;
+    }
+
+    @Override
+    public DeviceState getDeviceState() {
+        return deviceContext.getDeviceState();
     }
 }
