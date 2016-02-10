@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -657,6 +658,55 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
         Assert.assertEquals("Wrong tunnel id", new BigInteger(1, new byte[]{1, 2, 3, 4, 5, 6, 7, 8}),
                 builtMatch.getTunnel().getTunnelId());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+    @Test
+    public void testWithMatchEntryWithArbitraryMasks() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
+        final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
+        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 255, 0});
+        ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
+        final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
+        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 240, 0});
+        ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv4 src address", "10.1.1.1", ipv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv4 dst address", "10.0.1.1", ipv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask().getValue());
     }
 
     /**
