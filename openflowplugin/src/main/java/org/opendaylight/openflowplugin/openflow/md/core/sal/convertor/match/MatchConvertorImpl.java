@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -68,14 +69,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -373,10 +367,65 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
+    /**
+     * @param matchEntryList
+     * @param layer3Match
+     */
     private void layer3Match(List<MatchEntry> matchEntryList,
-            Layer3Match layer3Match) {
+                             Layer3Match layer3Match) {
         if (layer3Match != null) {
-            if (layer3Match instanceof Ipv4Match) {
+            if(layer3Match instanceof Ipv4MatchArbitraryBitMask) {
+                Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMaskFields = (Ipv4MatchArbitraryBitMask) layer3Match;
+                if (ipv4MatchArbitraryBitMaskFields.getIpv4SourceAddressNoMask() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+
+                    Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
+                    Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
+
+                    ipv4SrcBuilder.setIpv4Address(ipv4MatchArbitraryBitMaskFields.getIpv4SourceAddressNoMask());
+                    DottedQuad sourceArbitrarySubNetMask = ipv4MatchArbitraryBitMaskFields.getIpv4SourceArbitraryBitmask();
+
+                    boolean hasMask = false;
+                    if (sourceArbitrarySubNetMask != null) {
+                        byte[] maskByteArray = IpConversionUtil.convertArbitraryMaskToByteArray(sourceArbitrarySubNetMask);
+                        if (maskByteArray != null) {
+                            ipv4SrcBuilder.setMask(maskByteArray);
+                            hasMask = true;
+                        }
+                    }
+                    matchEntryBuilder.setHasMask(hasMask);
+                    ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+                if (ipv4MatchArbitraryBitMaskFields.getIpv4DestinationAddressNoMask() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
+
+                    Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
+                    Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
+
+                    ipv4DstBuilder.setIpv4Address(ipv4MatchArbitraryBitMaskFields.getIpv4DestinationAddressNoMask());
+                    DottedQuad destArbitrarySubNetMask = ipv4MatchArbitraryBitMaskFields.getIpv4DestinationArbitraryBitmask();
+
+                    boolean hasMask = false;
+                    if (destArbitrarySubNetMask != null) {
+                        byte[] maskByteArray = IpConversionUtil.convertArbitraryMaskToByteArray(destArbitrarySubNetMask);
+                        if (maskByteArray != null) {
+                            ipv4DstBuilder.setMask(maskByteArray);
+                            hasMask = true;
+                        }
+                    }
+                    matchEntryBuilder.setHasMask(hasMask);
+                    ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+            }
+            if(layer3Match instanceof Ipv4Match){
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
                 if (ipv4Match.getIpv4Source() != null) {
                     Ipv4Prefix ipv4Prefix = ipv4Match.getIpv4Source();
@@ -655,7 +704,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             }
         }
     }
-
 
     private void icmpv6Match(List<MatchEntry> matchEntryList,
             Icmpv6Match icmpv6Match) {
@@ -1097,6 +1145,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         Icmpv4MatchBuilder icmpv4MatchBuilder = new Icmpv4MatchBuilder();
         Icmpv6MatchBuilder icmpv6MatchBuilder = new Icmpv6MatchBuilder();
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+        Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = new Ipv4MatchArbitraryBitMaskBuilder();
         ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
         Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
@@ -1268,17 +1317,33 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.src._case.Ipv4Src ipv4Address = ((Ipv4SrcCase) ofMatch.getMatchEntryValue()).getIpv4Src();
                 if (ipv4Address != null) {
                     byte[] mask = ipv4Address.getMask();
-                    String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
-                    setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, ipv4PrefixStr);
-                    matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+                    if (mask != null && IpConversionUtil.isArbitraryBitMask(mask)) {
+                        DottedQuad dottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String Ipv4Address = ipv4Address.getIpv4Address().getValue();
+                        setIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch, dottedQuadMask, Ipv4Address);
+                        matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+                    }
+                    else {
+                        String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
+                        setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, ipv4PrefixStr);
+                        matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+                    }
                 }
             } else if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.dst._case.Ipv4Dst ipv4Address = ((Ipv4DstCase) ofMatch.getMatchEntryValue()).getIpv4Dst();
                 if (ipv4Address != null) {
                     byte[] mask = ipv4Address.getMask();
-                    String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
-                    setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, ipv4PrefixStr);
-                    matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+                    if(mask != null && IpConversionUtil.isArbitraryBitMask(mask)) {
+                        DottedQuad dottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String Ipv4Address = ipv4Address.getIpv4Address().getValue();
+                        setIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch, dottedQuadMask, Ipv4Address);
+                        matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+                    }
+                    else {
+                        String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
+                        setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, ipv4PrefixStr);
+                        matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+                    }
                 }
             } else if (ofMatch.getOxmMatchField().equals(TunnelIpv4Dst.class)
                     || ofMatch.getOxmMatchField().equals(TunnelIpv4Src.class)) {
@@ -1505,6 +1570,27 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
         if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
             ipv4MatchBuilder.setIpv4Destination(ipv4Prefix);
+        }
+    }
+
+    private static void setIpv4MatchArbitraryBitMaskBuilderFields(final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder, final MatchEntry ofMatch, final DottedQuad mask, final String ipv4AddressStr) {
+        Ipv4Address ipv4Address;
+        DottedQuad dottedQuad;
+        if (mask != null) {
+            dottedQuad = mask;
+            if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
+                ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(dottedQuad);
+            }
+            if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
+                ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(dottedQuad);
+            }
+        }
+        ipv4Address = new Ipv4Address(ipv4AddressStr);
+        if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
+            ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(ipv4Address);
+        }
+        if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
+            ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(ipv4Address);
         }
     }
 
@@ -1837,6 +1923,5 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         setField.fieldsFrom(match.build());
         return setField.build();
     }
-
 
 }
