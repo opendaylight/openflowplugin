@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -25,11 +27,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 5.3.2015.
  * v6 routines added by Anton Ivanov on 14.6.2015
+ * Arbitrary masks by sai.marapareddy@gmail.com
  */
 public final class IpConversionUtil {
 
@@ -40,6 +44,7 @@ public final class IpConversionUtil {
     private static final int INT16SZ = 2;
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
+    private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -119,6 +124,16 @@ public final class IpConversionUtil {
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask){
         return createPrefix(ipv4Address, String.valueOf(countBits(bytemask)));
+    }
+
+    public static DottedQuad createArbitraryBitMask(final byte [] bytemask)  {
+        DottedQuad dottedQuad = new DottedQuad(DEFAULT_ARBITRARY_BIT_MASK);
+        try {
+            dottedQuad = new DottedQuad(InetAddress.getByAddress(bytemask).getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return dottedQuad;
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address){
@@ -603,5 +618,54 @@ public final class IpConversionUtil {
             netmask += Integer.bitCount(UnsignedBytes.toInt(b));
         }
         return netmask;
+    }
+
+    public static final byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
+        String maskValue;
+        if(mask.getValue() != null && mask != null){
+           maskValue  = mask.getValue();
+        }
+        else maskValue = DEFAULT_ARBITRARY_BIT_MASK;
+        InetAddress maskInIpFormat = null;
+        try {
+            maskInIpFormat = InetAddress.getByName(maskValue);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        byte[] bytes = maskInIpFormat.getAddress();
+        return bytes;
+    }
+
+    public static boolean isMaskArbitraryBitMask(byte[] byteMask) {
+        if (byteMask == null) {
+            return false;
+        }
+        else {
+            ArrayList<Integer> integerMaskArrayList = new ArrayList<Integer>();
+            String maskInBits;
+            // converting byte array to bits
+            maskInBits = new BigInteger(1, byteMask).toString(2);
+            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+            for(String string:stringMaskArrayList){
+                integerMaskArrayList.add(Integer.parseInt(string));
+            }
+            return checkArbitraryBitMask(integerMaskArrayList);
+        }
+    }
+
+    private static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
+        // checks 0*1* case - Leading zeros in arrayList are truncated
+        if(arrayList.size()>0 && arrayList.size()<32) {
+            return true;
+        }
+        //checks 1*0*1 case
+        else {
+            for(int i=0; i<arrayList.size()-1;i++) {
+                if(arrayList.get(i) ==0 && arrayList.get(i+1) == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
