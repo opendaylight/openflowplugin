@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
@@ -186,15 +189,46 @@ public class MatchComparatorHelperTest {
     public void layer3MatchEqualsTest() {
         final Ipv4MatchBuilder statsBuilder = new Ipv4MatchBuilder();
         final Ipv4MatchBuilder storedBuilder = new Ipv4MatchBuilder();
-
         assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
-
         statsBuilder.setIpv4Destination(new Ipv4Prefix("192.168.1.1/30"));
         storedBuilder.setIpv4Destination(new Ipv4Prefix("191.168.1.1/30"));
         assertEquals(false, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
-
         assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
         assertEquals(true,
                 MatchComparatorHelper.layer3MatchEquals(new ArpMatchBuilder().build(), new ArpMatchBuilder().build()));
     }
+
+    @Test
+    public void layer3MatchEqualsIpv4ArbitraryMaskTest(){
+        final Ipv4MatchBuilder statsBuilder = new Ipv4MatchBuilder();
+        final Ipv4MatchArbitraryBitMaskBuilder storedBuilder = new Ipv4MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv4Destination(new Ipv4Prefix("192.168.1.1/24"));
+        storedBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address("192.168.1.1"));
+        storedBuilder.setIpv4DestinationArbitraryBitMask(new DottedQuad("255.255.255.0"));
+        statsBuilder.setIpv4Source(new Ipv4Prefix("192.168.1.1/24"));
+        storedBuilder.setIpv4SourceAddressNoMask(new Ipv4Address("192.168.1.1"));
+        storedBuilder.setIpv4SourceArbitraryBitMask(new DottedQuad("255.255.255.0"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
+        assertEquals(true,
+                MatchComparatorHelper.layer3MatchEquals(new ArpMatchBuilder().build(), new ArpMatchBuilder().build()));
+
+    }
+
+    @Test
+    public void layer3MatchEqualsIpv4ArbitraryEmptyBitMaskTest(){
+        final Ipv4MatchBuilder statsBuilder = new Ipv4MatchBuilder();
+        final Ipv4MatchArbitraryBitMaskBuilder storedBuilder = new Ipv4MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv4Destination(new Ipv4Prefix("192.168.1.1/32"));
+        storedBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address("192.168.1.1"));
+        statsBuilder.setIpv4Source(new Ipv4Prefix("192.168.1.1/32"));
+        storedBuilder.setIpv4SourceAddressNoMask(new Ipv4Address("192.168.1.1"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
+        assertEquals(true,
+                MatchComparatorHelper.layer3MatchEquals(new ArpMatchBuilder().build(), new ArpMatchBuilder().build()));
+    }
+
 }

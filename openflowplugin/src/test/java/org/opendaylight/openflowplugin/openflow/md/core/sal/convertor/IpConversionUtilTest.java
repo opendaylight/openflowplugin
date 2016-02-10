@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,19 @@ public class IpConversionUtilTest {
         for (int i = 0; i < maskInputs.length; i++) {
             int mask = IpConversionUtil.countBits(maskInputs[i]);
             Assert.assertEquals(maskOutputs[i], mask);
+        }
+    }
+
+    @Test
+    public void convertArbitraryMaskToByteArrayTest() {
+        int value = 0xffffffff;
+        byte[] bytes = new byte[]{
+                (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
+        byte[] maskBytes;
+        maskBytes = IpConversionUtil.convertArbitraryMaskToByteArray(new DottedQuad("255.255.255.255"));
+        for(int i=0; i<bytes.length;i++){
+            int mask = maskBytes[i];
+            Assert.assertEquals(bytes[i],mask);
         }
     }
 }
