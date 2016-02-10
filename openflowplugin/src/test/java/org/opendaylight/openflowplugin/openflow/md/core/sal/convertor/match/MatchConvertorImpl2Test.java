@@ -12,13 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -41,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
@@ -334,6 +331,54 @@ public class MatchConvertorImpl2Test {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
         Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     */
+    @Test
+    public void testIpv4MatchArbitraryBitMaskwithNoMask(){
+        MatchBuilder builder = new MatchBuilder();
+        Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder= new Ipv4MatchArbitraryBitMaskBuilder();
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask( new Ipv4Address("10.2.2.2"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask( new Ipv4Address("10.1.1.1"));
+        builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+        Match match = builder.build();
+
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        Assert.assertEquals("Wrong entries size", 2, entries.size());
+
+        MatchEntry entry = entries.get(0);
+        checkEntryHeader(entry,Ipv4Src.class,false);
+        Assert.assertEquals("wrong Ipv4Address source", "10.2.2.2",((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getIpv4Address().getValue());
+        entry = entries.get(1);
+        checkEntryHeader(entry,Ipv4Dst.class,false);
+        Assert.assertEquals("wrong Ipv4Address destination", "10.1.1.1",((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     */
+    @Test
+    public void testIpv4MatchArbitraryBitMaskwithMask(){
+        MatchBuilder builder = new MatchBuilder();
+        Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder= new Ipv4MatchArbitraryBitMaskBuilder();
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask( new Ipv4Address("10.2.2.2"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitMask(new DottedQuad("0.0.255.0"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask( new Ipv4Address("10.1.1.1"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitMask(new DottedQuad("0.240.0.0"));
+        builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+        Match match = builder.build();
+
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        Assert.assertEquals("Wrong entries size", 2, entries.size());
+
+        MatchEntry entry = entries.get(0);
+        checkEntryHeader(entry,Ipv4Src.class,true);
+        Assert.assertEquals("wrong Ipv4Address source", "10.2.2.2",((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getIpv4Address().getValue());
+        entry = entries.get(1);
+        checkEntryHeader(entry,Ipv4Dst.class,true);
+        Assert.assertEquals("wrong Ipv4Adress destination", "10.1.1.1",((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
     }
 
     /**
