@@ -92,7 +92,11 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
                         op = null;
                     }
                 } while (op != null);
-                submitOperations(opsToApply);
+                try {
+                        submitOperations(opsToApply);
+                    } catch (Exception e) {
+                    LOG.warn("Processing exception while submitOperations :", e);
+	        }
             }
         } catch (final InterruptedException e) {
             LOG.info("Processing interrupted, terminating", e);
