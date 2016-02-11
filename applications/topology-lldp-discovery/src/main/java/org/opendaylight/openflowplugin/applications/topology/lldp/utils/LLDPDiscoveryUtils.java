@@ -18,6 +18,7 @@ import org.opendaylight.controller.liblldp.NetUtils;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
+import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -127,7 +128,14 @@ public class LLDPDiscoveryUtils {
      * @throws NoSuchAlgorithmException
      */
     public static byte[] getValueForLLDPPacketIntegrityEnsuring(final NodeConnectorId nodeConnectorId) throws NoSuchAlgorithmException {
-        final String pureValue = nodeConnectorId+ManagementFactory.getRuntimeMXBean().getName();
+        String finalKey;
+        if(LLDPActivator.getLldpSecureKey() !=null && !LLDPActivator.getLldpSecureKey().isEmpty()) {
+            finalKey = LLDPActivator.getLldpSecureKey();
+        } else {
+            finalKey = ManagementFactory.getRuntimeMXBean().getName();
+        }
+        final String pureValue = nodeConnectorId + finalKey;
+
         final byte[] pureBytes = pureValue.getBytes();
         HashFunction hashFunction = Hashing.md5();
         Hasher hasher = hashFunction.newHasher();

@@ -18,7 +18,7 @@ public class TopologyLldpDiscoveryImplModule extends org.opendaylight.yang.gen.v
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        LLDPActivator provider = new LLDPActivator();
+        LLDPActivator provider = new LLDPActivator(getLldpSecureKey());
         getBrokerDependency().registerProvider(provider);
         return provider;
     }

@@ -26,6 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
             <name>binding-osgi-broker</name>
           </broker>
+          <lldp-secure-key>aa9251f8-c7c0-4322-b8d6-c3a84593bda3</lldp-secure-key>
         </module>
       </modules>
     </data>

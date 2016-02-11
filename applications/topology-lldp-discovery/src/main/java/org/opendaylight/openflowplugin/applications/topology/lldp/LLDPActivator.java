@@ -17,6 +17,11 @@ import org.slf4j.LoggerFactory;
 public class LLDPActivator implements BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPActivator.class);
     private static LLDPDiscoveryProvider provider = new LLDPDiscoveryProvider();
+    private static String lldpSecureKey;
+
+    public LLDPActivator(String secureKey) {
+        lldpSecureKey = secureKey;
+    }
 
     public void onSessionInitiated(final ProviderContext session) {
         DataProviderService dataService = session.<DataProviderService>getSALService(DataProviderService.class);
@@ -35,5 +40,9 @@ public class LLDPActivator implements BindingAwareProvider, AutoCloseable {
                 LOG.warn("Exception when closing down topology-lldp-discovery",e);
             }
         }
+    }
+
+    public static String getLldpSecureKey() {
+        return lldpSecureKey;
     }
 }
