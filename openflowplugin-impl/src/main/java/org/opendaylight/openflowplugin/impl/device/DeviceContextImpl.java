@@ -56,6 +56,7 @@ import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImp
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -200,6 +201,10 @@ public class DeviceContextImpl implements DeviceContext {
     public void onClusterRoleChange(@CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
+        if (rpcContext != null) {
+            // TODO : implement interface for onClusterRoleChange method
+            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
+        }
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
         } else if (OfpRole.BECOMESLAVE.equals(role)) {

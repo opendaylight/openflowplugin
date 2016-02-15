@@ -7,19 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RpcManagerImpl implements RpcManager {
 
@@ -42,8 +40,8 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
-        NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        OfpRole ofpRole = deviceContext.getDeviceState().getRole();
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
 
@@ -59,13 +57,13 @@ public class RpcManagerImpl implements RpcManager {
             LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
             try {
                 MdSalRegistratorUtils.unregisterServices(rpcContext);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.error("Exception while unregistering rpcs for slave role for node:{}. But continuing.", nodeId, e);
             }
 
         } else {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
-            MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
+            MdSalRegistratorUtils.registerServices(rpcContext, deviceContext, ofpRole);
         }
 
         deviceContext.addDeviceContextClosedHandler(this);
@@ -81,13 +79,13 @@ public class RpcManagerImpl implements RpcManager {
 
 
     @Override
-    public void onDeviceContextClosed(DeviceContext deviceContext) {
-        RpcContext removedContext = contexts.remove(deviceContext);
+    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+        final RpcContext removedContext = contexts.remove(deviceContext);
         if (removedContext != null) {
             try {
                 LOG.info("Unregistering rpcs for device context closure");
                 removedContext.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.error("Exception while unregistering rpcs onDeviceContextClosed handler for node:{}. But continuing.",
                         deviceContext.getDeviceState().getNodeId(), e);
             }
