@@ -137,6 +137,7 @@ public class DeviceContextImpl implements DeviceContext {
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
         primaryConnectionContext.setDeviceDisconnectedHandler(DeviceContextImpl.this);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -377,22 +378,27 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     private synchronized void tearDown() {
-        deviceState.setValid(false);
+        if (deviceState.isValid()) {
+            deviceState.setValid(false);
 
-        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
-            connectionContext.closeConnection(false);
+            for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
+                connectionContext.closeConnection(false);
+            }
+
+            LOG.info("Closing transaction chain manager without cleaning inventory operational");
+            transactionChainManager.close();
+
+            deviceGroupRegistry.close();
+            deviceFlowRegistry.close();
+            deviceMeterRegistry.close();
+
+            final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+            Collections.reverse(reversedCloseHandlers);
+            for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
+                deviceContextClosedHandler.onDeviceContextClosed(this);
+            }
+            closeHandlers.clear();
         }
-
-        deviceGroupRegistry.close();
-        deviceFlowRegistry.close();
-        deviceMeterRegistry.close();
-
-        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
-        Collections.reverse(reversedCloseHandlers);
-        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
-            deviceContextClosedHandler.onDeviceContextClosed(this);
-        }
-        closeHandlers.clear();
     }
 
     /**
@@ -400,7 +406,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS) {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure(removeNodeFromDS);
         if (removeNodeFromDS) {
             // FIXME : it has to be hooked for some another part of code
             final WriteTransaction write = dataBroker.newWriteOnlyTransaction();

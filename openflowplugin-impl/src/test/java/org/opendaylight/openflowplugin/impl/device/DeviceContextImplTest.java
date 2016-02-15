@@ -108,7 +108,8 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        txChainManager = new TransactionChainManager(dataBroker, nodeKeyIdent, registration);
+        Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
