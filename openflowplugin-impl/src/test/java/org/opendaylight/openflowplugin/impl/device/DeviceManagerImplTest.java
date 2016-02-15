@@ -77,10 +77,11 @@ public class DeviceManagerImplTest {
 
     /**
      * Test method for {@link org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl#deviceConnected(org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext)}.
+     * @throws Exception 
      */
     @Test
     @Ignore // FIXME : fix the test ASAP
-    public void testDeviceConnected() {
+    public void testDeviceConnected() throws Exception {
         deviceManager.deviceConnected(connectionContext);
 
         final ArgumentCaptor<MultipartRequestInput> mpInputCaptor = ArgumentCaptor.forClass(MultipartRequestInput.class);
