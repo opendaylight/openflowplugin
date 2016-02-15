@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import com.google.common.base.Preconditions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-
-import com.google.common.base.Preconditions;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -35,9 +34,10 @@ public class RpcContextImpl implements RpcContext {
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
 
     public RpcContextImpl(final MessageSpy messageSpy, final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext, final int maxRequests) {
-        this.messageSpy = messageSpy;
-        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
+        this.messageSpy = Preconditions.checkNotNull(messageSpy);
+        deviceContext.setRpcContext(this);
         tracker = new Semaphore(maxRequests, true);
     }
 
@@ -62,9 +62,9 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <S extends RpcService> S lookupRpcService(Class<S> serviceClass) {
+    public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
         S service = null;
-        for (RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations.values()) {
+        for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations.values()) {
             final RpcService rpcService = rpcRegistration.getInstance();
             if (serviceClass.isInstance(rpcService)) {
                 service = (S) rpcService;
