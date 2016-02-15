@@ -16,6 +16,6 @@ public interface RoleChangeListener extends AutoCloseable {
 
     Entity getEntity();
 
-    void onDeviceDisconnectedFromCluster();
+    void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS);
 
 }
