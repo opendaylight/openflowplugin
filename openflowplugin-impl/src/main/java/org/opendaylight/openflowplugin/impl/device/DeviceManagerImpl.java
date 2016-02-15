@@ -67,7 +67,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
-    private final DeviceTransactionChainManagerProvider deviceTransactionChainManagerProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
@@ -89,7 +88,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
-        deviceTransactionChainManagerProvider = new DeviceTransactionChainManagerProvider(dataBroker);
     }
 
 
