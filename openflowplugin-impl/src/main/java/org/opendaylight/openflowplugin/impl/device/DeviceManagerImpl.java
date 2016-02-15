@@ -136,31 +136,14 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
-
-        final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler = new ReadyForNewTransactionChainHandlerImpl(this, connectionContext);
-        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration transactionChainManagerRegistration = deviceTransactionChainManagerProvider.provideTransactionChainManager(connectionContext);
-        final TransactionChainManager transactionChainManager = transactionChainManagerRegistration.getTransactionChainManager();
-
-        if (transactionChainManagerRegistration.ownedByInvokingConnectionContext()) {
-            //this actually is new registration for currently processed connection context
-            initializeDeviceContext(connectionContext, transactionChainManager);
-        }
-        else if (TransactionChainManager.TransactionChainManagerStatus.WORKING.equals(transactionChainManager.getTransactionChainManagerStatus())) {
-            //this means there already exists connection described by same NodeId and it is not current connection contexts' registration
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false and  TransactionChainManagerStatus.WORKING. Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
-        }
-        else if (!transactionChainManager.attemptToRegisterHandler(readyForNewTransactionChainHandler)) {
-            //previous connection is shutting down, we will try to register handler listening on new transaction chain ready
-            // new connection wil be closed if handler registration fails
-            LOG.info("In deviceConnected, ownedByInvokingConnectionContext is false, TransactionChainManagerStatus is not shutting down or readyForNewTransactionChainHandler is null. " +
-                    "Closing connection to device to start again.");
-            connectionContext.closeConnection(false);
+        try {
+            initializeDeviceContext(connectionContext);
+        } catch (Exception e) {
+            LOG.warn("Exception during initialization phase.", e);
         }
     }
 
-    private void initializeDeviceContext(final ConnectionContext connectionContext,
-            final TransactionChainManager transactionChainManager) {
+    private void initializeDeviceContext(final ConnectionContext connectionContext) throws Exception{
         LOG.info("Initializing New Connection DeviceContext for node:{}",  connectionContext.getNodeId());
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
@@ -180,8 +163,20 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), nodeId);
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, transactionChainManager);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
+
         deviceContext.addDeviceContextClosedHandler(this);
+        // We would like to crete/register TxChainManager after
+        final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
+                .provideTransactionChainManager(connectionContext);
+        if (txChainManagerReg.ownedByInvokingConnectionContext()) {
+            //this actually is new registration for currently processed connection context
+            ((DeviceContextImpl) deviceContext).setTransactionChainManager(txChainManagerReg.getTransactionChainManager());
+        } else {
+            LOG.info("In deviceConnected {}, ownedByInvokingConnectionContext is false", connectionContext.getNodeId());
+            deviceContext.close();
+            return;
+        }
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
 
