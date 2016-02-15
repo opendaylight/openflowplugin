@@ -15,8 +15,11 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -233,6 +236,18 @@ public class RoleContextImpl implements RoleContext {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
                     .setNode(new NodeRef(deviceContext.getDeviceState().getNodeInstanceIdentifier())).build();
             setRoleOutputFuture = salRoleService.setRole(setRoleInput);
+            final TimerTask timerTask = new TimerTask() {
+
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    if (!setRoleOutputFuture.isDone()) {
+                        LOG.info("New Role {} was not propagated to device {} during 10 sec. Close connection immediately.",
+                                newRole, deviceContext.getDeviceState().getNodeId());
+                        deviceContext.close();
+                    }
+                }
+            };
+            deviceContext.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
     }
