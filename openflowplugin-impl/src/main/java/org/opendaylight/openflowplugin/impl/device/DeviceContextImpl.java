@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -30,9 +31,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -385,31 +384,6 @@ public class DeviceContextImpl implements DeviceContext {
                 deviceContextClosedHandler.onDeviceContextClosed(this);
             }
             closeHandlers.clear();
-        }
-    }
-
-    /**
-     */
-    @Override
-    public void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS) {
-        LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        if (removeNodeFromDS) {
-            // FIXME : it has to be hooked for some another part of code
-            final WriteTransaction write = dataBroker.newWriteOnlyTransaction();
-            write.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
-            final CheckedFuture<Void, TransactionCommitFailedException> deleteFuture = write.submit();
-            Futures.addCallback(deleteFuture, new FutureCallback<Void>() {
-
-                @Override
-                public void onSuccess(final Void result) {
-                    LOG.debug("Delete Node {} was successful", deviceState.getNodeId());
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
-                }
-            });
         }
     }
 

@@ -204,9 +204,7 @@ public interface DeviceContext extends AutoCloseable,
 
     RpcContext getRpcContext();
 
-    /**
-     * Callback when confirmed that device is disconnected from cluster
-      */
-    void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS);
+    @Override
+    void close();
 }
 

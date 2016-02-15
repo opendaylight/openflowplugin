@@ -169,7 +169,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         registerMXBean(messageIntelligenceAgency);
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota);
-        roleManager = new RoleManagerImpl(rpcProviderRegistry, entityOwnershipService, switchFeaturesMandatory);
+        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, switchFeaturesMandatory);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
@@ -222,9 +222,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void close() throws Exception {
-        //TODO: close all contexts, switchConnections (, managers)
+        //TODO: consider wrapping each manager into try-catch
+        deviceManager.close();
         rpcManager.close();
         statisticsManager.close();
+
+        // TODO: needs to close org.opendaylight.openflowplugin.impl.role.OpenflowOwnershipListener after RoleContexts are down
+        // TODO: must not be executed prior to all living RoleContexts have been closed (via closing living DeviceContexts)
         roleManager.close();
     }
 }
