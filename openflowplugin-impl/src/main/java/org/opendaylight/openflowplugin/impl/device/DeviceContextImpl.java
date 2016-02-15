@@ -104,7 +104,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private TransactionChainManager transactionChainManager;
+    private final TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -156,27 +156,11 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     /**
-     * @deprecated will be deleted
-     * @param txChainManager
-     */
-    @Deprecated
-    void setTransactionChainManager(final TransactionChainManager txChainManager) {
-        this.transactionChainManager = Preconditions.checkNotNull(txChainManager);
-    }
-
-    /**
      * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
     void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
-    }
-
-    /**
-     * This method is called fron
-     */
-    void cancelTransaction() {
-        transactionChainManager.cancelWriteTransaction();
     }
 
     @Override
