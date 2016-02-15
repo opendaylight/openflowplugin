@@ -76,7 +76,13 @@ public class RoleContextImpl implements RoleContext {
         return initRoleChangeFuture;
     }
 
+    /**
+     * @deprecated not used but we are able to add here extra call for get EntityOwnershipState from
+     *             OpenflowOwnershipListener instead call it directly from RoleManager (here could be
+     *             add call salRoleService.setRole(setRoleInput);
+     */
     @Override
+    @Deprecated
     public void facilitateRoleChange(final FutureCallback<Boolean> roleChangeCallback) {
         this.roleChangeCallback = roleChangeCallback;
         if (!isDeviceConnected()) {
@@ -85,6 +91,10 @@ public class RoleContextImpl implements RoleContext {
         }
     }
 
+    /**
+     * @deprecated not used
+     */
+    @Deprecated
     private void requestOpenflowEntityOwnership() {
 
         LOG.debug("requestOpenflowEntityOwnership for entity {}", entity);
