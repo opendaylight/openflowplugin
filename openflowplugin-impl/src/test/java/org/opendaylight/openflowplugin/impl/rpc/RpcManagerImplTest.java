@@ -24,8 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -54,7 +52,7 @@ public class RpcManagerImplTest {
 
     @Ignore
     @Test
-    public void deviceConnectedTest() {
+    public void deviceConnectedTest() throws Exception {
 
         rpcManager.onDeviceContextLevelUp(mockedDeviceContext);
 
@@ -92,8 +90,8 @@ public class RpcManagerImplTest {
     private void invokeRpcTestExistsCapacity(final int capacity, final boolean result) throws InterruptedException,
             ExecutionException {
         // TODO: how to invoke service remotely?
-        NodeId nodeId = new NodeId("openflow:1");
-        KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        final NodeId nodeId = new NodeId("openflow:1");
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         final RpcContextImpl rpcContext = new RpcContextImpl(messageSpy, mockedProviderContext, mockedDeviceContext, capacity);
         when(mockedProviderContext.getRpcService(SalFlowService.class)).thenReturn(new SalFlowServiceImpl(rpcContext, mockedDeviceContext));
 

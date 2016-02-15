@@ -81,7 +81,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", deviceContext.getDeviceState().getNodeId(),
                 deviceContext.getDeviceState().getRole());
         if (null == hashedWheelTimer) {
@@ -112,7 +112,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     final TimeCounter timeCounter = new TimeCounter();
                     scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
                     LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
-                    deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+                    try {
+                        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+                    } catch (Exception e) {
+                        LOG.info("failed to complete levelUp on next handler for device {}", deviceContext.getDeviceState().getNodeId());
+                        deviceContext.close();
+                        return;
+                    }
                     deviceContext.getDeviceState().setDeviceSynchronized(true);
                 } else {
                     final String deviceAdress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
