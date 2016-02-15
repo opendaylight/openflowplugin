@@ -169,7 +169,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                     // TODO : is there a chance to have TxEntity ?
                 }
             } else {
-                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close proces", entity);
+                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close process", entity);
             }
             roleContext.close();
         }
@@ -413,7 +413,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             @Override
             public void onSuccess(@Nullable final Void aVoid) {
                 LOG.debug("Freeing roleContext slot for device: {}", roleChangeListener.getDeviceState().getNodeId());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
 
@@ -421,7 +422,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             public void onFailure(final Throwable throwable) {
                 LOG.warn("NOT freeing roleContext slot for device: {}, {}", roleChangeListener.getDeviceState()
                         .getNodeId(), throwable.getMessage());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
         });
