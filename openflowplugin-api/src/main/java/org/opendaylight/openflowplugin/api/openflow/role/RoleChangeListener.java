@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.api.openflow.role;
 
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
@@ -16,6 +17,5 @@ public interface RoleChangeListener extends AutoCloseable {
 
     Entity getEntity();
 
-    void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS);
-
+    DeviceState getDeviceState();
 }
