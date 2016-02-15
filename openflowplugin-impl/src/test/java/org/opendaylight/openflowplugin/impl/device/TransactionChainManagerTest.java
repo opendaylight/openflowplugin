@@ -90,7 +90,7 @@ public class TransactionChainManagerTest {
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
-        txChainManager.activateTransactionManager(false);
+        txChainManager.activateTransactionManager();
     }
 
     @After
@@ -116,9 +116,9 @@ public class TransactionChainManagerTest {
     public void testSubmitTransaction() throws Exception {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.enableSubmit();
-        txChainManager.activateTransactionManager(true);
+        txChainManager.activateTransactionManager();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-        txChainManager.activateTransactionManager(true);
+        txChainManager.activateTransactionManager();
         txChainManager.submitWriteTransaction();
 
         Mockito.verify(txChain).newWriteOnlyTransaction();

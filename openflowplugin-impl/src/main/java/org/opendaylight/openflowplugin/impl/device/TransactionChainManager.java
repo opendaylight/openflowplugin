@@ -95,11 +95,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * Method change status for TxChainManager to {@link TransactionChainManagerStatus#WORKING} and it has to make
      * registration for this class instance as {@link TransactionChainListener} to provide possibility a make DS
      * transactions. Call this method for MASTER role only.
-     * @param enableSubmit - marker to be sure a WriteTransaction submit is not blocking
-     *            (Blocking write is used for initialization part only)
      */
-    public void activateTransactionManager(final boolean enableSubmit) {
-        LOG.trace("activetTransactionManager for node {} transaction submit is set to {}", deviceState.getNodeId(), enableSubmit);
+    public void activateTransactionManager() {
+        LOG.trace("activetTransactionManaager for node {} transaction submit is set to {}", deviceState.getNodeId());
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
                 LOG.debug("Transaction Factory create {}", deviceState.getNodeId());
@@ -107,7 +105,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 createTxChain();
-                this.submitIsEnabled = enableSubmit;
             } else {
                 LOG.debug("Transaction is active {}", deviceState.getNodeId());
             }
@@ -139,13 +136,28 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             return false;
         }
         synchronized (txLock) {
-            Preconditions.checkState(TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus),
-                    "we have here Uncompleted Transaction for node {} and we are not MASTER", nodeII);
             if (wTx == null) {
                 LOG.trace("nothing to commit - submit returns true");
                 return true;
             }
-            wTx.submit();
+            Preconditions.checkState(TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus),
+                    "we have here Uncompleted Transaction for node {} and we are not MASTER", nodeII);	    
+            final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
+            Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    //no action required
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    if (t instanceof TransactionCommitFailedException) {
+                        LOG.error("Transaction commit failed. {}", t);
+                    } else {
+                        LOG.error("Exception during transaction submitting. {}", t);
+                    }
+                }
+            });
             wTx = null;
         }
         return true;
@@ -194,10 +206,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @Nullable
     private WriteTransaction getTransactionSafely() {
-        if (wTx == null && !TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus)) {
+        if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
             synchronized (txLock) {
-                if (wTx == null && txChainFactory != null) {
-                    wTx = txChainFactory.newWriteOnlyTransaction();
+                if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
+                    if (wTx == null && txChainFactory != null) {
+                        wTx = txChainFactory.newWriteOnlyTransaction();
+                    }
                 }
             }
         }

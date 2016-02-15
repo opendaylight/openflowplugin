@@ -200,12 +200,15 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void onClusterRoleChange(@CheckForNull final OfpRole role) {
-        this.onClusterRoleChange(role, true);
-    }
-
-    @Override
-    public void onInitClusterRoleChange(@CheckForNull final OfpRole role) {
-        this.onClusterRoleChange(role, false);
+        LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
+        Preconditions.checkArgument(role != null);
+        if (OfpRole.BECOMEMASTER.equals(role)) {
+            transactionChainManager.activateTransactionManager();
+        } else if (OfpRole.BECOMESLAVE.equals(role)) {
+            transactionChainManager.deactivateTransactionManager();
+        } else {
+            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+        }
     }
 
     @Override
@@ -497,15 +500,4 @@ public class DeviceContextImpl implements DeviceContext {
         return rpcContext;
     }
 
-    private void onClusterRoleChange(@CheckForNull final OfpRole role, final boolean enableSubmit) {
-        LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
-        Preconditions.checkArgument(role != null);
-        if (OfpRole.BECOMESLAVE.equals(role)) {
-            transactionChainManager.activateTransactionManager(enableSubmit);
-        } else if (OfpRole.BECOMEMASTER.equals(role)) {
-            transactionChainManager.deactivateTransactionManager();
-        } else {
-            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
-        }
-    }
 }
