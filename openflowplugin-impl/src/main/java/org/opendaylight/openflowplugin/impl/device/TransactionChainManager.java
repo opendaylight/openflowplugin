@@ -59,8 +59,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return transactionChainManagerStatus;
     }
 
-    private TransactionChainManagerStatus transactionChainManagerStatus;
-    private ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler;
+    private volatile TransactionChainManagerStatus transactionChainManagerStatus;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private Registration managerRegistration;
 
@@ -84,18 +83,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitWriteTransaction();
     }
 
-    public synchronized boolean attemptToRegisterHandler(final ReadyForNewTransactionChainHandler readyForNewTransactionChainHandler) {
-        if (TransactionChainManagerStatus.SHUTTING_DOWN.equals(this.transactionChainManagerStatus)
-                && null == this.readyForNewTransactionChainHandler) {
-            this.readyForNewTransactionChainHandler = readyForNewTransactionChainHandler;
-            if (managerRegistration == null) {
-                this.readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     boolean submitWriteTransaction() {
         if (!submitIsEnabled) {
@@ -231,9 +218,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 LOG.warn("Failed to close transaction chain manager's registration.", e);
             }
             managerRegistration = null;
-            if (null != readyForNewTransactionChainHandler) {
-                readyForNewTransactionChainHandler.onReadyForNewTransactionChain();
-            }
         }
         txChainFactory.close();
         txChainFactory = null;
