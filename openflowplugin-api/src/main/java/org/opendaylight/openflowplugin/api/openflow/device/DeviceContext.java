@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import io.netty.util.Timeout;
+import javax.annotation.CheckForNull;
 import java.math.BigInteger;
 import java.util.List;
+
+import io.netty.util.Timeout;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -28,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -77,6 +80,24 @@ public interface DeviceContext extends AutoCloseable,
      * @return {@link DeviceState}
      */
     DeviceState getDeviceState();
+
+    /**
+     * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
+     * TransactionChainManager represents possibility to write or delete Node subtree data
+     * for actual Controller Cluster Node. We are able to have an active TxManager only if
+     * newRole is {@link OfpRole#BECOMESLAVE}.
+     * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
+     * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
+     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
+     */
+    void onClusterRoleChange(@CheckForNull OfpRole role);
+
+    /**
+     * Same as {@link DeviceContext#onClusterRoleChange(OfpRole)} but it should be call for new
+     * connection initialization only, because submit transaction is not active in this time.
+     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
+     */
+    void onInitClusterRoleChange(@CheckForNull final OfpRole role);
 
     /**
      * Method creates put operation using provided data in underlying transaction chain.
@@ -193,6 +214,6 @@ public interface DeviceContext extends AutoCloseable,
     /**
      * Callback when confirmed that device is disconnected from cluster
       */
-    void onDeviceDisconnectedFromCluster();
+    void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS);
 }
 

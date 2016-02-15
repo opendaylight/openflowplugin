@@ -7,7 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import javax.annotation.Nonnull;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,19 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -74,6 +77,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -114,7 +118,8 @@ public class DeviceContextImpl implements DeviceContext {
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final TranslatorLibrary translatorLibrary;
-    private Map<Long, NodeConnectorRef> nodeConnectorCache;
+    private final Map<Long, NodeConnectorRef> nodeConnectorCache;
+//    private ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private RpcContext rpcContext;
 
 
@@ -206,6 +211,16 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public ReadTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
+    }
+
+    @Override
+    public void onClusterRoleChange(@CheckForNull final OfpRole role) {
+        this.onClusterRoleChange(role, true);
+    }
+
+    @Override
+    public void onInitClusterRoleChange(@CheckForNull final OfpRole role) {
+        this.onClusterRoleChange(role, false);
     }
 
     @Override
@@ -381,12 +396,29 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     /**
-     * @deprecated will be deleted
      */
     @Override
-    public void onDeviceDisconnectedFromCluster() {
+    public void onDeviceDisconnectedFromCluster(final boolean removeNodeFromDS) {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());
-        transactionChainManager.cleanupPostClosure();
+        transactionChainManager.cleanupPostClosure(removeNodeFromDS);
+        if (removeNodeFromDS) {
+            // FIXME : it has to be hooked for some another part of code
+            final WriteTransaction write = dataBroker.newWriteOnlyTransaction();
+            write.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
+            final CheckedFuture<Void, TransactionCommitFailedException> deleteFuture = write.submit();
+            Futures.addCallback(deleteFuture, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.debug("Delete Node {} was successful", deviceState.getNodeId());
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
+                }
+            });
+        }
     }
 
     @Override
@@ -450,7 +482,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public NodeConnectorRef lookupNodeConnectorRef(Long portNumber) {
+    public NodeConnectorRef lookupNodeConnectorRef(final Long portNumber) {
         return nodeConnectorCache.get(portNumber);
     }
 
@@ -462,12 +494,12 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void updatePacketInRateLimit(long upperBound) {
+    public void updatePacketInRateLimit(final long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 
     @Override
-    public void setRpcContext(RpcContext rpcContext) {
+    public void setRpcContext(final RpcContext rpcContext) {
         this.rpcContext = rpcContext;
     }
 
@@ -476,5 +508,15 @@ public class DeviceContextImpl implements DeviceContext {
         return rpcContext;
     }
 
-
+    private void onClusterRoleChange(@CheckForNull final OfpRole role, final boolean enableSubmit) {
+        LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
+        Preconditions.checkArgument(role != null);
+        if (OfpRole.BECOMESLAVE.equals(role)) {
+            transactionChainManager.activateTransactionManager(enableSubmit);
+        } else if (OfpRole.BECOMEMASTER.equals(role)) {
+            transactionChainManager.deactivateTransactionManager();
+        } else {
+            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+        }
+    }
 }
