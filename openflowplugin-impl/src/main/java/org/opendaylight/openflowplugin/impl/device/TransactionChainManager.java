@@ -105,6 +105,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 createTxChain();
+                submitIsEnabled = false;
             } else {
                 LOG.debug("Transaction is active {}", deviceState.getNodeId());
             }
@@ -137,12 +138,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     public void onFailure(final Throwable t) {
                         txChainFactory.close();
                         txChainFactory = null;
+                        // FIXME: put empty node to DS
                     }
                 });
             } else {
                 // TODO : ignoring redundant deactivate invocation
                 future = Futures.immediateCheckedFuture(null);
             }
+            submitIsEnabled = false;
         }
         return future;
     }

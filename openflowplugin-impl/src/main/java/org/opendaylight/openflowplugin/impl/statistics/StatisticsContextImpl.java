@@ -61,6 +61,7 @@ public class StatisticsContextImpl implements StatisticsContext {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         emptyFuture = Futures.immediateFuture(new Boolean(false));
+        deviceContext.setStatisticsContext(this);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
 
@@ -148,7 +149,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public void setPollTimeout(Timeout pollTimeout) {
+    public void setPollTimeout(final Timeout pollTimeout) {
         this.pollTimeout = pollTimeout;
     }
 
@@ -246,12 +247,12 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringService(StatisticsGatheringService statisticsGatheringService) {
+    protected void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
         this.statisticsGatheringService = statisticsGatheringService;
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringOnTheFlyService(StatisticsGatheringOnTheFlyService
+    protected void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService
                                                              statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }

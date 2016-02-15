@@ -8,8 +8,9 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -27,12 +28,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -58,6 +60,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
@@ -71,6 +74,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
@@ -135,6 +139,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
+    private final boolean switchFeaturesMandatory;
     private NotificationPublishService notificationPublishService;
     private NotificationService notificationService;
     private final OutboundQueue outboundQueueProvider;
@@ -146,6 +151,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private RpcContext rpcContext;
+    private StatisticsContext statContext;
     private ExtensionConverterProvider extensionConverterProvider;
 
 
@@ -156,7 +162,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
+                      final boolean switchFeaturesMandatory,
             @Nonnull final TranslatorLibrary translatorLibrary) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -229,34 +237,84 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
-        LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
+        LOG.debug("onClusterRoleChange {} for node: {}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
-        if (rpcContext != null) {
-            // TODO : implement interface for onClusterRoleChange method
-            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
+
+        if (role.equals(deviceState.getRole())){
+            LOG.debug("Node {} new Role {} is same as last one {}", deviceState.getNodeId(), role, deviceState.getRole());
+            return Futures.immediateFuture(null);
         }
 
         final ListenableFuture<Void> nextStepFuture;
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
-            nextStepFuture = Futures.immediateCheckedFuture(null);
-            getDeviceState().setRole(role);
-        } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            nextStepFuture = transactionChainManager.deactivateTransactionManager();
-            Futures.transform(nextStepFuture, new Function<Void, Void>() {
-                @Nullable
+            final ListenableFuture<Void> nodeCheck = checkForNodeInitialization();
+            nextStepFuture = Futures.transform(nodeCheck, new AsyncFunction<Void, Void>() {
+
                 @Override
-                public Void apply(@Nullable final Void aVoid) {
-                    getDeviceState().setRole(role);
-                    return null;
+                public ListenableFuture<Void> apply(final Void input) throws Exception {
+                    transactionChainManager.initialSubmitWriteTransaction();
+                    deviceState.setStatisticsPolling(true);
+                    return Futures.immediateCheckedFuture(null);
                 }
             });
+        } else if (OfpRole.BECOMESLAVE.equals(role)) {
+            nextStepFuture = transactionChainManager.deactivateTransactionManager();
+            deviceState.setStatisticsPolling(false);
         } else {
             LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             nextStepFuture = Futures.immediateCheckedFuture(null);
+            deviceState.setStatisticsPolling(false);
+        }
+
+        if (rpcContext != null) {
+            // TODO : implement interface for onClusterRoleChange method
+            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
+        } else {
+            LOG.warn("DeviceCtx for node: {} doesn't contain RpcContext {}", deviceState.getNodeId(), rpcContext);
         }
 
         return nextStepFuture;
+    }
+
+    @SuppressWarnings("deprecation")
+    private ListenableFuture<Void> checkForNodeInitialization() {
+        final ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        final CheckedFuture<Optional<Node>, ReadFailedException> readNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
+
+        return Futures.transform(readNodeFuture, new AsyncFunction<Optional<Node>, Void>() {
+
+            @Override
+            public ListenableFuture<Void> apply(final Optional<Node> input) throws Exception {
+                final ListenableFuture<Void> returnFuture;
+                if (input.isPresent() && (!input.get().getNodeConnector().isEmpty())) {
+                    // TODO check when exactly could be NodeConnector empty for real device
+                    returnFuture = Futures.immediateCheckedFuture(null);
+                } else {
+                    final ListenableFuture<Void> initRead = DeviceInitializationUtils.initializeNodeInformation(
+                            DeviceContextImpl.this, switchFeaturesMandatory);
+                    final ListenableFuture<Boolean> statFuture = Futures.transform(initRead,
+                            new AsyncFunction<Void, Boolean>() {
+
+                        @Override
+                        public ListenableFuture<Boolean> apply(final Void input) throws Exception {
+                            return statContext.gatherDynamicData();
+                        }
+                    });
+                    returnFuture = Futures.transform(statFuture, new AsyncFunction<Boolean, Void>() {
+
+                        @Override
+                        public ListenableFuture<Void> apply(final Boolean input) throws Exception {
+                            transactionChainManager.initialSubmitWriteTransaction();
+                            return Futures.immediateFuture(null);
+                        }
+                    });
+                }
+                readTx.close();
+                return returnFuture;
+            }
+        });
     }
 
     @Override
@@ -608,5 +666,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ExtensionConverterProvider getExtensionConverterProvider() {
         return extensionConverterProvider;
+    }
+
+    @Override
+    public void setStatisticsContext(final StatisticsContext statContext) {
+        this.statContext = statContext;
+    }
+
+    @Override
+    public StatisticsContext getStatisticsContext() {
+        return statContext;
     }
 }
