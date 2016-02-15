@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.role;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -45,7 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -142,44 +140,6 @@ public class RoleContextImplTest {
         onRoleChanged.get(5, TimeUnit.SECONDS);
 
         verify(deviceContext, Mockito.never()).onClusterRoleChange(newRole);
-    }
-
-    @Test
-    public void testOnRoleChangedWorkingMaster() throws InterruptedException, ExecutionException, TimeoutException {
-        final OfpRole oldRole = OfpRole.BECOMESLAVE;
-        final OfpRole newRole = OfpRole.BECOMEMASTER;
-
-        final ListenableFuture<RpcResult<SetRoleOutput>> future =
-                RpcResultBuilder.success(new SetRoleOutputBuilder().build()).buildFuture();
-        when(salRoleService.setRole(Matchers.argThat(new SetRoleInputMatcher(newRole, instanceIdentifier))))
-                .thenReturn(future);
-
-        roleContext.setSalRoleService(salRoleService);
-        roleContext.promoteStateToWorking();
-
-        final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
-        onRoleChanged.get(5, TimeUnit.SECONDS);
-
-        verify(deviceContext).onClusterRoleChange(newRole);
-    }
-
-    @Test
-    public void testOnRoleChangedWorkingSlave() throws InterruptedException, ExecutionException, TimeoutException {
-        final OfpRole oldRole = OfpRole.BECOMEMASTER;
-        final OfpRole newRole = OfpRole.BECOMESLAVE;
-
-        final SettableFuture<RpcResult<SetRoleOutput>> future = SettableFuture.create();
-        future.set(RpcResultBuilder.<SetRoleOutput>success().build());
-        when(salRoleService.setRole(Matchers.argThat(new SetRoleInputMatcher(newRole, instanceIdentifier))))
-                .thenReturn(future);
-
-        roleContext.setSalRoleService(salRoleService);
-        roleContext.promoteStateToWorking();
-
-        final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
-        onRoleChanged.get(5, TimeUnit.SECONDS);
-
-        verify(deviceContext).onClusterRoleChange(newRole);
     }
 
     private class SetRoleInputMatcher extends ArgumentMatcher<SetRoleInput> {

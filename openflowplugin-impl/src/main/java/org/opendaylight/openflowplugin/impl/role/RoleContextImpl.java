@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
-import javax.annotation.Nullable;
-import java.util.concurrent.Future;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -24,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlready
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -38,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,6 @@ public class RoleContextImpl implements RoleContext {
 
     private final Semaphore mainCandidateGuard = new Semaphore(1, true);
     private final Semaphore txCandidateGuard = new Semaphore(1, true);
-    private volatile ROLE_CONTEXT_STATE state;
     private volatile boolean txLockOwned;
     private volatile OfpRole propagatingRole;
 
@@ -74,11 +73,32 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public void initialization() throws CandidateAlreadyRegisteredException {
-        state = ROLE_CONTEXT_STATE.STARTING;
-        LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-            entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-            LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
-                    .getPrimaryConnectionContext().getNodeId().getValue());
+        LOG.debug("Initialization RoleContext for Node {}", deviceContext.getDeviceState().getNodeId());
+        final AsyncFunction<RpcResult<SetRoleOutput>, Void> initFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
+            @Override
+            public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> input) throws Exception {
+                LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
+                getDeviceState().setRole(OfpRole.BECOMESLAVE);
+                entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
+                LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
+                        .getPrimaryConnectionContext().getNodeId().getValue());
+                return Futures.immediateFuture(null);
+            }
+        };
+        final ListenableFuture<Void> roleChange = sendRoleChangeToDevice(OfpRole.BECOMESLAVE, initFunction);
+        Futures.addCallback(roleChange, new FutureCallback<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                LOG.debug("Initial RoleContext for Node {} is successfull", deviceContext.getDeviceState().getNodeId());
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("Initial RoleContext for Node {} fail", deviceContext.getDeviceState().getNodeId(), t);
+                deviceContext.close();
+            }
+        });
     }
 
     @Override
@@ -90,51 +110,22 @@ public class RoleContextImpl implements RoleContext {
             LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
                     deviceContext.getPrimaryConnectionContext().getNodeId());
             LOG.debug("SetRole cancelled for entity [{}], reason = device disconnected.", entity);
-            return Futures.immediateFailedFuture(new Exception(
-                    "Device disconnected - stopped by setRole: " + deviceContext
-                            .getPrimaryConnectionContext().getNodeId()));
+            return Futures.immediateFailedFuture(new Exception("Device disconnected - stopped by setRole: "
+                                + deviceContext.getPrimaryConnectionContext().getNodeId()));
         }
 
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
                 deviceContext.getPrimaryConnectionContext().getNodeId());
 
-        final SetRoleInput setRoleInput = (new SetRoleInputBuilder())
-                .setControllerRole(newRole)
-                .setNode(new NodeRef(deviceContext.getDeviceState().getNodeInstanceIdentifier()))
-                .build();
-
-        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture = salRoleService.setRole(setRoleInput);
-
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture),
-                new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
-                    @Override
-                    public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
-                        LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
-                        final ListenableFuture<Void> nextStepFuture;
-                        switch (state) {
-                            case STARTING:
-                                if (OfpRole.BECOMESLAVE.equals(newRole)) {
-                                    getDeviceState().setRole(newRole);
-                                    nextStepFuture = Futures.immediateFuture(null);
-                                } else if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                                    nextStepFuture = deviceContext.onClusterRoleChange(newRole);
-                                } else {
-                                    nextStepFuture = Futures.immediateFuture(null);
-                                }
-
-                                break;
-                            case WORKING:
-                                nextStepFuture = deviceContext.onClusterRoleChange(newRole);
-                                break;
-                            //case TEARING_DOWN:
-                            default:
-                                nextStepFuture = Futures.immediateFuture(null);
-                                break;
-                        }
-
-                        return nextStepFuture;
-                    }
-                });
+        final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
+            @Override
+            public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
+                LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
+                getDeviceState().setRole(newRole);
+                return deviceContext.onClusterRoleChange(newRole);
+            }
+        };
+        return sendRoleChangeToDevice(newRole, roleChangeFunction);
     }
 
     @Override
@@ -151,7 +142,6 @@ public class RoleContextImpl implements RoleContext {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
         }
-        promoteStateToTearingDown();
     }
 
     @Override
@@ -214,11 +204,6 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public ROLE_CONTEXT_STATE getState() {
-        return state;
-    }
-
-    @Override
     public boolean isTxLockOwned() {
         return txLockOwned;
     }
@@ -226,15 +211,6 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void setTxLockOwned(final boolean txLockOwned) {
         this.txLockOwned = txLockOwned;
-    }
-
-    private void promoteStateToTearingDown() {
-        state = ROLE_CONTEXT_STATE.TEARING_DOWN;
-    }
-
-    @Override
-    public void promoteStateToWorking() {
-        state = ROLE_CONTEXT_STATE.WORKING;
     }
 
     @Override
@@ -245,5 +221,19 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void setPropagatingRole(final OfpRole propagatingRole) {
         this.propagatingRole = propagatingRole;
+    }
+
+    private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
+        LOG.debug("Send new Role {} to Device {}", newRole, deviceContext.getDeviceState().getNodeId());
+        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+        if (deviceContext.getDeviceState().getFeatures().getVersion() < OFConstants.OFP_VERSION_1_3) {
+            LOG.debug("Device OF version {} not support ROLE", deviceContext.getDeviceState().getFeatures().getVersion());
+            setRoleOutputFuture = Futures.immediateFuture(RpcResultBuilder.<SetRoleOutput> success().build());
+        } else {
+            final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
+                    .setNode(new NodeRef(deviceContext.getDeviceState().getNodeInstanceIdentifier())).build();
+            setRoleOutputFuture = salRoleService.setRole(setRoleInput);
+        }
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
     }
 }
