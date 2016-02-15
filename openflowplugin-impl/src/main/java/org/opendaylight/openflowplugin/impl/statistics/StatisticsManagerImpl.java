@@ -61,7 +61,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
-    private Semaphore workModeGuard = new Semaphore(1, true);
+    private final Semaphore workModeGuard = new Semaphore(1, true);
     private boolean shuttingDownStatisticsPolling;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
@@ -70,12 +70,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry) {
+    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
     }
 
-    public StatisticsManagerImpl(RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
         this(rpcProviderRegistry);
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
     }
@@ -84,13 +84,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", deviceContext.getDeviceState().getNodeId(),
                 deviceContext.getDeviceState().getRole());
-        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
-            // if slave, we dont poll for statistics and jump to rpc initialization
-            LOG.info("Skipping Statistics for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-            return;
-        }
-
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
@@ -100,6 +93,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
+
+        if (deviceContext.getDeviceState().getRole() == OfpRole.BECOMESLAVE) {
+            // if slave, we dont poll for statistics and jump to rpc initialization
+            LOG.info("Skipping Statistics for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
+            scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+            deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+            return;
+        }
+
         final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
@@ -116,7 +118,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     final String deviceAdress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
                     try {
                         deviceContext.close();
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAdress);
                     }
                 }
@@ -127,7 +129,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
                 try {
                     deviceContext.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Error closing device context.", e);
                 }
             }
@@ -137,9 +139,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void pollStatistics(final DeviceContext deviceContext,
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
+
+        if (!deviceContext.getDeviceState().isValid()) {
+            LOG.debug("Session for device {} is not valid.", deviceContext.getDeviceState().getNodeId().getValue());
+            return;
+        }
         LOG.debug("POLLING ALL STATS for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())) {
+            LOG.debug("Role is SLAVE so we don't want to poll any stat for device: {}", deviceContext.getDeviceState().getNodeId());
+            scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+            return;
+        }
         timeCounter.markStart();
-        ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean o) {
@@ -165,7 +177,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             deviceStatisticsCollectionFuture.get(STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Statistics collection for node {} failed", deviceContext.getDeviceState().getNodeId(), e);
-        } catch (TimeoutException e) {
+        } catch (final TimeoutException e) {
             LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceContext.getDeviceState().getNodeId(), STATS_TIMEOUT_SEC);
         }
     }
@@ -176,7 +188,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (null != hashedWheelTimer) {
             LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
             if (!shuttingDownStatisticsPolling) {
-                Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
+                final Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
                     @Override
                     public void run(final Timeout timeout) throws Exception {
                         pollStatistics(deviceContext, statisticsContext, timeCounter);
@@ -192,7 +204,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @VisibleForTesting
     protected void calculateTimerDelay(final TimeCounter timeCounter) {
         // TODO: move into TimeCounter
-        long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
+        final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
         if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;
             if (currentTimerDelay > maximumTimerDelay) {
@@ -214,12 +226,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        StatisticsContext statisticsContext = contexts.remove(deviceContext);
+        final StatisticsContext statisticsContext = contexts.remove(deviceContext);
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             try {
                 statisticsContext.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
             }
         }
@@ -227,13 +239,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public Future<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode() {
-        GetStatisticsWorkModeOutputBuilder smModeOutputBld = new GetStatisticsWorkModeOutputBuilder();
+        final GetStatisticsWorkModeOutputBuilder smModeOutputBld = new GetStatisticsWorkModeOutputBuilder();
         smModeOutputBld.setMode(workMode);
         return RpcResultBuilder.success(smModeOutputBld.build()).buildFuture();
     }
 
     @Override
-    public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
+    public Future<RpcResult<Void>> changeStatisticsWorkMode(final ChangeStatisticsWorkModeInput input) {
         final Future<RpcResult<Void>> result;
         // acquire exclusive access
         if (workModeGuard.tryAcquire()) {
@@ -241,7 +253,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             if (!workMode.equals(targetWorkMode)) {
                 shuttingDownStatisticsPolling = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
                 // iterate through stats-ctx: propagate mode
-                for (Map.Entry<DeviceContext, StatisticsContext> contextEntry : contexts.entrySet()) {
+                for (final Map.Entry<DeviceContext, StatisticsContext> contextEntry : contexts.entrySet()) {
                     final DeviceContext deviceContext = contextEntry.getKey();
                     final StatisticsContext statisticsContext = contextEntry.getValue();
                     switch (targetWorkMode) {
