@@ -62,6 +62,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     private final EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
     private final boolean switchFeaturesMandatory;
+    private boolean managerStart;
 
     public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker, final boolean switchFeaturesMandatory) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
@@ -69,6 +70,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.entityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(RoleManager.ENTITY_TYPE, this));
         this.txEntityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(TX_ENTITY_TYPE, this));
+        managerStart = true;
         LOG.debug("Registering OpenflowOwnershipListener listening to all entity ownership changes");
     }
 
@@ -83,6 +85,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
                 makeEntity(deviceContext.getDeviceState().getNodeId()),
                 makeTxEntity(deviceContext.getDeviceState().getNodeId()));
+        if (this.managerStart) {
+            roleContext.firstTimeRun();
+            this.managerStart = false;
+        }
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(this);
         final RoleContext previousContext = contexts.putIfAbsent(roleContext.getEntity(), roleContext);
@@ -223,13 +229,12 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             // SLAVE -> MASTER - acquired transition lock
             LOG.debug("Acquired tx-lock for entity {}", ownershipChange.getEntity());
             roleContext.setTxLockOwned(true);
-            final OfpRole role = roleContext.getDeviceState().getRole();
             Verify.verify(OfpRole.BECOMEMASTER.equals(roleContext.getPropagatingRole()),
-                    "Acquired tx-lock but current role = {}", role);
+                    "Acquired tx-lock but current role = {}", roleContext.getPropagatingRole());
 
             // activate txChainManager, activate rpcs
             processingClosure = roleContext.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
-            // activate stats - accomplished automatically by chaging role in deviceState
+            // activate stats - accomplished automatically by changing role in deviceState
             processingClosure = Futures.transform(processingClosure, new Function<Void, Void>() {
                 @Nullable
                 @Override

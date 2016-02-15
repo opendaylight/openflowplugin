@@ -53,4 +53,6 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
     DeviceContext getDeviceContext();
 
     boolean isTxLockOwned();
+
+    void firstTimeRun();
 }

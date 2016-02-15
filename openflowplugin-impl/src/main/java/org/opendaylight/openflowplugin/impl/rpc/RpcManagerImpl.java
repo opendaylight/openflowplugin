@@ -45,9 +45,9 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
+//        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 
-        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
+        LOG.debug("Node:{}", nodeId);
 
         RpcContext rpcContext = contexts.get(deviceContext);
         if (rpcContext == null) {
@@ -57,21 +57,14 @@ public class RpcManagerImpl implements RpcManager {
 
         deviceContext.addDeviceContextClosedHandler(this);
 
-        if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
-            LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
-            MdSalRegistratorUtils.registerServices(rpcContext, deviceContext, ofpRole);
+        LOG.info("Registering Openflow RPCs for node:{}", nodeId);
+        MdSalRegistratorUtils.registerServices(rpcContext, deviceContext, OfpRole.BECOMESLAVE);
 
-            if (isStatisticsRpcEnabled) {
-                MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
-                        notificationPublishService, new AtomicLong());
-            }
-
-        } else {
-            // if slave, we need to de-register rpcs if any have been registered, in case of master to slave
-            LOG.info("Register only part of RPC (if any) for no MASTER role for node:{}, role:{}", nodeId, ofpRole);
-            MdSalRegistratorUtils.registerServices(rpcContext, deviceContext, ofpRole);
-        }
-
+//        if (OfpRole.BECOMEMASTER.equals(ofpRole) && isStatisticsRpcEnabled) {
+//            LOG.info("Registering statistics services for backward compatibility.");
+//            MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
+//                    notificationPublishService, new AtomicLong());
+//        }
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
@@ -87,10 +80,10 @@ public class RpcManagerImpl implements RpcManager {
         final RpcContext removedContext = contexts.remove(deviceContext);
         if (removedContext != null) {
             try {
-                LOG.info("Unregistering rpcs for device context closure");
+                LOG.info("Un-registering rpcs for device context closure");
                 removedContext.close();
             } catch (final Exception e) {
-                LOG.error("Exception while unregistering rpcs onDeviceContextClosed handler for node:{}. But continuing.",
+                LOG.error("Exception while un-registering rpcs onDeviceContextClosed handler for node:{}. But continuing.",
                         deviceContext.getDeviceState().getNodeId(), e);
             }
         }

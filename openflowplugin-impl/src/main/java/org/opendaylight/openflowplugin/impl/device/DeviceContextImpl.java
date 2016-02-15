@@ -240,11 +240,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.debug("onClusterRoleChange {} for node: {}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
 
-        if (role.equals(deviceState.getRole())){
-            LOG.debug("Node {} new Role {} is same as last one {}", deviceState.getNodeId(), role, deviceState.getRole());
-            return Futures.immediateFuture(null);
-        }
-
         final ListenableFuture<Void> nextStepFuture;
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
@@ -262,7 +257,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             nextStepFuture = transactionChainManager.deactivateTransactionManager();
             deviceState.setStatisticsPolling(false);
         } else {
-            LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
+            LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             nextStepFuture = Futures.immediateCheckedFuture(null);
             deviceState.setStatisticsPolling(false);
         }

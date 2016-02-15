@@ -64,12 +64,14 @@ public class RoleContextImpl implements RoleContext {
     private volatile boolean txLockOwned;
     private volatile OfpRole propagatingRole;
 
+    private boolean starting = false;
+
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
-                           final Entity entity, final Entity txEnitity) {
+                           final Entity entity, final Entity txEntity) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.entity = Preconditions.checkNotNull(entity);
-        this.txEntity = Preconditions.checkNotNull(txEnitity);
+        this.txEntity = Preconditions.checkNotNull(txEntity);
 
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
     }
@@ -80,8 +82,7 @@ public class RoleContextImpl implements RoleContext {
         final AsyncFunction<RpcResult<SetRoleOutput>, Void> initFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
             @Override
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> input) throws Exception {
-                LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-                getDeviceState().setRole(OfpRole.BECOMESLAVE);
+                LOG.debug("Initialization request OpenflowEntityOwnership for entity {}", entity);
                 entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
                 LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
                         .getPrimaryConnectionContext().getNodeId().getValue());
@@ -93,7 +94,7 @@ public class RoleContextImpl implements RoleContext {
 
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("Initial RoleContext for Node {} is successfull", deviceContext.getDeviceState().getNodeId());
+                LOG.debug("Initial RoleContext for Node {} is successful", deviceContext.getDeviceState().getNodeId());
             }
 
             @Override
@@ -109,7 +110,7 @@ public class RoleContextImpl implements RoleContext {
         LOG.trace("onRoleChanged method call for Entity {}", entity);
 
         if (!isDeviceConnected()) {
-            // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
+            // this can happen as after the disconnect, we still get a last message from EntityOwnershipService.
             LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
                     deviceContext.getPrimaryConnectionContext().getNodeId());
             LOG.debug("SetRole cancelled for entity [{}], reason = device disconnected.", entity);
@@ -123,9 +124,15 @@ public class RoleContextImpl implements RoleContext {
         final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
             @Override
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
-                LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
+                LOG.debug("Role change {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
                 getDeviceState().setRole(newRole);
-                return deviceContext.onClusterRoleChange(newRole);
+                if(starting || !oldRole.equals(newRole)) {
+                    if (starting) { starting = false; }
+                    return deviceContext.onClusterRoleChange(newRole);
+                } else {
+                    LOG.debug("Node {} new Role {} is same as last one {}", deviceContext.getDeviceState().getNodeId(), newRole, oldRole);
+                    return Futures.immediateFuture(null);
+                }
             }
         };
         return sendRoleChangeToDevice(newRole, roleChangeFunction);
@@ -250,5 +257,9 @@ public class RoleContextImpl implements RoleContext {
             deviceContext.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
+    }
+
+    public void firstTimeRun() {
+        this.starting = true;
     }
 }

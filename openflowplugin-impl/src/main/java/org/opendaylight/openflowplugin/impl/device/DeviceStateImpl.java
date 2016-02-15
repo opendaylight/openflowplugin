@@ -56,6 +56,8 @@ class DeviceStateImpl implements DeviceState {
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         version = featuresReply.getVersion();
+        role = OfpRole.BECOMESLAVE;
+        statPollEnabled = false;
     }
 
     @Override

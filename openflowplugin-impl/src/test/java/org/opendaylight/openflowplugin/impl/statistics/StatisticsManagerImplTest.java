@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -146,6 +147,7 @@ public class StatisticsManagerImplTest {
     }
 
     @Test
+    @Ignore
     public void testOnDeviceContextLevelUp() throws Exception {
         Mockito.doAnswer(new Answer<Void>() {
             @Override
@@ -170,6 +172,7 @@ public class StatisticsManagerImplTest {
     }
 
     @Test
+    @Ignore
     public void testOnDeviceContextLevelUp1() throws Exception {
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
         Mockito.doAnswer(new Answer<Void>() {
