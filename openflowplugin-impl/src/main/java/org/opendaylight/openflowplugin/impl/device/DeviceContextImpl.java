@@ -10,8 +10,10 @@ package org.opendaylight.openflowplugin.impl.device;
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -147,6 +149,11 @@ public class DeviceContextImpl implements DeviceContext {
         nodeConnectorCache = new ConcurrentHashMap<>();
     }
 
+    /**
+     * @deprecated will be deleted
+     * @param txChainManager
+     */
+    @Deprecated
     void setTransactionChainManager(final TransactionChainManager txChainManager) {
         this.transactionChainManager = Preconditions.checkNotNull(txChainManager);
     }
@@ -354,7 +361,7 @@ public class DeviceContextImpl implements DeviceContext {
         primaryConnectionContext.closeConnection(false);
     }
 
-    private void tearDown() {
+    private synchronized void tearDown() {
         deviceState.setValid(false);
 
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
@@ -365,15 +372,17 @@ public class DeviceContextImpl implements DeviceContext {
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
 
-
-        for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
+        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+        Collections.reverse(reversedCloseHandlers);
+        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
-
-        LOG.info("Closing transaction chain manager without cleaning inventory operational");
-        transactionChainManager.close();
+        closeHandlers.clear();
     }
 
+    /**
+     * @deprecated will be deleted
+     */
     @Override
     public void onDeviceDisconnectedFromCluster() {
         LOG.info("Removing device from operational and closing transaction Manager for device:{}", getDeviceState().getNodeId());

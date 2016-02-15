@@ -8,9 +8,11 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
 
-    private final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
     private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
@@ -102,21 +103,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
         try {
-
-            if (deviceContext.getDeviceState().getRole() != OfpRole.BECOMESLAVE) {
-                ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-                deviceContext.onPublished();
-
-            } else {
-                //if role = slave
-                try {
-                    ((DeviceContextImpl) deviceContext).cancelTransaction();
-                } catch (final Exception e) {
-                    //TODO: how can we avoid it. pingpong does not have cancel
-                    LOG.debug("Expected Exception: Cancel Txn exception thrown for slaves", e);
-                }
-
-            }
+            ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
+            deviceContext.onPublished();
 
         } catch (final Exception e) {
             LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
@@ -124,9 +112,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             try {
                 deviceContext.close();
             } catch (final Exception e1) {
-                LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
+                LOG.warn("Exception on device context close. ", e);
             }
         }
+
     }
 
     @Override
@@ -157,8 +146,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
 
         deviceContext.addDeviceContextClosedHandler(this);
-        deviceContexts.put(connectionContext.getNodeId(), deviceContext);
+        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
 
+        // FIXME : txChainManager has to be propagate by Cluster MasterShip Election (remove this couple of lines)
         // We would like to crete/register TxChainManager after
         final DeviceTransactionChainManagerProvider.TransactionChainManagerRegistration txChainManagerReg = deviceTransactionChainManagerProvider
                 .provideTransactionChainManager(connectionContext);
@@ -170,9 +160,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             deviceContext.close();
             return;
         }
+        // --- remove end ----
+
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
-
 
         updatePacketInRateLimiters();
 
