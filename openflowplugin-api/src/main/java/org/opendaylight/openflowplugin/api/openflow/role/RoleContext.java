@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
@@ -26,9 +26,8 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService} returns
      * {@link org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException}
      * @return InitializationFuture for to know where first initial Election is done and we know role.
-     * @throws CandidateAlreadyRegisteredException - we have registered Entity so drop actual connection
      */
-    Future<OfpRole> initialization() throws CandidateAlreadyRegisteredException;
+    ListenableFuture<OfpRole> initialization();
 
     @Override
     void close();
