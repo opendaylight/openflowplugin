@@ -64,8 +64,6 @@ public class RoleContextImpl implements RoleContext {
     private volatile boolean txLockOwned;
     private volatile OfpRole propagatingRole;
 
-    private boolean starting = false;
-
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
                            final Entity entity, final Entity txEntity) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
@@ -126,13 +124,7 @@ public class RoleContextImpl implements RoleContext {
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
                 LOG.debug("Role change {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
                 getDeviceState().setRole(newRole);
-                if(starting || !oldRole.equals(newRole)) {
-                    if (starting) { starting = false; }
-                    return deviceContext.onClusterRoleChange(newRole);
-                } else {
-                    LOG.debug("Node {} new Role {} is same as last one {}", deviceContext.getDeviceState().getNodeId(), newRole, oldRole);
-                    return Futures.immediateFuture(null);
-                }
+                return deviceContext.onClusterRoleChange(oldRole, newRole);
             }
         };
         return sendRoleChangeToDevice(newRole, roleChangeFunction);
@@ -257,9 +249,5 @@ public class RoleContextImpl implements RoleContext {
             deviceContext.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
-    }
-
-    public void firstTimeRun() {
-        this.starting = true;
     }
 }

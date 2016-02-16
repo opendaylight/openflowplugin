@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -236,37 +237,42 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(@Nullable final OfpRole oldRole, @CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node: {}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
 
+        if (role.equals(oldRole)) {
+            LOG.debug("Role was not changed for node {}", deviceState.getNodeId());
+            return Futures.immediateFuture(null);
+        }
+
         final ListenableFuture<Void> nextStepFuture;
+
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
+
             final ListenableFuture<Void> nodeCheck = checkForNodeInitialization();
             nextStepFuture = Futures.transform(nodeCheck, new AsyncFunction<Void, Void>() {
 
                 @Override
                 public ListenableFuture<Void> apply(final Void input) throws Exception {
+                    LOG.debug("Device {} initialization completed.", deviceState.getNodeId());
                     transactionChainManager.initialSubmitWriteTransaction();
                     deviceState.setStatisticsPolling(true);
+                    MdSalRegistratorUtils.registerServices(rpcContext, DeviceContextImpl.this, role);
                     return Futures.immediateCheckedFuture(null);
                 }
             });
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
+            LOG.debug("Device {} SLAVE deactivation process", deviceState.getNodeId());
             nextStepFuture = transactionChainManager.deactivateTransactionManager();
             deviceState.setStatisticsPolling(false);
+            MdSalRegistratorUtils.unregisterServices(rpcContext, this, role);
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             nextStepFuture = Futures.immediateCheckedFuture(null);
             deviceState.setStatisticsPolling(false);
-        }
-
-        if (rpcContext != null) {
-            // TODO : implement interface for onClusterRoleChange method
-            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
-        } else {
-            LOG.warn("DeviceCtx for node: {} doesn't contain RpcContext {}", deviceState.getNodeId(), rpcContext);
+            MdSalRegistratorUtils.unregisterServices(rpcContext, this, role);
         }
 
         return nextStepFuture;
@@ -275,18 +281,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @SuppressWarnings("deprecation")
     private ListenableFuture<Void> checkForNodeInitialization() {
         final ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-        final CheckedFuture<Optional<Node>, ReadFailedException> readNodeFuture = readTx.read(
-                LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL,
+                deviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class));
 
-        return Futures.transform(readNodeFuture, new AsyncFunction<Optional<Node>, Void>() {
+        return Futures.transform(readNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
 
             @Override
-            public ListenableFuture<Void> apply(final Optional<Node> input) throws Exception {
+            public ListenableFuture<Void> apply(final Optional<FlowCapableNode> input) throws Exception {
                 final ListenableFuture<Void> returnFuture;
-                if (input.isPresent() && (!input.get().getNodeConnector().isEmpty())) {
-                    // TODO check when exactly could be NodeConnector empty for real device
+                if (input.isPresent() && (!input.get().getTable().isEmpty())) {
+                    /* Device exist in Oper DS with tables so we don't need to sync. Oper DS (as Device futures + stats) */
                     returnFuture = Futures.immediateCheckedFuture(null);
                 } else {
+                    // TODO: remove additional future for statContext.gatherDynamicData
                     final ListenableFuture<Void> initRead = DeviceInitializationUtils.initializeNodeInformation(
                             DeviceContextImpl.this, switchFeaturesMandatory);
                     final ListenableFuture<Boolean> statFuture = Futures.transform(initRead,

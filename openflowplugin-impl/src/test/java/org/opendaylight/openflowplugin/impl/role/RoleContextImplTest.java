@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
@@ -33,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -81,6 +81,8 @@ public class RoleContextImplTest {
 
     @Mock
     private FeaturesReply featuresReply;
+    @Mock
+    private MessageSpy mockMessageSpy;
 
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
@@ -92,15 +94,16 @@ public class RoleContextImplTest {
     public void setup() throws CandidateAlreadyRegisteredException {
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        when(deviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         when(connectionContext.getNodeId()).thenReturn(nodeId);
         when(deviceState.getNodeInstanceIdentifier()).thenReturn(instanceIdentifier);
         when(deviceState.getNodeId()).thenReturn(nodeId);
         when(rpcProviderRegistry.getRpcService(SalRoleService.class)).thenReturn(salRoleService);
         when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
-        when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         when(deviceContext.getPrimaryConnectionContext().getFeatures()).thenReturn(featuresReply);
         when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(deviceContext.onClusterRoleChange(Matchers.<OfpRole>any())).thenReturn(Futures.immediateFuture((Void) null));
+        when(deviceContext.onClusterRoleChange(Matchers.<OfpRole>any(), Matchers.<OfpRole>any())).thenReturn(Futures.immediateFuture((Void) null));
 
         roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.initialization();
@@ -121,7 +124,7 @@ public class RoleContextImplTest {
         final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
         onRoleChanged.get(FUTURE_SAFETY_TIMEOUT, TimeUnit.SECONDS);
 
-        verify(deviceContext).onClusterRoleChange(newRole);
+        verify(deviceContext).onClusterRoleChange(oldRole, newRole);
     }
 
     @Test
@@ -139,7 +142,7 @@ public class RoleContextImplTest {
         final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
         onRoleChanged.get(5, TimeUnit.SECONDS);
 
-        verify(deviceContext, Mockito.never()).onClusterRoleChange(newRole);
+        verify(deviceContext).onClusterRoleChange(oldRole, newRole);
     }
 
     private class SetRoleInputMatcher extends ArgumentMatcher<SetRoleInput> {

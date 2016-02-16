@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.mockito.Mockito.times;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -39,6 +39,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 public class RpcManagerImplTest {
 
     private static final int AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 11;
+    private static final int INIT_AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 1;
 
     private RpcManagerImpl rpcManager;
     @Mock
@@ -55,6 +56,8 @@ public class RpcManagerImplTest {
     private DeviceState deviceState;
     @Mock
     private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Mock
+    private MessageSpy mockMessageSpy;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
@@ -63,7 +66,7 @@ public class RpcManagerImplTest {
         nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow-junit:1")));
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
-        FeaturesReply features = new GetFeaturesOutputBuilder()
+        final FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
                 .build();
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
@@ -71,6 +74,7 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
     }
 
@@ -83,10 +87,12 @@ public class RpcManagerImplTest {
 
         rpcManager.onDeviceContextLevelUp(deviceContext);
 
-        Mockito.verify(rpcProviderRegistry, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
+        Mockito.verify(rpcProviderRegistry, times(INIT_AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class));
-        Mockito.verify(routedRpcRegistration, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).registerPath(
+        Mockito.verify(routedRpcRegistration, times(INIT_AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).registerPath(
                 NodeContext.class, nodePath);
         Mockito.verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceContext);
     }
+
+    // FIXME : add test for role change to MASTER and test call for all 11 time RPC registration
 }
