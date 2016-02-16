@@ -7,10 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.reflect.TypeToken;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -62,41 +63,49 @@ public class MdSalRegistratorUtils {
     }
 
 
-    public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext, final OfpRole newRole) {
+    public static void registerServices(@CheckForNull final RpcContext rpcContext,
+            @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+        Preconditions.checkArgument(rpcContext != null);
+        Preconditions.checkArgument(deviceContext != null);
+        Preconditions.checkArgument(newRole != null);
+        Verify.verify(OfpRole.BECOMEMASTER.equals(newRole), "Service call with bad Role {} we expect role BECOMEMASTER", newRole);
+
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
-
-        if (OfpRole.BECOMEMASTER.equals(newRole)) {
-            rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
-            //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
-            rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
-            rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
-            // TODO: experimenter symmetric and multipart message services
-            rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
-
-        } else if (OfpRole.BECOMESLAVE.equals(newRole)) {
-            rpcContext.unregisterRpcServiceImplementation(SalFlowService.class);
-            //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
-            rpcContext.unregisterRpcServiceImplementation(FlowCapableTransactionService.class);
-            rpcContext.unregisterRpcServiceImplementation(SalMeterService.class);
-            rpcContext.unregisterRpcServiceImplementation(SalGroupService.class);
-            rpcContext.unregisterRpcServiceImplementation(SalTableService.class);
-	    rpcContext.unregisterRpcServiceImplementation(SalPortService.class);
-            rpcContext.unregisterRpcServiceImplementation(PacketProcessingService.class);
-            rpcContext.unregisterRpcServiceImplementation(NodeConfigService.class);
-            rpcContext.unregisterRpcServiceImplementation(OpendaylightFlowStatisticsService.class);
-            // TODO: experimenter symmetric and multipart message services
-            rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
-        }
+        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
+        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
+        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
+        // TODO: experimenter symmetric and multipart message services
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
     }
 
-    public static void unregisterServices(final RpcContext rpcContext) throws Exception {
-        rpcContext.close();
+    public static void unregisterServices(@CheckForNull final RpcContext rpcContext,
+            @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+        Preconditions.checkArgument(rpcContext != null);
+        Preconditions.checkArgument(newRole != null);
+        Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
+
+        // TODO: why we would like to have Echo Service for every cluster RPC instance (check if it is not problem)
+        rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
+
+        rpcContext.unregisterRpcServiceImplementation(SalFlowService.class);
+        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
+        rpcContext.unregisterRpcServiceImplementation(FlowCapableTransactionService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalMeterService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalGroupService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalTableService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalPortService.class);
+        rpcContext.unregisterRpcServiceImplementation(PacketProcessingService.class);
+        rpcContext.unregisterRpcServiceImplementation(NodeConfigService.class);
+        rpcContext.unregisterRpcServiceImplementation(OpendaylightFlowStatisticsService.class);
+        // TODO: experimenter symmetric and multipart message services
+        rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
     }
 
     /**
@@ -116,7 +125,7 @@ public class MdSalRegistratorUtils {
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
         Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isAssignableFrom(flowStatisticsService.getClass()));
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
-        OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
+        final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong());
         ((Delegator<OpendaylightFlowStatisticsService>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
 

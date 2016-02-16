@@ -51,7 +51,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
-    private final List<MultipartType> collectingStatType;
+    private List<MultipartType> collectingStatType;
 
     private StatisticsGatheringService statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
@@ -64,7 +64,12 @@ public class StatisticsContextImpl implements StatisticsContext {
         deviceContext.setStatisticsContext(this);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
+        statListForCollectingInitialization();
+        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
+    }
 
+    @Override
+    public synchronized void statListForCollectingInitialization() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
         if (devState.isTableStatisticsAvailable()) {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
@@ -87,7 +92,6 @@ public class StatisticsContextImpl implements StatisticsContext {
             statListForCollecting.add(MultipartType.OFPMPQUEUE);
         }
         collectingStatType = ImmutableList.<MultipartType>copyOf(statListForCollecting);
-        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
     }
 
     @Override

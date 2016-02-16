@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,6 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -35,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -70,13 +71,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry) {
-        this.rpcProviderRegistry = rpcProviderRegistry;
+    public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry,
+            final boolean shuttingDownStatisticsPolling) {
+        this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
-    }
-
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
-        this(rpcProviderRegistry);
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
     }
 
@@ -92,54 +90,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
 
-        LOG.info("Schedule Statistics poll for node:{}", deviceContext.getDeviceState()
-                .getNodeId());
+        LOG.info("Schedule Statistics poll for node:{}", deviceContext.getDeviceState().getNodeId());
         scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-        return;
-
-//        if (!OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
-//        }
-
-//        LOG.info("Starting Statistics for master role for node:{}", deviceContext.getDeviceState().getNodeId());
-//        final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
-//        Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
-//            @Override
-//            public void onSuccess(final Boolean statisticsGathered) {
-//                if (statisticsGathered) {
-//                    //there are some statistics on device worth gathering
-//                    contexts.put(deviceContext, statisticsContext);
-//                    final TimeCounter timeCounter = new TimeCounter();
-//                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
-//                    LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
-//                    try {
-//                        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-//                    } catch (final Exception e) {
-//                        LOG.info("failed to complete levelUp on next handler for device {}", deviceContext.getDeviceState().getNodeId());
-//                        deviceContext.close();
-//                        return;
-//                    }
-//                    deviceContext.getDeviceState().setDeviceSynchronized(true);
-//                } else {
-//                    final String deviceAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
-//                    try {
-//                        deviceContext.close();
-//                    } catch (final Exception e) {
-//                        LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAddress);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(final Throwable throwable) {
-//                LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
-//                try {
-//                    deviceContext.close();
-//                } catch (final Exception e) {
-//                    LOG.warn("Error closing device context.", e);
-//                }
-//            }
-//        });
     }
 
     private void pollStatistics(final DeviceContext deviceContext,

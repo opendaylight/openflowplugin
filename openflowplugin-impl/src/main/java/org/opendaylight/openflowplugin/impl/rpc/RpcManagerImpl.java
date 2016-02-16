@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -45,7 +44,6 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-//        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 
         LOG.debug("Node:{}", nodeId);
 
@@ -58,13 +56,8 @@ public class RpcManagerImpl implements RpcManager {
         deviceContext.addDeviceContextClosedHandler(this);
 
         LOG.info("Registering Openflow RPCs for node:{}", nodeId);
-        MdSalRegistratorUtils.registerServices(rpcContext, deviceContext, OfpRole.BECOMESLAVE);
+        MdSalRegistratorUtils.unregisterServices(rpcContext, deviceContext, OfpRole.BECOMESLAVE);
 
-//        if (OfpRole.BECOMEMASTER.equals(ofpRole) && isStatisticsRpcEnabled) {
-//            LOG.info("Registering statistics services for backward compatibility.");
-//            MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
-//                    notificationPublishService, new AtomicLong());
-//        }
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
