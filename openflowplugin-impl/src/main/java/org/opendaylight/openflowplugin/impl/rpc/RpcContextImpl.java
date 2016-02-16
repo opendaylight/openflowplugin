@@ -48,16 +48,12 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
+        LOG.trace("registerRpcServiceImplementation method serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
         if (! rpcRegistrations.containsKey(serviceClass)) {
+            LOG.debug("Registration of service {} for device {}.", serviceClass, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistrations.put(serviceClass, routedRpcReg);
-        }
-        LOG.debug("Registration of service {} for device {}.", serviceClass, deviceContext.getDeviceState().getNodeInstanceIdentifier());
-
-        if (serviceInstance instanceof ItemLifeCycleSource) {
-            // TODO: collect registration for selective unregistering in case of tearing down only one rpc
-            deviceContext.getItemLifeCycleSourceRegistry().registerLifeCycleSource((ItemLifeCycleSource) serviceInstance);
         }
     }
 
@@ -115,9 +111,10 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
-        LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
+        LOG.trace("unregisterRpcServiceImplementation method serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
         final RoutedRpcRegistration<?> rpcRegistration = rpcRegistrations.remove(serviceClass);
         if (rpcRegistration != null) {
+            LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
             rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistration.close();
         }

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -28,13 +27,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -236,37 +234,42 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(@Nullable final OfpRole oldRole, @CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node: {}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
 
+        if (role.equals(oldRole)) {
+            LOG.debug("Role was not changed for node {}", deviceState.getNodeId());
+            return Futures.immediateFuture(null);
+        }
+
         final ListenableFuture<Void> nextStepFuture;
+
         if (OfpRole.BECOMEMASTER.equals(role)) {
             transactionChainManager.activateTransactionManager();
+
             final ListenableFuture<Void> nodeCheck = checkForNodeInitialization();
             nextStepFuture = Futures.transform(nodeCheck, new AsyncFunction<Void, Void>() {
 
                 @Override
                 public ListenableFuture<Void> apply(final Void input) throws Exception {
+                    LOG.debug("Device {} initialization completed.", deviceState.getNodeId());
                     transactionChainManager.initialSubmitWriteTransaction();
                     deviceState.setStatisticsPolling(true);
+                    MdSalRegistratorUtils.registerServices(rpcContext, DeviceContextImpl.this, role);
                     return Futures.immediateCheckedFuture(null);
                 }
             });
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            nextStepFuture = transactionChainManager.deactivateTransactionManager();
+            LOG.debug("Device {} SLAVE deactivation process", deviceState.getNodeId());
             deviceState.setStatisticsPolling(false);
+            nextStepFuture = transactionChainManager.deactivateTransactionManager();
+            MdSalRegistratorUtils.unregisterServices(rpcContext, this, role);
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             nextStepFuture = Futures.immediateCheckedFuture(null);
             deviceState.setStatisticsPolling(false);
-        }
-
-        if (rpcContext != null) {
-            // TODO : implement interface for onClusterRoleChange method
-            MdSalRegistratorUtils.registerServices(rpcContext, this, role);
-        } else {
-            LOG.warn("DeviceCtx for node: {} doesn't contain RpcContext {}", deviceState.getNodeId(), rpcContext);
+            MdSalRegistratorUtils.unregisterServices(rpcContext, this, role);
         }
 
         return nextStepFuture;
@@ -274,40 +277,25 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @SuppressWarnings("deprecation")
     private ListenableFuture<Void> checkForNodeInitialization() {
-        final ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-        final CheckedFuture<Optional<Node>, ReadFailedException> readNodeFuture = readTx.read(
-                LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
-
-        return Futures.transform(readNodeFuture, new AsyncFunction<Optional<Node>, Void>() {
+        // TODO : we have to run initialization for every Role change, because we don't have functionality
+        //        for populate DeviceState and relevant statistics markers in StatContext
+        final ListenableFuture<Void> initRead = DeviceInitializationUtils.initializeNodeInformation(
+                DeviceContextImpl.this, switchFeaturesMandatory);
+        final ListenableFuture<Boolean> statFuture = Futures.transform(initRead, new AsyncFunction<Void, Boolean>() {
 
             @Override
-            public ListenableFuture<Void> apply(final Optional<Node> input) throws Exception {
-                final ListenableFuture<Void> returnFuture;
-                if (input.isPresent() && (!input.get().getNodeConnector().isEmpty())) {
-                    // TODO check when exactly could be NodeConnector empty for real device
-                    returnFuture = Futures.immediateCheckedFuture(null);
-                } else {
-                    final ListenableFuture<Void> initRead = DeviceInitializationUtils.initializeNodeInformation(
-                            DeviceContextImpl.this, switchFeaturesMandatory);
-                    final ListenableFuture<Boolean> statFuture = Futures.transform(initRead,
-                            new AsyncFunction<Void, Boolean>() {
+            public ListenableFuture<Boolean> apply(final Void input) throws Exception {
+                statContext.statListForCollectingInitialization();
+                return statContext.gatherDynamicData();
+            }
+        });
 
-                        @Override
-                        public ListenableFuture<Boolean> apply(final Void input) throws Exception {
-                            return statContext.gatherDynamicData();
-                        }
-                    });
-                    returnFuture = Futures.transform(statFuture, new AsyncFunction<Boolean, Void>() {
+        return Futures.transform(statFuture, new AsyncFunction<Boolean, Void>() {
 
-                        @Override
-                        public ListenableFuture<Void> apply(final Boolean input) throws Exception {
-                            transactionChainManager.initialSubmitWriteTransaction();
-                            return Futures.immediateFuture(null);
-                        }
-                    });
-                }
-                readTx.close();
-                return returnFuture;
+            @Override
+            public ListenableFuture<Void> apply(final Boolean input) throws Exception {
+                transactionChainManager.initialSubmitWriteTransaction();
+                return Futures.immediateFuture(null);
             }
         });
     }

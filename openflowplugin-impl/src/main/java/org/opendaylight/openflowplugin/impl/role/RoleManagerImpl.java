@@ -62,7 +62,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     private final EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
     private final boolean switchFeaturesMandatory;
-    private boolean managerStart;
+    private final boolean managerStart;
 
     public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker, final boolean switchFeaturesMandatory) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
@@ -85,10 +85,6 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
                 makeEntity(deviceContext.getDeviceState().getNodeId()),
                 makeTxEntity(deviceContext.getDeviceState().getNodeId()));
-        if (this.managerStart) {
-            roleContext.firstTimeRun();
-            this.managerStart = false;
-        }
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(this);
         final RoleContext previousContext = contexts.putIfAbsent(roleContext.getEntity(), roleContext);
@@ -169,7 +165,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                     // TODO : is there a chance to have TxEntity ?
                 }
             } else {
-                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close proces", entity);
+                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close process", entity);
             }
             roleContext.close();
         }
@@ -413,7 +409,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             @Override
             public void onSuccess(@Nullable final Void aVoid) {
                 LOG.debug("Freeing roleContext slot for device: {}", roleChangeListener.getDeviceState().getNodeId());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                final RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
 
@@ -421,7 +418,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             public void onFailure(final Throwable throwable) {
                 LOG.warn("NOT freeing roleContext slot for device: {}, {}", roleChangeListener.getDeviceState()
                         .getNodeId(), throwable.getMessage());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                final RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
         });
