@@ -1,0 +1,299 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_9a75399a",
+        "filename": "applications/openflow-benchmark/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "For consistency with other OpenDaylight .md files I\u0027d advocate a change to \u0027# How To Build and Run\u0027 and remove next line.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_da62d1d7",
+        "filename": "applications/openflow-benchmark/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "Per your pom.xml Maven version should be changed to 3.1.1+ \"\u003cprerequisites\u003e\n    \u003cmaven\u003e3.1.1\u003c/maven\u003e\n \u003c/prerequisites\u003e\"",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 35
+      },
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_ba783590",
+        "filename": "applications/openflow-benchmark/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "I\u0027d advocate a change to \u0027## Jbench Usage Options\u0027 for constancy with other OpenDaylight .md files and clarity. This would include removal of dashed line.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_7a72bdae",
+        "filename": "applications/openflow-benchmark/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "Line 22 to 53 should be indented four spaces or tabbed to signify pre-formatting. This will ensure proper display when viewed as html.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_7ae15dfd",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "Imports should follow OpenDaylight code standards for import ordering: https://wiki.opendaylight.org/view/GettingStarted:_Eclipse_Setup#Import_ordering\n\n\"Organize imports in following way:\n\n    static imports sorted alphabetically\n    \u003cblank line\u003e\n    imports sorted alphabetically\"",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_459286a0",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "\u0027out\u0027 is not very descriptive. This should be changed to something like \u0027outputByteBuf\u0027",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_e5905297",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "\u0027registry\u0027 - same as above. This should likely be \u0027serializerRegistry\u0027",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_a5d1fa58",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "Unsure if both conditions are necessary, I\u0027d assume sentToController would be null if socket was null.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_65cb02a6",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "\u0027in\u0027 is not descriptive enought and should be changed to something like \u0027inputByteBuf\u0027",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_85ce3eb3",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "\u0027type\u0027 is not descriptive and should be changed to something like \u0027ofHeaderType\u0027",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_25c50a8e",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "Here you return ECHOREQUEST, but in the next two else if statements you return \u0027type\u0027. While both should be equal in any of the else if statements, they should be handled the same in each statement.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_c53bd69a",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "\u0027payload1\u0027 is not descriptive. Consider changing to be more descriptive of the contents. This also applies to payload2 and ofpayload. Comments would be handy hear also.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_65422212",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/FakeSwitch.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "again \u0027out\u0027 is not descriptive, consider rename.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_0713b10d",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/Jbench.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "This log info and below could be cleaned up to make tool output cleaner and less confusing.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_67fb9dc1",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/Jbench.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "runTests() should take argument of latency or throughput, currently it seems like only throughput is supported.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_a70125b1",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/Jbench.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "We should report in seconds and possibly minute and ms here. \n\nAlso, results should be saved to a file (option to do so should be in jcommand flags)",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_2725155c",
+        "filename": "applications/openflow-benchmark/src/main/java/org/opendaylight/jbench/Jbench.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2016-02-17T18:47:53Z",
+      "side": 1,
+      "message": "I\u0027m still working through how this function works... \n\nAt first look this seems like it should be split into two or more functions (display per loop results and calculate min max average for a start) and should be heavily commented to explain logic.",
+      "revId": "0331724f4607ab687aa6d011fbe583db7adfa79b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
