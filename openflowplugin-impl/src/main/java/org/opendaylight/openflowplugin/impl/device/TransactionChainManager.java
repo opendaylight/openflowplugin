@@ -115,21 +115,36 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * Method change status for TxChainManger to {@link TransactionChainManagerStatus#SLEEPING} and it unregisters
      * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS.
      * Call this method for SLAVE only.
+     * @return Future
      */
-    public void deactivateTransactionManager() {
+    public CheckedFuture<Void, TransactionCommitFailedException> deactivateTransactionManager() {
+        final CheckedFuture<Void, TransactionCommitFailedException> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                 LOG.debug("Submitting all transactions if we were in status WORKING for Node", deviceState.getNodeId());
-                submitWriteTransaction();
+                transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+                future = txChainShuttingDown();
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 LOG.debug("Transaction Factory delete for Node {}", deviceState.getNodeId());
-                transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-                txChainFactory.close();
-                txChainFactory = null;
+                Futures.addCallback(future, new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(final Void result) {
+                        txChainFactory.close();
+                        txChainFactory = null;
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        txChainFactory.close();
+                        txChainFactory = null;
+                    }
+                });
             } else {
-                LOG.debug("Transaction is not active {}", deviceState.getNodeId());
+                // TODO : ignoring redundant deactivate invocation
+                future = Futures.immediateCheckedFuture(null);
             }
         }
+        return future;
     }
 
     boolean submitWriteTransaction() {
@@ -230,19 +245,25 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         CheckedFuture<Void, TransactionCommitFailedException> future;
         synchronized (txLock) {
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
-            if (txChainFactory == null) {
-                // stay with actual thread
-                future = Futures.immediateCheckedFuture(null);
-            } else {
-                // hijack md-sal thread
-                if (wTx == null) {
-                    wTx = txChainFactory.newWriteOnlyTransaction();
-                }
-                final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId());
-                wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
-                future = wTx.submit();
-                wTx = null;
+            future = txChainShuttingDown();
+        }
+        return future;
+    }
+
+    private CheckedFuture<Void, TransactionCommitFailedException> txChainShuttingDown() {
+        CheckedFuture<Void, TransactionCommitFailedException> future;
+        if (txChainFactory == null) {
+            // stay with actual thread
+            future = Futures.immediateCheckedFuture(null);
+        } else {
+            // hijack md-sal thread
+            if (wTx == null) {
+                wTx = txChainFactory.newWriteOnlyTransaction();
             }
+            final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId());
+            wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
+            future = wTx.submit();
+            wTx = null;
         }
         return future;
     }
