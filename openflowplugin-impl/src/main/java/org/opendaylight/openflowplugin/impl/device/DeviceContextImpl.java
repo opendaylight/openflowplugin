@@ -233,28 +233,29 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void onClusterRoleChange(@CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (OfpRole.BECOMEMASTER.equals(role)) {
             if (!deviceState.deviceSynchronized()) {
                 LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
+                return Futures.immediateCheckedFuture(null);
             } else {
                 /* Relevant for no initial Slave-to-Master scenario */
-                asyncClusterRoleChange(role);
+                return asyncClusterRoleChange(role);
             }
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (rpcContext != null) {
                 MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
             }
-            transactionChainManager.deactivateTransactionManager();
+            return transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (rpcContext != null) {
                 MdSalRegistratorUtils.unregisterServices(rpcContext);
             }
-            transactionChainManager.deactivateTransactionManager();
+            return transactionChainManager.deactivateTransactionManager();
         }
     }
 
@@ -263,7 +264,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
      * check all NodeInformation for statistics otherwise statistics will not contains
      * all possible MultipartTypes for polling in StatTypeList
      */
-    private void asyncClusterRoleChange(final OfpRole role) {
+    private ListenableFuture<Void> asyncClusterRoleChange(final OfpRole role) {
         final ListenableFuture<Void> statInitFuture = DeviceInitializationUtils.initializeNodeInformation(
                 DeviceContextImpl.this, switchFeaturesMandatory);
         Futures.addCallback(statInitFuture, new FutureCallback<Void>() {
@@ -275,8 +276,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
                 }
                 getStatisticsContext().statListForCollectingInitialization();
-                transactionChainManager.activateTransactionManager();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
+                transactionChainManager.activateTransactionManager();
             }
 
             @Override
@@ -285,6 +286,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 DeviceContextImpl.this.close();
             }
         });
+        return statInitFuture;
     }
 
     @Override

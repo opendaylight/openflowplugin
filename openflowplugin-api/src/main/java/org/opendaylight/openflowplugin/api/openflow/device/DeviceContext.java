@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
@@ -88,8 +89,9 @@ public interface DeviceContext extends AutoCloseable,
      * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
      * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
+     * @return RoleChangeTxChainManager future for activation/deactivation
      */
-    void onClusterRoleChange(@CheckForNull OfpRole role);
+    ListenableFuture<Void> onClusterRoleChange(@CheckForNull OfpRole role);
 
     /**
      * Method creates put operation using provided data in underlying transaction chain.
