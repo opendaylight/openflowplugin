@@ -59,9 +59,8 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -193,7 +192,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             try {
                 deviceContext.close();
             } catch (final Exception e1) {
-                LOG.warn("Device context close FAIL - " + deviceContext.getDeviceState().getNodeId());
+                LOG.warn("Device context close FAIL - {}", deviceContext.getDeviceState().getNodeId());
             }
         }
     }
@@ -555,19 +554,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             LOG.warn("IP address of the node {} cannot be obtained. No connection with switch.", deviceContext.getDeviceState().getNodeId());
             return null;
         }
-        LOG.info("IP address of switch is :"+remoteAddress);
 
-        final InetAddress address = remoteAddress.getAddress();
-        String hostAddress = address.getHostAddress();
-        if (address instanceof Inet4Address) {
-            return new IpAddress(new Ipv4Address(hostAddress));
-        }
-        if (address instanceof Inet6Address) {
-            return new IpAddress(new Ipv6Address(hostAddress));
-        }
-        LOG.info("Illegal IP address {} of switch:{} ", address, deviceContext.getDeviceState().getNodeId());
-        return null;
-
+        LOG.info("IP address of switch is: {}", remoteAddress);
+        return IetfInetUtil.ipAddressFor(remoteAddress.getAddress());
     }
 
     private static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
