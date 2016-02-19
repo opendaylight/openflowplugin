@@ -8,23 +8,22 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Iterator;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 
 
 /**
@@ -96,7 +95,7 @@ public final class IpConversionUtil {
     */
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address){
-        return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + IPV4_ADDRESS_LENGTH);
+        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final String mask){
@@ -114,15 +113,15 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final int intmask){
-        return createPrefix(ipv4Address, String.valueOf(intmask));
+        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, intmask);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask){
-        return createPrefix(ipv4Address, String.valueOf(countBits(bytemask)));
+        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address){
-        return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + IPV6_ADDRESS_LENGTH);
+        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask){
@@ -140,37 +139,19 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final int intmask){
-        return createPrefix(ipv6Address, String.valueOf(intmask));
+        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, intmask);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask){
-        /*
-         * Ipv4Address has already validated the address part of the prefix,
-         * It is mandated to comply to the same regexp as the address
-         * There is absolutely no point rerunning additional checks vs this
-         * Note - there is no canonical form check here!!!
-         */
-         return createPrefix(ipv6Address, String.valueOf(countBits(bytemask)));
+        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, countBits(bytemask));
     }
 
     public static Integer extractPrefix(final Ipv4Prefix ipv4Prefix) {
-        Iterator<String> addressParts = splitToParts(ipv4Prefix);
-        addressParts.next();
-        Integer retval = null;
-        if (addressParts.hasNext()) {
-            retval = Integer.parseInt(addressParts.next());
-        }
-        return retval;
+        return IetfInetUtil.INSTANCE.splitIpv4Prefix(ipv4Prefix).getValue();
     }
 
     public static Integer extractPrefix(final Ipv6Prefix ipv6Prefix) {
-        Iterator<String> addressParts = splitToParts(ipv6Prefix);
-        addressParts.next();
-        Integer retval = null;
-        if (addressParts.hasNext()) {
-            retval = Integer.parseInt(addressParts.next());
-        }
-        return retval;
+        return IetfInetUtil.INSTANCE.splitIpv6Prefix(ipv6Prefix).getValue();
     }
 
     public static Integer extractPrefix(final Ipv4Address ipv4Prefix) {
@@ -561,7 +542,7 @@ public final class IpConversionUtil {
         }
     }
 
-     /**
+    /**
      * Canonicalize a v6 prefix while in binary form
      *
      * @param prefix - prefix, in byte [] form
@@ -582,19 +563,11 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
-        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
-        return new Ipv6Address(addressParts.next());
+        return IetfInetUtil.INSTANCE.ipv6AddressFrom(ipv6Prefix);
     }
 
     public static Integer extractIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
-        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
-        addressParts.next();
-
-        Integer prefix = null;
-        if (addressParts.hasNext()) {
-            prefix = Integer.parseInt(addressParts.next());
-        }
-        return prefix;
+        return IetfInetUtil.INSTANCE.splitIpv6Prefix(ipv6Prefix).getValue();
     }
 
     public static int countBits(final byte[] mask) {
