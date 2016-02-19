@@ -4,17 +4,17 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.6.0-Beryllium</version>
+    <version>1.6.1-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
-  <version>0.2.0-Beryllium</version>
+  <version>0.2.1-SNAPSHOT</version>
   <artifactId>features-openflowplugin-extension-li</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
-    <openflowplugin.version>0.2.0-Beryllium</openflowplugin.version>
+    <openflowplugin.version>0.2.1-SNAPSHOT</openflowplugin.version>
   </properties>
 
   <dependencyManagement>
