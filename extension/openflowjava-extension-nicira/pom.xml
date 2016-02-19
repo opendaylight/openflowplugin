@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-extension-parent</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.2.0-Beryllium</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>openflowjava-extension-nicira</artifactId>

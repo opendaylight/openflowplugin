@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin.model</groupId>
     <artifactId>model-parent</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0-Beryllium</version>
   </parent>
   <artifactId>model-flow-base</artifactId>
   <packaging>bundle</packaging>

@@ -5,28 +5,28 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>features-parent</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.0-Beryllium</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin-li</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0-Beryllium</version>
 
     <properties>
-        <yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
-        <config.version>0.4.0-SNAPSHOT</config.version>
-        <mdsal.version>1.3.0-SNAPSHOT</mdsal.version>
-        <openflowjava.version>0.7.0-SNAPSHOT</openflowjava.version>
-        <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
-        <dlux.version>0.3.0-SNAPSHOT</dlux.version>
-        <lldp.version>0.10.0-SNAPSHOT</lldp.version>
+        <yangtools.version>0.8.0-Beryllium</yangtools.version>
+        <config.version>0.4.0-Beryllium</config.version>
+        <mdsal.version>1.3.0-Beryllium</mdsal.version>
+        <openflowjava.version>0.7.0-Beryllium</openflowjava.version>
+        <openflowplugin.version>0.2.0-Beryllium</openflowplugin.version>
+        <dlux.version>0.3.0-Beryllium</dlux.version>
+        <lldp.version>0.10.0-Beryllium</lldp.version>
 
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
         <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
-        <restconf.version>1.3.0-SNAPSHOT</restconf.version>
-        <mdsal.model.version>0.8.0-SNAPSHOT</mdsal.model.version>
+        <restconf.version>1.3.0-Beryllium</restconf.version>
+        <mdsal.model.version>0.8.0-Beryllium</mdsal.model.version>
     </properties>
 
     <dependencyManagement>
