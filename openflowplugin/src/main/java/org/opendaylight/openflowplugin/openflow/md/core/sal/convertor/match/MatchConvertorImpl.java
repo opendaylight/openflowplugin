@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -962,36 +963,34 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
         if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwSrc() != null) {
-            String ipv4PrefixStr = swMatch.getNwSrc().getValue();
+            final Ipv4Prefix prefix;
             if (swMatch.getNwSrcMask() != null) {
-                ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + swMatch.getNwSrcMask();
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(swMatch.getNwSrc(), swMatch.getNwSrcMask());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
                 // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
                 // statistics response.
-
-                ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(swMatch.getNwSrc());
             }
-            if (!NO_IP.equals(ipv4PrefixStr)) {
-                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+            if (!NO_IP.equals(prefix.getValue())) {
+                ipv4MatchBuilder.setIpv4Source(prefix);
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
         if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwDst() != null) {
-            String ipv4PrefixStr = swMatch.getNwDst().getValue();
+            final Ipv4Prefix prefix;
             if (swMatch.getNwDstMask() != null) {
-                ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + swMatch.getNwDstMask();
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(swMatch.getNwDst(), swMatch.getNwDstMask());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
                 // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
                 // statistics response.
-
-                ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(swMatch.getNwDst());
             }
-            if (!NO_IP.equals(ipv4PrefixStr)) {
-                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+            if (!NO_IP.equals(prefix.getValue())) {
+                ipv4MatchBuilder.setIpv4Destination(prefix);
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
@@ -1493,7 +1492,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
     private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final MatchEntry ofMatch, final byte[] mask, final String ipv4PrefixStr) {
-        Ipv4Prefix ipv4Prefix;
+        final Ipv4Prefix ipv4Prefix;
         if (mask != null) {
             ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
         } else {
