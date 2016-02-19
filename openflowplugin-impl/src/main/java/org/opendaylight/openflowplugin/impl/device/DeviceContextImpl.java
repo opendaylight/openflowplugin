@@ -50,12 +50,15 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -121,6 +124,9 @@ public class DeviceContextImpl implements DeviceContext {
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
     private RpcContext rpcContext;
 
+    private final boolean switchFeaturesMandatory;
+    private StatisticsContext statCtx;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -129,7 +135,9 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-            @Nonnull final TranslatorLibrary translatorLibrary) {
+                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -202,21 +210,54 @@ public class DeviceContextImpl implements DeviceContext {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            transactionChainManager.activateTransactionManager();
-            if (rpcContext != null) {
-                MdSalRegistratorUtils.registerMasterServices(rpcContext, DeviceContextImpl.this, role);
+            if (!deviceState.deviceSynchronized()) {
+                LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
+                transactionChainManager.activateTransactionManager();
+            } else {
+                /* Relevant for no initial Slave-to-Master scenario */
+                asyncClusterRoleChange(role);
             }
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            transactionChainManager.deactivateTransactionManager();
             if (rpcContext != null) {
                 MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
             }
+            transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknow OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (rpcContext != null) {
                 MdSalRegistratorUtils.unregisterServices(rpcContext);
             }
+            transactionChainManager.deactivateTransactionManager();
         }
+    }
+
+    /*
+     * we don't have active TxManager so anything will not be stored to DS yet, but we have
+     * check all NodeInformation for statistics otherwise statistics will not contains
+     * all possible MultipartTypes for polling in StatTypeList
+     */
+    private void asyncClusterRoleChange(final OfpRole role) {
+        final ListenableFuture<Void> statInitFuture = DeviceInitializationUtils.initializeNodeInformation(
+                DeviceContextImpl.this, switchFeaturesMandatory);
+        Futures.addCallback(statInitFuture, new FutureCallback<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                LOG.debug("Initial Device {} information is successful", getDeviceState().getNodeId());
+                if (null != getRpcContext()) {
+                    MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+                }
+                getStatisticsContext().statListForCollectingInitialization();
+                transactionChainManager.activateTransactionManager();
+                getDeviceState().setStatisticsPollingEnabledProp(true);
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("Inital Device {} information fails", getDeviceState().getNodeId());
+                DeviceContextImpl.this.close();
+            }
+        });
     }
 
     @Override
@@ -503,4 +544,13 @@ public class DeviceContextImpl implements DeviceContext {
         return rpcContext;
     }
 
+    @Override
+    public void setStatisticsContext(final StatisticsContext statisticsContext) {
+        this.statCtx = statisticsContext;
+    }
+
+    @Override
+    public StatisticsContext getStatisticsContext() {
+        return statCtx;
+    }
 }

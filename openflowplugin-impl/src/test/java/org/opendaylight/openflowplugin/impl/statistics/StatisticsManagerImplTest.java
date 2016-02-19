@@ -5,6 +5,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
 import junit.framework.TestCase;
@@ -25,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,6 +65,7 @@ public class StatisticsManagerImplTest extends TestCase {
         when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
 
         when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
+        when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
@@ -72,7 +76,7 @@ public class StatisticsManagerImplTest extends TestCase {
 
     @Test
     public void testOnDeviceContextLevelUp() throws Exception {
-        final StatisticsManagerImpl statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry);
+        final StatisticsManagerImpl statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
         verify(mockedDeviceState).setDeviceSynchronized(eq(true));

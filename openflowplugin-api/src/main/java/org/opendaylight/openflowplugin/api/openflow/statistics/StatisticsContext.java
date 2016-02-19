@@ -21,6 +21,16 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable {
     ListenableFuture<Boolean> gatherDynamicData();
 
     /**
+     * Method has to be called from DeviceInitialization Method, otherwise
+     * we are not able to poll anything. Statistics Context normally initialize
+     * this part by initialization process but we don't have this information
+     * in initialization phase and we have to populate whole list after every
+     * device future collecting. Because device future collecting set DeviceState
+     * and we creating marks for the correct kind of stats from DeviceState.
+     */
+    void statListForCollectingInitialization();
+
+    /**
      * @param pollTimeout handle to nearest scheduled statistics poll
      */
     void setPollTimeout(Timeout pollTimeout);
@@ -29,4 +39,6 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable {
      * @return handle to currently scheduled statistics polling
      */
     Optional<Timeout> getPollTimeout();
+    @Override
+    void close();
 }

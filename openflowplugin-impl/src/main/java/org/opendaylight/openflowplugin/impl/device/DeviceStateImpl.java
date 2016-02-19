@@ -48,6 +48,7 @@ class DeviceStateImpl implements DeviceState {
     private boolean portStatisticsAvailable;
     private boolean queueStatisticsAvailable;
     private volatile OfpRole role;
+    private volatile boolean statPollEnabled;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -55,6 +56,7 @@ class DeviceStateImpl implements DeviceState {
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         version = featuresReply.getVersion();
+        statPollEnabled = false;
     }
 
     @Override
@@ -166,5 +168,15 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setRole(final OfpRole role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean isStatisticsPollingEnabled() {
+        return statPollEnabled;
+    }
+
+    @Override
+    public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
+        this.statPollEnabled = statPollEnabled;
     }
 }
