@@ -41,9 +41,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -362,19 +361,9 @@ public class DeviceInitializationUtils {
                     .getDeviceState().getNodeId());
             return null;
         }
-        LOG.info("IP address of switch is :" + remoteAddress);
+        LOG.info("IP address of switch is: {}", remoteAddress);
 
-        final InetAddress address = remoteAddress.getAddress();
-        final String hostAddress = address.getHostAddress();
-        if (address instanceof Inet4Address) {
-            return new IpAddress(new Ipv4Address(hostAddress));
-        }
-        if (address instanceof Inet6Address) {
-            return new IpAddress(new Ipv6Address(hostAddress));
-        }
-        LOG.info("Illegal IP address {} of switch:{} ", address, deviceContext.getDeviceState().getNodeId());
-        return null;
-
+        return IetfInetUtil.ipAddressFor(remoteAddress.getAddress());
     }
 
     // FIXME : remove after ovs tableFeatures fix
