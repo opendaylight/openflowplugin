@@ -12,6 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -51,7 +53,9 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
-    private final List<MultipartType> collectingStatType;
+    private final Object COLLECTION_STAT_TYPE_LOCK = new Object();
+    @GuardedBy("COLLECTION_STAT_TYPE_LOCK")
+    private List<MultipartType> collectingStatType;
 
     private StatisticsGatheringService statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
@@ -63,30 +67,37 @@ public class StatisticsContextImpl implements StatisticsContext {
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
-
-        final List<MultipartType> statListForCollecting = new ArrayList<>();
-        if (devState.isTableStatisticsAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPTABLE);
-        }
-        if (devState.isFlowStatisticsAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPFLOW);
-        }
-        if (devState.isGroupAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
-            statListForCollecting.add(MultipartType.OFPMPGROUP);
-        }
-        if (devState.isMetersAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
-            statListForCollecting.add(MultipartType.OFPMPMETER);
-        }
-        if (devState.isPortStatisticsAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPPORTSTATS);
-        }
-        if (devState.isQueueStatisticsAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPQUEUE);
-        }
-        collectingStatType = ImmutableList.<MultipartType>copyOf(statListForCollecting);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
+        statListForCollectingInitialization();
+        deviceContext.setStatisticsContext(StatisticsContextImpl.this);
+    }
+
+    @Override
+    public void statListForCollectingInitialization() {
+        synchronized (COLLECTION_STAT_TYPE_LOCK) {
+            final List<MultipartType> statListForCollecting = new ArrayList<>();
+            if (devState.isTableStatisticsAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPTABLE);
+            }
+            if (devState.isFlowStatisticsAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPFLOW);
+            }
+            if (devState.isGroupAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
+                statListForCollecting.add(MultipartType.OFPMPGROUP);
+            }
+            if (devState.isMetersAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
+                statListForCollecting.add(MultipartType.OFPMPMETER);
+            }
+            if (devState.isPortStatisticsAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPPORTSTATS);
+            }
+            if (devState.isQueueStatisticsAvailable()) {
+                statListForCollecting.add(MultipartType.OFPMPQUEUE);
+            }
+            collectingStatType = ImmutableList.<MultipartType> copyOf(statListForCollecting);
+        }
     }
 
     @Override
@@ -95,10 +106,12 @@ public class StatisticsContextImpl implements StatisticsContext {
         if (errorResultFuture != null) {
             return errorResultFuture;
         }
-        final Iterator<MultipartType> statIterator = collectingStatType.iterator();
-        final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
-        statChainFuture(statIterator, settableStatResultFuture);
-        return settableStatResultFuture;
+        synchronized (COLLECTION_STAT_TYPE_LOCK) {
+            final Iterator<MultipartType> statIterator = Iterators.unmodifiableIterator(collectingStatType.iterator());
+            final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
+            statChainFuture(statIterator, settableStatResultFuture);
+            return settableStatResultFuture;
+        }
     }
 
     private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType) {
@@ -148,7 +161,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public void setPollTimeout(Timeout pollTimeout) {
+    public void setPollTimeout(final Timeout pollTimeout) {
         this.pollTimeout = pollTimeout;
     }
 
@@ -246,12 +259,12 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringService(StatisticsGatheringService statisticsGatheringService) {
+    protected void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
         this.statisticsGatheringService = statisticsGatheringService;
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringOnTheFlyService(StatisticsGatheringOnTheFlyService
+    protected void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService
                                                              statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }

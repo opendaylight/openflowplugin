@@ -146,7 +146,7 @@ public class DeviceManagerImplTest {
 
         MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
         DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;

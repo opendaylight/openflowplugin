@@ -126,6 +126,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 txChainFactory.close();
                 txChainFactory = null;
+            } else {
+                LOG.debug("Transaction is not active {}", deviceState.getNodeId());
             }
         }
     }

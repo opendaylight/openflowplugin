@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -211,6 +212,10 @@ public interface DeviceContext extends AutoCloseable,
     void setRpcContext(RpcContext rpcContext);
 
     RpcContext getRpcContext();
+
+    void setStatisticsContext(StatisticsContext statisticsContext);
+
+    StatisticsContext getStatisticsContext();
 
     @Override
     void close();

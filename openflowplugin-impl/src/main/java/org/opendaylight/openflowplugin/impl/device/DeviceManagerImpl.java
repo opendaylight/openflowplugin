@@ -55,6 +55,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static final long TICK_DURATION = 10; // 0.5 sec.
     private final long globalNotificationQuota;
+    private boolean switchFeaturesMandatory;
     private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
@@ -74,7 +75,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
-                             final long globalNotificationQuota) {
+                             final long globalNotificationQuota, final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
@@ -145,7 +147,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         final DeviceState deviceState = createDeviceState(connectionContext);
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary);
+                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
         deviceContext.addDeviceContextClosedHandler(this);
         Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
