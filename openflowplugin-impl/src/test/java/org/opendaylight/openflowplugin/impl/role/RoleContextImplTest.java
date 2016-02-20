@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.role;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,7 +104,7 @@ public class RoleContextImplTest {
         final RoleContextImpl roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.setSalRoleService(salRoleService);
 
-        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole, null);
+        roleContext.onRoleChanged(OfpRole.BECOMESLAVE, newRole);
 
         verify(deviceState).setRole(newRole);
     }
@@ -113,6 +114,7 @@ public class RoleContextImplTest {
 
         private final OfpRole ofpRole;
         private final NodeRef nodeRef;
+
         public SetRoleInputMatcher(final OfpRole ofpRole, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
             this.ofpRole = ofpRole;
             nodeRef = new NodeRef(instanceIdentifier);
