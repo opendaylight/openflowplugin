@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -72,24 +74,34 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
             setResult(rpcResultBuilder.build());
             endCollecting();
         } else {
-            MultipartReply multipartReply = (MultipartReply) result;
+            final MultipartReply multipartReply = (MultipartReply) result;
 
-            Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
             final MultipartReply singleReply = multipartReply;
             final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
-            allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+            final Iterable<? extends DataObject> allMultipartData = multipartDataList;
 
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
+            ListenableFuture<Void> future;
             if (virgin) {
-                StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
+                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
                 virgin = false;
+            } else {
+                future = Futures.immediateFuture(null);
             }
-            StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceContext);
-            // ^^^^
 
-            if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
-                endCollecting();
-            }
+            Futures.transform(future, new Function<Void, Void>() {
+
+                @Override
+                public Void apply(final Void input) {
+                    StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,deviceContext);
+                    // ^^^^
+
+                    if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
+                        endCollecting();
+                    }
+                    return null;
+                }
+            });
         }
     }
 
