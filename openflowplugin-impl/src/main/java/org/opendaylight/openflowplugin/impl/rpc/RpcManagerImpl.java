@@ -43,7 +43,7 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
         final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 
@@ -58,7 +58,7 @@ public class RpcManagerImpl implements RpcManager {
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
-            
+
             if (isStatisticsRpcEnabled) {
                 MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
                         notificationPublishService, new AtomicLong());

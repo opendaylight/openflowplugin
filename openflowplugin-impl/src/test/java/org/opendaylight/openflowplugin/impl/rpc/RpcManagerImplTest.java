@@ -78,7 +78,7 @@ public class RpcManagerImplTest {
     }
 
     @Test
-    public void testOnDeviceContextLevelUp() {
+    public void testOnDeviceContextLevelUp() throws Exception {
 
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))

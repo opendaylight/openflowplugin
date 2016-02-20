@@ -185,7 +185,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
-    void deviceCtxLevelUp(final DeviceContext deviceContext) {
+    private void deviceCtxLevelUp(final DeviceContext deviceContext) throws Exception {
         deviceContext.getDeviceState().setValid(true);
         LOG.trace("Device context level up called.");
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
