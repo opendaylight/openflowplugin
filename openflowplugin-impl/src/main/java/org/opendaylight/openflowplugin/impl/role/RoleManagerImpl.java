@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -100,59 +99,19 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                 "RoleCtx for master Node {} is still not close.", deviceContext.getDeviceState().getNodeId());
 
         roleContext.initialization();
-        @Deprecated
-        final ListenableFuture<OfpRole> roleChangeFuture = SettableFuture.<OfpRole> create();
-
-        final ListenableFuture<Void> txFreeFuture = Futures.transform(roleChangeFuture, new AsyncFunction<OfpRole, Void>() {
-            @Override
-            public ListenableFuture<Void> apply(final OfpRole input) throws Exception {
-                final ListenableFuture<Void> nextFuture;
-                if (OfpRole.BECOMEMASTER.equals(input)) {
-                    LOG.debug("Node {} has marked as LEADER", deviceContext.getDeviceState().getNodeId());
-                    Verify.verify(txContexts.putIfAbsent(roleContext.getTxEntity(), roleContext) == null,
-                            "RoleCtx for TxEntity {} master Node {} is still not close.",
-                            roleContext.getTxEntity(), deviceContext.getDeviceState().getNodeId());
-//                    nextFuture = roleContext.setupTxCandidate();
-                            nextFuture = Futures.immediateFuture(null);
-                } else {
-                    LOG.debug("Node {} was marked as FOLLOWER", deviceContext.getDeviceState().getNodeId());
-                    nextFuture = Futures.immediateFuture(null);
-                }
-                return nextFuture;
-            }
-        });
-
-        final ListenableFuture<Void> initDeviceFuture = Futures.transform(txFreeFuture, new AsyncFunction<Void, Void>() {
-            @Override
-            public ListenableFuture<Void> apply(final Void input) throws Exception {
-                LOG.debug("Node {} will be initialized", deviceContext.getDeviceState().getNodeId());
-                return DeviceInitializationUtils.initializeNodeInformation(deviceContext, switchFeaturesMandatory);
-            }
-        });
-
-        Futures.addCallback(initDeviceFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("Initialization Node {} is done.", deviceContext.getDeviceState().getNodeId());
-                try {
-                    getRoleContextLevelUp(deviceContext);
-                } catch (final Exception e) {
-                    deviceContext.close();
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("Unexpected error for Node {} initialization", deviceContext.getDeviceState().getNodeId(), t);
-                deviceContext.close();
-            }
-        });
     }
 
-    void getRoleContextLevelUp(final DeviceContext deviceContext) throws Exception {
+    void getRoleContextLevelUp(final DeviceContext deviceContext) {
         LOG.debug("Created role context for node {}", deviceContext.getDeviceState().getNodeId());
         LOG.debug("roleChangeFuture success for device:{}. Moving to StatisticsManager", deviceContext.getDeviceState().getNodeId());
-        deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        try {
+            deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        } catch (final Exception e) {
+            LOG.info("failed to complete levelUp on next handler for device {}",
+                    deviceContext.getDeviceState().getNodeId());
+            deviceContext.close();
+            return;
+        }
     }
 
     @Override
@@ -237,27 +196,106 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                 ownershipChange.getEntity(), ownershipChange);
     }
 
-    private void changeForTxEntity(final EntityOwnershipChange ownershipChange, @Nonnull final RoleChangeListener roleTxChangeListener) throws InterruptedException {
-        LOG.info("Received EntityOwnershipChange:{}", ownershipChange);
-        final Semaphore txCandidateGuard = roleTxChangeListener.getTxCandidateGuard();
+    private void changeForTxEntity(final EntityOwnershipChange ownershipChange, @Nonnull final RoleContext roleContext)
+            throws InterruptedException {
+        LOG.info("Received TX-EntityOwnershipChange:{}", ownershipChange);
+        final Semaphore txCandidateGuard = roleContext.getTxCandidateGuard();
         LOG.trace("txCandidate lock queue: " + txCandidateGuard.getQueueLength());
         txCandidateGuard.acquire();
 
-        if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
-            // MASTER -> SLAVE - left transition lock
-            txContexts.remove(roleTxChangeListener.getTxEntity(), roleTxChangeListener);
-            txCandidateGuard.release();
-        } else if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
-            // SLAVE -> MASTER - acquired transition lock
-            LOG.debug("TxRoleChange for entity {}", ownershipChange.getEntity());
-            final OfpRole role = roleTxChangeListener.getDeviceState().getRole();
-            Verify.verify(OfpRole.BECOMEMASTER.equals(role),
-                    "Acquired txCandidate lock but current role = {}", role);
+        ListenableFuture<Void> processingClosure;
+        final DeviceContext deviceContext = roleContext.getDeviceContext();
+        final NodeId nodeId = roleContext.getDeviceState().getNodeId();
 
+        if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
+            // SLAVE -> MASTER - acquired transition lock
+            LOG.debug("Acquired tx-lock for entity {}", ownershipChange.getEntity());
+            roleContext.setTxLockOwned(true);
+            final OfpRole role = roleContext.getDeviceState().getRole();
+            Verify.verify(OfpRole.BECOMEMASTER.equals(roleContext.getPropagatingRole()),
+                    "Acquired tx-lock but current role = {}", role);
+
+            switch (roleContext.getState()) {
+                case STARTING:
+                    processingClosure = roleContext.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+                    // activate stats - accomplished automatically by chaging role in deviceState
+                    // collect initial dynamic data from device
+                    processingClosure = Futures.transform(processingClosure, new AsyncFunction<Void, Void>() {
+                        @Nullable
+                        @Override
+                        public ListenableFuture<Void> apply(@Nullable final Void aVoid) {
+                            deviceContext.getDeviceState().setRole(OfpRole.BECOMEMASTER);
+                            return DeviceInitializationUtils.initializeNodeInformation(
+                                    deviceContext, switchFeaturesMandatory);
+                        }
+                    });
+                    break;
+                case WORKING:
+                    // activate txChainManager, activate rpcs
+                    processingClosure = roleContext.onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+                    // activate stats - accomplished automatically by chaging role in deviceState
+                    processingClosure = Futures.transform(processingClosure, new Function<Void, Void>() {
+                        @Nullable
+                        @Override
+                        public Void apply(@Nullable final Void aVoid) {
+                            deviceContext.getDeviceState().setRole(OfpRole.BECOMEMASTER);
+                            return null;
+                        }
+                    });
+                    break;
+                //case TEARING_DOWN:
+                default:
+                    //TODO: reconsider if there is really nothing to do when tearing down
+                    processingClosure = Futures.immediateFuture(null);
+                    break;
+            }
+        } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
+            // MASTER -> SLAVE - released tx-lock
+            LOG.debug("Released tx-lock for entity {}", ownershipChange.getEntity());
+            roleContext.setTxLockOwned(false);
+            txContexts.remove(roleContext.getTxEntity(), roleContext);
+            processingClosure = Futures.immediateFuture(null);
         } else {
-            LOG.debug("NOOP state transition for TxEntity {} ", roleTxChangeListener.getTxEntity());
-            txCandidateGuard.release();
+            LOG.debug("NOOP state transition for TxEntity {} ", roleContext.getTxEntity());
+            processingClosure = Futures.immediateFuture(null);
         }
+
+        // handle result of executed steps
+        Futures.addCallback(processingClosure, new FutureCallback<Void>()
+
+                {
+                    @Override
+                    public void onSuccess(@Nullable final Void aVoid) {
+                        // propagating role must be BECOMEMASTER in order to run this processing
+                        // removing it will disable redundand processing of BECOMEMASTER
+                        roleContext.setPropagatingRole(null);
+
+                        txCandidateGuard.release();
+                        switch (roleContext.getState()) {
+                            case STARTING:
+                                LOG.debug("init steps protected by tx-lock for node {} are done.", nodeId);
+                                roleContext.promoteStateToWorking();
+                                getRoleContextLevelUp(deviceContext);
+                                break;
+                            case WORKING:
+                                LOG.debug("normal steps protected by tx-lock for node {} are done.", nodeId);
+                                break;
+                            case TEARING_DOWN:
+                                LOG.debug("teardown steps protected by tx-lock for node {} are done.", nodeId);
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        LOG.warn("Unexpected error for Node {}, state={}, txLock={} -> terminating device context",
+                                nodeId, roleContext.getState(), roleContext.isTxLockOwned(), throwable);
+                        txCandidateGuard.release();
+                        deviceContext.close();
+                    }
+                }
+
+        );
     }
 
     private static Function<Void, Void> makeTxEntitySuspendCallback(final RoleContext roleChangeListener) {
@@ -270,14 +308,28 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         };
     }
 
-    private static Function<Void, Void> makeTxEntitySetupCallback(final RoleContext roleChangeListener) {
+    private Function<Void, Void> makeTxEntitySetupCallback(final RoleContext roleContext) {
         return new Function<Void, Void>() {
             @Override
             public Void apply(final Void result) {
+                final NodeId nodeId = roleContext.getDeviceState().getNodeId();
                 try {
-                    roleChangeListener.setupTxCandidate();
+                    LOG.debug("Node {} is marked as LEADER", nodeId);
+                    Verify.verify(txContexts.putIfAbsent(roleContext.getTxEntity(), roleContext) == null,
+                            "RoleCtx for TxEntity {} master Node {} is still not closed.",
+                            roleContext.getTxEntity(), nodeId);
+                    roleContext.setPropagatingRole(OfpRole.BECOMEMASTER);
+
+                    // try to register tx-candidate via ownership service
+                    roleContext.setupTxCandidate();
                 } catch (final CandidateAlreadyRegisteredException e) {
                     LOG.debug("txCandidate registration failed");
+                    // --- CLEAN UP ---
+                    // withdraw context from map in order to have it as before
+                    txContexts.remove(roleContext.getTxEntity(), roleContext);
+                    // no more propagating any role - there is no txCandidate lock approaching
+                    roleContext.setPropagatingRole(null);
+
                     Throwables.propagate(e);
                 }
                 return null;
@@ -285,37 +337,44 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         };
     }
 
-    private void changeForEntity(final EntityOwnershipChange ownershipChange, @Nonnull final RoleContext roleChangeListener) throws InterruptedException {
-        final Semaphore mainCandidateGuard = roleChangeListener.getMainCandidateGuard();
+    private void changeForEntity(final EntityOwnershipChange ownershipChange, @Nonnull final RoleContext roleContext) throws InterruptedException {
+        final Semaphore mainCandidateGuard = roleContext.getMainCandidateGuard();
         LOG.trace("mainCandidate lock queue: " + mainCandidateGuard.getQueueLength());
         mainCandidateGuard.acquire();
         //FIXME : check again implementation for double candidate scenario
         LOG.info("Received EntityOwnershipChange:{}", ownershipChange);
 
-        if (roleChangeListener.getDeviceState().isValid()) {
+        if (roleContext.getDeviceState().isValid()) {
             LOG.debug("RoleChange for entity {}", ownershipChange.getEntity());
             final OfpRole newRole = ownershipChange.isOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
             final OfpRole oldRole = ownershipChange.wasOwner() ? OfpRole.BECOMEMASTER : OfpRole.BECOMESLAVE;
-            // send even if they are same. we do the check for duplicates in SalRoleService and maintain a lastKnownRole
-            ListenableFuture<Void> rolePropagatedFx = roleChangeListener.onRoleChanged(oldRole, newRole);
+
+            // propagation start point
+            ListenableFuture<Void> rolePropagationFx = Futures.immediateFuture(null);
             final Function<Void, Void> txProcessCallback;
+
             if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && ownershipChange.hasOwner()) {
                 // MASTER -> SLAVE
-                txProcessCallback = makeTxEntitySuspendCallback(roleChangeListener);
+                rolePropagationFx = roleContext.onRoleChanged(oldRole, newRole);
+                if (RoleContext.ROLE_CONTEXT_STATE.WORKING.equals(roleContext.getState())) {
+                    txProcessCallback = makeTxEntitySuspendCallback(roleContext);
+                } else {
+                    txProcessCallback = null;
+                }
             } else if (!ownershipChange.wasOwner() && ownershipChange.isOwner() && ownershipChange.isOwner()) {
-                // FIXME : make different code path deviceContext.onClusterRoleChange(newRole); has to call from onTxRoleChange (for master)
                 // SLAVE -> MASTER
-                txProcessCallback = makeTxEntitySetupCallback(roleChangeListener);
+                txProcessCallback = makeTxEntitySetupCallback(roleContext);
             } else {
                 LOG.trace("Main candidate role change case not covered: {} -> {} .. NOOP", oldRole, newRole);
                 txProcessCallback = null;
             }
 
             if (txProcessCallback != null) {
-                rolePropagatedFx = Futures.transform(rolePropagatedFx, txProcessCallback);
+                rolePropagationFx = Futures.transform(rolePropagationFx, txProcessCallback);
             }
 
-            Futures.addCallback(rolePropagatedFx, new FutureCallback<Void>() {
+            // catching result
+            Futures.addCallback(rolePropagationFx, new FutureCallback<Void>() {
                         @Override
                         public void onSuccess(@Nullable final Void aVoid) {
                             LOG.debug("Role of main candidate successfully propagated: {}, {} -> {}",
@@ -325,10 +384,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
 
                         @Override
                         public void onFailure(final Throwable throwable) {
-                            LOG.warn("Main candidate role propagation failed for entity: {}, {} -> {}",
+                            LOG.warn("Main candidate role propagation FAILED for entity: {}, {} -> {}",
                                     ownershipChange.getEntity(), oldRole, newRole);
                             mainCandidateGuard.release();
-                            // FIXME: here we shall disconnect probably - in order to avoid inconsistent state
+                            roleContext.getDeviceContext().close();
                         }
                     }
             );
@@ -339,10 +398,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             // expecting that this roleContext will get closed in a moment
             // FIXME: reconsider location of following cleanup logic
             if (!ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
-                unregistrationHelper(ownershipChange, roleChangeListener);
+                unregistrationHelper(ownershipChange, roleContext);
             } else if (ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
-                roleChangeListener.suspendTxCandidate();
+                contexts.remove(ownershipChange.getEntity(), roleContext);
+                roleContext.suspendTxCandidate();
             } else {
                 LOG.info("Unexpected role change msg {} for entity {}", ownershipChange, ownershipChange.getEntity());
             }
