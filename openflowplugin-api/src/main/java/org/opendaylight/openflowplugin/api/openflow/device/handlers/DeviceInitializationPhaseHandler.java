@@ -31,5 +31,5 @@ public interface DeviceInitializationPhaseHandler {
      *
      * @param deviceContext
      */
-    void onDeviceContextLevelUp(@CheckForNull DeviceContext deviceContext);
+    void onDeviceContextLevelUp(@CheckForNull DeviceContext deviceContext) throws Exception;
 }

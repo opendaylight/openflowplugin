@@ -41,7 +41,7 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
         final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 

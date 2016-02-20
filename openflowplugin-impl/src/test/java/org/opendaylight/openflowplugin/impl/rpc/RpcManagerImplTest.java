@@ -52,7 +52,7 @@ public class RpcManagerImplTest {
 
     @Ignore
     @Test
-    public void deviceConnectedTest() {
+    public void deviceConnectedTest() throws Exception {
 
         rpcManager.onDeviceContextLevelUp(mockedDeviceContext);
 
