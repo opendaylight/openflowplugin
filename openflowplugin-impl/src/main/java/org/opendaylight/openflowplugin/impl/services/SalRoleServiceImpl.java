@@ -8,8 +8,12 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -19,10 +23,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import javax.annotation.concurrent.GuardedBy;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -55,6 +59,11 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
     private final NodeId nodeId;
     private final Short version;
 
+    private final Semaphore currentRoleGuard = new Semaphore(1, true);
+
+    @GuardedBy("currentRoleGuard")
+    private OfpRole currentRole = OfpRole.NOCHANGE;
+
     public SalRoleServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = deviceContext;
@@ -85,126 +94,90 @@ public class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetR
     @Override
     public Future<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
         LOG.info("SetRole called with input:{}", input);
-        OfpRole lastKnownRole = lastKnownRoleRef.get();
-
+        try {
+            currentRoleGuard.acquire();
+            LOG.trace("currentRole lock queue: " + currentRoleGuard.getQueueLength());
+        } catch (final InterruptedException e) {
+            LOG.warn("Unexpected exception for acquire semaphor for input {}", input);
+            return RpcResultBuilder.<SetRoleOutput> success().buildFuture();
+        }
         // compare with last known role and set if different. If they are same, then return.
-        if (lastKnownRoleRef.compareAndSet(input.getControllerRole(), input.getControllerRole())) {
-            LOG.info("Role to be set is same as the last known role for the device:{}. Hence ignoring.", input.getControllerRole());
-            SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture.create();
-            resultFuture.set(RpcResultBuilder.<SetRoleOutput>success().build());
-            return resultFuture;
+        if (currentRole == input.getControllerRole()) {
+            LOG.info("Role to be set is same as the last known role for the device:{}. Hence ignoring.",
+                    input.getControllerRole());
+            currentRoleGuard.release();
+            return RpcResultBuilder.<SetRoleOutput> success().buildFuture();
         }
 
-        final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture.create();
-
-        RoleChangeTask roleChangeTask = new RoleChangeTask(nodeId, input.getControllerRole(), version, roleService);
-
-        do {
-            ListenableFuture<RpcResult<SetRoleOutput>> deviceCheck = deviceConnectionCheck();
-            if (deviceCheck != null) {
-                LOG.info("Device {} is disconnected or state is not valid. Giving up on role change", input.getNode());
-                return deviceCheck;
-            }
-
-            ListenableFuture<SetRoleOutput> taskFuture = listeningExecutorService.submit(roleChangeTask);
-            LOG.info("RoleChangeTask submitted for execution");
-            CheckedFuture<SetRoleOutput, RoleChangeException> taskFutureChecked = makeCheckedFuture(taskFuture);
-            try {
-                SetRoleOutput setRoleOutput = taskFutureChecked.checkedGet(10, TimeUnit.SECONDS);
-                LOG.info("setRoleOutput received after roleChangeTask execution:{}", setRoleOutput);
-                resultFuture.set(RpcResultBuilder.<SetRoleOutput>success().withResult(setRoleOutput).build());
-                lastKnownRoleRef.set(input.getControllerRole());
-                return resultFuture;
-
-            } catch (TimeoutException | RoleChangeException e) {
-                roleChangeTask.incrementRetryCounter();
-                LOG.info("Exception in setRole(), will retry:" + (MAX_RETRIES - roleChangeTask.getRetryCounter()) + " times.", e);
-            }
-
-        } while (roleChangeTask.getRetryCounter() < MAX_RETRIES);
-
-        resultFuture.setException(new RoleChangeException("Set Role failed after " + MAX_RETRIES + "tries on device " + input.getNode().getValue()));
-
+        final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture
+                .<RpcResult<SetRoleOutput>> create();
+        repeaterForChangeRole(resultFuture, input, 0);
         return resultFuture;
     }
 
-    private ListenableFuture<RpcResult<SetRoleOutput>> deviceConnectionCheck() {
-        if (!ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-            ListenableFuture<RpcResult<SetRoleOutput>> resultingFuture = SettableFuture.create();
-            switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
-                case RIP:
-                    final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
-                            deviceContext.getPrimaryConnectionContext().getConnectionState());
-                    resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
-                    break;
-                default:
-                    resultingFuture = Futures.immediateCheckedFuture(RpcResultBuilder.<SetRoleOutput>failed().build());
-                    break;
-            }
-            return resultingFuture;
+    private void repeaterForChangeRole(final SettableFuture<RpcResult<SetRoleOutput>> future, final SetRoleInput input,
+            final int retryCounter) {
+        if (retryCounter >= MAX_RETRIES) {
+            currentRoleGuard.release();
+            future.setException(new RoleChangeException(String.format("Set Role failed after %s tries on device %s",
+                    MAX_RETRIES, input.getNode().getValue())));
+            return;
         }
-        return null;
+        // Check current connection state
+        final CONNECTION_STATE state = deviceContext.getPrimaryConnectionContext().getConnectionState();
+        switch (state) {
+        case RIP:
+            LOG.info("Device {} has been disconnected", input.getNode());
+            currentRoleGuard.release();
+            future.setException(new Exception(String.format(
+                    "Device connection doesn't exist anymore. Primary connection status : %s", state)));
+            return;
+        case WORKING:
+            // We can proceed
+            break;
+        default:
+            LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
+            currentRoleGuard.release();
+            future.setException(new Exception(String.format("Unexcpected device connection status : %s", state)));
+            return;
+        }
+
+        LOG.info("Requesting state change to {}", input.getControllerRole());
+        final ListenableFuture<SetRoleOutput> changeRoleFuture = tryToChangeRole(input.getControllerRole());
+        Futures.addCallback(changeRoleFuture, new FutureCallback<SetRoleOutput>() {
+
+            @Override
+            public void onSuccess(final SetRoleOutput result) {
+                LOG.info("setRoleOutput received after roleChangeTask execution:{}", result);
+                currentRole = input.getControllerRole();
+                currentRoleGuard.release();
+                future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result).build());
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.info("Exception in setRole(), will retry: {} times.", MAX_RETRIES - retryCounter, t);
+                repeaterForChangeRole(future, input, (retryCounter + 1));
+            }
+        });
     }
 
-    class RoleChangeTask implements Callable<SetRoleOutput> {
+    private ListenableFuture<SetRoleOutput> tryToChangeRole(final OfpRole role) {
+        LOG.info("RoleChangeTask called on device:{} OFPRole:{}", nodeId.getValue(), role);
 
-        private final NodeId nodeId;
-        private final OfpRole ofpRole;
-        private final Short version;
-        private final RoleService roleService;
-        private int retryCounter = 0;
+        final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(version);
 
-        public RoleChangeTask(NodeId nodeId, OfpRole ofpRole, Short version, RoleService roleService) {
-            this.nodeId = nodeId;
-            this.ofpRole = ofpRole;
-            this.version = version;
-            this.roleService = roleService;
-        }
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), new AsyncFunction<BigInteger, SetRoleOutput>() {
 
-        @Override
-        public SetRoleOutput call() throws RoleChangeException {
-            LOG.info("RoleChangeTask called on device:{} OFPRole:{}", this.nodeId.getValue(), ofpRole);
-
-            // we cannot move ahead without having the generation id, so block the thread till we get it.
-            BigInteger generationId = null;
-            SetRoleOutput setRoleOutput = null;
-
-            try {
-                generationId = this.roleService.getGenerationIdFromDevice(version).get(10, TimeUnit.SECONDS);
-                LOG.info("RoleChangeTask, GenerationIdFromDevice from device is {}", generationId);
-
-            } catch (Exception e ) {
-                LOG.info("Exception in getting generationId for device:{}. Ex:{}" + this.nodeId.getValue(), e);
-                throw new RoleChangeException("Exception in getting generationId for device:"+ this.nodeId.getValue(), e);
+            @Override
+            public ListenableFuture<SetRoleOutput> apply(final BigInteger generationId) throws Exception {
+                LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", nodeId.getValue(), generationId);
+                final BigInteger nextGenerationId = getNextGenerationId(generationId);
+                LOG.debug("nextGenerationId received from device:{} is {}", nodeId.getValue(), nextGenerationId);
+                final Future<SetRoleOutput> submitRoleFuture = roleService.submitRoleChange(role, version, nextGenerationId);
+                return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
             }
-
-
-            LOG.info("GenerationId received from device:{} is {}", nodeId.getValue(), generationId);
-
-            final BigInteger nextGenerationId = getNextGenerationId(generationId);
-
-            LOG.info("nextGenerationId received from device:{} is {}", nodeId.getValue(), nextGenerationId);
-
-            try {
-                setRoleOutput = roleService.submitRoleChange(ofpRole, version, nextGenerationId).get(10 , TimeUnit.SECONDS);
-                LOG.info("setRoleOutput after submitRoleChange:{}", setRoleOutput);
-
-            }  catch (InterruptedException | ExecutionException |  TimeoutException e) {
-                LOG.error("Exception in making role change for device", e);
-                throw new RoleChangeException("Exception in making role change for device:" + nodeId.getValue());
-            }
-
-            return setRoleOutput;
-
-        }
-
-        public void incrementRetryCounter() {
-            this.retryCounter = retryCounter + 1;
-        }
-
-        public int getRetryCounter() {
-            return retryCounter;
-        }
+        });
     }
 
     public static CheckedFuture<SetRoleOutput, RoleChangeException> makeCheckedFuture(ListenableFuture<SetRoleOutput> rolePushResult) {
