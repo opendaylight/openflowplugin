@@ -27,6 +27,7 @@ public class TimeCounterTest {
         timeCounter = new TimeCounter();
     }
 
+    //TODO: Recheck this 'annoying' testl
     @Test
     public void testGetAverageTimeBetweenMarks() throws Exception {
         Assert.assertEquals(0, timeCounter.getAverageTimeBetweenMarks());
