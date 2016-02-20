@@ -17,7 +17,7 @@ import java.util.List;
 import io.netty.util.Timeout;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -114,8 +114,9 @@ public interface DeviceContext extends AutoCloseable,
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
      * as write transaction in this context.
+     * @return readOnlyTransaction - Don't forget to close it after finish reading
      */
-    ReadTransaction getReadTransaction();
+    ReadOnlyTransaction getReadTransaction();
 
 
     /**
