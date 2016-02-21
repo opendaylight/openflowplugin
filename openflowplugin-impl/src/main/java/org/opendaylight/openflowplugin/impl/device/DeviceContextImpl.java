@@ -8,7 +8,10 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -31,6 +34,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -241,10 +245,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
-            } else {
-                /* Relevant for no initial Slave-to-Master scenario */
-                return asyncClusterRoleChange(role);
             }
+            /* Relevant for no initial Slave-to-Master scenario in cluster */
+            return asyncClusterRoleChange(role);
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (rpcContext != null) {
                 MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
@@ -265,28 +268,64 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
      * all possible MultipartTypes for polling in StatTypeList
      */
     private ListenableFuture<Void> asyncClusterRoleChange(final OfpRole role) {
-        final ListenableFuture<Void> statInitFuture = DeviceInitializationUtils.initializeNodeInformation(
-                DeviceContextImpl.this, switchFeaturesMandatory);
-        Futures.addCallback(statInitFuture, new FutureCallback<Void>() {
+        if (statCtx == null) {
+            final String errMsg = String.format("DeviceCtx {} is up but we are missing StatisticsContext", deviceState.getNodeId());
+            LOG.warn(errMsg);
+            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
+        }
+
+        final InstanceIdentifier<FlowCapableNode> ofNodeII = deviceState.getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class);
+        final ReadOnlyTransaction readTx = getReadTransaction();
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readOfNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL, ofNodeII);
+
+        final ListenableFuture<Void> nodeInitInfoFuture = Futures.transform(readOfNodeFuture,
+                new AsyncFunction<Optional<FlowCapableNode>, Void>() {
+                    @Override
+                    public ListenableFuture<Void> apply(final Optional<FlowCapableNode> input) throws Exception {
+                        if (!input.isPresent() || input.get().getTable().isEmpty()) {
+                            /* Last master close fail scenario so we would like to activate TxManager */
+                            LOG.debug("Oper DS for Device {} has to be replaced", deviceState.getNodeId());
+                            getDeviceState().setDeviceSynchronized(false);
+                            transactionChainManager.activateTransactionManager();
+                        }
+                        return DeviceInitializationUtils.initializeNodeInformation(DeviceContextImpl.this, switchFeaturesMandatory);
+                    }
+                });
+
+        final ListenableFuture<Boolean> statPollFuture = Futures.transform(nodeInitInfoFuture,
+                new AsyncFunction<Void, Boolean>() {
+
+                    @Override
+                    public ListenableFuture<Boolean> apply(final Void input) throws Exception {
+                        getStatisticsContext().statListForCollectingInitialization();
+                        if (getDeviceState().deviceSynchronized()) {
+                            return Futures.immediateFuture(Boolean.TRUE);
+                        }
+                        return getStatisticsContext().gatherDynamicData();
+                    }
+                });
+
+        return Futures.transform(statPollFuture, new Function<Boolean, Void>() {
 
             @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("Initial Device {} information is successful", getDeviceState().getNodeId());
+            public Void apply(final Boolean input) {
+                if (!input.booleanValue()) {
+                    LOG.warn("Get Inital Device {} information fails", getDeviceState().getNodeId());
+                    DeviceContextImpl.this.close();
+                    return null;
+                }
+                LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 if (null != getRpcContext()) {
                     MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
                 }
-                getStatisticsContext().statListForCollectingInitialization();
+                getDeviceState().setDeviceSynchronized(true);
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 transactionChainManager.activateTransactionManager();
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("Inital Device {} information fails", getDeviceState().getNodeId());
-                DeviceContextImpl.this.close();
+                return null;
             }
         });
-        return statInitFuture;
     }
 
     @Override

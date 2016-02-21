@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
@@ -53,14 +52,14 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceContext);
+        statisticsContext = new StatisticsContextImpl(mockedDeviceContext, false);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
 
     @Test
     public void testCreateRequestContext() {
-        RequestContext<Object> requestContext = statisticsContext.createRequestContext();
+        final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         assertNotNull(requestContext);
         assertEquals(TEST_XID, requestContext.getXid().getValue());
         Assert.assertFalse(requestContext.getFuture().isDone());
@@ -71,7 +70,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext, false);
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {
@@ -79,7 +78,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
             final RpcResult<?> rpcResult = requestContext.getFuture().get();
             Assert.assertFalse(rpcResult.isSuccessful());
             Assert.assertFalse(rpcResult.isSuccessful());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("request future value should be finished", e);
             Assert.fail("request context closing failed");
         }
@@ -139,7 +138,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         try {
             deviceConnectionCheckResult.get();
             Assert.fail("connection in state RIP should have caused exception here");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.debug("expected behavior for RIP connection achieved");
             Assert.assertTrue(e instanceof ExecutionException);
         }
@@ -155,7 +154,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         try {
             final Boolean checkPositive = deviceConnectionCheckResult.get();
             Assert.assertTrue(checkPositive);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail("connection in state HANDSHAKING should NOT have caused exception here");
         }
     }
