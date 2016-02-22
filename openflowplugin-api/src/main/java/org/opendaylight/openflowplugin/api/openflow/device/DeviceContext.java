@@ -13,6 +13,7 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -88,10 +89,11 @@ public interface DeviceContext extends AutoCloseable,
      * newRole is {@link OfpRole#BECOMESLAVE}.
      * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
      * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
+     * @param oldRole - old role for quick validation for needed processing
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      * @return RoleChangeTxChainManager future for activation/deactivation
      */
-    ListenableFuture<Void> onClusterRoleChange(@CheckForNull OfpRole role);
+    ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
 
     /**
      * Method creates put operation using provided data in underlying transaction chain.

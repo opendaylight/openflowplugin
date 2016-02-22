@@ -237,9 +237,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(final OfpRole oldRole, @CheckForNull final OfpRole role) {
         LOG.debug("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
+        if (role.equals(oldRole)) {
+            LOG.debug("Role for device {} was not change OldRole: {}, NewRole {}", deviceState.getNodeId(), oldRole, role);
+            return Futures.immediateFuture(null);
+        }
         if (OfpRole.BECOMEMASTER.equals(role)) {
             if (!deviceState.deviceSynchronized()) {
                 LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
