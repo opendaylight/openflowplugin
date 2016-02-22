@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.CheckForNull;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.reflect.TypeToken;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -62,8 +62,6 @@ public class MdSalRegistratorUtils {
         throw new IllegalStateException();
     }
 
-
-
     /**
      * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
      * @param rpcContext - registration processing is implemented in {@link RpcContext}
@@ -98,19 +96,14 @@ public class MdSalRegistratorUtils {
      * Method registers {@link SalEchoService} in next step only because we would like to have SalEchoService as local service for all apps
      * to be able actively check connection status for slave connection too.
      * @param rpcContext - registration/unregistration processing is implemented in {@link RpcContext}
-     * @param deviceContext - every service needs {@link DeviceContext} as input parameter
      * @param newRole - role validation for {@link OfpRole#BECOMESLAVE}
      */
-    public static void registerSlaveServices(@CheckForNull final RpcContext rpcContext,
-            @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+    public static void registerSlaveServices(@CheckForNull final RpcContext rpcContext, @CheckForNull final OfpRole newRole) {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(newRole != null);
         Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
         
         unregisterServices(rpcContext);
-
-        // TODO: why we would like to have Echo Service for every cluster RPC instance (check if it is not problem)
-        rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
     }
 
     /**
@@ -120,9 +113,7 @@ public class MdSalRegistratorUtils {
     public static void unregisterServices(@CheckForNull final RpcContext rpcContext) {
         Preconditions.checkArgument(rpcContext != null);
 
-        // TODO: why we would like to have Echo Service for every cluster RPC instance (check if it is not problem)
         rpcContext.unregisterRpcServiceImplementation(SalEchoService.class);
-
         rpcContext.unregisterRpcServiceImplementation(SalFlowService.class);
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
         rpcContext.unregisterRpcServiceImplementation(FlowCapableTransactionService.class);
@@ -154,7 +145,7 @@ public class MdSalRegistratorUtils {
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
         Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isAssignableFrom(flowStatisticsService.getClass()));
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
-        OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
+        final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong());
         ((Delegator<OpendaylightFlowStatisticsService>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
 

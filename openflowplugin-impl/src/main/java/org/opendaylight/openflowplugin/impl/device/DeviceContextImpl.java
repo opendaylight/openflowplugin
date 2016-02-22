@@ -246,20 +246,22 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
             if (!deviceState.deviceSynchronized()) {
-                LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
+                //TODO: no necessary code for yet - it needs for initialization phase only
+                LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
             }
             /* Relevant for no initial Slave-to-Master scenario in cluster */
             return asyncClusterRoleChange(role);
+
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            if (rpcContext != null) {
-                MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
+            if (null != rpcContext) {
+                MdSalRegistratorUtils.registerSlaveServices(rpcContext, role);
             }
             return transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
-            if (rpcContext != null) {
+            if (null != rpcContext) {
                 MdSalRegistratorUtils.unregisterServices(rpcContext);
             }
             return transactionChainManager.deactivateTransactionManager();
@@ -321,12 +323,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     return null;
                 }
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
-                if (null != getRpcContext()) {
-                    MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
-                }
                 getDeviceState().setDeviceSynchronized(true);
-                getDeviceState().setStatisticsPollingEnabledProp(true);
                 transactionChainManager.activateTransactionManager();
+                //TODO: This is relevant for slave to master scenario make verify
+                if (null != rpcContext) {
+                    MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+                    getRpcContext().registerStatCompatibilityServices();
+                } else {
+                    LOG.warn("No RpcCtx on deviceCtx: {}, cannot register services", this);
+                    // TODO : can we stay without RPCs or we need to call DeviceCtx.close ?
+                }
+                initialSubmitTransaction();
+                getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
             }
         });
@@ -555,20 +563,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.info("TxChain {} was shutdown successfull.", deviceState.getNodeId());
+                    LOG.info("TxChain {} was shutdown successfull.", getDeviceState().getNodeId());
                     tearDownClean();
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("Shutdown TxChain {} fail.", deviceState.getNodeId(), t);
+                    LOG.warn("Shutdown TxChain {} fail.", getDeviceState().getNodeId(), t);
                     tearDownClean();
                 }
             });
         }
     }
 
-    synchronized void tearDownClean() {
+    protected void tearDownClean() {
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
         Preconditions.checkState(!deviceState.isValid());
         transactionChainManager.close();
