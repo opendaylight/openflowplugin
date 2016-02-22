@@ -54,16 +54,12 @@ public class RpcContextImpl implements RpcContext {
             rpcRegistrations.put(serviceClass, routedRpcReg);
         }
         LOG.debug("Registration of service {} for device {}.", serviceClass, deviceContext.getDeviceState().getNodeInstanceIdentifier());
-
-        if (serviceInstance instanceof ItemLifeCycleSource) {
-            // TODO: collect registration for selective unregistering in case of tearing down only one rpc
-            deviceContext.getItemLifeCycleSourceRegistry().registerLifeCycleSource((ItemLifeCycleSource) serviceInstance);
-        }
     }
 
     @Override
     public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
-        return (S) rpcRegistrations.get(serviceClass);
+        final RpcService rpcService = rpcRegistrations.get(serviceClass).getInstance();
+        return (S) rpcService;
     }
     /**
      * Unregisters all services.
@@ -78,6 +74,7 @@ public class RpcContextImpl implements RpcContext {
             LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
                     deviceContext.getDeviceState().getNodeInstanceIdentifier());
         }
+        rpcRegistrations.clear();
     }
 
     @Override

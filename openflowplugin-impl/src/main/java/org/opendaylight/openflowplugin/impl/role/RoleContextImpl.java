@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -60,9 +61,7 @@ public class RoleContextImpl implements RoleContext {
 
     private final Semaphore mainCandidateGuard = new Semaphore(1, true);
     private final Semaphore txCandidateGuard = new Semaphore(1, true);
-    private volatile ROLE_CONTEXT_STATE state;
     private volatile boolean txLockOwned;
-    private volatile OfpRole propagatingRole;
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
                            final Entity entity, final Entity txEnitity) {
@@ -75,12 +74,34 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void initialization() throws CandidateAlreadyRegisteredException {
-        state = ROLE_CONTEXT_STATE.STARTING;
-        LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-        entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-        LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}",
-                deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
+    public ListenableFuture<Void> initialization() throws CandidateAlreadyRegisteredException {
+        LOG.debug("Initialization RoleContext for Node {}", deviceContext.getDeviceState().getNodeId());
+        final AsyncFunction<RpcResult<SetRoleOutput>, Void> initFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
+            @Override
+            public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> input) throws Exception {
+                LOG.debug("Initialization request OpenflowEntityOwnership for entity {}", entity);
+                getDeviceState().setRole(OfpRole.BECOMESLAVE);
+                return Futures.immediateFuture(null);
+            }
+        };
+        final ListenableFuture<Void> deviceSlaveFuture = sendRoleChangeToDevice(OfpRole.BECOMESLAVE, initFunction);
+        return Futures.transform(deviceSlaveFuture, new Function<Void, Void>() {
+
+            @Override
+            public Void apply(final Void input) {
+                try {
+                    entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
+                    LOG.debug("Candidate registered with ownership service for device :{}", deviceContext
+                            .getDeviceState().getNodeId());
+                } catch (final CandidateAlreadyRegisteredException e) {
+                    LOG.warn("Candidate registration fail with ownership service for device :{}", deviceContext
+                            .getDeviceState().getNodeId());
+                    deviceContext.close();
+                }
+
+                return input;
+            }
+        });
     }
 
     @Override
@@ -100,38 +121,16 @@ public class RoleContextImpl implements RoleContext {
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
                 deviceContext.getPrimaryConnectionContext().getNodeId());
 
-
-        final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeRpcFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
+        final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
             @Override
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
-                LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
-                final ListenableFuture<Void> nextStepFuture;
-                switch (state) {
-                case STARTING:
-                    if (OfpRole.BECOMESLAVE.equals(newRole)) {
-                        getDeviceState().setRole(newRole);
-                        nextStepFuture = Futures.immediateFuture(null);
-                    } else if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                        nextStepFuture = deviceContext.onClusterRoleChange(oldRole, newRole);
-                    } else {
-                        nextStepFuture = Futures.immediateFuture(null);
-                    }
-
-                    break;
-                case WORKING:
-                    nextStepFuture = deviceContext.onClusterRoleChange(oldRole, newRole);
-                    break;
-                //case TEARING_DOWN:
-                default:
-                    nextStepFuture = Futures.immediateFuture(null);
-                    break;
-                }
-
-                return nextStepFuture;
+                LOG.debug("Role change {} successful made on switch :{}", newRole, deviceContext.getDeviceState()
+                        .getNodeId());
+                getDeviceState().setRole(newRole);
+                return deviceContext.onClusterRoleChange(oldRole, newRole);
             }
         };
-
-        return sendRoleChangeToDevice(newRole, roleChangeRpcFunction);
+        return sendRoleChangeToDevice(newRole, roleChangeFunction);
     }
 
     @Override
@@ -148,7 +147,6 @@ public class RoleContextImpl implements RoleContext {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
         }
-        promoteStateToTearingDown();
     }
 
     @Override
@@ -211,11 +209,6 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public ROLE_CONTEXT_STATE getState() {
-        return state;
-    }
-
-    @Override
     public boolean isTxLockOwned() {
         return txLockOwned;
     }
@@ -223,25 +216,6 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void setTxLockOwned(final boolean txLockOwned) {
         this.txLockOwned = txLockOwned;
-    }
-
-    private void promoteStateToTearingDown() {
-        state = ROLE_CONTEXT_STATE.TEARING_DOWN;
-    }
-
-    @Override
-    public void promoteStateToWorking() {
-        state = ROLE_CONTEXT_STATE.WORKING;
-    }
-
-    @Override
-    public OfpRole getPropagatingRole() {
-        return propagatingRole;
-    }
-
-    @Override
-    public void setPropagatingRole(final OfpRole propagatingRole) {
-        this.propagatingRole = propagatingRole;
     }
 
     private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
