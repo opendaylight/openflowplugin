@@ -12,6 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -51,19 +53,31 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
-    private final List<MultipartType> collectingStatType;
+    private final boolean shuttingDownStatisticsPolling;
+    private final Object COLLECTION_STAT_TYPE_LOCK = new Object();
+    @GuardedBy("COLLECTION_STAT_TYPE_LOCK")
+    private List<MultipartType> collectingStatType;
 
     private StatisticsGatheringService statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
-    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
+    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext,
+            final boolean shuttingDownStatisticsPolling) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
-        devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
+        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
+        statListForCollectingInitialization();
+        deviceContext.setStatisticsContext(StatisticsContextImpl.this);
+    }
 
+    @Override
+    public void statListForCollectingInitialization() {
+        synchronized (COLLECTION_STAT_TYPE_LOCK) {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
         if (devState.isTableStatisticsAvailable()) {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
@@ -91,10 +105,15 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
+        if (shuttingDownStatisticsPolling) {
+            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceState().getNodeId());
+            return Futures.immediateFuture(Boolean.TRUE);
+        }
         final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
         if (errorResultFuture != null) {
             return errorResultFuture;
         }
+        synchronized (COLLECTION_STAT_TYPE_LOCK) {
         final Iterator<MultipartType> statIterator = collectingStatType.iterator();
         final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
         statChainFuture(statIterator, settableStatResultFuture);
@@ -246,12 +265,12 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringService(StatisticsGatheringService statisticsGatheringService) {
+    protected void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
         this.statisticsGatheringService = statisticsGatheringService;
     }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringOnTheFlyService(StatisticsGatheringOnTheFlyService
+    protected void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService
                                                              statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
