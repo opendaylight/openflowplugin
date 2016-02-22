@@ -149,8 +149,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
+        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
         deviceContext.addDeviceContextClosedHandler(this);
-        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);

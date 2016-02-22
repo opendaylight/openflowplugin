@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
@@ -106,7 +105,7 @@ public class RoleContextImplTest {
         when(deviceContext.getPrimaryConnectionContext().getFeatures()).thenReturn(featuresReply);
         when(deviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(deviceContext.onClusterRoleChange(Matchers.<OfpRole>any(), Matchers.<OfpRole>any()))
-                .thenReturn(Futures.immediateFuture((Void) null));
+            .thenReturn(Futures.immediateFuture((Void) null));
 
         roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
         roleContext.initialization();
@@ -145,7 +144,7 @@ public class RoleContextImplTest {
         final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
         onRoleChanged.get(5, TimeUnit.SECONDS);
 
-        verify(deviceContext, Mockito.never()).onClusterRoleChange(oldRole, newRole);
+        verify(deviceContext).onClusterRoleChange(oldRole, newRole);
     }
 
     @Test
@@ -177,7 +176,6 @@ public class RoleContextImplTest {
                 .thenReturn(future);
 
         roleContext.setSalRoleService(salRoleService);
-        roleContext.promoteStateToWorking();
 
         final ListenableFuture<Void> onRoleChanged = roleContext.onRoleChanged(oldRole, newRole);
         onRoleChanged.get(5, TimeUnit.SECONDS);
