@@ -20,30 +20,9 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
 
     void setTxLockOwned(boolean txLockOwned);
 
-    void promoteStateToWorking();
-
     OfpRole getPropagatingRole();
 
     void setPropagatingRole(OfpRole propagatingRole);
-
-    /** available states the {@link RoleContext} can exist in */
-    enum ROLE_CONTEXT_STATE {
-        /**
-         * before consequences of first entity ownership election are completely settled
-         * (lock acquired, data written, role propagated onto device)
-         */
-        STARTING,
-        /**
-         * state between
-         * <ul>
-         * <li>first entity ownership election settled</li>
-         * <li>and device disconnected or {@link DeviceContext#close()} invoked</li>
-         * </ul>
-         */
-        WORKING,
-        /** after {@link DeviceContext#close()} invoked */
-        TEARING_DOWN
-    }
 
     /**
      * Initialization method is responsible for a registration of
@@ -72,8 +51,6 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
     void close();
 
     DeviceContext getDeviceContext();
-
-    ROLE_CONTEXT_STATE getState();
 
     boolean isTxLockOwned();
 }
