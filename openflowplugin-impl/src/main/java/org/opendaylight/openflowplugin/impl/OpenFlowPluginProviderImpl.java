@@ -78,6 +78,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
+    private boolean isStatisticsRpcEnabled;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -173,12 +174,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
-        // CM -> DM -> Role -> SM -> RPC -> DM
+        // CM -> DM -> SM -> RPC -> Role -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
-        deviceManager.setDeviceInitializationPhaseHandler(roleManager);
-        roleManager.setDeviceInitializationPhaseHandler(statisticsManager);
+        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
-        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+        rpcManager.setDeviceInitializationPhaseHandler(roleManager);
+        roleManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);

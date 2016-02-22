@@ -22,4 +22,7 @@ public interface RpcContext extends RequestContextStack, AutoCloseable {
 
     <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
     <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
+
+    @Override
+    void close();
 }
