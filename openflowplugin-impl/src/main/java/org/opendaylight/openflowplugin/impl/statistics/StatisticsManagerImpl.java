@@ -85,7 +85,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
         }
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, shuttingDownStatisticsPolling);
         deviceContext.addDeviceContextClosedHandler(this);
 
         if (shuttingDownStatisticsPolling) {
