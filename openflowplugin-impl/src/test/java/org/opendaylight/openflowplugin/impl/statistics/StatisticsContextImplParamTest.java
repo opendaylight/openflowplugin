@@ -15,9 +15,7 @@ import static com.google.common.util.concurrent.Futures.immediateFuture;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,8 +34,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class StatisticsContextImplParamTest extends StatisticsContextImpMockInitiation {
 
 
-    public StatisticsContextImplParamTest(boolean isTable, boolean isFlow, boolean isGroup, boolean isMeter, boolean isPort,
-                                          boolean isQueue) {
+    public StatisticsContextImplParamTest(final boolean isTable, final boolean isFlow, final boolean isGroup, final boolean isMeter, final boolean isPort,
+                                          final boolean isQueue) {
         super();
         this.isTable = isTable;
         this.isFlow = isFlow;
@@ -65,9 +63,9 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
     @Test
     public void gatherDynamicDataTest() {
 
-        StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext, false);
 
-        ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
                 .class))).thenReturn(rpcResult);
         when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
@@ -76,7 +74,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
 
-        ListenableFuture<Boolean> futureResult = statisticsContext.gatherDynamicData();
+        final ListenableFuture<Boolean> futureResult = statisticsContext.gatherDynamicData();
 
         try {
             assertTrue(futureResult.get());
