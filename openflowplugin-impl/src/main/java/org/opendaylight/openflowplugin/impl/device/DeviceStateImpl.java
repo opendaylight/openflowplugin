@@ -57,6 +57,7 @@ class DeviceStateImpl implements DeviceState {
         nodeII = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         version = featuresReply.getVersion();
         statPollEnabled = false;
+        deviceSynchronized = false;
     }
 
     @Override
