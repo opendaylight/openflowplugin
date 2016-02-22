@@ -173,12 +173,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
-        // CM -> DM -> Role -> SM -> RPC -> DM
+        // CM -> DM -> SM -> RPC -> Role -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
-        deviceManager.setDeviceInitializationPhaseHandler(roleManager);
-        roleManager.setDeviceInitializationPhaseHandler(statisticsManager);
+        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
-        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+        rpcManager.setDeviceInitializationPhaseHandler(roleManager);
+        roleManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);
