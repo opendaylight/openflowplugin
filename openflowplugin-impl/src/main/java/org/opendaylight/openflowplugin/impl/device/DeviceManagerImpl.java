@@ -52,7 +52,7 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final long TICK_DURATION = 10; // 0.5 sec.
     private final long globalNotificationQuota;
-    private boolean switchFeaturesMandatory;
+    private final boolean switchFeaturesMandatory;
     private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
@@ -101,6 +101,7 @@ public class DeviceManagerImpl implements DeviceManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
+        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceContext.getDeviceState().getNodeId());
         Preconditions.checkNotNull(deviceContext);
         try {
             ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
@@ -145,8 +146,8 @@ public class DeviceManagerImpl implements DeviceManager {
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
+        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
         deviceContext.addDeviceContextClosedHandler(this);
-        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null);
 
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
@@ -225,5 +226,4 @@ public class DeviceManagerImpl implements DeviceManager {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
     }
-
 }
