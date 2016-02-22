@@ -8,7 +8,10 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.base.Verify;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -27,7 +30,7 @@ public class RpcManagerImpl implements RpcManager {
     private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private final int maxRequestsQuota;
-    private final ConcurrentHashMap<DeviceContext, RpcContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceContext, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
     private NotificationPublishService notificationPublishService;
 
@@ -48,23 +51,20 @@ public class RpcManagerImpl implements RpcManager {
         final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
 
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
+        final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext, maxRequestsQuota);
 
-        RpcContext rpcContext = contexts.get(deviceContext);
-        if (rpcContext == null) {
-            rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext, maxRequestsQuota);
-            contexts.put(deviceContext, rpcContext);
-        }
-
+        Verify.verify(contexts.putIfAbsent(deviceContext, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
         deviceContext.addDeviceContextClosedHandler(this);
+
+        if (isStatisticsRpcEnabled) {
+            MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
+                    notificationPublishService, new AtomicLong());
+        }
 
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
 
-            if (isStatisticsRpcEnabled) {
-                MdSalRegistratorUtils.registerStatCompatibilityServices(rpcContext, deviceContext,
-                        notificationPublishService, new AtomicLong());
-            }
         } else if(OfpRole.BECOMESLAVE.equals(ofpRole)) {
             // if slave, we need to de-register rpcs if any have been registered, in case of master to slave
             LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
