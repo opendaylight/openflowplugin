@@ -35,7 +35,6 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -83,11 +82,6 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceContext deviceContext) throws Exception {
         LOG.debug("RoleManager called for device:{}", deviceContext.getPrimaryConnectionContext().getNodeId());
-        if (deviceContext.getDeviceState().getFeatures().getVersion() < OFConstants.OFP_VERSION_1_3) {
-            // Roles are not supported before OF1.3, so move forward.
-            deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
-            return;
-        }
 
         final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
                 makeEntity(deviceContext.getDeviceState().getNodeId()),
@@ -400,6 +394,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                         public void onSuccess(@Nullable final Void aVoid) {
                             LOG.debug("Role of main candidate successfully propagated: {}, {} -> {}",
                                     ownershipChange.getEntity(), oldRole, newRole);
+                            roleContext.setPropagatingRole(newRole);
                             mainCandidateGuard.release();
                         }
 
@@ -451,13 +446,15 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         return delFuture;
     }
 
+
     private void unregistrationHelper(final EntityOwnershipChange ownershipChange, final RoleChangeListener roleChangeListener) {
         LOG.info("Initiate removal from operational. Possibly the last node to be disconnected for :{}. ", ownershipChange);
         Futures.addCallback(removeDeviceFromOperDS(roleChangeListener), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void aVoid) {
                 LOG.debug("Freeing roleContext slot for device: {}", roleChangeListener.getDeviceState().getNodeId());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                final RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
 
@@ -465,7 +462,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             public void onFailure(final Throwable throwable) {
                 LOG.warn("NOT freeing roleContext slot for device: {}, {}", roleChangeListener.getDeviceState()
                         .getNodeId(), throwable.getMessage());
-                contexts.remove(ownershipChange.getEntity(), roleChangeListener);
+                final RoleContext roleContext = contexts.remove(ownershipChange.getEntity());
+                txContexts.remove(roleContext.getTxEntity(), roleContext);
                 ((RoleContext) roleChangeListener).suspendTxCandidate();
             }
         });
