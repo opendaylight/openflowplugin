@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -25,6 +26,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.ipv6.arbitrary.bitmask.fields.rev160130.Ipv6Arbitrary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -40,6 +46,10 @@ public final class IpConversionUtil {
     private static final int INT16SZ = 2;
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
+    private static final String DEFAULT_IPV6_ARBITRARY_BIT_MASK = "255.255.255.255";
+    private static final Logger logger = LoggerFactory.getLogger(IpConversionUtil.class);
+
+
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -604,4 +614,21 @@ public final class IpConversionUtil {
         }
         return netmask;
     }
+
+    public static final byte[] convertIpv6ArbitraryMaskToByteArray(Ipv6Arbitrary mask) {
+        String maskValue;
+        if(mask.getValue() != null && mask != null){
+           maskValue  = mask.getValue();
+        }
+        else maskValue = DEFAULT_IPV6_ARBITRARY_BIT_MASK;
+        InetAddress maskInIpFormat = null;
+        try {
+            maskInIpFormat = InetAddress.getByName(maskValue);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        byte[] bytes = maskInIpFormat.getAddress();
+        return bytes;
+    }
+
 }
