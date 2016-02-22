@@ -72,7 +72,7 @@ public class StatisticsContextImpl implements StatisticsContext {
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
-        deviceContext.setStatisticsContext(StatisticsContextImpl.this);
+        this.deviceContext.setStatisticsContext(StatisticsContextImpl.this);
     }
 
     @Override
@@ -267,16 +267,16 @@ public class StatisticsContextImpl implements StatisticsContext {
                     statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
         }
 
-        @VisibleForTesting
-        protected void setStatisticsGatheringService ( final StatisticsGatheringService statisticsGatheringService){
-            this.statisticsGatheringService = statisticsGatheringService;
-        }
+    @VisibleForTesting
+    protected void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
+        this.statisticsGatheringService = statisticsGatheringService;
+    }
 
-        @VisibleForTesting
-        protected void setStatisticsGatheringOnTheFlyService ( final StatisticsGatheringOnTheFlyService
-        statisticsGatheringOnTheFlyService){
-            this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
-        }
+    @VisibleForTesting
+    protected void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService
+                                                             statisticsGatheringOnTheFlyService) {
+        this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
+    }
 
         @Override
         public ItemLifecycleListener getItemLifeCycleListener () {
