@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_bf6bd31c",
+        "filename": "applications/statistics-manager/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-02-22T22:50:41Z",
+      "side": 1,
+      "message": "you don\u0027t need it, remove it.",
+      "revId": "ea57ccc36795f896d889b1511303e19f498105ea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3f67c34e",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-02-22T22:50:41Z",
+      "side": 1,
+      "message": "replace tabs with whitespaces",
+      "revId": "ea57ccc36795f896d889b1511303e19f498105ea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9fcfef28",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-02-22T22:50:41Z",
+      "side": 1,
+      "message": "put comment s on why this third condition is required.",
+      "range": {
+        "startLine": 153,
+        "startChar": 8,
+        "endLine": 153,
+        "endChar": 16
+      },
+      "revId": "ea57ccc36795f896d889b1511303e19f498105ea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
