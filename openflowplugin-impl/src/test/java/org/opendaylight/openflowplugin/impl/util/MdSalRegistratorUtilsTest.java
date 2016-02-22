@@ -30,7 +30,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 public class MdSalRegistratorUtilsTest {
 
     /**
-     * Number of currently registrated services (can be changed) in {@link MdSalRegistratorUtils#registerServices
+     * Number of currently registrated services (can be changed) in {@link MdSalRegistratorUtils#registerMasterServices
      * (RpcContext, DeviceContext)}
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 11;
@@ -49,7 +49,7 @@ public class MdSalRegistratorUtilsTest {
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        MdSalRegistratorUtils.registerServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
+        MdSalRegistratorUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(any
                         (RpcService.class.getClass()), any(RpcService.class));
     }

@@ -142,7 +142,7 @@ public class StatisticsManagerImplTest {
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
 
         verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
-        verify(mockedDeviceContext, Mockito.times(8)).getReservedXid();
+        verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
         verify(hashedWheelTimer).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
@@ -188,7 +188,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
 
         verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
-        verify(mockedDeviceContext, Mockito.times(8)).getReservedXid();
+        verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
         verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
