@@ -246,12 +246,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
             if (!deviceState.deviceSynchronized()) {
-                LOG.debug("Setup Device Ctx {} for Master Role", getDeviceState().getNodeId());
+                LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
             }
             /* Relevant for no initial Slave-to-Master scenario in cluster */
             return asyncClusterRoleChange(role);
+
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (rpcContext != null) {
                 MdSalRegistratorUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
@@ -323,10 +324,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 if (null != getRpcContext()) {
                     MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+                } else {
+                    LOG.warn("No RpcCtx on deviceCtx: {}, cannot register services", this);
                 }
                 getDeviceState().setDeviceSynchronized(true);
-                getDeviceState().setStatisticsPollingEnabledProp(true);
                 transactionChainManager.activateTransactionManager();
+                initialSubmitTransaction();
+                getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
             }
         });
@@ -555,20 +559,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.info("TxChain {} was shutdown successfull.", deviceState.getNodeId());
+                    LOG.info("TxChain {} was shutdown successfull.", getDeviceState().getNodeId());
                     tearDownClean();
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("Shutdown TxChain {} fail.", deviceState.getNodeId(), t);
+                    LOG.warn("Shutdown TxChain {} fail.", getDeviceState().getNodeId(), t);
                     tearDownClean();
                 }
             });
         }
     }
 
-    synchronized void tearDownClean() {
+    protected void tearDownClean() {
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
         Preconditions.checkState(!deviceState.isValid());
         transactionChainManager.close();
