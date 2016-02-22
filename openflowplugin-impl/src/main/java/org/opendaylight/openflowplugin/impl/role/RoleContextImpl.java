@@ -78,9 +78,9 @@ public class RoleContextImpl implements RoleContext {
     public void initialization() throws CandidateAlreadyRegisteredException {
         state = ROLE_CONTEXT_STATE.STARTING;
         LOG.debug("Initialization requestOpenflowEntityOwnership for entity {}", entity);
-            entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
-            LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}", deviceContext
-                    .getPrimaryConnectionContext().getNodeId().getValue());
+        entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity);
+        LOG.debug("RoleContextImpl : Candidate registered with ownership service for device :{}",
+                deviceContext.getPrimaryConnectionContext().getNodeId().getValue());
     }
 
     @Override
@@ -100,43 +100,38 @@ public class RoleContextImpl implements RoleContext {
         LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
                 deviceContext.getPrimaryConnectionContext().getNodeId());
 
-        final SetRoleInput setRoleInput = (new SetRoleInputBuilder())
-                .setControllerRole(newRole)
-                .setNode(new NodeRef(deviceContext.getDeviceState().getNodeInstanceIdentifier()))
-                .build();
 
-        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture = salRoleService.setRole(setRoleInput);
-
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture),
-                new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
-                    @Override
-                    public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
-                        LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
-                        final ListenableFuture<Void> nextStepFuture;
-                        switch (state) {
-                            case STARTING:
-                                if (OfpRole.BECOMESLAVE.equals(newRole)) {
-                                    getDeviceState().setRole(newRole);
-                                    nextStepFuture = Futures.immediateFuture(null);
-                                } else if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                                    nextStepFuture = deviceContext.onClusterRoleChange(newRole);
-                                } else {
-                                    nextStepFuture = Futures.immediateFuture(null);
-                                }
-
-                                break;
-                            case WORKING:
-                                nextStepFuture = deviceContext.onClusterRoleChange(newRole);
-                                break;
-                            //case TEARING_DOWN:
-                            default:
-                                nextStepFuture = Futures.immediateFuture(null);
-                                break;
-                        }
-
-                        return nextStepFuture;
+        final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeRpcFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
+            @Override
+            public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
+                LOG.debug("Rolechange {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
+                final ListenableFuture<Void> nextStepFuture;
+                switch (state) {
+                case STARTING:
+                    if (OfpRole.BECOMESLAVE.equals(newRole)) {
+                        getDeviceState().setRole(newRole);
+                        nextStepFuture = Futures.immediateFuture(null);
+                    } else if (OfpRole.BECOMEMASTER.equals(newRole)) {
+                        nextStepFuture = deviceContext.onClusterRoleChange(oldRole, newRole);
+                    } else {
+                        nextStepFuture = Futures.immediateFuture(null);
                     }
-                });
+
+                    break;
+                case WORKING:
+                    nextStepFuture = deviceContext.onClusterRoleChange(oldRole, newRole);
+                    break;
+                //case TEARING_DOWN:
+                default:
+                    nextStepFuture = Futures.immediateFuture(null);
+                    break;
+                }
+
+                return nextStepFuture;
+            }
+        };
+
+        return sendRoleChangeToDevice(newRole, roleChangeRpcFunction);
     }
 
     @Override

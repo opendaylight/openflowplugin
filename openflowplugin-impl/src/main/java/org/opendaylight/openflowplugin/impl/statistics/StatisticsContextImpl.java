@@ -49,6 +49,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
+    private final boolean shuttingDownStatisticsPolling;
     private final Object COLLECTION_STAT_TYPE_LOCK = new Object();
     @GuardedBy("COLLECTION_STAT_TYPE_LOCK")
     private List<MultipartType> collectingStatType;
@@ -57,9 +58,11 @@ public class StatisticsContextImpl implements StatisticsContext {
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
-    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext) {
+    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext,
+            final boolean shuttingDownStatisticsPolling) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
-        devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
         emptyFuture = Futures.immediateFuture(new Boolean(false));
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
@@ -97,6 +100,10 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
+        if (shuttingDownStatisticsPolling) {
+            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceState().getNodeId());
+            return Futures.immediateFuture(Boolean.TRUE);
+        }
         final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
         if (errorResultFuture != null) {
             return errorResultFuture;

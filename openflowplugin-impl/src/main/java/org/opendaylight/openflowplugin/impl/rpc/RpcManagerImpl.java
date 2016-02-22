@@ -53,6 +53,8 @@ public class RpcManagerImpl implements RpcManager {
             contexts.put(deviceContext, rpcContext);
         }
 
+        deviceContext.addDeviceContextClosedHandler(this);
+
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
@@ -65,8 +67,6 @@ public class RpcManagerImpl implements RpcManager {
             LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
             MdSalRegistratorUtils.unregisterServices(rpcContext);
         }
-
-        deviceContext.addDeviceContextClosedHandler(this);
 
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
