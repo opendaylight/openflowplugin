@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.CheckForNull;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.reflect.TypeToken;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -61,8 +61,6 @@ public class MdSalRegistratorUtils {
     private MdSalRegistratorUtils() {
         throw new IllegalStateException();
     }
-
-
 
     /**
      * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
@@ -154,7 +152,7 @@ public class MdSalRegistratorUtils {
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
         Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isAssignableFrom(flowStatisticsService.getClass()));
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
-        OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
+        final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong());
         ((Delegator<OpendaylightFlowStatisticsService>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
 

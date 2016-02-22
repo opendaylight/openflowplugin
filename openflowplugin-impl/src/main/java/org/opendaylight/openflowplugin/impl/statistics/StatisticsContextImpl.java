@@ -72,7 +72,7 @@ public class StatisticsContextImpl implements StatisticsContext {
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
-        deviceContext.setStatisticsContext(StatisticsContextImpl.this);
+        this.deviceContext.setStatisticsContext(StatisticsContextImpl.this);
     }
 
     @Override
