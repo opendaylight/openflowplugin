@@ -38,7 +38,8 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
-      <artifactId>ietf-yang-types</artifactId>
+      <artifactId>ietf-yang-types-20130715</artifactId>
+      <version>2013.07.15.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
