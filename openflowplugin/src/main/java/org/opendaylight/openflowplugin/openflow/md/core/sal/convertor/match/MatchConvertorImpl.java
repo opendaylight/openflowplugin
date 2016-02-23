@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
-
 import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -351,8 +350,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void protocolMatchFields(List<MatchEntry> matchEntryList,
-            ProtocolMatchFields protocolMatchFields) {
+    private void protocolMatchFields(final List<MatchEntry> matchEntryList,
+            final ProtocolMatchFields protocolMatchFields) {
         if (protocolMatchFields != null) {
             if (protocolMatchFields.getMplsLabel() != null) {
                 matchEntryList.add(toOfMplsLabel(protocolMatchFields.getMplsLabel()));
@@ -373,8 +372,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void layer3Match(List<MatchEntry> matchEntryList,
-            Layer3Match layer3Match) {
+    private void layer3Match(final List<MatchEntry> matchEntryList,
+            final Layer3Match layer3Match) {
         if (layer3Match != null) {
             if (layer3Match instanceof Ipv4Match) {
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
@@ -657,8 +656,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void icmpv6Match(List<MatchEntry> matchEntryList,
-            Icmpv6Match icmpv6Match) {
+    private void icmpv6Match(final List<MatchEntry> matchEntryList,
+            final Icmpv6Match icmpv6Match) {
         if (icmpv6Match != null) {
             if (icmpv6Match.getIcmpv6Type() != null) {
                 matchEntryList.add(toOfIcmpv6Type(icmpv6Match.getIcmpv6Type()));
@@ -671,8 +670,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void icmpv4Match(List<MatchEntry> matchEntryList,
-            Icmpv4Match icmpv4Match) {
+    private void icmpv4Match(final List<MatchEntry> matchEntryList,
+            final Icmpv4Match icmpv4Match) {
         if (icmpv4Match != null) {
             if (icmpv4Match.getIcmpv4Type() != null) {
                 matchEntryList.add(toOfIcmpv4Type(icmpv4Match.getIcmpv4Type()));
@@ -685,8 +684,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void layer4Match(List<MatchEntry> matchEntryList,
-            Layer4Match layer4Match) {
+    private void layer4Match(final List<MatchEntry> matchEntryList,
+            final Layer4Match layer4Match) {
         if (layer4Match != null) {
             if (layer4Match instanceof TcpMatch) {
                 TcpMatch tcpMatch = (TcpMatch) layer4Match;
@@ -782,7 +781,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void ipMatch(List<MatchEntry> matchEntryList, IpMatch ipMatch) {
+    private void ipMatch(final List<MatchEntry> matchEntryList, final IpMatch ipMatch) {
         if (ipMatch != null) {
             if (ipMatch.getIpDscp() != null) {
                 matchEntryList.add(toOfIpDscp(ipMatch.getIpDscp()));
@@ -800,8 +799,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void vlanMatch(List<MatchEntry> matchEntryList,
-            VlanMatch vlanMatch) {
+    private void vlanMatch(final List<MatchEntry> matchEntryList,
+            final VlanMatch vlanMatch) {
         if (vlanMatch != null) {
             if (vlanMatch.getVlanId() != null) {
                 VlanId vlanId = vlanMatch.getVlanId();
@@ -840,8 +839,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
-    private void ethernetMatch(List<MatchEntry> matchEntryList,
-            EthernetMatch ethernetMatch) {
+    private void ethernetMatch(final List<MatchEntry> matchEntryList,
+            final EthernetMatch ethernetMatch) {
         if (ethernetMatch != null) {
             EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
             if (ethernetDestination != null) {
@@ -888,6 +887,18 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
     }
 
+    // Pre-calculated masks for the 33 possible values. We can share the arrays freely, as we will never
+    // leak them to the outside world except through built DTOs, which will clone them.
+    private static final byte[][] IPV4_MASKS;
+    static {
+        final byte[][] tmp = new byte[33][];
+        for (int i = 0; i <= 32; ++i) {
+            final int mask = 0xffffffff << (32 - i);
+            tmp[i] =  new byte[]{(byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8), (byte) mask};
+        }
+
+        IPV4_MASKS = tmp;
+    }
 
     private static byte[] extractIpv4Mask(final Iterator<String> addressParts) {
         final int prefix;
@@ -899,10 +910,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
 
         if (prefix != 0) {
-            int mask = 0xffffffff << (32 - prefix);
-            byte[] maskBytes = new byte[]{(byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
-                    (byte) mask};
-            return maskBytes;
+            return IPV4_MASKS[prefix];
         }
         return null;
     }
