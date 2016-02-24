@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -16,6 +17,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Matc
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6Arbitrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +117,16 @@ public class IpConversionUtilTest {
                 (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
         byte[] maskBytes;
         maskBytes = IpConversionUtil.convertArbitraryMaskToByteArray(new DottedQuad("255.255.255.255"));
+        for(int i=0; i<bytes.length;i++){
+            int mask = maskBytes[i];
+            Assert.assertEquals(bytes[i],mask);
+        }
+    }
+
+    @Test
+    public void convertipv6ArbitraryMaskToByteArrayTest() {
+        byte[] bytes = {-5,-96,-1,-74,-1,-16,-1,-16, -1,-16,-1,-16,-1,-16,-91,85};
+        byte[] maskBytes = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(new Ipv6Arbitrary("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
         for(int i=0; i<bytes.length;i++){
             int mask = maskBytes[i];
             Assert.assertEquals(bytes[i],mask);
