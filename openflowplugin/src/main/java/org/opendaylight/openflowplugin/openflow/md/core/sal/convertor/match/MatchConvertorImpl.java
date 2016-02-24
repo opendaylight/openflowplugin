@@ -11,12 +11,15 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
 import com.google.common.base.Optional;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.annotation.Nonnull;
+
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -72,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6ArbitraryMaskMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
@@ -86,6 +90,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bit.mask.fields.rev160224.Ipv6Arbitrary;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -376,6 +381,56 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     private void layer3Match(List<MatchEntry> matchEntryList,
             Layer3Match layer3Match) {
         if (layer3Match != null) {
+            if(layer3Match instanceof Ipv6ArbitraryMaskMatch){
+                Ipv6ArbitraryMaskMatch Ipv6ArbitraryMaskMatchFields = (Ipv6ArbitraryMaskMatch) layer3Match;
+                if (Ipv6ArbitraryMaskMatchFields.getIpv6SourceArbitraryAddress() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
+
+                    Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+                    Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+
+                    ipv6SrcBuilder.setIpv6Address(Ipv6ArbitraryMaskMatchFields.getIpv6SourceArbitraryAddress());
+                    Ipv6Arbitrary sourceArbitrarySubNetMask = Ipv6ArbitraryMaskMatchFields.getIpv6SourceArbitraryMask();
+                    boolean hasMask = false;
+                    if (sourceArbitrarySubNetMask != null) {
+                        byte[] maskByteArray = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(sourceArbitrarySubNetMask);
+                        if (maskByteArray != null) {
+                            ipv6SrcBuilder.setMask(maskByteArray);
+                            hasMask = true;
+                        }
+                    }
+                    matchEntryBuilder.setHasMask(hasMask);
+                    ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+                if (Ipv6ArbitraryMaskMatchFields.getIpv6DestinationArbitraryAddress() != null) {
+                    MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+                    matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+                    matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
+
+                    Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+                    Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
+
+                    ipv6DstBuilder.setIpv6Address(Ipv6ArbitraryMaskMatchFields.getIpv6DestinationArbitraryAddress());
+                    Ipv6Arbitrary destinationArbitrarySubNetMask = Ipv6ArbitraryMaskMatchFields.getIpv6DestinationArbitraryMask();
+
+                    boolean hasMask = false;
+                    if (destinationArbitrarySubNetMask != null) {
+                        byte[] maskByteArray = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(destinationArbitrarySubNetMask);
+                        if (maskByteArray != null) {
+                            ipv6DstBuilder.setMask(maskByteArray);
+                            hasMask = true;
+                        }
+                    }
+                    matchEntryBuilder.setHasMask(hasMask);
+                    ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+                    matchEntryList.add(matchEntryBuilder.build());
+                }
+            }
             if (layer3Match instanceof Ipv4Match) {
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
                 if (ipv4Match.getIpv4Source() != null) {
