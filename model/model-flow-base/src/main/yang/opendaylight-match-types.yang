@@ -6,6 +6,7 @@ module opendaylight-match-types {
     import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
     import opendaylight-l2-types {prefix l2t;revision-date "2013-08-27";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import opendaylight-ipv6-arbitrary-bit-mask-fields {prefix ipv6-arbitrary-mask; revision-date "2016-02-24";}
 
     revision "2013-10-26" {
         description "Initial revision of match types";
@@ -328,6 +329,9 @@ module opendaylight-match-types {
             }
             case "ipv6-match" {
                 uses "ipv6-match-fields";
+            }
+           case "ipv6-arbitrary-mask-match" {
+            	uses ipv6-arbitrary-mask:ipv6-match-arbitrary-bit-mask-fields;
             }
             case "arp-match" {
                 uses "arp-match-fields";
