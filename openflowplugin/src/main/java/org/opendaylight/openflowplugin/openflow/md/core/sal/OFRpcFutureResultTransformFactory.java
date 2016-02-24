@@ -90,7 +90,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveFlowOutput result = removeFlowOutput.build();
 
                 RpcResult<RemoveFlowOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug(MSG_ADD_FLOW_RPC);
+                LOG.debug("Returning the Remove Flow RPC result to MD-SAL");
                 return rpcResult;
             }
 
@@ -134,7 +134,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveGroupOutput result = removeGroupOutput.build();
 
                 RpcResult<RemoveGroupOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug(MSG_ADD_FLOW_RPC);
+                LOG.debug("Returning the Remove Group RPC result to MD-SAL");
                 return rpcResult;
             }
 
@@ -178,7 +178,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveMeterOutput result = removeMeterOutput.build();
 
                 RpcResult<RemoveMeterOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Meter RPC result to MD-SAL");
+                LOG.debug("Returning the Remvoe Meter RPC result to MD-SAL");
                 return rpcResult;
             }
         };
