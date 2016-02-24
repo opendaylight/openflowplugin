@@ -1,0 +1,42 @@
+module opendaylight-ipv6-arbitrary-bit-mask-fields {
+    namespace "urn:opendaylight:opendaylight-ipv6-arbitrary-bit-mask-fields";
+    prefix "ipv6-mask";
+    
+    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+
+
+    revision 2016-02-24 {
+        description "Initial revision";
+    }
+    
+    typedef ipv6-arbitrary{
+    	type string {
+     	      pattern 
+     	             '((([0-9a-fA-F]{4}\:){7}[0-9a-fA-F]{4}))';
+     	    }
+       }
+
+    grouping "ipv6-match-arbitrary-bit-mask-fields" {
+
+        leaf ipv6-source-arbitrary-address {
+            description "IPv6 source address with no mask .";
+            type inet:ipv6-address;
+        }
+        
+        leaf ipv6-source-arbitrary-mask {
+            description "IPv6 source address with arbitrary bit mask .";
+            type ipv6-arbitrary;
+        }
+
+        leaf ipv6-destination-arbitrary-address {
+            description "IPv6 destination address with no mask.";
+            type inet:ipv6-address;
+        }
+
+        leaf ipv6-destination-arbitrary-mask {
+            description "IPv6 destination address with arbitrary bit mask.";
+            type ipv6-arbitrary;
+        }
+    }
+
+}
