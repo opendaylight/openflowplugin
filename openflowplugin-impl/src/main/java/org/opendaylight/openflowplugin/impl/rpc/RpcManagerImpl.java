@@ -8,6 +8,9 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.base.Verify;
+import com.google.common.collect.Iterators;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -51,8 +54,6 @@ public class RpcManagerImpl implements RpcManager {
         Verify.verify(contexts.putIfAbsent(deviceContext, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
         deviceContext.addDeviceContextClosedHandler(this);
 
-        //FIXME : propagate isStatisticsRpcEnabled to DeviceContext
-
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
             LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
@@ -72,11 +73,11 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void close() throws Exception {
-        for(final RpcContext ctx : contexts.values()) {
-            ctx.close();
+    public void close() {
+        for (final Iterator<Entry<DeviceContext, RpcContext>> iterator = Iterators
+                .consumingIterator(contexts.entrySet().iterator()); iterator.hasNext();) {
+            iterator.next().getValue().close();
         }
-        contexts.clear();
     }
 
 

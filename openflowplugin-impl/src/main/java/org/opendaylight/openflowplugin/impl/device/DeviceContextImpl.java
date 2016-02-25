@@ -35,7 +35,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -56,7 +55,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -253,6 +251,11 @@ public class DeviceContextImpl implements DeviceContext {
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
+        if (rpcContext == null) {
+            final String errMsg = String.format("DeviceCtx {} is up but we are missing RpcContext", deviceState.getNodeId());
+            LOG.warn(errMsg);
+            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
+        }
 
         final InstanceIdentifier<FlowCapableNode> ofNodeII = deviceState.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
@@ -264,7 +267,7 @@ public class DeviceContextImpl implements DeviceContext {
                 new AsyncFunction<Optional<FlowCapableNode>, Void>() {
                     @Override
                     public ListenableFuture<Void> apply(final Optional<FlowCapableNode> input) throws Exception {
-                        if (!input.isPresent() || input.get().getTable() != null || input.get().getTable().isEmpty()) {
+                        if (!input.isPresent() || input.get().getTable() == null || input.get().getTable().isEmpty()) {
                             /* Last master close fail scenario so we would like to activate TxManager */
                             LOG.debug("Operational DS for Device {} has to be replaced", deviceState.getNodeId());
                             getDeviceState().setDeviceSynchronized(false);
@@ -291,21 +294,24 @@ public class DeviceContextImpl implements DeviceContext {
 
             @Override
             public Void apply(final Boolean input) {
+                if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
+                    final String errMsg = String.format("We lost connection for Device {}, context has to be closed.",
+                            getDeviceState().getNodeId());
+                    LOG.warn(errMsg);
+                    transactionChainManager.clearUnsubmittedTransaction();
+                    throw new IllegalStateException(errMsg);
+                }
                 if (!input.booleanValue()) {
-                    LOG.warn("Get Initial Device {} information fails", getDeviceState().getNodeId());
-                    DeviceContextImpl.this.close();
-                    return null;
+                    final String errMsg = String.format("Get Initial Device {} information fails",
+                            getDeviceState().getNodeId());
+                    LOG.warn(errMsg);
+                    transactionChainManager.clearUnsubmittedTransaction();
+                    throw new IllegalStateException(errMsg);
                 }
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 transactionChainManager.activateTransactionManager();
-                //TODO: This is relevant for slave to master scenario make verify
-                if (null != rpcContext) {
-                    MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
-                } else {
-                    LOG.warn("No RpcCtx on deviceCtx: {}, cannot register services", this);
-                    // TODO : can we stay without RPCs or we need to call DeviceCtx.close ?
-                }
+                MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
@@ -479,7 +485,7 @@ public class DeviceContextImpl implements DeviceContext {
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            final CheckedFuture<Void, TransactionCommitFailedException> future = transactionChainManager.shuttingDown();
+            final ListenableFuture<Void> future = transactionChainManager.shuttingDown();
             Futures.addCallback(future, new FutureCallback<Void>() {
 
                 @Override

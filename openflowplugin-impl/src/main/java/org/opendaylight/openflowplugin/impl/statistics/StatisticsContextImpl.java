@@ -173,6 +173,13 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            final String errMsg = String.format("Device connection is closed for Node : %s.",
+                    deviceContext.getDeviceState().getNodeId());
+            LOG.debug(errMsg);
+            resultFuture.setException(new IllegalStateException(errMsg));
+            return;
+        }
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
             LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceState().getNodeId());
