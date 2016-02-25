@@ -17,14 +17,12 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,13 +115,13 @@ public class DeviceManagerImplTest {
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
 
-    @Test
-    public void onDeviceContextLevelUpFailTest() {
+    @Test(expected = IllegalStateException.class)
+    public void onDeviceContextLevelUpFailTest() throws Exception {
         onDeviceContextLevelUp(true);
     }
 
     @Test
-    public void onDeviceContextLevelUpSuccessTest() {
+    public void onDeviceContextLevelUpSuccessTest() throws Exception {
         onDeviceContextLevelUp(false);
     }
 
@@ -131,12 +129,12 @@ public class DeviceManagerImplTest {
         return prepareDeviceManager(false);
     }
 
-    private DeviceManagerImpl prepareDeviceManager(boolean withException) {
-        DataBroker mockedDataBroker = mock(DataBroker.class);
-        WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
+    private DeviceManagerImpl prepareDeviceManager(final boolean withException) {
+        final DataBroker mockedDataBroker = mock(DataBroker.class);
+        final WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
 
-        BindingTransactionChain mockedTxChain = mock(BindingTransactionChain.class);
-        WriteTransaction mockedWTx = mock(WriteTransaction.class);
+        final BindingTransactionChain mockedTxChain = mock(BindingTransactionChain.class);
+        final WriteTransaction mockedWTx = mock(WriteTransaction.class);
         when(mockedTxChain.newWriteOnlyTransaction()).thenReturn(mockedWTx);
         when(mockedDataBroker.createTransactionChain(any(TransactionChainListener.class))).thenReturn
                 (mockedTxChain);
@@ -144,17 +142,17 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
+        final MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
+        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
     }
 
-    public void onDeviceContextLevelUp(boolean withException) {
-        DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
-        DeviceState mockedDeviceState = mock(DeviceState.class);
+    public void onDeviceContextLevelUp(final boolean withException) throws Exception {
+        final DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
+        final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
 
@@ -173,13 +171,13 @@ public class DeviceManagerImplTest {
 
     @Test
     public void deviceConnectedTest() throws Exception{
-        DeviceManagerImpl deviceManager = prepareDeviceManager();
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
         injectMockTranslatorLibrary(deviceManager);
-        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+        final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
 
         deviceManager.deviceConnected(mockConnectionContext);
 
-        InOrder order = inOrder(mockConnectionContext);
+        final InOrder order = inOrder(mockConnectionContext);
         order.verify(mockConnectionContext).getFeatures();
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
@@ -190,21 +188,21 @@ public class DeviceManagerImplTest {
 
     @Test
     public void deviceConnectedV10Test() throws Exception{
-        DeviceManagerImpl deviceManager = prepareDeviceManager();
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
         injectMockTranslatorLibrary(deviceManager);
-        ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
+        final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
 
-        PhyPortBuilder phyPort = new PhyPortBuilder()
+        final PhyPortBuilder phyPort = new PhyPortBuilder()
                 .setPortNo(41L);
         when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
-        MessageTranslator<Object, Object> mockedTranslator = Mockito.mock(MessageTranslator.class);
+        final MessageTranslator<Object, Object> mockedTranslator = Mockito.mock(MessageTranslator.class);
         when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceContext>any(), Matchers.any()))
                 .thenReturn(null);
         when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
 
         deviceManager.deviceConnected(mockConnectionContext);
 
-        InOrder order = inOrder(mockConnectionContext);
+        final InOrder order = inOrder(mockConnectionContext);
         order.verify(mockConnectionContext).getFeatures();
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
@@ -213,12 +211,12 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
     }
 
-    protected ConnectionContext buildMockConnectionContext(short ofpVersion) {
+    protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {
         when(mockFeatures.getVersion()).thenReturn(ofpVersion);
         when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(final InvocationOnMock invocation) throws Throwable {
                 final FutureCallback<OfHeader> callBack = (FutureCallback<OfHeader>) invocation.getArguments()[2];
                 callBack.onSuccess(null);
                 return null;
@@ -230,8 +228,8 @@ public class DeviceManagerImplTest {
         when(mockedConnectionAdapter.registerOutboundQueueHandler(Matchers.<OutboundQueueHandler>any(), Matchers.anyInt(), Matchers.anyLong()))
                 .thenAnswer(new Answer<OutboundQueueHandlerRegistration<OutboundQueueHandler>>() {
                     @Override
-                    public OutboundQueueHandlerRegistration<OutboundQueueHandler> answer(InvocationOnMock invocation) throws Throwable {
-                        OutboundQueueHandler handler = (OutboundQueueHandler) invocation.getArguments()[0];
+                    public OutboundQueueHandlerRegistration<OutboundQueueHandler> answer(final InvocationOnMock invocation) throws Throwable {
+                        final OutboundQueueHandler handler = (OutboundQueueHandler) invocation.getArguments()[0];
                         handler.onConnectionQueueChanged(outboundQueueProvider);
                         return null;
                     }
@@ -241,13 +239,13 @@ public class DeviceManagerImplTest {
         return mockConnectionContext;
     }
 
-    private void injectMockTranslatorLibrary(DeviceManagerImpl deviceManager) {
+    private void injectMockTranslatorLibrary(final DeviceManagerImpl deviceManager) {
         deviceManager.setTranslatorLibrary(translatorLibrary);
     }
 
     @Test
     public void testClose() throws Exception {
-        DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
+        final DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
         final DeviceManagerImpl deviceManager = prepareDeviceManager();
         final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
         deviceContexts.put(mockedNodeId, deviceContext);
@@ -258,7 +256,7 @@ public class DeviceManagerImplTest {
         Mockito.verify(deviceContext).close();
     }
 
-    private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);

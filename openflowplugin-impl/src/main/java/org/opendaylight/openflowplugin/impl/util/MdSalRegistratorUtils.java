@@ -102,7 +102,7 @@ public class MdSalRegistratorUtils {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(newRole != null);
         Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
-        
+
         unregisterServices(rpcContext);
     }
 
