@@ -18,12 +18,21 @@ import java.util.concurrent.TimeoutException;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -56,7 +65,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private HashedWheelTimer hashedWheelTimer;
 
-    private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
@@ -87,6 +96,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             hashedWheelTimer = deviceContext.getTimer();
         }
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, shuttingDownStatisticsPolling);
+
+        Verify.verify(contexts.putIfAbsent(deviceContext, statisticsContext) == null, "StatisticsCtx still not closed for Node {}",deviceContext.getDeviceState().getNodeId());
         deviceContext.addDeviceContextClosedHandler(this);
 
         if (shuttingDownStatisticsPolling) {
@@ -100,7 +111,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             }
             scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
         }
-        contexts.put(deviceContext, statisticsContext);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
         deviceContext.getDeviceState().setDeviceSynchronized(true);
     }

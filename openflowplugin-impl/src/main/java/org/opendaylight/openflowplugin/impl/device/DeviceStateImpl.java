@@ -55,6 +55,8 @@ class DeviceStateImpl implements DeviceState {
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         version = featuresReply.getVersion();
+        statPollEnabled = false;
+        deviceSynchronized = false;
     }
 
     @Override
@@ -166,5 +168,15 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setRole(OfpRole role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean isStatisticsPollingEnabled() {
+        return statPollEnabled;
+    }
+
+    @Override
+    public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
+        this.statPollEnabled = statPollEnabled;
     }
 }
