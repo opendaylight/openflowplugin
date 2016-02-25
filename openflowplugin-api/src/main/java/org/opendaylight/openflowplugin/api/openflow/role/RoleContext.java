@@ -17,8 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
  */
 public interface RoleContext extends RoleChangeListener, RequestContextStack {
 
-    void setTxLockOwned(boolean txLockOwned);
-
     /**
      * Initialization method is responsible for a registration of
      * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listen for notification from service.
@@ -47,5 +45,4 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
 
     DeviceContext getDeviceContext();
 
-    boolean isTxLockOwned();
 }

@@ -8,6 +8,9 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
@@ -72,13 +75,14 @@ public class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations.values()) {
+        for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext();) {
+            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
             rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistration.close();
             LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
                     deviceContext.getDeviceState().getNodeInstanceIdentifier());
         }
-        rpcRegistrations.clear();
     }
 
     @Override
@@ -90,7 +94,14 @@ public class RpcContextImpl implements RpcContext {
             LOG.trace("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
         }
 
-        return new AbstractRequestContext<T>(deviceContext.reservedXidForDeviceMessage()) {
+        final Long xid = deviceContext.reservedXidForDeviceMessage();
+        if (xid == null) {
+            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", deviceContext.getDeviceState().getNodeId());
+            tracker.release();
+            return null;
+        }
+
+        return new AbstractRequestContext<T>(xid) {
             @Override
             public void close() {
                 tracker.release();
