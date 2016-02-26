@@ -63,6 +63,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
+    private long barrierInterval;
+    private int barrierCountLimit;
+    private long echoReplyTimeout;
     private DeviceManager deviceManager;
     private RoleManager roleManager;
     private RpcManager rpcManager;
@@ -131,6 +134,22 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setBarrierCountLimit(int barrierCountLimit) {
+        this.barrierCountLimit = barrierCountLimit;
+    }
+
+    @Override
+    public void setBarrierInterval(long barrierTimeoutLimit) {
+        this.barrierInterval = barrierTimeoutLimit;
+    }
+
+    @Override
+    public void setEchoReplyTimeout(long echoReplyTimeout) {
+        this.echoReplyTimeout = echoReplyTimeout;
+    }
+
+
+    @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
@@ -166,11 +185,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // TODO: rewrite later!
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
-        connectionManager = new ConnectionManagerImpl();
+        connectionManager = new ConnectionManagerImpl(echoReplyTimeout);
 
         registerMXBean(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota, switchFeaturesMandatory);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota,
+                switchFeaturesMandatory, barrierInterval, barrierCountLimit);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, switchFeaturesMandatory);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);

@@ -40,6 +40,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class SystemNotificationsListenerImplTest {
 
     public static final int SAFE_TIMEOUT = 1000;
+    private final static int ECHO_REPLY_TIMEOUT = 2000;
     @Mock
     private org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter connectionAdapter;
     @Mock
@@ -64,7 +65,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
-        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext);
+        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT);
     }
 
     @After
