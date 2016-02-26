@@ -99,7 +99,7 @@ public class RpcContextImpl implements RpcContext {
             LOG.trace("Device queue {} at capacity", this);
             return null;
         } else {
-            LOG.info("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
+            LOG.trace("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
         }
 
         return new AbstractRequestContext<T>(deviceContext.reservedXidForDeviceMessage()) {
@@ -107,7 +107,7 @@ public class RpcContextImpl implements RpcContext {
             public void close() {
                 tracker.release();
                 final long xid = getXid().getValue();
-                LOG.info("Removed request context with xid {}", xid);
+                LOG.trace("Removed request context with xid {}", xid);
                 messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
             }
         };
