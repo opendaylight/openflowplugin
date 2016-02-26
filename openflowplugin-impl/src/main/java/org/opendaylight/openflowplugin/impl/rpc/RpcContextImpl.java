@@ -105,7 +105,7 @@ public class RpcContextImpl implements RpcContext {
             LOG.trace("Device queue {} at capacity", this);
             return null;
         } else {
-            LOG.info("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
+            LOG.trace("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
         }
 
         final Long xid = deviceContext.reservedXidForDeviceMessage();
