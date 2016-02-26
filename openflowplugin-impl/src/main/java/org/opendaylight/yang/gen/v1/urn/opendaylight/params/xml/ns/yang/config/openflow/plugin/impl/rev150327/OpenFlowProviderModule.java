@@ -38,8 +38,15 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         openflowPluginProvider.setIsStatisticsPollingOff(getIsStatisticsPollingOff());
         openflowPluginProvider.setEntityOwnershipService(getEntityOwnershipServiceDependency());
         openflowPluginProvider.setIsStatisticsRpcEnabled(getIsStatisticsRpcEnabled());
+        openflowPluginProvider.setBarrierCountLimit(getBarrierCountLimit().getValue());
+        openflowPluginProvider.setBarrierInterval(getBarrierInterval().getValue());
+        openflowPluginProvider.setEchoReplyTimeout(getEchoReplyTimeout().getValue());
 
         openflowPluginProvider.initialize();
+
+        LOG.info("Configured values, StatisticsPollingOff:{}, SwitchFeaturesMandatory:{}, BarrierCountLimit:{}, BarrierTimeoutLimit:{}, EchoReplyTimeout:{}",
+                getIsStatisticsPollingOff(), getSwitchFeaturesMandatory(), getBarrierCountLimit().getValue(), getBarrierInterval().getValue(), getEchoReplyTimeout().getValue());
+
 
         return openflowPluginProvider;
     }

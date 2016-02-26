@@ -41,6 +41,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private static final int HELLO_LIMIT = 20;
     private final boolean bitmapNegotiationEnabled = true;
     private DeviceConnectedHandler deviceConnectedHandler;
+    private final long echoReplyTimeout;
+
+    public ConnectionManagerImpl(long echoReplyTimeout) {
+        this.echoReplyTimeout = echoReplyTimeout;
+    }
+
 
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
@@ -71,7 +77,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext, echoReplyTimeout);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");

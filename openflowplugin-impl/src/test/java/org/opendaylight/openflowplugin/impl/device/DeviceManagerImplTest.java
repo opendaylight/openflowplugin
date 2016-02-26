@@ -79,6 +79,8 @@ public class DeviceManagerImplTest {
     private static final Long DUMMY_MAX_METER = 544L;
     private static final String DUMMY_DATAPATH_ID = "44";
     private static final Long DUMMY_PORT_NUMBER = 21L;
+    private static final int barrierCountLimit = 25600;
+    private static final int barrierIntervalNanos = 500;
 
     @Mock
     CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
@@ -144,7 +146,8 @@ public class DeviceManagerImplTest {
 
         final MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit);
+
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
 
         return deviceManager;
