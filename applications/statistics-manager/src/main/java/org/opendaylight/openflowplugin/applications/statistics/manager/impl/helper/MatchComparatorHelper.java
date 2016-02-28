@@ -12,11 +12,13 @@ import java.net.Inet4Address;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 
 /**
  * @author joe
@@ -106,7 +108,16 @@ public class MatchComparatorHelper {
                 verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(statsIpv4Match.getIpv4Source(),
                         storedIpv4Match.getIpv4Source());
             }
-        } else {
+        } else if(statsLayer3Match instanceof Ipv6Match && storedLayer3Match instanceof Ipv6Match) {
+            final Ipv6Match statsIpv6Match = (Ipv6Match) statsLayer3Match;
+            final Ipv6Match storedIpv6Match = (Ipv6Match) storedLayer3Match;
+            verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(storedIpv6Match.getIpv6Destination(),
+                    statsIpv6Match.getIpv6Destination());
+            if (verdict) {
+                verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(statsIpv6Match.getIpv6Source(),
+                        storedIpv6Match.getIpv6Source());
+            }
+        }else {
             final Boolean nullCheckOut = checkNullValues(storedLayer3Match, statsLayer3Match);
             if (nullCheckOut != null) {
                 verdict = nullCheckOut;
@@ -117,6 +128,7 @@ public class MatchComparatorHelper {
 
         return verdict;
     }
+
 
     /**
      * TODO: why don't we use the default Ipv4Prefix.equals()?
@@ -148,6 +160,20 @@ public class MatchComparatorHelper {
         return (statsIpAddressInt.getIp() == storedIpAddressInt.getIp());
     }
 
+
+    private static boolean IpAddressEquals(Ipv6Prefix statsIpv6, Ipv6Prefix storedIpv6) {
+        final String[] statsIpMask = statsIpv6.getValue().split("/");
+        final String[] storedIpMask = storedIpv6.getValue().split("/");
+        if(! (statsIpMask.length > 1 && storedIpMask.length > 1 &&  statsIpMask[1].equals(storedIpMask[1]))){
+            return false;
+        }
+        if(InetAddresses.forString(statsIpMask[0]).equals(InetAddresses.forString(storedIpMask[0]))){
+            return true;
+        }
+        return false;
+    }
+
+
     static Boolean checkNullValues(final Object v1, final Object v2) {
         Boolean verdict = null;
         if (v1 == null && v2 != null) {
@@ -167,6 +193,18 @@ public class MatchComparatorHelper {
         if (checkDestNullValuesOut != null) {
             verdict = checkDestNullValuesOut;
         } else if (!IpAddressEquals(statsIpv4, storedIpv4)) {
+            verdict = false;
+        }
+
+        return verdict;
+    }
+
+    private static boolean compareIpv6PrefixNullSafe(Ipv6Prefix statsIpv6, Ipv6Prefix storedIpv6) {
+        boolean verdict = true;
+        final Boolean checkDestNullValuesOut = checkNullValues(statsIpv6, storedIpv6);
+        if (checkDestNullValuesOut != null) {
+            verdict = checkDestNullValuesOut;
+        } else if (!IpAddressEquals(statsIpv6, storedIpv6)) {
             verdict = false;
         }
 
