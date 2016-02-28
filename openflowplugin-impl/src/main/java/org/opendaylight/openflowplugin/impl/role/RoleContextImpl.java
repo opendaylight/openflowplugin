@@ -61,7 +61,6 @@ public class RoleContextImpl implements RoleContext {
 
     private final Semaphore mainCandidateGuard = new Semaphore(1, true);
     private final Semaphore txCandidateGuard = new Semaphore(1, true);
-    private volatile boolean txLockOwned;
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
                            final Entity entity, final Entity txEnitity) {
@@ -205,16 +204,6 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public Semaphore getTxCandidateGuard() {
         return txCandidateGuard;
-    }
-
-    @Override
-    public boolean isTxLockOwned() {
-        return txLockOwned;
-    }
-
-    @Override
-    public void setTxLockOwned(final boolean txLockOwned) {
-        this.txLockOwned = txLockOwned;
     }
 
     private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
