@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>applications</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opendaylight.openflowplugin.applications</groupId>
+  <artifactId>forwardingrules-sync</artifactId>
+  <packaging>bundle</packaging>
+
+  <properties>
+    <netconf.version>${restconf.version}</netconf.version>
+	<yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
+	<mdsal.version>1.3.0-SNAPSHOT</mdsal.version>
+	<mdsal.model.version>0.8.0-SNAPSHOT</mdsal.model.version>
+	<mdsal.model.groupid>org.opendaylight.mdsal.model</mdsal.model.groupid>
+	<dlux.version>0.3.0-SNAPSHOT</dlux.version>
+	<openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
+	<openflowjava.version>0.7.0-SNAPSHOT</openflowjava.version>
+	<restconf.version>1.3.0-SNAPSHOT</restconf.version>
+	<features.restconf.groupid>org.opendaylight.netconf</features.restconf.groupid>	
+	<config.version>0.4.0-SNAPSHOT</config.version>
+    <lldp.version>0.10.0-SNAPSHOT</lldp.version>
+	
+	<odl-models>odl-mdsal-models</odl-models>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+		<!-- 
+      <dependency>
+        <groupId>org.opendaylight.controller</groupId>
+        <artifactId>netconf-artifacts</artifactId>
+        <version>${netconf.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+		<dependency> <groupId>${project.groupId}</groupId> <artifactId>commons-dependency-management</artifactId> 
+			<version>${project.version}</version> <scope>import</scope> <type>pom</type> 
+			</dependency>
+		<dependency>
+			<groupId>org.opendaylight.controller</groupId>
+			<artifactId>mdsal-artifacts</artifactId>
+			<version>${mdsal.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.yangtools</groupId>
+			<artifactId>yangtools-artifacts</artifactId>
+			<version>${yangtools.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+			 -->
+		<dependency>
+			<groupId>org.opendaylight.netconf</groupId>
+			<artifactId>restconf-artifacts</artifactId>
+			<version>${restconf.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		<dependency>
+               <groupId>org.opendaylight.controller</groupId>
+               <artifactId>config-artifacts</artifactId>
+               <version>${config.version}</version>
+               <scope>import</scope>
+               <type>pom</type>
+           </dependency>
+		<!-- project specific dependencies -->
+		<dependency>
+			<groupId>org.opendaylight.openflowplugin</groupId>
+			<artifactId>openflowplugin-artifacts</artifactId>
+			<version>${openflowplugin.version}</version>
+			<scope>import</scope>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+               <groupId>org.opendaylight.openflowjava</groupId>
+               <artifactId>openflowjava-artifacts</artifactId>
+               <version>${openflowjava.version}</version>
+               <scope>import</scope>
+               <type>pom</type>
+           </dependency>
+	</dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>forwardingrules-manager</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-binding-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-binding-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-common-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>forwardingrules-manager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.yangtools</groupId>
+      <artifactId>yang-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.yangtools</groupId>
+      <artifactId>concepts</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>config-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-binding-broker-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-binding-broker-impl</artifactId>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.opendaylight.yangtools</groupId>
+        <artifactId>yang-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/classes/initial/69-forwardingrules-sync.xml</file>
+                  <type>xml</type>
+                  <classifier>config</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features.xml</file>
+                  <type>xml</type>
+                  <classifier>features</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+
+  <scm>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+    <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+    <tag>HEAD</tag>
+  </scm>
+
+</project>
