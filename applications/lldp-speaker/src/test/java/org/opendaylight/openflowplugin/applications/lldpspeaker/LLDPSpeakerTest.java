@@ -80,7 +80,6 @@ public class LLDPSpeakerTest {
                         any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
         lldpSpeaker = new LLDPSpeaker(packetProcessingService,
                 scheduledExecutorService, destinationMACAddress);
-        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
     }
 
     /**
@@ -98,7 +97,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packet);
+        verify(packetProcessingService, times(0)).transmitPacket(packet);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
