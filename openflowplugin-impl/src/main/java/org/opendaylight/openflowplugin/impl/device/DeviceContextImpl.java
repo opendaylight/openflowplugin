@@ -244,6 +244,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
+
             if (!deviceState.deviceSynchronized()) {
                 //TODO: no necessary code for yet - it needs for initialization phase only
                 LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
@@ -252,7 +253,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             /* Relevant for no initial Slave-to-Master scenario in cluster */
             return asyncClusterRoleChange(role);
-
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
                 MdSalRegistratorUtils.registerSlaveServices(rpcContext, role);
@@ -338,9 +338,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 transactionChainManager.activateTransactionManager();
+                initialSubmitTransaction();
                 MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
                 getRpcContext().registerStatCompatibilityServices();
-                initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
             }
@@ -542,14 +542,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         LOG.debug("closing deviceContext: {}, nodeId:{}",
                 getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
                 getDeviceState().getNodeId());
 
-        tearDown();
-
-        primaryConnectionContext.closeConnection(false);
+        if (deviceState.isValid()) {
+            primaryConnectionContext.closeConnection(false);
+            tearDown();
+        }
     }
 
     private synchronized void tearDown() {
