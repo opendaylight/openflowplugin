@@ -35,19 +35,18 @@ public class LLDPSpeakerModule extends AbstractLLDPSpeakerModule {
     public AutoCloseable createInstance() {
         LOG.trace("Creating LLDP speaker.");
 
-        PacketProcessingService packetProcessingService = getRpcRegistryDependency()
-                .getRpcService(PacketProcessingService.class);
+        PacketProcessingService packetProcessingService = getRpcRegistryDependency().getRpcService(PacketProcessingService.class);
         MacAddress macDestination = getAddressDestination();
 
-        final LLDPSpeaker lldpSpeaker = new LLDPSpeaker(
-                packetProcessingService, macDestination);
+        final LLDPSpeaker lldpSpeaker = new LLDPSpeaker(packetProcessingService, macDestination);
         final NodeConnectorInventoryEventTranslator eventTranslator = new NodeConnectorInventoryEventTranslator(
                 getDataBrokerDependency(), lldpSpeaker);
 
-        OperationalStatusChangeService operationalStatusChangeService = new OperationalStatusChangeService(
-                lldpSpeaker);
+        OperationalStatusChangeService operationalStatusChangeService = new OperationalStatusChangeService(lldpSpeaker);
         final BindingAwareBroker.RpcRegistration<LldpSpeakerService> statusServiceRegistration =
                 getRpcRegistryDependency().addRpcImplementation(LldpSpeakerService.class, operationalStatusChangeService);
+
+        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
 
         return new AutoCloseable() {
             @Override

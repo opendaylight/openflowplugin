@@ -98,7 +98,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packet);
+        verify(packetProcessingService, times(0)).transmitPacket(packet);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -110,6 +110,7 @@ public class LLDPSpeakerTest {
     public void testNodeConnectorAdd() {
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
+        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
         // Execute one iteration of periodic task - LLDP packet should be
@@ -128,6 +129,7 @@ public class LLDPSpeakerTest {
     @Test
     public void testNodeConnectorRemoval() {
         // Prepare for test - add node connector first
+        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
         // Trigger removal of packet
@@ -150,6 +152,7 @@ public class LLDPSpeakerTest {
     public void testMultipleSameNodeConnectorAddEvents() {
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
+        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
         for (int i = 0; i < 10; i++) {
             lldpSpeaker.nodeConnectorAdded(id, fcnc);
         }
