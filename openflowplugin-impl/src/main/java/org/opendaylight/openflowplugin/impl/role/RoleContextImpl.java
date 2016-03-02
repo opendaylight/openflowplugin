@@ -17,13 +17,17 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -38,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,5 +250,31 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void setPropagatingRole(final OfpRole propagatingRole) {
         this.propagatingRole = propagatingRole;
+    }
+
+    private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
+        LOG.debug("Send new Role {} to Device {}", newRole, deviceContext.getDeviceState().getNodeId());
+        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+        if (deviceContext.getDeviceState().getFeatures().getVersion() < OFConstants.OFP_VERSION_1_3) {
+            LOG.debug("Device OF version {} not support ROLE", deviceContext.getDeviceState().getFeatures().getVersion());
+            setRoleOutputFuture = Futures.immediateFuture(RpcResultBuilder.<SetRoleOutput> success().build());
+        } else {
+            final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
+                    .setNode(new NodeRef(deviceContext.getDeviceState().getNodeInstanceIdentifier())).build();
+            setRoleOutputFuture = salRoleService.setRole(setRoleInput);
+            final TimerTask timerTask = new TimerTask() {
+
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    if (!setRoleOutputFuture.isDone()) {
+                        LOG.info("New Role {} was not propagated to device {} during 10 sec. Close connection immediately.",
+                                newRole, deviceContext.getDeviceState().getNodeId());
+                        deviceContext.close();
+                    }
+                }
+            };
+            deviceContext.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
+        }
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
     }
 }
