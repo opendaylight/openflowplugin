@@ -50,7 +50,7 @@ public class NodeListenerOperationalImpl extends AbstractNodeListener {
                 if (input.isPresent()) {
                     nextResult = reactor.syncup(nodePath, input.get(), triggerModification);
                 } else {
-                    LOG.trace("no node present in DS/operational for nodeId={}", PathUtil.digNodeId(nodePath));
+                    LOG.trace("no node present in DS/config for nodeId={}", PathUtil.digNodeId(nodePath));
                     nextResult = Futures.immediateFuture(null);
                 }
 
