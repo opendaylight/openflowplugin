@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.reflect.TypeToken;
@@ -105,7 +103,7 @@ public class MdSalRegistratorUtils {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(newRole != null);
         Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
-
+        
         unregisterServices(rpcContext);
     }
 

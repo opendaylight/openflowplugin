@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -42,12 +43,14 @@ public class RpcContextImplTest {
     private DeviceContext deviceContext;
     @Mock
     private MessageSpy messageSpy;
+    @Mock
+    private NotificationPublishService notificationPublishService;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
     @Before
     public void setup() {
-        NodeId nodeId = new NodeId("openflow:1");
+        final NodeId nodeId = new NodeId("openflow:1");
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
         when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
@@ -61,16 +64,18 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 100)) {
-            RequestContext<?> requestContext = rpcContext.createRequestContext();
+        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext,
+                100, false, notificationPublishService)) {
+            final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
     }
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 0)) {
-            RequestContext<?> requestContext = rpcContext.createRequestContext();
+        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 0,
+                false, notificationPublishService)) {
+            final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
     }

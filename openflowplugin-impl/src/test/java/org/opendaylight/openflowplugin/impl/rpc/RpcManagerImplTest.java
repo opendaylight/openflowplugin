@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -55,6 +56,8 @@ public class RpcManagerImplTest {
     private DeviceState deviceState;
     @Mock
     private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Mock
+    private MessageSpy messageSpy;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
@@ -72,6 +75,7 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
     }
 
     @Test
