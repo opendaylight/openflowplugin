@@ -268,7 +268,7 @@ public class DeviceContextImplTest {
 
     private ConnectionContext addDummyAuxiliaryConnectionContext() {
         ConnectionContext mockedConnectionContext = prepareConnectionContext();
-        deviceContext.addAuxiliaryConenctionContext(mockedConnectionContext);
+        deviceContext.addAuxiliaryConnectionContext(mockedConnectionContext);
         return mockedConnectionContext;
     }
 
@@ -392,7 +392,7 @@ public class DeviceContextImplTest {
         when(deviceState.getNodeId()).thenReturn(dummyNodeId);
 
         ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
-        deviceContext.addAuxiliaryConenctionContext(mockedAuxiliaryConnectionContext);
+        deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
         DeviceContextClosedHandler mockedDeviceContextClosedHandler = mock(DeviceContextClosedHandler.class);
         deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
         deviceContext.close();
