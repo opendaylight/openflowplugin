@@ -163,7 +163,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(resultFeatures.getResult(), version);
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(resultFeatures.getResult(), version);
     }
 
     /**
@@ -181,7 +181,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(resultFeatures.getResult(), version);
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(resultFeatures.getResult(), version);
     }
 
     /**
@@ -197,7 +197,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
@@ -216,7 +216,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
@@ -238,7 +238,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(expVersion, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), expVersion);
     }
 
@@ -262,7 +262,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(expVersion, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), expVersion);
     }
 
@@ -281,7 +281,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -302,7 +302,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -324,7 +324,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(expVersion, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), expVersion);
     }
 
@@ -346,7 +346,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(expVersion, helloXid).build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), expVersion);
     }
 
@@ -365,7 +365,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
@@ -386,7 +386,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
@@ -409,7 +409,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -434,7 +434,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -457,7 +457,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -482,7 +482,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener).onHandshakeSuccessful(
                 resultFeatures.getResult(), version);
     }
 
@@ -503,7 +503,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
@@ -526,7 +526,7 @@ public class HandshakeManagerImplTest {
 
         handshakeManager.shake(helloMessage.build());
 
-        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessful(
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 

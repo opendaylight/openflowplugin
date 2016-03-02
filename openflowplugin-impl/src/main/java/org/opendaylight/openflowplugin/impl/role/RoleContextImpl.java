@@ -52,23 +52,24 @@ public class RoleContextImpl implements RoleContext {
 
     private final EntityOwnershipService entityOwnershipService;
     private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
-    private final DeviceContext deviceContext;
-    private final Entity entity;
-    private SalRoleService salRoleService;
-
     private EntityOwnershipCandidateRegistration txEntityOwnershipCandidateRegistration;
+
+    private final DeviceContext deviceContext;
+
+    private final Entity entity;
     private final Entity txEntity;
+
+    private SalRoleService salRoleService;
 
     private final Semaphore mainCandidateGuard = new Semaphore(1, true);
     private final Semaphore txCandidateGuard = new Semaphore(1, true);
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
-                           final Entity entity, final Entity txEnitity) {
+                           final Entity entity, final Entity txEntity) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.entity = Preconditions.checkNotNull(entity);
-        this.txEntity = Preconditions.checkNotNull(txEnitity);
-
+        this.txEntity = Preconditions.checkNotNull(txEntity);
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
     }
 
@@ -107,7 +108,7 @@ public class RoleContextImpl implements RoleContext {
         LOG.trace("onRoleChanged method call for Entity {}", entity);
 
         if (!isDeviceConnected()) {
-            // this can happen as after the disconnect, we still get a last messsage from EntityOwnershipService.
+            // this can happen as after the disconnect, we still get a last message from EntityOwnershipService.
             LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
                     deviceContext.getPrimaryConnectionContext().getNodeId());
             LOG.debug("SetRole cancelled for entity [{}], reason = device disconnected.", entity);
@@ -207,7 +208,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
-        LOG.debug("Send new Role {} to Device {}", newRole, deviceContext.getDeviceState().getNodeId());
+        LOG.debug("Send new role {} to device {}", newRole, deviceContext.getDeviceState().getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
         if (deviceContext.getDeviceState().getFeatures().getVersion() < OFConstants.OFP_VERSION_1_3) {
             LOG.debug("Device OF version {} not support ROLE", deviceContext.getDeviceState().getFeatures().getVersion());
@@ -221,7 +222,7 @@ public class RoleContextImpl implements RoleContext {
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     if (!setRoleOutputFuture.isDone()) {
-                        LOG.info("New Role {} was not propagated to device {} during 10 sec. Close connection immediately.",
+                        LOG.info("New role {} was not propagated to device {} during 10 sec. Close connection immediately.",
                                 newRole, deviceContext.getDeviceState().getNodeId());
                         deviceContext.close();
                     }
