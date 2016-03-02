@@ -389,7 +389,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                                     featureOutput.getAuxiliaryId());
                             LOG.trace("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}",
                                     version, featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
-                            handshakeListener.onHandshakeSuccessfull(featureOutput, proposedVersion);
+                            handshakeListener.onHandshakeSuccessful(featureOutput, proposedVersion);
                         } else {
                             // handshake failed
                             LOG.warn("issuing disconnect during handshake [{}]", connectionAdapter.getRemoteAddress());

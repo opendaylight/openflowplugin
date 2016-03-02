@@ -22,7 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public void registerStatCompatibilityServices() {
         if (isStatisticsRpcEnabled) {
-            MdSalRegistratorUtils.registerStatCompatibilityServices(RpcContextImpl.this, deviceContext,
+            MdSalRegistrationUtils.registerStatCompatibilityServices(RpcContextImpl.this, deviceContext,
                     notificationPublishService, new AtomicLong());
         }
     }

@@ -26,10 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
-public class MdSalRegistratorUtilsTest {
+public class MdSalRegistrationUtilsTest {
 
     /**
-     * Number of currently registrated services (can be changed) in {@link MdSalRegistratorUtils#registerServices
+     * Number of currently registrated services (can be changed) in {@link MdSalRegistrationUtils#registerServices
      * (RpcContext, DeviceContext)}
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 11;
@@ -48,7 +48,7 @@ public class MdSalRegistratorUtilsTest {
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        MdSalRegistratorUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
+        MdSalRegistrationUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(RpcService.class.getClass()), any(RpcService.class));
     }

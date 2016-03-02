@@ -14,7 +14,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -77,7 +76,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
-import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -155,7 +154,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
 
     private final boolean switchFeaturesMandatory;
-    private StatisticsContext statCtx;
+    private StatisticsContext statisticsContext;
 
 
     @VisibleForTesting
@@ -214,7 +213,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void addAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
+    public void addAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
         auxiliaryConnectionContexts.put(connectionDistinguisher, connectionContext);
     }
@@ -224,8 +223,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void removeAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
-        // TODO Auto-generated method stub
+    public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
+        final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
+        if (null != connectionDistinguisher) {
+            auxiliaryConnectionContexts.remove(connectionDistinguisher);
+        }
     }
 
     @Override
@@ -247,7 +249,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+            MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
             getRpcContext().registerStatCompatibilityServices();
             if (!deviceState.deviceSynchronized()) {
                 //TODO: no necessary code for yet - it needs for initialization phase only
@@ -267,7 +269,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 @Override
                 public void onFailure(Throwable throwable) {
                     LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
-                    MdSalRegistratorUtils.unregisterServices(getRpcContext());
+                    MdSalRegistrationUtils.unregisterServices(getRpcContext());
                 }
 
             });
@@ -276,13 +278,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
-                MdSalRegistratorUtils.registerSlaveServices(rpcContext, role);
+                MdSalRegistrationUtils.registerSlaveServices(rpcContext, role);
             }
             return transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (null != rpcContext) {
-                MdSalRegistratorUtils.unregisterServices(rpcContext);
+                MdSalRegistrationUtils.unregisterServices(rpcContext);
             }
             return transactionChainManager.deactivateTransactionManager();
         }
@@ -294,7 +296,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
      * all possible MultipartTypes for polling in StatTypeList
      */
     private ListenableFuture<Void> asyncClusterRoleChange() {
-        if (statCtx == null) {
+        if (statisticsContext == null) {
             final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceState.getNodeId());
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
@@ -590,7 +592,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.info("TxChain {} was shutdown successfull.", getDeviceState().getNodeId());
+                    LOG.info("TxChain {} was shutdown successful.", getDeviceState().getNodeId());
                     tearDownClean();
                 }
 
@@ -643,8 +645,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setNotificationService(final NotificationService notificationServiceParam) {
-        notificationService = notificationServiceParam;
+    public void setNotificationService(final NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -719,11 +721,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void setStatisticsContext(final StatisticsContext statisticsContext) {
-        this.statCtx = statisticsContext;
+        this.statisticsContext = statisticsContext;
     }
 
     @Override
     public StatisticsContext getStatisticsContext() {
-        return statCtx;
+        return statisticsContext;
     }
 }

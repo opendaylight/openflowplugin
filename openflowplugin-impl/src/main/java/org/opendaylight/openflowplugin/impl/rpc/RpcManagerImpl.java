@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
@@ -55,21 +55,21 @@ public class RpcManagerImpl implements RpcManager {
         final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry,
                 deviceContext, maxRequestsQuota, isStatisticsRpcEnabled, notificationPublishService);
 
-        Verify.verify(contexts.putIfAbsent(deviceContext, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
+        Verify.verify(contexts.putIfAbsent(deviceContext, rpcContext) == null, "RPC context still not closed for node {}", nodeId);
         deviceContext.addDeviceContextClosedHandler(this);
 
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
-            LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
-            MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
+            LOG.info("Registering Openflow RPCs services for node:{}, role:{}", nodeId, ofpRole);
+            MdSalRegistrationUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
 
         } else if(OfpRole.BECOMESLAVE.equals(ofpRole)) {
             // if slave, we need to de-register rpcs if any have been registered, in case of master to slave
-            LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistratorUtils.registerSlaveServices(rpcContext, ofpRole);
+            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
+            MdSalRegistrationUtils.registerSlaveServices(rpcContext, ofpRole);
         } else {
             // if we don't know role, we need to unregister rpcs if any have been registered
-            LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistratorUtils.unregisterServices(rpcContext);
+            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
+            MdSalRegistrationUtils.unregisterServices(rpcContext);
         }
 
         // finish device initialization cycle back to DeviceManager
@@ -89,7 +89,7 @@ public class RpcManagerImpl implements RpcManager {
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         final RpcContext removedContext = contexts.remove(deviceContext);
         if (removedContext != null) {
-            LOG.info("Unregistering rpcs for device context closure");
+            LOG.info("Unregister RPCs services for device context closure");
             removedContext.close();
         }
     }
