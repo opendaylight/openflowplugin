@@ -34,21 +34,21 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
 
-    private ConnectionContext connectionContext;
-    private DeviceConnectedHandler deviceConnectedHandler;
+    private final ConnectionContext connectionContext;
+    private final DeviceConnectedHandler deviceConnectedHandler;
     private HandshakeContext handshakeContext;
 
     /**
      * @param connectionContext
      * @param deviceConnectedHandler
      */
-    public HandshakeListenerImpl(ConnectionContext connectionContext, DeviceConnectedHandler deviceConnectedHandler) {
+    public HandshakeListenerImpl(final ConnectionContext connectionContext, final DeviceConnectedHandler deviceConnectedHandler) {
         this.connectionContext = connectionContext;
         this.deviceConnectedHandler = deviceConnectedHandler;
     }
 
     @Override
-    public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version) {
+    public void onHandshakeSuccessful(final GetFeaturesOutput featureOutput, final Short version) {
         LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         closeHandshakeContext();
         connectionContext.changeStateToWorking();
@@ -65,7 +65,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                     deviceConnectedHandler.deviceConnected(connectionContext);
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.info("ConnectionContext initial processing failed: {}", e.getMessage());
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
@@ -100,14 +100,14 @@ public class HandshakeListenerImpl implements HandshakeListener {
     private void closeHandshakeContext() {
         try {
             handshakeContext.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Closing handshake context failed: {}", e.getMessage());
-            LOG.debug("Detail in hanshake context close:", e);
+            LOG.debug("Detail in handshake context close:", e);
         }
     }
 
     @Override
-    public void setHandshakeContext(HandshakeContext handshakeContext) {
+    public void setHandshakeContext(final HandshakeContext handshakeContext) {
         this.handshakeContext = handshakeContext;
     }
 }

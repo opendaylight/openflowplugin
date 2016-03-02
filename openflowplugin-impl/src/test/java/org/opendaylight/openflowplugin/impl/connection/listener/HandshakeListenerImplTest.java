@@ -74,7 +74,7 @@ public class HandshakeListenerImplTest {
 
     @Test
     public void testOnHandshakeSuccessfull() throws Exception {
-        handshakeListener.onHandshakeSuccessfull(features, version);
+        handshakeListener.onHandshakeSuccessful(features, version);
         Mockito.verify(connectionContextSpy).changeStateToWorking();
         Mockito.verify(connectionContextSpy).setFeatures(Matchers.any(FeaturesReply.class));
         Mockito.verify(connectionContextSpy).setNodeId(nodeIdCaptor.capture());

@@ -192,7 +192,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota,
                 switchFeaturesMandatory, barrierInterval, barrierCountLimit);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
-        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, switchFeaturesMandatory);
+        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
