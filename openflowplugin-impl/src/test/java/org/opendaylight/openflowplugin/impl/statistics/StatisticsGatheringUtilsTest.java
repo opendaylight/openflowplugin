@@ -13,7 +13,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -35,7 +34,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -51,6 +50,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Stati
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -128,7 +128,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -155,7 +154,7 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private GetFeaturesOutput features;
     @Mock
-    private ReadTransaction readTx;
+    private ReadOnlyTransaction readTx;
     @Mock
     private ConnectionContext connectionAdapter;
     @Mock
@@ -190,26 +189,26 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testWriteFlowStatistics() {
-        ArgumentCaptor<LogicalDatastoreType> dataStoreType = ArgumentCaptor.forClass(LogicalDatastoreType.class);
-        ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
-        ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
+        final ArgumentCaptor<LogicalDatastoreType> dataStoreType = ArgumentCaptor.forClass(LogicalDatastoreType.class);
+        final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
+        final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
         StatisticsGatheringUtils.writeFlowStatistics(prepareFlowStatisticsData(), deviceContext);
 
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, dataStoreType.getValue());
-        InstanceIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
+        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
         Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.firstKeyOf(Node.class, NodeKey.class).getId());
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
     private Iterable<FlowsStatisticsUpdate> prepareFlowStatisticsData() {
-        FlowAndStatisticsMapListBuilder flowAndStatsMapListBld = new FlowAndStatisticsMapListBuilder();
+        final FlowAndStatisticsMapListBuilder flowAndStatsMapListBld = new FlowAndStatisticsMapListBuilder();
         flowAndStatsMapListBld.setTableId((short) 42);
         flowAndStatsMapListBld.setMatch(new MatchBuilder().build());
 
-        FlowsStatisticsUpdateBuilder flowStatsUpdateBld1 = new FlowsStatisticsUpdateBuilder();
+        final FlowsStatisticsUpdateBuilder flowStatsUpdateBld1 = new FlowsStatisticsUpdateBuilder();
         flowStatsUpdateBld1.setFlowAndStatisticsMapList(Lists.newArrayList(flowAndStatsMapListBld.build()));
 
         return Lists.newArrayList(flowStatsUpdateBld1.build());
@@ -218,10 +217,10 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_group() throws Exception {
-        MultipartType type = MultipartType.OFPMPGROUP;
+        final MultipartType type = MultipartType.OFPMPGROUP;
         final long groupIdValue = 19L;
 
-        GroupStatsBuilder groupStatsBld = new GroupStatsBuilder()
+        final GroupStatsBuilder groupStatsBld = new GroupStatsBuilder()
                 .setBucketStats(Lists.newArrayList(createBucketStat(21L, 42L)))
                 .setByteCount(BigInteger.valueOf(84L))
                 .setPacketCount(BigInteger.valueOf(63L))
@@ -229,13 +228,13 @@ public class StatisticsGatheringUtilsTest {
                 .setDurationNsec(12L)
                 .setRefCount(13L)
                 .setGroupId(new GroupId(groupIdValue));
-        MultipartReplyGroupBuilder mpReplyGroupBld = new MultipartReplyGroupBuilder();
+        final MultipartReplyGroupBuilder mpReplyGroupBld = new MultipartReplyGroupBuilder();
         mpReplyGroupBld.setGroupStats(Lists.newArrayList(groupStatsBld.build()));
-        MultipartReplyGroupCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupCaseBuilder();
+        final MultipartReplyGroupCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupCaseBuilder();
         mpReplyGroupCaseBld.setMultipartReplyGroup(mpReplyGroupBld.build());
 
-        MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
+        final MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -249,27 +248,27 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_groupDesc() throws Exception {
-        MultipartType type = MultipartType.OFPMPGROUPDESC;
+        final MultipartType type = MultipartType.OFPMPGROUPDESC;
         final long groupIdValue = 27L;
 
-        BucketsListBuilder bucketsListBld = new BucketsListBuilder()
+        final BucketsListBuilder bucketsListBld = new BucketsListBuilder()
                 .setWatchPort(new PortNumber(5L));
-        GroupDescBuilder groupStatsBld = new GroupDescBuilder()
+        final GroupDescBuilder groupStatsBld = new GroupDescBuilder()
                 .setBucketsList(Lists.newArrayList(bucketsListBld.build()))
                 .setGroupId(new GroupId(groupIdValue))
                 .setType(GroupType.OFPGTALL);
-        MultipartReplyGroupDescBuilder mpReplyGroupBld = new MultipartReplyGroupDescBuilder();
+        final MultipartReplyGroupDescBuilder mpReplyGroupBld = new MultipartReplyGroupDescBuilder();
         mpReplyGroupBld.setGroupDesc(Lists.newArrayList(groupStatsBld.build()));
-        MultipartReplyGroupDescCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupDescCaseBuilder();
+        final MultipartReplyGroupDescCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupDescCaseBuilder();
         mpReplyGroupCaseBld.setMultipartReplyGroupDesc(mpReplyGroupBld.build());
 
-        MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
+        final MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
 
         fireAndCheck(type, statsData);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId storedGroupId = new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue);
-        KeyedInstanceIdentifier<Group, GroupKey> groupPath = dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId storedGroupId = new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue);
+        final KeyedInstanceIdentifier<Group, GroupKey> groupPath = dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.any(InstanceIdentifier.class));
         verify(deviceGroupRegistry).removeMarked();
@@ -280,13 +279,13 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_meter() throws Exception {
-        MultipartType type = MultipartType.OFPMPMETER;
+        final MultipartType type = MultipartType.OFPMPMETER;
         final long meterIdValue = 19L;
 
-        MeterBandStatsBuilder meterBandStatsBld = new MeterBandStatsBuilder()
+        final MeterBandStatsBuilder meterBandStatsBld = new MeterBandStatsBuilder()
                 .setByteBandCount(BigInteger.valueOf(91L))
                 .setPacketBandCount(BigInteger.valueOf(92L));
-        MeterStatsBuilder meterStatsBld = new MeterStatsBuilder()
+        final MeterStatsBuilder meterStatsBld = new MeterStatsBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .setByteInCount(BigInteger.valueOf(111L))
                 .setDurationSec(112L)
@@ -294,17 +293,17 @@ public class StatisticsGatheringUtilsTest {
                 .setFlowCount(114L)
                 .setPacketInCount(BigInteger.valueOf(115L))
                 .setMeterBandStats(Lists.newArrayList(meterBandStatsBld.build()));
-        MultipartReplyMeterBuilder mpReplyMeterBld = new MultipartReplyMeterBuilder();
+        final MultipartReplyMeterBuilder mpReplyMeterBld = new MultipartReplyMeterBuilder();
         mpReplyMeterBld.setMeterStats(Lists.newArrayList(meterStatsBld.build()));
-        MultipartReplyMeterCaseBuilder mpReplyMeterCaseBld = new MultipartReplyMeterCaseBuilder();
+        final MultipartReplyMeterCaseBuilder mpReplyMeterCaseBld = new MultipartReplyMeterCaseBuilder();
         mpReplyMeterCaseBld.setMultipartReplyMeter(mpReplyMeterBld.build());
 
-        MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
-        InstanceIdentifier<MeterStatistics> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
+        final InstanceIdentifier<MeterStatistics> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
                 .child(MeterStatistics.class);
@@ -314,21 +313,21 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_nodeConnector() throws Exception {
-        MultipartType type = MultipartType.OFPMPPORTSTATS;
+        final MultipartType type = MultipartType.OFPMPPORTSTATS;
 
-        PortStatsBuilder portStatsBld = new PortStatsBuilder()
+        final PortStatsBuilder portStatsBld = new PortStatsBuilder()
                 .setPortNo(11L);
-        MultipartReplyPortStatsBuilder mpReplyMeterBld = new MultipartReplyPortStatsBuilder();
+        final MultipartReplyPortStatsBuilder mpReplyMeterBld = new MultipartReplyPortStatsBuilder();
         mpReplyMeterBld.setPortStats(Lists.newArrayList(portStatsBld.build()));
-        MultipartReplyPortStatsCaseBuilder mpReplyMeterCaseBld = new MultipartReplyPortStatsCaseBuilder();
+        final MultipartReplyPortStatsCaseBuilder mpReplyMeterCaseBld = new MultipartReplyPortStatsCaseBuilder();
         mpReplyMeterCaseBld.setMultipartReplyPortStats(mpReplyMeterBld.build());
 
-        MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
-        InstanceIdentifier<FlowCapableNodeConnectorStatistics> portPath = dummyNodePath
+        final InstanceIdentifier<FlowCapableNodeConnectorStatistics> portPath = dummyNodePath
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
                 .child(FlowCapableNodeConnectorStatistics.class);
@@ -340,24 +339,24 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_table() throws Exception {
-        MultipartType type = MultipartType.OFPMPTABLE;
+        final MultipartType type = MultipartType.OFPMPTABLE;
 
-        TableStatsBuilder tableStatsBld = new TableStatsBuilder()
+        final TableStatsBuilder tableStatsBld = new TableStatsBuilder()
                 .setActiveCount(33L)
                 .setLookupCount(BigInteger.valueOf(34L))
                 .setMatchedCount(BigInteger.valueOf(35L))
                 .setTableId((short) 0);
-        MultipartReplyTableBuilder mpReplyTableBld = new MultipartReplyTableBuilder();
+        final MultipartReplyTableBuilder mpReplyTableBld = new MultipartReplyTableBuilder();
         mpReplyTableBld.setTableStats(Lists.newArrayList(tableStatsBld.build()));
-        MultipartReplyTableCaseBuilder mpReplyTableCaseBld = new MultipartReplyTableCaseBuilder();
+        final MultipartReplyTableCaseBuilder mpReplyTableCaseBld = new MultipartReplyTableCaseBuilder();
         mpReplyTableCaseBld.setMultipartReplyTable(mpReplyTableBld.build());
 
-        MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyTableCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyTableCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
-        InstanceIdentifier<FlowTableStatistics> tablePath = dummyNodePath
+        final InstanceIdentifier<FlowTableStatistics> tablePath = dummyNodePath
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .augmentation(FlowTableStatisticsData.class)
@@ -370,10 +369,10 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_queue() throws Exception {
-        MultipartType type = MultipartType.OFPMPQUEUE;
+        final MultipartType type = MultipartType.OFPMPQUEUE;
 
-        long queueIdValue = 4L;
-        QueueStatsBuilder queueStatsBld = new QueueStatsBuilder()
+        final long queueIdValue = 4L;
+        final QueueStatsBuilder queueStatsBld = new QueueStatsBuilder()
                 .setPortNo(11L)
                 .setTxBytes(BigInteger.valueOf(44L))
                 .setTxErrors(BigInteger.valueOf(45L))
@@ -382,17 +381,17 @@ public class StatisticsGatheringUtilsTest {
                 .setDurationNsec(48L)
                 .setQueueId(queueIdValue);
 
-        MultipartReplyQueueBuilder mpReplyQueueBld = new MultipartReplyQueueBuilder();
+        final MultipartReplyQueueBuilder mpReplyQueueBld = new MultipartReplyQueueBuilder();
         mpReplyQueueBld.setQueueStats(Lists.newArrayList(queueStatsBld.build()));
-        MultipartReplyQueueCaseBuilder mpReplyQueueCaseBld = new MultipartReplyQueueCaseBuilder();
+        final MultipartReplyQueueCaseBuilder mpReplyQueueCaseBld = new MultipartReplyQueueCaseBuilder();
         mpReplyQueueCaseBld.setMultipartReplyQueue(mpReplyQueueBld.build());
 
-        MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyQueueCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyQueueCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
-        KeyedInstanceIdentifier<Queue, QueueKey> queuePath = dummyNodePath
+        final KeyedInstanceIdentifier<Queue, QueueKey> queuePath = dummyNodePath
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
                 .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
@@ -404,14 +403,14 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_flow() throws Exception {
-        MultipartType type = MultipartType.OFPMPFLOW;
+        final MultipartType type = MultipartType.OFPMPFLOW;
         when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class), Matchers.anyShort()))
                 .thenReturn(new FlowId("openflow:21"));
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
                         .setMatchEntry(Collections.<MatchEntry>emptyList());
-        FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
+        final FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
                 .setByteCount(BigInteger.valueOf(55L))
                 .setPacketCount(BigInteger.valueOf(56L))
                 .setDurationSec(57L)
@@ -420,19 +419,19 @@ public class StatisticsGatheringUtilsTest {
                 .setMatch(matchBld.build())
                 .setFlags(new FlowModFlags(true, false, false, false, true));
 
-        MultipartReplyFlowBuilder mpReplyFlowBld = new MultipartReplyFlowBuilder();
+        final MultipartReplyFlowBuilder mpReplyFlowBld = new MultipartReplyFlowBuilder();
         mpReplyFlowBld.setFlowStats(Lists.newArrayList(flowStatsBld.build()));
-        MultipartReplyFlowCaseBuilder mpReplyFlowCaseBld = new MultipartReplyFlowCaseBuilder();
+        final MultipartReplyFlowCaseBuilder mpReplyFlowCaseBld = new MultipartReplyFlowCaseBuilder();
         mpReplyFlowCaseBld.setMultipartReplyFlow(mpReplyFlowBld.build());
 
-        MultipartReply flowStatsUpdated = assembleMPReplyMessage(type, mpReplyFlowCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(flowStatsUpdated);
+        final MultipartReply flowStatsUpdated = assembleMPReplyMessage(type, mpReplyFlowCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(flowStatsUpdated);
         fireAndCheck(type, statsData);
 
-        FlowBuilder flowBld = new FlowBuilder()
+        final FlowBuilder flowBld = new FlowBuilder()
                 .setTableId((short) 0)
                 .setMatch(new MatchBuilder().build());
-        KeyedInstanceIdentifier<Flow, FlowKey> flowPath = dummyNodePath.augmentation(FlowCapableNode.class)
+        final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("openflow:21")));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.any(InstanceIdentifier.class));
@@ -442,43 +441,43 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_meterConfig() throws Exception {
-        MultipartType type = MultipartType.OFPMPMETERCONFIG;
+        final MultipartType type = MultipartType.OFPMPMETERCONFIG;
         final Long meterIdValue = 55L;
 
-        MeterConfigBuilder meterConfigBld = new MeterConfigBuilder()
+        final MeterConfigBuilder meterConfigBld = new MeterConfigBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .setFlags(new MeterFlags(false, true, false, true))
                 .setBands(Collections.<Bands>emptyList());
 
-        MultipartReplyMeterConfigBuilder mpReplyMeterConfigBld = new MultipartReplyMeterConfigBuilder();
+        final MultipartReplyMeterConfigBuilder mpReplyMeterConfigBld = new MultipartReplyMeterConfigBuilder();
         mpReplyMeterConfigBld.setMeterConfig(Lists.newArrayList(meterConfigBld.build()));
-        MultipartReplyMeterConfigCaseBuilder mpReplyMeterConfigCaseBld = new MultipartReplyMeterConfigCaseBuilder();
+        final MultipartReplyMeterConfigCaseBuilder mpReplyMeterConfigCaseBld = new MultipartReplyMeterConfigCaseBuilder();
         mpReplyMeterConfigCaseBld.setMultipartReplyMeterConfig(mpReplyMeterConfigBld.build());
 
-        MultipartReply meterConfigUpdated = assembleMPReplyMessage(type, mpReplyMeterConfigCaseBld.build());
-        List<MultipartReply> statsData = Collections.singletonList(meterConfigUpdated);
+        final MultipartReply meterConfigUpdated = assembleMPReplyMessage(type, mpReplyMeterConfigCaseBld.build());
+        final List<MultipartReply> statsData = Collections.singletonList(meterConfigUpdated);
 
         fireAndCheck(type, statsData);
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId meterId =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue);
-        KeyedInstanceIdentifier<Meter, MeterKey> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
+        final KeyedInstanceIdentifier<Meter, MeterKey> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(meterId));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.any(InstanceIdentifier.class));
         verify(deviceMeterRegistry).store(meterId);
         verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(meterPath), Matchers.any(Meter.class));
     }
 
-    private void fireAndCheck(MultipartType type, List<MultipartReply> statsData) throws InterruptedException, ExecutionException, TimeoutException {
+    private void fireAndCheck(final MultipartType type, final List<MultipartReply> statsData) throws InterruptedException, ExecutionException, TimeoutException {
         when(statisticsService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.eq(type)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
-        ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(statisticsService, deviceContext, type);
+        final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(statisticsService, deviceContext, type);
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
         verify(deviceContext).submitTransaction();
     }
 
-    private static MultipartReplyMessage assembleMPReplyMessage(MultipartType type, MultipartReplyBody mpReplyGroupCaseBld) {
+    private static MultipartReplyMessage assembleMPReplyMessage(final MultipartType type, final MultipartReplyBody mpReplyGroupCaseBld) {
         return new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(mpReplyGroupCaseBld)
                 .setType(type)
@@ -500,18 +499,20 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testDeleteAllKnownFlows() throws Exception {
+        final short tableId = 0;
         when(deviceState.deviceSynchronized()).thenReturn(true);
-        when(features.getTables()).thenReturn((short) 1);
-        KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceState.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0));
+        final InstanceIdentifier<FlowCapableNode> nodePath = deviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final TableBuilder tableDataBld = new TableBuilder();
+        tableDataBld.setId(tableId);
+        final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
+        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
+        when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceState.getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
-        TableBuilder tableDataBld = new TableBuilder();
-        Optional<Table> tableDataOpt = Optional.of(tableDataBld.build());
-        CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = Futures.immediateCheckedFuture(tableDataOpt);
-        when(readTx.read(LogicalDatastoreType.OPERATIONAL, tablePath)).thenReturn(tableDataFuture);
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
-
 
         verify(deviceContext).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,

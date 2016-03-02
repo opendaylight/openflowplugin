@@ -3,9 +3,14 @@ package org.opendaylight.openflowplugin.impl.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +22,9 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -28,6 +35,11 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -79,10 +91,13 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private GetFeaturesOutput mocketGetFeaturesOutput;
     @Mock
     private DeviceFlowRegistry mockedFlowRegistry;
+    @Mock
+    private ReadOnlyTransaction mockedReadOnlyTx;
 
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
-    private EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
+    private final EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
     private MultipartRequestOnTheFlyCallback multipartRequestOnTheFlyCallback;
+    private final short tableId = 0;
 
     @Before
     public void initialization() {
@@ -92,13 +107,23 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedPrimaryConnection.getFeatures()).thenReturn(mockedFeaturesReply);
         when(mockedFeaturesReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(mockedFeaturesReply.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
-        when(mocketGetFeaturesOutput.getTables()).thenReturn((short) 0);
+
+        when(mocketGetFeaturesOutput.getTables()).thenReturn(tableId);
+
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnection);
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
         when(mockedDeviceState.getFeatures()).thenReturn(mocketGetFeaturesOutput);
         when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
+
+        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
+        flowNodeBuilder.setTable(Collections.<Table> emptyList());
+        final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
+        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
         dummyRequestContext = new AbstractRequestContext<List<MultipartReply>>(DUMMY_XID) {
 
@@ -123,7 +148,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
     @Test
     public void testOnSuccessWithNotMultiNoMultipart() throws ExecutionException, InterruptedException {
-        HelloMessage mockedHelloMessage = mock(HelloMessage.class);
+        final HelloMessage mockedHelloMessage = mock(HelloMessage.class);
         multipartRequestOnTheFlyCallback.onSuccess(mockedHelloMessage);
 
         final RpcResult<List<MultipartReply>> expectedRpcResult =
@@ -155,7 +180,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final MatchBuilder matchBuilder = new MatchBuilder()
                 .setMatchEntry(Collections.<MatchEntry>emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
-                .setTableId((short) 0)
+.setTableId(tableId)
                 .setPriority(2)
                 .setCookie(BigInteger.ZERO)
                 .setByteCount(BigInteger.TEN)
@@ -168,17 +193,38 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setFlowStats(Collections.singletonList(flowStatsBuilder.build()));
         final MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder()
                 .setMultipartReplyFlow(multipartReplyFlowBuilder.build());
-        MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
+        final MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
                 .setType(MultipartType.OFPMPFLOW)
                 .setFlags(new MultipartRequestFlags(true))
                 .setMultipartReplyBody(multipartReplyFlowCaseBuilder.build())
                 .setXid(21L);
 
-        multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
+        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceState.getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class);
+        final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
+        final TableBuilder tableDataBld = new TableBuilder();
+        tableDataBld.setId(tableId);
+        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures
+                .immediateCheckedFuture(flowNodeOpt);
+        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
-        Mockito.verify(mockedFlowRegistry).storeIfNecessary(Matchers.<FlowRegistryKey>any(), Matchers.anyShort());
-        Mockito.verify(mockedDeviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
+        multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
+        final InstanceIdentifier<Table> tableIdent = nodePath.child(Table.class, new TableKey(tableId));
+
+        verify(mockedReadOnlyTx, times(1)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
+        verify(mockedReadOnlyTx, times(1)).close();
+        verify(mockedFlowRegistry).storeIfNecessary(Matchers.<FlowRegistryKey> any(), Matchers.anyShort());
+        verify(mockedDeviceContext, times(1)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                eq(tableIdent), Matchers.<Table> any());
+        /*
+         * One call for Table one call for Flow
+         * we are not able to create Flow InstanceIdentifier because we are missing FlowId
+         */
+        verify(mockedDeviceContext, times(2)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                Matchers.<InstanceIdentifier> any(), Matchers.<DataObject> any());
     }
 
     /**
@@ -189,7 +235,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
      */
     @Test
     public void testOnSuccessWithValidMultipart2() throws ExecutionException, InterruptedException {
-        MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
+        final MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
                 .setType(MultipartType.OFPMPDESC)
                 .setFlags(new MultipartRequestFlags(false));
 
