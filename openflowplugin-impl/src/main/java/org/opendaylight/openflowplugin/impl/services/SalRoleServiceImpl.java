@@ -131,6 +131,9 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         case WORKING:
             // We can proceed
             break;
+        case TIMEOUTING:
+            // We can proceed
+            break;
         default:
             LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
             future.setException(new Exception(String.format("Unexcpected device connection status : %s", state)));
