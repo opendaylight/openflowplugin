@@ -16,6 +16,24 @@
       "revId": "31fdee3295112055500559834f3d5b755e004cad",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_677a4abe",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalRoleServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2016-03-02T16:59:34Z",
+      "side": 1,
+      "message": "i believe as per java constructs, it falls down to the next and the break is applicable for both.\n\nI will still add a break for better readability.",
+      "parentUuid": "9a3d3df0_87fdceb3",
+      "revId": "31fdee3295112055500559834f3d5b755e004cad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
