@@ -113,7 +113,7 @@ module openflow-plugin-provider-impl {
                 type boolean;
                 default "false";
             }
-            leaf barrier-interval {
+            leaf barrier-interval-timeout-limit {
                 type non-zero-uint32-type;
                 default 500;
             }
