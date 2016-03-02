@@ -34,11 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
-public class MdSalRegistratorUtils {
-
-    private MdSalRegistratorUtils() {
-        throw new IllegalStateException();
-    }
+public class MdSalRegistrationUtils {
 
     /**
      * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
@@ -67,7 +63,7 @@ public class MdSalRegistratorUtils {
     }
 
     /**
-     * Method unregisters all services in first step. So we don't need to call {@link MdSalRegistratorUtils#unregisterServices(RpcContext)}
+     * Method unregisters all services in first step. So we don't need to call {@link MdSalRegistrationUtils#unregisterServices(RpcContext)}
      * directly before by change role from {@link OfpRole#BECOMEMASTER} to {@link OfpRole#BECOMESLAVE}.
      * Method registers {@link SalEchoService} in next step only because we would like to have SalEchoService as local service for all apps
      * to be able actively check connection status for slave connection too.

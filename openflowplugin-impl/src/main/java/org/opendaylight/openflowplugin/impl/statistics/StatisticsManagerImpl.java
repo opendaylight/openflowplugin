@@ -117,7 +117,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             public void onSuccess(final Boolean statisticsGathered) {
                 if (statisticsGathered) {
                     //there are some statistics on device worth gathering
-                    contexts.put(deviceContext, statisticsContext);
                     final TimeCounter timeCounter = new TimeCounter();
                     deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
                     scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
@@ -131,8 +130,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     }
                     deviceContext.getDeviceState().setDeviceSynchronized(true);
                 } else {
-                    final String deviceAdress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
-                    LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAdress);
+                    final String deviceAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
+                    LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAddress);
                     deviceContext.close();
                 }
             }
