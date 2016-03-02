@@ -75,10 +75,10 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             LOG.trace("currentRole lock queue: " + currentRoleGuard.getQueueLength());
         } catch (final InterruptedException e) {
             LOG.warn("Unexpected exception for acquire semaphor for input {}", input);
-            return RpcResultBuilder.<SetRoleOutput> success().buildFuture();
+            return RpcResultBuilder.<SetRoleOutput> failed().buildFuture();
         }
         // compare with last known role and set if different. If they are same, then return.
-        if (currentRole == input.getControllerRole()) {
+        if (currentRole.equals(input.getControllerRole())) {
             LOG.info("Role to be set is same as the last known role for the device:{}. Hence ignoring.",
                     input.getControllerRole());
             currentRoleGuard.release();
@@ -88,13 +88,34 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture
                 .<RpcResult<SetRoleOutput>> create();
         repeaterForChangeRole(resultFuture, input, 0);
+        /* Add Callback for release Guard */
+        Futures.addCallback(resultFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
+
+            @Override
+            public void onSuccess(final RpcResult<SetRoleOutput> result) {
+                LOG.debug("SetRoleService for Node: {} is ok Role: {}", input.getNode().getValue(),
+                        input.getControllerRole());
+                currentRoleGuard.release();
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("SetRoleService set Role {} for Node: {} fail.", input.getControllerRole(),
+                        input.getNode().getValue(), t);
+                currentRoleGuard.release();
+            }
+        });
         return resultFuture;
     }
 
     private void repeaterForChangeRole(final SettableFuture<RpcResult<SetRoleOutput>> future, final SetRoleInput input,
             final int retryCounter) {
+        if (future.isCancelled()) {
+            future.setException(new RoleChangeException(String.format(
+                    "Set Role for device %s stop because Future was canceled", input.getNode().getValue())));
+            return;
+        }
         if (retryCounter >= MAX_RETRIES) {
-            currentRoleGuard.release();
             future.setException(new RoleChangeException(String.format("Set Role failed after %s tries on device %s",
                     MAX_RETRIES, input.getNode().getValue())));
             return;
@@ -104,7 +125,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         switch (state) {
         case RIP:
             LOG.info("Device {} has been disconnected", input.getNode());
-            currentRoleGuard.release();
             future.setException(new Exception(String.format(
                     "Device connection doesn't exist anymore. Primary connection status : %s", state)));
             return;
@@ -113,7 +133,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             break;
         default:
             LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
-            currentRoleGuard.release();
             future.setException(new Exception(String.format("Unexcpected device connection status : %s", state)));
             return;
         }
@@ -126,7 +145,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             public void onSuccess(final SetRoleOutput result) {
                 LOG.info("setRoleOutput received after roleChangeTask execution:{}", result);
                 currentRole = input.getControllerRole();
-                currentRoleGuard.release();
                 future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result).build());
             }
 
