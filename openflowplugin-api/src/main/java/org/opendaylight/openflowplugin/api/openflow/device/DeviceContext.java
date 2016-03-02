@@ -8,13 +8,13 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import javax.annotation.CheckForNull;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
-import io.netty.util.Timeout;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -89,9 +90,10 @@ public interface DeviceContext extends AutoCloseable,
      * newRole is {@link OfpRole#BECOMESLAVE}.
      * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
      * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
+     * @param oldRole - old role for quick validation for needed processing
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      */
-    ListenableFuture<Void> onClusterRoleChange(@CheckForNull OfpRole role);
+    ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
 
     /**
      * Method creates put operation using provided data in underlying transaction chain.
@@ -188,7 +190,12 @@ public interface DeviceContext extends AutoCloseable,
 
     MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
 
-    Long getReservedXid();
+    /**
+     * Method is reserved unique XID for Device Message.
+     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
+     * @return Reserved XID
+     */
+    Long reservedXidForDeviceMessage();
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)
@@ -210,6 +217,10 @@ public interface DeviceContext extends AutoCloseable,
     void setRpcContext(RpcContext rpcContext);
 
     RpcContext getRpcContext();
+
+    void setStatisticsContext(StatisticsContext statisticsContext);
+
+    StatisticsContext getStatisticsContext();
 
     @Override
     void close();

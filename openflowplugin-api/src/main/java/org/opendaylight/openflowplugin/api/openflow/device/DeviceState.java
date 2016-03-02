@@ -127,5 +127,8 @@ public interface DeviceState {
 
     OfpRole getRole();
 
+    boolean isStatisticsPollingEnabled();
+
+    void setStatisticsPollingEnabledProp(boolean statPollEnabled);
 
 }
