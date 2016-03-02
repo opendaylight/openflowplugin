@@ -48,7 +48,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
     }
 
     @Override
-    public void onHandshakeSuccessfull(final GetFeaturesOutput featureOutput, final Short version) {
+    public void onHandshakeSuccessful(final GetFeaturesOutput featureOutput, final Short version) {
         LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         closeHandshakeContext();
         connectionContext.changeStateToWorking();
@@ -102,7 +102,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
             handshakeContext.close();
         } catch (final Exception e) {
             LOG.warn("Closing handshake context failed: {}", e.getMessage());
-            LOG.debug("Detail in hanshake context close:", e);
+            LOG.debug("Detail in handshake context close:", e);
         }
     }
 

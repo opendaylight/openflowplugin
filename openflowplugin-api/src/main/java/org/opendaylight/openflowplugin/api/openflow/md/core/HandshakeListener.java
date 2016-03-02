@@ -20,7 +20,7 @@ public interface HandshakeListener {
      * @param featureOutput obtained
      * @param version negotiated
      */
-    void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
+    void onHandshakeSuccessful(GetFeaturesOutput featureOutput, Short version);
 
     /**
      * This method is called when handshake fails for some reason. It allows

@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * openflowplugin-impl
@@ -92,6 +93,41 @@ public class DeviceStateImplTest {
         Assert.assertNotNull(getFeatures);
         Assert.assertEquals(expetedResult.getVersion(), getFeatures.getVersion());
         Assert.assertEquals(expetedResult.getPhyPort(), getFeatures.getPhyPort());
+    }
+
+    @Test
+    public void testIsValid_initialValue(){
+        Assert.assertFalse(deviceState.isValid());
+    }
+
+    @Test
+    public void testDeviceSynchronized_initialValue(){
+        Assert.assertFalse(deviceState.deviceSynchronized());
+    }
+
+    @Test
+    public void testStatPollEnabled_initialValue(){
+        Assert.assertFalse(deviceState.isStatisticsPollingEnabled());
+    }
+
+    @Test
+    public void testRole_initialValue(){
+        Assert.assertFalse(deviceState.getRole().equals(OfpRole.BECOMEMASTER));
+        Assert.assertFalse(deviceState.getRole().equals(OfpRole.NOCHANGE));
+    }
+
+    @Test
+    public void testStatistics_initialValue(){
+        Assert.assertFalse(deviceState.isFlowStatisticsAvailable());
+        Assert.assertFalse(deviceState.isPortStatisticsAvailable());
+        Assert.assertFalse(deviceState.isQueueStatisticsAvailable());
+        Assert.assertFalse(deviceState.isTableStatisticsAvailable());
+    }
+
+    @Test
+    public void testMeterAndGroupAvailable_initialValue(){
+        Assert.assertFalse(deviceState.isGroupAvailable());
+        Assert.assertFalse(deviceState.isMetersAvailable());
     }
 
 }

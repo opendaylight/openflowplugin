@@ -456,8 +456,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     @Override
-    public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
-                                       Short negotiatedVersion) {
+    public void onHandshakeSuccessful(GetFeaturesOutput featureOutput,
+                                      Short negotiatedVersion) {
         postHandshakeBasic(featureOutput, negotiatedVersion);
     }
 
