@@ -58,6 +58,7 @@ class DeviceStateImpl implements DeviceState {
         version = featuresReply.getVersion();
         statPollEnabled = false;
         deviceSynchronized = false;
+        role = OfpRole.BECOMESLAVE;
     }
 
     @Override

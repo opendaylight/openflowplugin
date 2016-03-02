@@ -273,6 +273,6 @@ public class PacketInV10TranslatorTest {
         connectionConductor.setQueueProcessor(queueProcessor);
         connectionConductor.init();
         connectionConductor
-                .onHandshakeSuccessfull(featuresOutput, (short) 0x01);
+                .onHandshakeSuccessful(featuresOutput, (short) 0x01);
     }
 }

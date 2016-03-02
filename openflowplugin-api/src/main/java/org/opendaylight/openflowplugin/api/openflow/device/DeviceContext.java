@@ -66,14 +66,14 @@ public interface DeviceContext extends AutoCloseable,
      *
      * @param connectionContext
      */
-    void addAuxiliaryConenctionContext(ConnectionContext connectionContext);
+    void addAuxiliaryConnectionContext(ConnectionContext connectionContext);
 
     /**
      * Method removes auxiliary connection context from this context representing single device connection.
      *
      * @param connectionContext
      */
-    void removeAuxiliaryConenctionContext(ConnectionContext connectionContext);
+    void removeAuxiliaryConnectionContext(ConnectionContext connectionContext);
 
 
     /**

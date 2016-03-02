@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * openflowplugin-impl
@@ -31,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * test of {@link DeviceStateImpl} - lightweight version, using basic ways (TDD)
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
+ * updated: 3/3/16 by <a href="mailto:jbacigal@cisco.com">Jozef Bacigal</a>
  *
  * Created: Mar 29, 2015
  */
@@ -92,6 +94,61 @@ public class DeviceStateImplTest {
         Assert.assertNotNull(getFeatures);
         Assert.assertEquals(expetedResult.getVersion(), getFeatures.getVersion());
         Assert.assertEquals(expetedResult.getPhyPort(), getFeatures.getPhyPort());
+    }
+
+    @Test
+    public void testGetSetIsValid(){
+        Assert.assertFalse(deviceState.isValid());
+        deviceState.setValid(true);
+        Assert.assertTrue(deviceState.isValid());
+    }
+
+    @Test
+    public void testGetSetDeviceSynchronized(){
+        Assert.assertFalse(deviceState.deviceSynchronized());
+        deviceState.setDeviceSynchronized(true);
+        Assert.assertTrue(deviceState.deviceSynchronized());
+    }
+
+    @Test
+    public void testGetSetStatPollEnabled(){
+        Assert.assertFalse(deviceState.isStatisticsPollingEnabled());
+        deviceState.setStatisticsPollingEnabledProp(true);
+        Assert.assertTrue(deviceState.isStatisticsPollingEnabled());
+    }
+
+    @Test
+    public void testGetSetRole(){
+        Assert.assertFalse(deviceState.getRole().equals(OfpRole.BECOMEMASTER));
+        Assert.assertFalse(deviceState.getRole().equals(OfpRole.NOCHANGE));
+        deviceState.setRole(OfpRole.BECOMEMASTER);
+        Assert.assertFalse(deviceState.getRole().equals(OfpRole.BECOMESLAVE));
+    }
+
+    @Test
+    public void testFalseStatisticsAfterInit(){
+        Assert.assertFalse(deviceState.isFlowStatisticsAvailable());
+        Assert.assertFalse(deviceState.isPortStatisticsAvailable());
+        Assert.assertFalse(deviceState.isQueueStatisticsAvailable());
+        Assert.assertFalse(deviceState.isTableStatisticsAvailable());
+        deviceState.setFlowStatisticsAvailable(true);
+        deviceState.setPortStatisticsAvailable(true);
+        deviceState.setQueueStatisticsAvailable(true);
+        deviceState.setTableStatisticsAvailable(true);
+        Assert.assertTrue(deviceState.isFlowStatisticsAvailable());
+        Assert.assertTrue(deviceState.isPortStatisticsAvailable());
+        Assert.assertTrue(deviceState.isQueueStatisticsAvailable());
+        Assert.assertTrue(deviceState.isTableStatisticsAvailable());
+    }
+
+    @Test
+    public void testFalseMeterAndGroupAvaiable(){
+        Assert.assertFalse(deviceState.isGroupAvailable());
+        Assert.assertFalse(deviceState.isMetersAvailable());
+        deviceState.setGroupAvailable(true);
+        deviceState.setMeterAvailable(true);
+        Assert.assertTrue(deviceState.isGroupAvailable());
+        Assert.assertTrue(deviceState.isMetersAvailable());
     }
 
 }
