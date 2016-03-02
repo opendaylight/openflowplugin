@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_87fdceb3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalRoleServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-03-02T13:42:16Z",
+      "side": 1,
+      "message": "what we can do here? It is switch case, so please add break.",
+      "revId": "31fdee3295112055500559834f3d5b755e004cad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
