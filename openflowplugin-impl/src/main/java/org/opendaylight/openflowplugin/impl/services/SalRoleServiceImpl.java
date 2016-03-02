@@ -129,6 +129,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
                     "Device connection doesn't exist anymore. Primary connection status : %s", state)));
             return;
         case WORKING:
+        case TIMEOUTING:
             // We can proceed
             break;
         default:
