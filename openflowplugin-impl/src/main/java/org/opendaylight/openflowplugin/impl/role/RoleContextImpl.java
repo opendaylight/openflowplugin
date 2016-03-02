@@ -151,6 +151,7 @@ public class RoleContextImpl implements RoleContext {
             LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
         }
+        promoteStateToTearingDown();
     }
 
     @Override
@@ -225,6 +226,10 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void setTxLockOwned(final boolean txLockOwned) {
         this.txLockOwned = txLockOwned;
+    }
+
+    private void promoteStateToTearingDown() {
+        state = ROLE_CONTEXT_STATE.TEARING_DOWN;
     }
 
     @Override
