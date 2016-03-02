@@ -78,6 +78,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
 
         nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, FLOW_CAPABLE_NODE_WC_PATH);
+        
+        start();
     }
 
     public void start() {
