@@ -111,7 +111,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                         }
                     });
 
-            SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+            /*SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
             dataTreeOperationalChangeListener = looper2.loopUntilNoException(
                     new Callable<ListenerRegistration<NodeListener>>() {
                         @Override
@@ -119,7 +119,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                             return dataService.registerDataTreeChangeListener(
                                     nodeOperationalDataTreePath, nodeListenerOperational);
                         }
-                    });
+                    });*/
         } catch (final Exception e) {
             LOG.warn("FR-Sync node DataChange listener registration fail!", e);
             throw new IllegalStateException("FR-Sync startup fail!", e);
