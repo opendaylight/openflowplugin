@@ -5,24 +5,24 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>features-parent</artifactId>
-        <version>1.5.4-Lithium-SR4</version>
+        <version>1.5.5-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin-li</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.4-Lithium-SR4</version>
+    <version>0.1.5-SNAPSHOT</version>
 
     <properties>
-        <yangtools.version>0.7.4-Lithium-SR4</yangtools.version>
-        <config.version>0.3.4-Lithium-SR4</config.version>
-        <mdsal.version>1.2.4-Lithium-SR4</mdsal.version>
-        <netconf.version>0.3.4-Lithium-SR4</netconf.version>
-        <openflowjava.version>0.6.4-Lithium-SR4</openflowjava.version>
-        <openflowplugin.version>0.1.4-Lithium-SR4</openflowplugin.version>
-        <dlux.version>0.2.4-Lithium-SR4</dlux.version>
-        <lldp.version>0.9.4-Lithium-SR4</lldp.version>
+        <yangtools.version>0.7.5-SNAPSHOT</yangtools.version>
+        <config.version>0.3.5-SNAPSHOT</config.version>
+        <mdsal.version>1.2.5-SNAPSHOT</mdsal.version>
+        <netconf.version>0.3.5-SNAPSHOT</netconf.version>
+        <openflowjava.version>0.6.5-SNAPSHOT</openflowjava.version>
+        <openflowplugin.version>0.1.5-SNAPSHOT</openflowplugin.version>
+        <dlux.version>0.2.5-SNAPSHOT</dlux.version>
+        <lldp.version>0.9.5-SNAPSHOT</lldp.version>
 
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
         <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>

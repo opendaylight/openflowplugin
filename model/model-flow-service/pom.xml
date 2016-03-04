@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin.model</groupId>
     <artifactId>model-parent</artifactId>
-    <version>0.1.4-Lithium-SR4</version>
+    <version>0.1.5-SNAPSHOT</version>
   </parent>
   <artifactId>model-flow-service</artifactId>
   <packaging>bundle</packaging>

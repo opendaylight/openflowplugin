@@ -4,7 +4,7 @@
    <parent>
      <groupId>org.opendaylight.openflowplugin.legacy</groupId>
      <artifactId>legacy-parent</artifactId>
-     <version>0.1.4-Lithium-SR4</version>
+     <version>0.1.5-SNAPSHOT</version>
      <relativePath>../</relativePath>
    </parent>
 
@@ -12,8 +12,8 @@
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <feature.test.version>0.7.4-Lithium-SR4</feature.test.version>
-      <sal.version>0.9.4-Lithium-SR4</sal.version>
+      <feature.test.version>0.7.5-SNAPSHOT</feature.test.version>
+      <sal.version>0.9.5-SNAPSHOT</sal.version>
    </properties>
    <dependencies>
     <!--
@@ -30,21 +30,21 @@
         <dependency>
           <groupId>org.opendaylight.yangtools</groupId>
           <artifactId>features-yangtools</artifactId>
-          <version>0.7.4-Lithium-SR4</version>
+          <version>0.7.5-SNAPSHOT</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>features-mdsal</artifactId>
-          <version>1.2.4-Lithium-SR4</version>
+          <version>1.2.5-SNAPSHOT</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.openflowplugin</groupId>
           <artifactId>features-openflowplugin</artifactId>
-          <version>0.1.4-Lithium-SR4</version>
+          <version>0.1.5-SNAPSHOT</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
