@@ -134,7 +134,7 @@ public class ReconcileUtil {
                         } else {
                             if (checkGroupPrecondition(installedGroups.keySet(), group)) {
                                 iterator.remove();
-                                LOG.trace("Group {} on device {} differs - planed for update", group.getGroupId(), nodeId);
+                                LOG.trace("Group {} on device {} differs - planned for update", group.getGroupId(), nodeId);
                                 stepPlan.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingGroup, group));
                             }
                         }
@@ -162,11 +162,15 @@ public class ReconcileUtil {
 
     public static boolean checkGroupPrecondition(final Set<Long> installedGroupIds, final Group pendingGroup) {
         boolean okToInstall = true;
+        // check each bucket in the pending group
         for (Bucket bucket : pendingGroup.getBuckets().getBucket()) {
             for (Action action : bucket.getAction()) {
+                // if the output action is a group
                 if (GroupActionCase.class.equals(action.getAction().getImplementedInterface())) {
                     Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                    // see if that output group is installed
                     if (!installedGroupIds.contains(groupId)) {
+                        // if not installed, we have missing dependencies and cannot install this pending group
                         okToInstall = false;
                         break;
                     }
