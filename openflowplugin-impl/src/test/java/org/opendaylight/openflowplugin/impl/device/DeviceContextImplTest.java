@@ -396,9 +396,6 @@ public class DeviceContextImplTest {
         DeviceContextClosedHandler mockedDeviceContextClosedHandler = mock(DeviceContextClosedHandler.class);
         deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
         deviceContext.close();
-        verify(connectionContext).closeConnection(eq(false));
-//        verify(deviceState).setValid(eq(false));
-//        verify(mockedAuxiliaryConnectionContext).closeConnection(eq(false));
     }
 
     @Test
