@@ -1,0 +1,320 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_f67c46ee",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please put this statement in braces \nelse {\n     verdict \u003d false;\n}\n\nalso return the verdict here, there is no point in going further. If you don\u0027t return here, there is a possibility that next condition (sourceAddress) will get evaluated and that gives positive results and now verdict become true. that\u0027s not desired.",
+      "range": {
+        "startLine": 138,
+        "startChar": 29,
+        "endLine": 138,
+        "endChar": 45
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_96485ab4",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "return the verdict if it\u0027s false, there is no point in going further. If you go further there is a possibility that source address matches the stored flow and verdict become true.",
+      "range": {
+        "startLine": 175,
+        "startChar": 16,
+        "endLine": 175,
+        "endChar": 23
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_56525267",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please log the exception, don\u0027t throw it to stdout.",
+      "range": {
+        "startLine": 347,
+        "startChar": 12,
+        "endLine": 347,
+        "endChar": 32
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_f68ba61c",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-arbitrary-bitmask-fields.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "it should be \"bitmask\", rather then bit-mask.",
+      "range": {
+        "startLine": 12,
+        "startChar": 35,
+        "endLine": 12,
+        "endChar": 43
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_567a5224",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-arbitrary-bitmask-fields.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please see above comment.",
+      "range": {
+        "startLine": 24,
+        "startChar": 35,
+        "endLine": 24,
+        "endChar": 43
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_f692864a",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-arbitrary-bitmask-fields.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please see above comment.",
+      "range": {
+        "startLine": 29,
+        "startChar": 40,
+        "endLine": 29,
+        "endChar": 48
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_16d44abb",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-match-types.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please use \"bitmask\", rather then \"bit-mask\"",
+      "range": {
+        "startLine": 330,
+        "startChar": 39,
+        "endLine": 330,
+        "endChar": 47
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_b6c3de36",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please log the exception, don\u0027t print it on stdout.\nLOG.error(\"Failed to create dotted quad for the given the mask\",e);",
+      "range": {
+        "startLine": 134,
+        "startChar": 12,
+        "endLine": 134,
+        "endChar": 32
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_d695c233",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 625,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "this will fail, if mask is null, so please change it to \nif (mask !\u003d null \u0026\u0026 mask.getValue())",
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_b6ac7e8d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please re-write the statement in braces (best practices)\nelse {\nmaskValue \u003d DEFAULT_ARBITRARY_BIT_MASK;\n}",
+      "range": {
+        "startLine": 628,
+        "startChar": 8,
+        "endLine": 628,
+        "endChar": 52
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_56c89254",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 633,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please log the exception LOG.error (\"Failed to resolve the ip address of the mask\",e);",
+      "range": {
+        "startLine": 633,
+        "startChar": 12,
+        "endLine": 633,
+        "endChar": 32
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_96be9aac",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "please rename it to isArbitraryBitMask(byte[] bitMask), it\u0027s implicit from the input that it\u0027s a mask.",
+      "range": {
+        "startLine": 639,
+        "startChar": 26,
+        "endLine": 639,
+        "endChar": 48
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_d6cdc232",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1321,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "move this condition as a first condition.",
+      "range": {
+        "startLine": 1321,
+        "startChar": 72,
+        "endLine": 1321,
+        "endChar": 84
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_36d18ecd",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1337,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-04T00:11:03Z",
+      "side": 1,
+      "message": "move this condition as a first condition",
+      "range": {
+        "startLine": 1337,
+        "startChar": 72,
+        "endLine": 1337,
+        "endChar": 84
+      },
+      "revId": "7b7cc130321a106b7283907c78feb20f72acbc45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
