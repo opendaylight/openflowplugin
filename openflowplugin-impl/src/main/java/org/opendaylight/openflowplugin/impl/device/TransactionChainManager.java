@@ -70,10 +70,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private BindingTransactionChain txChainFactory;
     private boolean submitIsEnabled;
 
-    public TransactionChainManagerStatus getTransactionChainManagerStatus() {
-        return transactionChainManagerStatus;
-    }
-
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
@@ -337,7 +333,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         Preconditions.checkState(txChainFactory == null);
     }
 
-    public enum TransactionChainManagerStatus {
+    private enum TransactionChainManagerStatus {
         /** txChainManager is sleeping - is not active (SLAVE or default init value) */
         WORKING,
         /** txChainManager is working - is active (MASTER) */
