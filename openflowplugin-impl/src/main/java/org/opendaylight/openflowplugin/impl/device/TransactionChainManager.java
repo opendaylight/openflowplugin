@@ -34,6 +34,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -61,26 +62,26 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
     private final Object txLock = new Object();
-
+    private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final DataBroker dataBroker;
-    private final DeviceState deviceState;
+
     @GuardedBy("txLock")
     private WriteTransaction wTx;
     @GuardedBy("txLock")
     private BindingTransactionChain txChainFactory;
+    @GuardedBy("txLock")
+    private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+
     private boolean submitIsEnabled;
 
-    @GuardedBy("txLock")
-    private TransactionChainManagerStatus transactionChainManagerStatus;
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-
-    TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final DeviceState deviceState) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final DeviceState deviceState) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.deviceState = Preconditions.checkNotNull(deviceState);
         this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
-        this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-        LOG.debug("created txChainManager");
+        LOG.debug("created txChainManager for {}", nodeII);
+    }
+
+    private NodeId nodeId() {
+        return nodeII.getKey().getId();
     }
 
     @GuardedBy("txLock")
@@ -102,16 +103,16 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * transactions. Call this method for MASTER role only.
      */
     public void activateTransactionManager() {
-        LOG.trace("activateTransactionManager for node {} transaction submit is set to {}", deviceState.getNodeId(), this.submitIsEnabled);
+        LOG.trace("activateTransactionManager for node {} transaction submit is set to {}", nodeId(), submitIsEnabled);
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
-                LOG.debug("Transaction Factory create {}", deviceState.getNodeId());
+                LOG.debug("Transaction Factory create {}", nodeId());
                 Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 createTxChain();
             } else {
-                LOG.debug("Transaction is active {}", deviceState.getNodeId());
+                LOG.debug("Transaction is active {}", nodeId());
             }
         }
     }
@@ -126,11 +127,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         final ListenableFuture<Void> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                LOG.debug("Submitting all transactions if we were in status WORKING for Node", deviceState.getNodeId());
+                LOG.debug("Submitting all transactions if we were in status WORKING for Node", nodeId());
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
-                LOG.debug("Transaction Factory delete for Node {}", deviceState.getNodeId());
+                LOG.debug("Transaction Factory delete for Node {}", nodeId());
                 Futures.addCallback(future, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final Void result) {
@@ -265,7 +266,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             if (wTx == null) {
                 wTx = txChainFactory.newWriteOnlyTransaction();
             }
-            final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId());
+            final NodeBuilder nodeBuilder = new NodeBuilder().setId(nodeId());
             wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
             future = wTx.submit();
             wTx = null;
@@ -274,8 +275,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
                 @Override
                 public ListenableFuture<Void> create(final Throwable t) throws Exception {
-                    LOG.debug("Last ShuttingDown Transaction for node {} fail. Put empty FlowCapableNode",
-                            deviceState.getNodeId());
+                    LOG.debug("Last ShuttingDown Transaction for node {} fail. Put empty FlowCapableNode", nodeId());
                     final ReadOnlyTransaction readWriteTx = dataBroker.newReadOnlyTransaction();
                     final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readFlowNode = readWriteTx
                             .read(LogicalDatastoreType.OPERATIONAL, nodeII.augmentation(FlowCapableNode.class));
@@ -304,8 +304,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * safely.
      */
     void clearUnsubmittedTransaction() {
-        LOG.debug("Cleaning unsubmited Transaction for Device {}", deviceState.getNodeId());
-        Verify.verify(!submitIsEnabled, "We are not able clean TxChain {}", deviceState.getNodeId());
+        LOG.debug("Cleaning unsubmited Transaction for Device {}", nodeId());
+        Verify.verify(!submitIsEnabled, "We are not able clean TxChain {}", nodeId());
         synchronized (txLock) {
             if (wTx != null) {
                 wTx.cancel();
