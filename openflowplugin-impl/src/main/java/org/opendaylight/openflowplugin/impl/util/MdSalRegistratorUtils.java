@@ -53,6 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Sal
 
 public class MdSalRegistratorUtils {
 
+    //TODO: Make one register and one unregister method for all services
+
     private static final TypeToken<Delegator<OpendaylightFlowStatisticsService>> COMPOSITE_SERVICE_TYPE_TOKEN =
             new TypeToken<Delegator<OpendaylightFlowStatisticsService>>() {
                 //NOBODY
