@@ -8,10 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_sync;
 
-import com.google.common.util.concurrent.FutureCallback;
-import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.applications.frsync.impl.ForwardingRulesSyncProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +34,7 @@ public class ForwardingRulesSyncModule extends org.opendaylight.openflowplugin.a
         LOG.info("FRSync module initialization.");
 
         final ForwardingRulesSyncProvider forwardingRulesSyncProvider =
-                new ForwardingRulesSyncProvider(getDataBrokerDependency(), getRpcRegistryDependency());
+                new ForwardingRulesSyncProvider(getBrokerDependency(), getDataBrokerDependency(), getRpcRegistryDependency());
 
         return forwardingRulesSyncProvider;
     }

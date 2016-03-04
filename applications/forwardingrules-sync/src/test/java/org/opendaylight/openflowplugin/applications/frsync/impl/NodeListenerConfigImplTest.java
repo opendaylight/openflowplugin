@@ -73,7 +73,7 @@ public class NodeListenerConfigImplTest {
         final FlowCapableNode flowModOperational = Mockito.mock(FlowCapableNode.class);
         final FlowCapableNode flowModConfig = Mockito.mock(FlowCapableNode.class);
         final AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>> nextStepFunction =
-                nodeListenerConfig.createNextStepFunction(nodePath, flowModConfig);
+                nodeListenerConfig.createNextStepFunction(nodePath, Optional.of(flowModConfig));
 
         nextStepFunction.apply(Optional.of(flowModOperational));
         Mockito.verify(reactor).syncup(nodePath, flowModConfig, flowModOperational);

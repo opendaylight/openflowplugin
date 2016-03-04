@@ -8,11 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Preconditions;
 import java.util.concurrent.Callable;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -32,10 +34,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * top provider of forwarding rules synchronization functionality
  */
-public class ForwardingRulesSyncProvider implements AutoCloseable {
+public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
     public static final int STARTUP_LOOP_TICK = 500;
@@ -59,7 +63,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
 
 
-    public ForwardingRulesSyncProvider(final DataBroker dataBroker,
+    public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
+                                       final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
@@ -78,11 +83,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
 
         nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, FLOW_CAPABLE_NODE_WC_PATH);
-        
-        start();
+
+        broker.registerProvider(this);
     }
 
-    public void start() {
+    @Override
+    public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
         final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
         final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
         final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
@@ -97,8 +103,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         reactor.setTransactionService(transactionService);
 
         final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
-        final NodeListener nodeListenerConfig = new NodeListenerConfigImpl(reactor, dataService, semaphoreKeeper);
-        final NodeListener nodeListenerOperational = new NodeListenerOperationalImpl(reactor, dataService, semaphoreKeeper);
+        final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, semaphoreKeeper); 
+                //new NodeListenerConfigImpl(reactor, dataService, semaphoreKeeper);
+        final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, dataService, semaphoreKeeper);
 
         try {
             SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
@@ -111,7 +118,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                         }
                     });
 
-            /*SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+            SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
             dataTreeOperationalChangeListener = looper2.loopUntilNoException(
                     new Callable<ListenerRegistration<NodeListener>>() {
                         @Override
@@ -119,7 +126,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                             return dataService.registerDataTreeChangeListener(
                                     nodeOperationalDataTreePath, nodeListenerOperational);
                         }
-                    });*/
+                    });
         } catch (final Exception e) {
             LOG.warn("FR-Sync node DataChange listener registration fail!", e);
             throw new IllegalStateException("FR-Sync startup fail!", e);

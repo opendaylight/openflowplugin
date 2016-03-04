@@ -75,8 +75,9 @@ public abstract class AbstractNodeListener implements NodeListener {
             final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> read =
                     roTx.read(getCounterpartDSLogicalType(), nodePath);
 
+            //TODO: sanitize mark&sweep in case config is empty
             final ListenableFuture<RpcResult<Void>> endResult = Futures.transform(read,
-                    createNextStepFunction(nodePath, triggerModification.getDataAfter()));
+                    createNextStepFunction(nodePath, Optional.fromNullable(triggerModification.getDataAfter())));
             processingResults.add(endResult);
             // unlock per node
             hookGuardRelease(endResult, nodeId, guard);
@@ -115,5 +116,5 @@ public abstract class AbstractNodeListener implements NodeListener {
     abstract LogicalDatastoreType getCounterpartDSLogicalType();
 
     abstract AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>> createNextStepFunction(
-            final InstanceIdentifier<FlowCapableNode> nodePath, final FlowCapableNode triggerModification);
+            final InstanceIdentifier<FlowCapableNode> nodePath, final Optional<FlowCapableNode> triggerModification);
 }

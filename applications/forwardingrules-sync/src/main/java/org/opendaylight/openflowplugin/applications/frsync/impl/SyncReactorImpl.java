@@ -8,18 +8,14 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import javax.annotation.Nullable;
+
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.FlowCapableNodeLookups;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
@@ -58,6 +54,16 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+
 /**
  * Synchronization reactor implementation, applicable for both - syncup and reconciliation
  */
@@ -74,6 +80,9 @@ public class SyncReactorImpl implements SyncReactor {
     @Override
     public ListenableFuture<RpcResult<Void>> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
+        
+        LOG.debug("syncup {} {} {}", nodeIdent, configTree, operationalTree);
+        
         /** reconciliation strategy - phase 1:
          *  - add/update missing objects in following order
          *    - table features
@@ -182,8 +191,7 @@ public class SyncReactorImpl implements SyncReactor {
     ListenableFuture<RpcResult<Void>> updateTableFeatures(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                           final FlowCapableNode flowCapableNodeConfigured) {
         // CHECK if while pushing the update, updateTableInput can be null to emulate a table add
-        List<Table> tableList = flowCapableNodeConfigured.getTable() != null
-                ? flowCapableNodeConfigured.getTable() : Collections.<Table>emptyList();
+        final List<Table> tableList = safeTables(flowCapableNodeConfigured);
 
         final List<ListenableFuture<RpcResult<UpdateTableOutput>>> allResults = new ArrayList<>();
         for (Table table : tableList) {
@@ -208,23 +216,27 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
 
+    @VisibleForTesting
     ListenableFuture<RpcResult<Void>> addMissingGroups(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                        final FlowCapableNode flowCapableNodeConfigured,
                                                        final FlowCapableNode flowCapableNodeOperational) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Group> groupsConfigured = flowCapableNodeConfigured.getGroup();
-        if (groupsConfigured == null || groupsConfigured.isEmpty()) {
+        final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
+        if (groupsConfigured.isEmpty()) {
             LOG.debug("no groups configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
-        final List<Group> groupsOperational = flowCapableNodeOperational.getGroup();
-        if (groupsOperational == null) {
-            LOG.debug("groups list empty for device: {} -> SKIPPING", nodeId.getValue());
-            return RpcResultBuilder.<Void>success().buildFuture();
-        }
+        final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
+        
+        return addMissingGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
+    }
+    
+    protected ListenableFuture<RpcResult<Void>> addMissingGroups(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final List<Group> groupsConfigured,
+            final List<Group> groupsOperational) {
 
-        final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(flowCapableNodeOperational.getGroup());
+        final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.addAll(groupsConfigured);
@@ -305,15 +317,25 @@ public class SyncReactorImpl implements SyncReactor {
     ListenableFuture<RpcResult<Void>> addMissingMeters(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                        final FlowCapableNode flowCapableNodeConfigured,
                                                        final FlowCapableNode flowCapableNodeOperational) {
-
+        //TODO start of method (see groups)
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Meter> metersConfigured = flowCapableNodeConfigured.getMeter();
-        if (metersConfigured == null || metersConfigured.isEmpty()) {
+        final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
+        if (metersConfigured.isEmpty()) {
             LOG.debug("no meters configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
+        
+        final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
 
-        final Map<MeterId, Meter> meterOperationalMap = FlowCapableNodeLookups.wrapMetersToMap(flowCapableNodeOperational.getMeter());
+        return addMissingMeters(nodeId, nodeIdent, metersConfigured, metersOperational);
+    }
+    
+
+    protected ListenableFuture<RpcResult<Void>> addMissingMeters(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            List<Meter> metersConfigured,
+            List<Meter> metersOperational) {
+
+        final Map<MeterId, Meter> meterOperationalMap = FlowCapableNodeLookups.wrapMetersToMap(metersOperational);
 
         final List<ListenableFuture<RpcResult<AddMeterOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateMeterOutput>>> allUpdateResults = new ArrayList<>();
@@ -353,18 +375,26 @@ public class SyncReactorImpl implements SyncReactor {
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
+    @VisibleForTesting
     ListenableFuture<RpcResult<Void>> addMissingFlows(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                       final FlowCapableNode flowCapableNodeConfigured,
                                                       final FlowCapableNode flowCapableNodeOperational) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Table> tablesConfigured = flowCapableNodeConfigured.getTable();
-
-        if (tablesConfigured == null || tablesConfigured.isEmpty()) {
+        final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
+        if (tablesConfigured.isEmpty()) {
             LOG.debug("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
+        
+        final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);        
 
-        final Map<Short, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(flowCapableNodeOperational.getTable());
+        return addMissingFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
+    }
+    
+    protected ListenableFuture<RpcResult<Void>> addMissingFlows(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            List<Table> tablesConfigured, List<Table> tablesOperational) {
+
+        final Map<Short, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(tablesOperational);
         final List<ListenableFuture<RpcResult<AddFlowOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateFlowOutput>>> allUpdateResults = new ArrayList<>();
 
@@ -421,19 +451,28 @@ public class SyncReactorImpl implements SyncReactor {
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
+    @VisibleForTesting
     ListenableFuture<RpcResult<Void>> removeRedundantFlows(
             final InstanceIdentifier<FlowCapableNode> nodeIdent,
             final FlowCapableNode flowCapableNodeConfigured,
             final FlowCapableNode flowCapableNodeOperational) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Table> tablesOperational = flowCapableNodeOperational.getTable();
+        final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);
 
-        if (tablesOperational == null || tablesOperational.isEmpty()) {
+        if (tablesOperational.isEmpty()) {
             LOG.debug("no tables in operational for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
+        
+        final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
 
-        final Map<Short, Table> tableConfigMap = FlowCapableNodeLookups.wrapTablesToMap(flowCapableNodeConfigured.getTable());
+        return removeRedundantFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
+    }
+
+    protected ListenableFuture<RpcResult<Void>> removeRedundantFlows(
+            NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final List<Table> tablesConfigured, final List<Table> tablesOperational) {
+        final Map<Short, Table> tableConfigMap = FlowCapableNodeLookups.wrapTablesToMap(tablesConfigured);
         final List<ListenableFuture<RpcResult<RemoveFlowOutput>>> allResults = new ArrayList<>();
 
         for (final Table tableOperational : tablesOperational) {
@@ -476,18 +515,29 @@ public class SyncReactorImpl implements SyncReactor {
 
     }
 
+    @VisibleForTesting
     ListenableFuture<RpcResult<Void>> removeRedundantMeters(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                             final FlowCapableNode flowCapableNodeConfigured,
                                                             final FlowCapableNode flowCapableNodeOperational) {
 
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Meter> metersOperational = flowCapableNodeOperational.getMeter();
-        if (metersOperational == null || metersOperational.isEmpty()) {
+        final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
+        if (metersOperational.isEmpty()) {
             LOG.debug("no meters on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
+        
+        final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
 
-        final Map<MeterId, Meter> meterConfigMap = FlowCapableNodeLookups.wrapMetersToMap(flowCapableNodeConfigured.getMeter());
+        return removeRedundantMeters(nodeId, nodeIdent, metersConfigured , metersOperational);
+    }
+        
+
+    protected ListenableFuture<RpcResult<Void>> removeRedundantMeters(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            List<Meter> metersConfigured,
+            List<Meter> metersOperational) {
+
+        final Map<MeterId, Meter> meterConfigMap = FlowCapableNodeLookups.wrapMetersToMap(metersConfigured);
 
         final List<ListenableFuture<RpcResult<RemoveMeterOutput>>> allResults = new ArrayList<>();
         for (Meter meter : metersOperational) {
@@ -509,17 +559,26 @@ public class SyncReactorImpl implements SyncReactor {
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
+    @VisibleForTesting
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                             final FlowCapableNode flowCapableNodeConfigured,
                                                             final FlowCapableNode flowCapableNodeOperational) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        final List<Group> groupsOperational = flowCapableNodeOperational.getGroup();
+        final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
         if (groupsOperational == null || groupsOperational.isEmpty()) {
             LOG.debug("no groups on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
-        final Map<Long, Group> groupConfigMap = FlowCapableNodeLookups.wrapGroupsToMap(flowCapableNodeConfigured.getGroup());
+        final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
+        
+        return removeRedundantGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
+    }
+    
+    ListenableFuture<RpcResult<Void>> removeRedundantGroups(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            List<Group> groupsConfigured, List<Group> groupsOperational) {
+        
+        final Map<Long, Group> groupConfigMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.addAll(groupsOperational);
@@ -559,6 +618,30 @@ public class SyncReactorImpl implements SyncReactor {
         return chainedResult;
     }
 
+    static List<Group> safeGroups(FlowCapableNode node) {
+        if(node == null) {
+            return Collections.emptyList();
+        }
+        
+        return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.<Group>of());
+    }
+    
+    static List<Table> safeTables(FlowCapableNode node) {
+        if(node == null) {
+            return Collections.emptyList();
+        }
+        
+        return MoreObjects.firstNonNull(node.getTable(), ImmutableList.<Table>of());
+    }
+    
+    static List<Meter> safeMeters(FlowCapableNode node) {
+        if(node == null) {
+            return Collections.emptyList();
+        }
+        
+        return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.<Meter>of());
+    }
+    
     private ListenableFuture<RpcResult<Void>> flushRemoveGroupPortionAndBarrier(
             final InstanceIdentifier<FlowCapableNode> nodeIdent,
             final ItemSyncBox<Group> groupsPortion) {

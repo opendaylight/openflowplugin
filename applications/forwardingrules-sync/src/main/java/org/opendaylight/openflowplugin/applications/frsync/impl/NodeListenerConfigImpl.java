@@ -42,13 +42,15 @@ public class NodeListenerConfigImpl extends AbstractNodeListener {
 
     @Override
     AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>> createNextStepFunction(
-            final InstanceIdentifier<FlowCapableNode> nodePath, final FlowCapableNode triggerModification) {
+            final InstanceIdentifier<FlowCapableNode> nodePath, final Optional<FlowCapableNode> triggerModification) {
         return new AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final Optional<FlowCapableNode> input) throws Exception {
                 final ListenableFuture<RpcResult<Void>> nextResult;
-                if (input.isPresent()) {
-                    nextResult = reactor.syncup(nodePath, triggerModification, input.get());
+
+                // TODO: add mark&sweep use case
+                if (input.isPresent() && triggerModification.isPresent()) {
+                    nextResult = reactor.syncup(nodePath, triggerModification.get(), input.get());
                 } else {
                     LOG.trace("no node present in DS/operational for nodeId={}", PathUtil.digNodeId(nodePath));
                     nextResult = Futures.immediateFuture(null);

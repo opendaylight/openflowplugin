@@ -12,6 +12,7 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -32,6 +33,10 @@ public class ForwardingRulesSyncProviderTest {
     private DataBroker dataBroker;
     @Mock
     private RpcConsumerRegistry rpcRegistry;
+    @Mock
+    private BindingAwareBroker broker;
+    @Mock
+    private BindingAwareBroker.ProviderContext providerContext;
 
     @Before
     public void setUp() throws Exception {
@@ -44,18 +49,20 @@ public class ForwardingRulesSyncProviderTest {
                     }
                 });
 
-        provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry);
+        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry);
 
         Mockito.verify(rpcRegistry).getRpcService(SalFlowService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalGroupService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalMeterService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
         Mockito.verify(rpcRegistry).getRpcService(FlowCapableTransactionService.class);
+
+        Mockito.verify(broker).registerProvider(provider);
     }
 
     @Test
-    public void testStart() throws Exception {
-        provider.start();
+    public void testOnSessionInitiated() throws Exception {
+        provider.onSessionInitiated(providerContext);
 
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
                 Matchers.<DataTreeIdentifier<FlowCapableNode>>any(),
