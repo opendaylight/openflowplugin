@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin.legacy</groupId>
     <artifactId>legacy-parent</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.4-Lithium-SR4</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>sal-compatibility</artifactId>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>clustering.services</artifactId>
-      <version>0.6.4-SNAPSHOT</version>
+      <version>0.6.4-Lithium-SR4</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>

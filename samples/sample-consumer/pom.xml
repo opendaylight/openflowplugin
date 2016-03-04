@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.1.4-SNAPSHOT</version>
+        <version>0.1.4-Lithium-SR4</version>
         <relativePath>../../parent</relativePath>
     </parent>
 

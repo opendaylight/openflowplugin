@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-extension-parent</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.4-Lithium-SR4</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>features-openflowplugin-extension-li</artifactId>
@@ -13,7 +13,7 @@
 
   <properties>
     <features.file>features.xml</features.file>
-    <karaf.empty.distro.version>1.5.4-SNAPSHOT</karaf.empty.distro.version>
+    <karaf.empty.distro.version>1.5.4-Lithium-SR4</karaf.empty.distro.version>
   </properties>
 
   <dependencies>

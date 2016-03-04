@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.4-Lithium-SR4</version>
     <relativePath>../../parent</relativePath>
   </parent>
   <artifactId>openflowplugin-karaf</artifactId>
@@ -13,8 +13,8 @@
     <maven>3.0</maven>
   </prerequisites>
   <properties>
-    <branding.version>1.1.4-SNAPSHOT</branding.version>
-    <karaf.resources.version>1.5.4-SNAPSHOT</karaf.resources.version>
+    <branding.version>1.1.4-Lithium-SR4</branding.version>
+    <karaf.resources.version>1.5.4-Lithium-SR4</karaf.resources.version>
   </properties>
 
   <dependencies>

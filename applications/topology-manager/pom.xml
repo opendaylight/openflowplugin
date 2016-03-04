@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>0.3.4-Lithium-SR4</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>topology-manager</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
+  <version>0.1.4-Lithium-SR4</version>
   <packaging>bundle</packaging>
 
   <dependencyManagement>
