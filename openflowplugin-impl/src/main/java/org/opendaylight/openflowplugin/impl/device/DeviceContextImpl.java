@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -217,6 +218,7 @@ public class DeviceContextImpl implements DeviceContext {
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
+            MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
             if (!deviceState.deviceSynchronized()) {
                 //TODO: no necessary code for yet - it needs for initialization phase only
                 LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
@@ -224,7 +226,16 @@ public class DeviceContextImpl implements DeviceContext {
                 return Futures.immediateCheckedFuture(null);
             }
             /* Relevant for no initial Slave-to-Master scenario in cluster */
-            return asyncClusterRoleChange(role);
+            final ListenableFuture<Void> deviceInitialization = asyncClusterRoleChange(role);
+            return Futures.withFallback(deviceInitialization, new FutureFallback<Void>() {
+
+                @Override
+                public ListenableFuture<Void> create(final Throwable t) throws Exception {
+                    LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId(), t);
+                    MdSalRegistratorUtils.unregisterServices(getRpcContext());
+                    return null;
+                }
+            });
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
@@ -311,7 +322,6 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 transactionChainManager.activateTransactionManager();
-                MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
@@ -462,14 +472,15 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         LOG.debug("closing deviceContext: {}, nodeId:{}",
                 getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
                 getDeviceState().getNodeId());
 
-        tearDown();
-
-        primaryConnectionContext.closeConnection(false);
+        if (deviceState.isValid()) {
+            primaryConnectionContext.closeConnection(false);
+            tearDown();
+        }
     }
 
     private synchronized void tearDown() {
