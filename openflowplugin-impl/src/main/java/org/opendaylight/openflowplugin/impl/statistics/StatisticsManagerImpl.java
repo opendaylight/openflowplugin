@@ -12,16 +12,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -106,8 +103,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             }
             scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
         }
-        deviceContext.getDeviceState().setDeviceSynchronized(true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        deviceContext.getDeviceState().setDeviceSynchronized(true);
     }
 
     private void initialStatPollForMaster(final StatisticsContext statisticsContext, final DeviceContext deviceContext) {
@@ -124,7 +121,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                     try {
                         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-                    } catch (final Exception e) {
+                    } catch (Exception e) {
                         LOG.info("failed to complete levelUp on next handler for device {}", deviceContext.getDeviceState().getNodeId());
                         deviceContext.close();
                         return;
@@ -304,9 +301,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             controlServiceRegistration.close();
             controlServiceRegistration = null;
         }
-        for (final Iterator<Entry<DeviceContext, StatisticsContext>> iterator = Iterators
-                .consumingIterator(contexts.entrySet().iterator()); iterator.hasNext();) {
-            iterator.next().getValue().close();
+        for (final StatisticsContext statCtx : contexts.values()) {
+            statCtx.close();
         }
+        contexts.clear();
     }
 }

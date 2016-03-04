@@ -9,10 +9,7 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.FutureFallback;
@@ -23,17 +20,13 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -126,8 +119,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * Call this method for SLAVE only.
      * @return Future
      */
-    public ListenableFuture<Void> deactivateTransactionManager() {
-        final ListenableFuture<Void> future;
+    public CheckedFuture<Void, TransactionCommitFailedException> deactivateTransactionManager() {
+        final CheckedFuture<Void, TransactionCommitFailedException> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                 LOG.debug("Submitting all transactions if we were in status WORKING for Node", deviceState.getNodeId());
@@ -249,9 +242,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         submitIsEnabled = true;
     }
 
-    ListenableFuture<Void> shuttingDown() {
+    CheckedFuture<Void, TransactionCommitFailedException> shuttingDown() {
         LOG.debug("TxManager is going SUTTING_DOWN for node {}", nodeII);
-        ListenableFuture<Void> future;
+        CheckedFuture<Void, TransactionCommitFailedException> future;
         synchronized (txLock) {
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             future = txChainShuttingDown();
@@ -259,8 +252,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return future;
     }
 
-    private ListenableFuture<Void> txChainShuttingDown() {
-        ListenableFuture<Void> future;
+    private CheckedFuture<Void, TransactionCommitFailedException> txChainShuttingDown() {
+        CheckedFuture<Void, TransactionCommitFailedException> future;
         if (txChainFactory == null) {
             // stay with actual thread
             future = Futures.immediateCheckedFuture(null);
@@ -273,54 +266,17 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
             future = wTx.submit();
             wTx = null;
-
-            future = Futures.withFallback(future, new FutureFallback<Void>() {
+            Futures.withFallback(future, new FutureFallback<Void>() {
 
                 @Override
                 public ListenableFuture<Void> create(final Throwable t) throws Exception {
-                    LOG.debug("Last ShuttingDown Transaction for node {} fail. Put empty FlowCapableNode",
-                            deviceState.getNodeId());
-                    final ReadOnlyTransaction readWriteTx = dataBroker.newReadOnlyTransaction();
-                    final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readFlowNode = readWriteTx
-                            .read(LogicalDatastoreType.OPERATIONAL, nodeII.augmentation(FlowCapableNode.class));
-                    return Futures.transform(readFlowNode, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
-
-                        @Override
-                        public ListenableFuture<Void> apply(final Optional<FlowCapableNode> input) {
-                            if (input.isPresent()) {
-                                final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-                                nodeBuilder.addAugmentation(FlowCapableNode.class, new FlowCapableNodeBuilder().build());
-                                delWtx.put(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
-                                return delWtx.submit();
-                            }
-                            return Futures.immediateFuture(null);
-                        }
-                    });
+                    final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
+                    delWtx.put(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
+                    return delWtx.submit();
                 }
             });
         }
         return future;
-    }
-
-    /**
-     * Transaction could be close if we are not submit anything. We have property submitIsEnable what
-     * could protect us for check it is NEW transaction from chain and we are able close everything
-     * safely.
-     */
-    void clearUnsubmittedTransaction() {
-        LOG.debug("Cleaning unsubmited Transaction for Device {}", deviceState.getNodeId());
-        Verify.verify(!submitIsEnabled, "We are not able clean TxChain {}", deviceState.getNodeId());
-        synchronized (txLock) {
-            if (wTx != null) {
-                wTx.cancel();
-                wTx = null;
-            }
-            if (txChainFactory != null) {
-                txChainFactory.close();
-                txChainFactory = null;
-            }
-            transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-        }
     }
 
     @Override

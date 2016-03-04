@@ -10,15 +10,12 @@ package org.opendaylight.openflowplugin.impl.role;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.base.Verify;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
@@ -96,29 +93,46 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 
+    void getRoleContextLevelUp(final DeviceContext deviceContext) {
+        LOG.debug("Created role context for node {}", deviceContext.getDeviceState().getNodeId());
+        LOG.debug("roleChangeFuture success for device:{}. Moving to StatisticsManager", deviceContext.getDeviceState().getNodeId());
+        try {
+            deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        } catch (final Exception e) {
+            LOG.info("failed to complete levelUp on next handler for device {}",
+                    deviceContext.getDeviceState().getNodeId());
+            deviceContext.close();
+            return;
+        }
+    }
+
     @Override
-    public void close() {
+    public void close() throws Exception {
         entityOwnershipListenerRegistration.close();
         txEntityOwnershipListenerRegistration.close();
-        for (final Iterator<Entry<Entity, RoleContext>> iterator = Iterators.consumingIterator(contexts.entrySet()
-                .iterator()); iterator.hasNext();) {
+        for (final Map.Entry<Entity, RoleContext> roleContextEntry : contexts.entrySet()) {
             // got here because last known role is LEADER and DS might need clearing up
-            final Entry<Entity, RoleContext> entry = iterator.next();
-            final RoleContext roleCtx = entry.getValue();
-            final NodeId nodeId = roleCtx.getDeviceState().getNodeId();
-            if (OfpRole.BECOMEMASTER.equals(roleCtx.getDeviceState().getRole())) {
-                LOG.trace("Last role is LEADER and ownershipService returned hasOwner=false for node: {}; "
-                        + "cleaning DS as being probably the last owner", nodeId);
-                removeDeviceFromOperDS(roleCtx);
+            final Entity entity = roleContextEntry.getKey();
+            final Optional<EntityOwnershipState> ownershipState = entityOwnershipService.getOwnershipState(entity);
+            final NodeId nodeId = roleContextEntry.getValue().getDeviceState().getNodeId();
+            if (ownershipState.isPresent()) {
+                if ((!ownershipState.get().hasOwner())) {
+                    LOG.trace("Last role is LEADER and ownershipService returned hasOwner=false for node: {}; " +
+                            "cleaning DS as being probably the last owner", nodeId);
+                    removeDeviceFromOperDS(roleContextEntry.getValue());
+                } else {
+                    // NOOP - there is another owner
+                    LOG.debug("Last role is LEADER and ownershipService returned hasOwner=true for node: {}; " +
+                            "leaving DS untouched", nodeId);
+                }
             } else {
-                // NOOP - there is another owner
-                LOG.debug("Last role is LEADER and ownershipService returned hasOwner=true for node: {}; "
-                        + "leaving DS untouched", nodeId);
+                // TODO: is this safe? When could this happen?
+                LOG.warn("Last role is LEADER but ownershipService returned empty ownership info for node: {}; " +
+                        "cleaning DS ANYWAY!", nodeId);
+                removeDeviceFromOperDS(roleContextEntry.getValue());
             }
-            roleCtx.suspendTxCandidate();
-            txContexts.remove(roleCtx.getTxEntity(), roleCtx);
-            roleCtx.close();
         }
+        contexts.clear();
     }
 
     @Override
@@ -165,23 +179,25 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
         Preconditions.checkArgument(ownershipChange != null);
-        RoleContext roleContext = null;
+        RoleContext roleCtxForClose = null;
         try {
-            roleContext = contexts.get(ownershipChange.getEntity());
+            final RoleContext roleContext = contexts.get(ownershipChange.getEntity());
             if (roleContext != null) {
+                roleCtxForClose = roleContext;
                 changeForEntity(ownershipChange, roleContext);
                 return;
             }
 
-            roleContext = txContexts.get(ownershipChange.getEntity());
-            if (roleContext != null) {
-                changeForTxEntity(ownershipChange, roleContext);
+            final RoleContext txRoleContext = txContexts.get(ownershipChange.getEntity());
+            if (txRoleContext != null) {
+                roleCtxForClose = txRoleContext;
+                changeForTxEntity(ownershipChange, txRoleContext);
                 return;
             }
-        } catch (final Exception e) {
-            LOG.warn("fail to acquire semaphore: {}", ownershipChange.getEntity(), e);
-            if (roleContext != null) {
-                roleContext.getDeviceContext().close();
+        } catch (final InterruptedException e) {
+            LOG.warn("fail to acquire semaphore: {}", ownershipChange.getEntity());
+            if (roleCtxForClose != null) {
+                roleCtxForClose.close();
             }
         }
 
@@ -203,6 +219,11 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
             // SLAVE -> MASTER - acquired transition lock
             LOG.debug("Acquired tx-lock for entity {}", ownershipChange.getEntity());
+            roleContext.setTxLockOwned(true);
+            final OfpRole role = roleContext.getDeviceState().getRole();
+            /* SLAVE to MASTER scenario has wait for TxEntity LEADER before sending ROLE to Device */
+            Verify.verify(OfpRole.BECOMESLAVE.equals(role),
+                    "Acquired tx-lock but current role = {}", role);
 
             // activate txChainManager, activate rpcs
             if (roleContext.getDeviceState().isValid()) {
@@ -224,6 +245,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
             // MASTER -> SLAVE - released tx-lock
             LOG.debug("Released tx-lock for entity {}", ownershipChange.getEntity());
+            roleContext.setTxLockOwned(false);
             txContexts.remove(roleContext.getTxEntity(), roleContext);
             processingClosure = Futures.immediateFuture(null);
         } else {
@@ -244,7 +266,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        LOG.warn("Unexpected error for Node {} -> terminating device context", nodeId, throwable);
+                        LOG.warn("Unexpected error for Node {}, txLock={} -> terminating device context", nodeId,
+                                roleContext.isTxLockOwned(), throwable);
                         txCandidateGuard.release();
                         deviceContext.close();
                     }
@@ -280,7 +303,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                     // withdraw context from map in order to have it as before
                     txContexts.remove(roleContext.getTxEntity(), roleContext);
                     // no more propagating any role - there is no txCandidate lock approaching
-                    Throwables.propagate(e);
+                    roleContext.getDeviceContext().close();
                 }
                 return null;
             }

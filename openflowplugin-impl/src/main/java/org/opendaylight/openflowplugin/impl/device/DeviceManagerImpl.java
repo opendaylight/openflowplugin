@@ -9,11 +9,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-import com.google.common.collect.Iterators;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -102,12 +99,24 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
         LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceContext.getDeviceState().getNodeId());
         Preconditions.checkNotNull(deviceContext);
-        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
-        deviceContext.onPublished();
+        try {
+            ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
+            deviceContext.onPublished();
+
+        } catch (final Exception e) {
+            LOG.warn("Node {} can not be add to OPERATIONAL DataStore yet because {} ", deviceContext.getDeviceState().getNodeId(), e.getMessage());
+            LOG.trace("Problem with add node {} to OPERATIONAL DataStore", deviceContext.getDeviceState().getNodeId(), e);
+            try {
+                deviceContext.close();
+            } catch (final Exception e1) {
+                LOG.warn("Exception on device context close. ", e);
+            }
+        }
+
     }
 
     @Override
@@ -199,10 +208,9 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
-    public void close() {
-        for (final Iterator<Entry<NodeId, DeviceContext>> iterator = Iterators
-                .consumingIterator(deviceContexts.entrySet().iterator()); iterator.hasNext();) {
-            iterator.next().getValue().close();
+    public void close() throws Exception {
+        for (final DeviceContext deviceContext : deviceContexts.values()) {
+            deviceContext.close();
         }
     }
 
