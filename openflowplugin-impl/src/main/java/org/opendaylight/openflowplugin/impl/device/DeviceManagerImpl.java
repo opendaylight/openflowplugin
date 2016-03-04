@@ -208,6 +208,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 .consumingIterator(deviceContexts.entrySet().iterator()); iterator.hasNext();) {
             iterator.next().getValue().close();
         }
+
+        if (spyPool != null) {
+            spyPool.shutdownNow();
+            spyPool = null;
+        }
     }
 
     @Override
