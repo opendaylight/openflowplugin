@@ -117,7 +117,7 @@ public abstract class AbstractFrmSyncListener implements NodeListener {
         if (guard == null) {
             return;
         }
-        guard.release();
+        //guard.release();
     }
 
     public abstract LogicalDatastoreType dsType();
