@@ -66,8 +66,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
         final ListenableFuture<RpcResult<Void>> endResult =
                 // better preformance needed just compare config after and before:
-                reactor.syncup(nodePath, configModification.getDataAfter(),
-                        configModification.getDataBefore());
+                reactor.syncup(nodePath, configModification.getDataBefore(), configModification.getDataAfter());
         // reactor.syncup(nodePath, operationalNode.get(), configModification.getDataAfter());
 
         return Optional.of(endResult);

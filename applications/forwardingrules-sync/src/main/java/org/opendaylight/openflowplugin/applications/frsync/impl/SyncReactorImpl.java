@@ -81,7 +81,7 @@ public class SyncReactorImpl implements SyncReactor {
     public ListenableFuture<RpcResult<Void>> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
         
-        LOG.debug("syncup {} {} {}", nodeIdent, configTree, operationalTree);
+        LOG.trace("syncup {} {} {}", nodeIdent, configTree, operationalTree);
         
         /** reconciliation strategy - phase 1:
          *  - add/update missing objects in following order
@@ -317,7 +317,6 @@ public class SyncReactorImpl implements SyncReactor {
     ListenableFuture<RpcResult<Void>> addMissingMeters(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                        final FlowCapableNode flowCapableNodeConfigured,
                                                        final FlowCapableNode flowCapableNodeOperational) {
-        //TODO start of method (see groups)
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
         if (metersConfigured.isEmpty()) {
