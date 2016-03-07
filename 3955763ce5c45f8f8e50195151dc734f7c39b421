@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_fac260e7",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceStateImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-07T13:49:14Z",
+      "side": 1,
+      "message": "this is available from git log, please remove",
+      "revId": "3955763ce5c45f8f8e50195151dc734f7c39b421",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9ab35497",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceStateImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-07T13:49:14Z",
+      "side": 1,
+      "message": "add suffix \"_initialValue\"",
+      "revId": "3955763ce5c45f8f8e50195151dc734f7c39b421",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5ab6ec8a",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceStateImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-07T13:49:14Z",
+      "side": 1,
+      "message": "please stop testing of setters",
+      "range": {
+        "startLine": 102,
+        "startChar": 11,
+        "endLine": 103,
+        "endChar": 16
+      },
+      "revId": "3955763ce5c45f8f8e50195151dc734f7c39b421",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
