@@ -75,7 +75,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
         final DataObjectModification<FlowCapableNode> operationalModification = modification.getRootNode();
         final ListenableFuture<RpcResult<Void>> rpcResult =
-                reactor.syncup(nodePath, operationalModification.getDataAfter(), nodeConfiguration.orNull());
+                reactor.syncup(nodePath, nodeConfiguration.orNull(), operationalModification.getDataAfter());
         return Optional.of(rpcResult);
     }
 

@@ -201,8 +201,10 @@ public class SyncReactorImpl implements SyncReactor {
             List<TableFeatures> tableFeatures = table.getTableFeatures();
             if (tableFeatures != null) {
                 for (TableFeatures tableFeaturesItem : tableFeatures) {
-                    allResults.add(JdkFutureAdapters.listenInPoolThread(
-                            tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
+                    //TODO uncomment java.lang.NullPointerException
+                    //at org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer.serializeHeader(AbstractOxmMatchEntrySerializer.java:31
+                    //allResults.add(JdkFutureAdapters.listenInPoolThread(
+                    //        tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
                 }
             }
         }
