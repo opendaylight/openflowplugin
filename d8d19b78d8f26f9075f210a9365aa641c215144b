@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_b5458b44",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-07T16:12:06Z",
+      "side": 1,
+      "message": "Why no outcomming future? if you do not care about result then addCallback is probably what you need here.\nThis will break code in RoleManagerImpl.changeFor*Entity() causing a NPE.",
+      "range": {
+        "startLine": 263,
+        "startChar": 20,
+        "endLine": 263,
+        "endChar": 32
+      },
+      "revId": "d8d19b78d8f26f9075f210a9365aa641c215144b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_954e8739",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-07T16:12:06Z",
+      "side": 1,
+      "message": "If connectionContext.close() is not invoked with any argument than it is probably broken, please investigate a fix test or tested code.",
+      "revId": "d8d19b78d8f26f9075f210a9365aa641c215144b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
