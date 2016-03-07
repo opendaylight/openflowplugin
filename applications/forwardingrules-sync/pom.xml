@@ -26,6 +26,10 @@
     <lldp.version>0.10.${sr}</lldp.version>
 	
 	<jacoco.version>0.7.5.201505241946</jacoco.version>
+	<!-- see property sonar.jacoco.reportPath (it overriden in JENKINS) -->
+	<jacoco.append>false</jacoco.append><!-- overriden in JENKINS -->
+	<jacoco.inclBootstrapClasses>true</jacoco.inclBootstrapClasses>
+	<jacoco.inclNoLocationClasses>true</jacoco.inclNoLocationClasses>
 	
 	<odl-models>odl-mdsal-models</odl-models>
   </properties>
@@ -185,6 +189,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-jacoco-listeners</artifactId>
+      <version>${sonar-jacoco-listeners.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
