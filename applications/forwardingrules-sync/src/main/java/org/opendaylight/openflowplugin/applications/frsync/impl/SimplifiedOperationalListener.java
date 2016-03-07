@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import java.util.Collection;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -15,6 +17,10 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -36,18 +42,26 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
     protected final SyncReactor reactor;
     private final DataBroker dataBroker;
 
+    private FlowCapableNodeSnapshotDao operationalSnaphot;
+
+    private FlowCapableNodeDao configDao;
+
     public SimplifiedOperationalListener(SyncReactor reactor, DataBroker dataBroker,
-            final SemaphoreKeeperImpl<NodeId> semaphoreKeeper) {
+            final SemaphoreKeeperImpl<NodeId> semaphoreKeeper, FlowCapableNodeSnapshotDao operationalSnaphot, FlowCapableNodeDao configDao) {
         super(semaphoreKeeper);
         this.reactor = reactor;
         this.dataBroker = dataBroker;
+        this.operationalSnaphot = operationalSnaphot;
+        this.configDao = configDao;
     }
-
+    
     /**
-     * Process only node added notification (not updates).
+     * If node is added to operational store than Inventory RPCs are called (reconciliation).
      */
     protected Optional<ListenableFuture<RpcResult<Void>>> processNodeModification(
             DataTreeModification<FlowCapableNode> modification) throws ReadFailedException {
+        operationalSnaphot.modification(modification);
+        
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
@@ -58,15 +72,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
             return Optional.absent();// skip processing
         }
 
-        try (final ReadOnlyTransaction roTx = dataBroker.newReadOnlyTransaction()) {
-            // final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> read =
-            final Optional<FlowCapableNode> nodeConfiguration;
-            nodeConfiguration = roTx.read(LogicalDatastoreType.CONFIGURATION, nodePath).checkedGet();
-            final DataObjectModification<FlowCapableNode> triggerModification = modification.getRootNode();
-            final ListenableFuture<RpcResult<Void>> rpcResult =
-                    reactor.syncup(nodePath, triggerModification.getDataAfter(), nodeConfiguration.orNull());
-            return Optional.of(rpcResult);
-        }
+        final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
+        final DataObjectModification<FlowCapableNode> operationalModification = modification.getRootNode();
+        final ListenableFuture<RpcResult<Void>> rpcResult =
+                reactor.syncup(nodePath, operationalModification.getDataAfter(), nodeConfiguration.orNull());
+        return Optional.of(rpcResult);
     }
 
     @Override

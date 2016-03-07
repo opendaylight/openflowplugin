@@ -51,6 +51,9 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     public Future<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
+        LOG.debug("Received the Meter REMOVE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -62,6 +65,9 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     public Future<RpcResult<UpdateMeterOutput>> update(final InstanceIdentifier<Meter> identifier,
                                                        final Meter original, final Meter update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Meter UPDATE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final UpdateMeterInputBuilder builder = new UpdateMeterInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -75,6 +81,9 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     @Override
     public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Meter ADD request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final AddMeterInputBuilder builder = new AddMeterInputBuilder(addDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));

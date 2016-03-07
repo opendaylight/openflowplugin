@@ -40,8 +40,8 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     public Future<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
                                                        final TableFeatures original, final TableFeatures update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd {} {} {} {}",
-                identifier, nodeIdent, original, update);
+        LOG.debug("Received the Table Update request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
 
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
@@ -55,7 +55,7 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
 
         builder.setOriginalTable(new OriginalTableBuilder().setTableFeatures(
                 Collections.singletonList(original)).build());
-        LOG.debug("Invoking SalTableService ");
+        LOG.debug("Invoking SalTableService {} ", nodeIdent);
 
         return salTableService.updateTable(builder.build());
     }

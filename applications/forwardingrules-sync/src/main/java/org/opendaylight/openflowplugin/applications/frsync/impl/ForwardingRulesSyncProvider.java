@@ -18,6 +18,10 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -102,36 +106,43 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         reactor.setTableForwarder(tableForwarder);
         reactor.setTransactionService(transactionService);
 
-        final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
-        final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, semaphoreKeeper); 
-                //new NodeListenerConfigImpl(reactor, dataService, semaphoreKeeper);
-        final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, dataService, semaphoreKeeper);
+        {
+            final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
+            final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
+            final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
+            final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
+            
+            final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
+            final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, semaphoreKeeper, configSnaphot, operationalDao); 
+            //new NodeListenerConfigImpl(reactor, dataService, semaphoreKeeper);
+            final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, dataService, semaphoreKeeper, operationalSnaphot, configDao);
 
-        try {
-            SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            dataTreeConfigChangeListener = looper1.loopUntilNoException(
-                    new Callable<ListenerRegistration<NodeListener>>() {
-                        @Override
-                        public ListenerRegistration<NodeListener> call() throws Exception {
-                            return dataService.registerDataTreeChangeListener(
-                                    nodeConfigDataTreePath, nodeListenerConfig);
-                        }
-                    });
-
-            SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            dataTreeOperationalChangeListener = looper2.loopUntilNoException(
-                    new Callable<ListenerRegistration<NodeListener>>() {
-                        @Override
-                        public ListenerRegistration<NodeListener> call() throws Exception {
-                            return dataService.registerDataTreeChangeListener(
-                                    nodeOperationalDataTreePath, nodeListenerOperational);
-                        }
-                    });
-        } catch (final Exception e) {
-            LOG.warn("FR-Sync node DataChange listener registration fail!", e);
-            throw new IllegalStateException("FR-Sync startup fail!", e);
+            try {
+                SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+                dataTreeConfigChangeListener = looper1.loopUntilNoException(
+                        new Callable<ListenerRegistration<NodeListener>>() {
+                            @Override
+                            public ListenerRegistration<NodeListener> call() throws Exception {
+                                return dataService.registerDataTreeChangeListener(
+                                        nodeConfigDataTreePath, nodeListenerConfig);
+                            }
+                        });
+    
+                SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+                dataTreeOperationalChangeListener = looper2.loopUntilNoException(
+                        new Callable<ListenerRegistration<NodeListener>>() {
+                            @Override
+                            public ListenerRegistration<NodeListener> call() throws Exception {
+                                return dataService.registerDataTreeChangeListener(
+                                        nodeOperationalDataTreePath, nodeListenerOperational);
+                            }
+                        });
+            } catch (final Exception e) {
+                LOG.warn("FR-Sync node DataChange listener registration fail!", e);
+                throw new IllegalStateException("FR-Sync startup fail!", e);
+            }
         }
-        LOG.info("ForwardingRulesSync has started successfully.");
+        LOG.info("ForwardingRulesSync has started.");
     }
 
     public void close() throws Exception {

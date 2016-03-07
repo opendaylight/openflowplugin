@@ -50,6 +50,9 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<RemoveFlowOutput>> remove(final InstanceIdentifier<Flow> identifier,
                                                       final Flow removeDataObj,
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Flow REMOVE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
@@ -71,6 +74,9 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<UpdateFlowOutput>> update(final InstanceIdentifier<Flow> identifier,
                                                       final Flow original, final Flow update,
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Flow UPDATE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final Future<RpcResult<UpdateFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
@@ -97,6 +103,9 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier,
                                                 final Flow addDataObj,
                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Flow ADD request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final Future<RpcResult<AddFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {

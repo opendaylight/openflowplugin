@@ -51,6 +51,9 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Table REMOVE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(removeDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -62,6 +65,9 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
                                                        final Group original, final Group update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Group UPDATE request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -75,6 +81,9 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Group ADD request [Tbl id, node Id {} {}",
+                identifier, nodeIdent);
+        
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(addDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
