@@ -347,6 +347,17 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        LOG.debug("Node {} has not been extended for feature {}!", nodeIdent, statCapab);
    }
 
+    @Override
+    public void unregisterNodeStats(final InstanceIdentifier<Node> nodeIdent,
+                                              final StatCapabTypes statCapab) {
+        for (final StatPermCollector collector : statCollectors) {
+            if (collector.unregisterNodeStats(nodeIdent, statCapab)) {
+                return;
+            }
+        }
+        LOG.debug("Stats type {} is not removed from the node {}!", statCapab,nodeIdent );
+    }
+
    /* Getter internal Statistic Manager Job Classes */
    @Override
    public StatRpcMsgManager getRpcMsgManager() {

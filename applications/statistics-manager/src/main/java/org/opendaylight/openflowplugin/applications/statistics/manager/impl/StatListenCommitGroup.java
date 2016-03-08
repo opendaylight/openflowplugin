@@ -178,10 +178,12 @@ public class StatListenCommitGroup extends StatAbstractListenCommit<Group, Opend
                     return;
                 }
 
-                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
-
                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
                         .create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+
+                manager.registerAdditionalNodeFeature(nodeIdent, StatCapabTypes.GROUP_STATS);
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
 
                 final List<? extends TransactionAware> cacheNotifs = txContainer.get().getNotifications();
                 for (final TransactionAware notif : cacheNotifs) {
@@ -203,7 +205,9 @@ public class StatListenCommitGroup extends StatAbstractListenCommit<Group, Opend
                     if (node.isPresent()) {
                         tx.merge(LogicalDatastoreType.OPERATIONAL, nodeGroupFeatureIdent, new NodeGroupFeaturesBuilder().build(), true);
                         tx.put(LogicalDatastoreType.OPERATIONAL, groupFeatureIdent, stats);
-                        manager.registerAdditionalNodeFeature(nodeIdent, StatCapabTypes.GROUP_STATS);
+                        manager.unregisterNodeStats(nodeIdent, StatCapabTypes.GROUP_FEATURE_STATS);
+                    } else {
+                        LOG.debug("Node {} is NOT present in the operational data store",nodeId);
                     }
                 }
             }

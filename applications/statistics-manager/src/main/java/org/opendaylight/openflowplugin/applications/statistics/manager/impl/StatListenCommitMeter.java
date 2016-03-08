@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -131,7 +132,6 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 }
 
                 if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
-
                 /* Prepare List actual Meters and not updated Meters will be removed */
                 final List<Meter> existMeters = fNode.get().getMeter() != null
                         ? fNode.get().getMeter() : Collections.<Meter> emptyList();
@@ -177,10 +177,15 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                     return;
                 }
 
-                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
-
                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
                         .create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+
+                //Register meter feature irrespective of whether this instance is
+                //master instance of the device or not. In cluster mode, all instances
+                // should have knowledge if meter is supported by the device.
+                manager.registerAdditionalNodeFeature(nodeIdent, StatCapabTypes.METER_STATS);
+
+                if(!nodeRegistrationManager.isFlowCapableNodeOwner(nodeId)) { return; }
 
                 final List<? extends TransactionAware> cacheNotifs = txContainer.get().getNotifications();
                 for (final TransactionAware notif : cacheNotifs) {
@@ -202,7 +207,9 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                     if (node.isPresent()) {
                         tx.merge(LogicalDatastoreType.OPERATIONAL, nodeMeterFeatureIdent, new NodeMeterFeaturesBuilder().build(), true);
                         tx.put(LogicalDatastoreType.OPERATIONAL, meterFeatureIdent, stats);
-                        manager.registerAdditionalNodeFeature(nodeIdent, StatCapabTypes.METER_STATS);
+                        manager.unregisterNodeStats(nodeIdent, StatCapabTypes.METER_FEATURE_STATS);
+                    } else {
+                        LOG.debug("Node {} is NOT present in the operational data store",nodeId);
                     }
                 }
             }
