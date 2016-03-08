@@ -191,6 +191,33 @@ public class StatPermCollectorImpl implements StatPermCollector {
     }
 
     @Override
+    public boolean unregisterNodeStats(final InstanceIdentifier<Node> ident,
+                                                 final StatCapabTypes statCapab) {
+        if (isNodeIdentValidForUse(ident)) {
+            if ( ! statNodeHolder.containsKey(ident)) {
+                return false;
+            }
+            final StatNodeInfoHolder statNode = statNodeHolder.get(ident);
+            if ( statNode.getStatMarkers().contains(statCapab)) {
+                synchronized (statNodeHolderLock) {
+                    if ( statNode.getStatMarkers().contains(statCapab)) {
+                        final List<StatCapabTypes> statCapabForEdit = new ArrayList<>(statNode.getStatMarkers());
+                        statCapabForEdit.remove(statCapab);
+                        final StatNodeInfoHolder nodeInfoHolder = new StatNodeInfoHolder(statNode.getNodeRef(),
+                                Collections.unmodifiableList(statCapabForEdit), statNode.getMaxTables());
+
+                        final Map<InstanceIdentifier<Node>, StatNodeInfoHolder> statNodes =
+                                new HashMap<>(statNodeHolder);
+                        statNodes.put(ident, nodeInfoHolder);
+                        statNodeHolder = Collections.unmodifiableMap(statNodes);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void collectNextStatistics(final TransactionId xid) {
         if (checkTransactionId(xid) && wakeMe) {
             synchronized (statCollectorLock) {
@@ -316,6 +343,14 @@ public class StatPermCollectorImpl implements StatPermCollector {
                             final TableId tableId = new TableId(i);
                             manager.getRpcMsgManager().getAggregateFlowStat(actualNodeRef, tableId);
                         }*/
+                        break;
+                    case METER_FEATURE_STATS:
+                        LOG.trace("STAT-MANAGER-collecting METER-FEATURE-STATS for NodeRef {}", actualNodeRef);
+                        manager.getRpcMsgManager().getMeterFeaturesStat(actualNodeRef);
+                        break;
+                    case GROUP_FEATURE_STATS:
+                        LOG.trace("STAT-MANAGER-collecting GROUP-FEATURE-STATS for NodeRef {}", actualNodeRef);
+                        manager.getRpcMsgManager().getGroupFeaturesStat(actualNodeRef);
                         break;
                     default:
                         /* Exception for programmers in implementation cycle */

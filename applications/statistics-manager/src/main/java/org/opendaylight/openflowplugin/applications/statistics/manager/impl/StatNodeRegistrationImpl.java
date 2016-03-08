@@ -137,6 +137,10 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
                 statCapabTypes.add(StatCapabTypes.QUEUE_STATS);
             }
         }
+
+        statCapabTypes.add(StatCapabTypes.GROUP_FEATURE_STATS);
+        statCapabTypes.add(StatCapabTypes.METER_FEATURE_STATS);
+
         maxCapTables = data.getMaxTables();
 
         final Optional<Short> maxTables = Optional.<Short> of(maxCapTables);
@@ -218,22 +222,21 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
             NodeId nodeId = InstanceIdentifier.keyOf(nodeIdent).getId();
             boolean ownershipState = preConfigurationCheck(nodeId);
             setNodeOwnership(nodeId, ownershipState);
-            if(ownershipState) {
-                LOG.info("onNodeUpdated: Send group/meter feature request to the device {}",nodeIdent);
-                manager.getRpcMsgManager().getGroupFeaturesStat(nodeRef);
-                manager.getRpcMsgManager().getMeterFeaturesStat(nodeRef);
-            }
+            LOG.info("onNodeUpdated: Send group/meter feature request to the device {}",nodeIdent);
+            manager.getRpcMsgManager().getGroupFeaturesStat(nodeRef);
+            manager.getRpcMsgManager().getMeterFeaturesStat(nodeRef);
         }
     }
 
     @Override
     public boolean isFlowCapableNodeOwner(NodeId node) {
         if(this.nodeOwnershipState.containsKey(node)){
-            return this.nodeOwnershipState.get(node).booleanValue();
+            boolean state = this.nodeOwnershipState.get(node).booleanValue();
+            LOG.debug("Is Node {} owned by this instance : {}",node, state);
+            return state;
         }
         return false;
     }
-
 
     @Override
     public void ownershipChanged(EntityOwnershipChange ownershipChange) {
@@ -248,6 +251,7 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
     }
 
     private void setNodeOwnership(NodeId node, boolean ownership) {
+        LOG.debug("Set {} ownership for Node {}",ownership?"Master":"Slave",node);
         this.nodeOwnershipState.put(node,ownership);
     }
 
