@@ -209,6 +209,16 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
      void registerAdditionalNodeFeature(InstanceIdentifier<Node> nodeIdent, StatCapabTypes statCapab);
 
     /**
+     * Method wraps {@link StatPermCollector}.unregisterNodeStats to provide
+     * possibility to unregister Node stats type {@link StatCapabTypes} for
+     * statistics collecting.
+     *
+     * @param nodeIdent
+     * @param statCapab
+     */
+    void unregisterNodeStats(InstanceIdentifier<Node> nodeIdent, StatCapabTypes statCapab);
+
+    /**
      * Method provides access to Device RPC methods by wrapped
      * internal method. In next {@link StatRpcMsgManager} is registered all
      * Multipart device msg response and joining all to be able run all

@@ -67,7 +67,13 @@ public interface StatPermCollector extends Runnable, AutoCloseable {
          * so we have to try get statistics for it and wait for response
          * Error or response package with results.
          */
-        METER_STATS
+        METER_STATS,
+
+        //Custom flags for meter feature flags
+        METER_FEATURE_STATS,
+
+        //Custom flags for group feature flags
+        GROUP_FEATURE_STATS
     }
 
     /**
@@ -97,6 +103,15 @@ public interface StatPermCollector extends Runnable, AutoCloseable {
      * @return true/false if the {@link StatCapabTypes} add successful
      */
     boolean registerAdditionalNodeFeature(InstanceIdentifier<Node> nodeIdent, StatCapabTypes statCapab);
+
+    /**
+     * Method remove stats {@link StatCapabTypes} from Node identified by
+     * nodeIdent -&gt; InstanceIdentifier&lt;Node&gt;
+     *
+     * @param nodeIdent
+     * @return true/false if the {@link StatCapabTypes} add successful
+     */
+    boolean unregisterNodeStats(InstanceIdentifier<Node> nodeIdent, StatCapabTypes statCapab);
 
     /**
      * Method return true only and only if {@link StatPermCollector} contain
