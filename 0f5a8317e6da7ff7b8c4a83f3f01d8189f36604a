@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_d9b84977",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-08T04:52:19Z",
+      "side": 1,
+      "message": "{} -- remove this, no need for {}, if your exception object is last one.",
+      "revId": "0f5a8317e6da7ff7b8c4a83f3f01d8189f36604a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_39b33599",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-08T04:52:19Z",
+      "side": 1,
+      "message": "remove {}, as this is not required if your last param object is exception.",
+      "range": {
+        "startLine": 135,
+        "startChar": 83,
+        "endLine": 135,
+        "endChar": 85
+      },
+      "revId": "0f5a8317e6da7ff7b8c4a83f3f01d8189f36604a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
