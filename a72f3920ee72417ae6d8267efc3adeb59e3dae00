@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_3c16834c",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1676
+      },
+      "writtenOn": "2016-03-08T06:25:11Z",
+      "side": 1,
+      "message": "is this supposed to be -he? Sorry, i missed the later part of the discission.",
+      "range": {
+        "startLine": 13,
+        "startChar": 40,
+        "endLine": 13,
+        "endChar": 42
+      },
+      "revId": "a72f3920ee72417ae6d8267efc3adeb59e3dae00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
