@@ -55,12 +55,14 @@ public class ConnectionManagerImplTest {
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
 
+    private final static int ECHO_REPLY_TIMEOUT = 500;
+
     /**
      * before each test method
      */
     @Before
     public void setUp() {
-        connectionManagerImpl = new ConnectionManagerImpl();
+        connectionManagerImpl = new ConnectionManagerImpl(ECHO_REPLY_TIMEOUT);
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);

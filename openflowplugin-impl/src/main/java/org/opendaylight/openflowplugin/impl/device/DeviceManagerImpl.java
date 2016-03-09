@@ -58,6 +58,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final long TICK_DURATION = 10; // 0.5 sec.
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
+
     private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
@@ -71,13 +72,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final ConcurrentMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
-    private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
-    private final int maxQueueDepth = 25600;
+    private final long barrierIntervalNanos;
+    private final int barrierCountLimit;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
-                             final long globalNotificationQuota, final boolean switchFeaturesMandatory) {
+                             final long globalNotificationQuota, final boolean switchFeaturesMandatory,
+                             final long barrierInterval, final int barrierCountLimit) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -96,6 +98,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
+        this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
+        this.barrierCountLimit = barrierCountLimit;
     }
 
 
@@ -133,7 +137,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         connectionContext.setOutboundQueueProvider(outboundQueueProvider);
         final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
+                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final DeviceState deviceState = createDeviceState(connectionContext);

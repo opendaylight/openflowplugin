@@ -20,6 +20,18 @@ module openflow-plugin-provider-impl {
             "Second openflow plugin implementation.";
     }
 
+    typedef non-zero-uint32-type {
+        type uint32 {
+            range "1..max";
+        }
+    }
+
+    typedef non-zero-uint16-type {
+        type uint16 {
+            range "1..max";
+        }
+     }
+
     identity openflow-plugin-provider-impl {
         base config:module-type;
         config:provided-service openflow-provider:openflow-provider;
@@ -100,6 +112,18 @@ module openflow-plugin-provider-impl {
                 description "Exposing backward compatible statistics rpcs providing result in form of async notification";
                 type boolean;
                 default "false";
+            }
+            leaf barrier-interval-timeout-limit {
+                type non-zero-uint32-type;
+                default 500;
+            }
+            leaf barrier-count-limit {
+                type non-zero-uint16-type;
+                default 25600;
+            }
+            leaf echo-reply-timeout {
+                type non-zero-uint32-type;
+                default 2000;
             }
         }
 
