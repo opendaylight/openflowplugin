@@ -248,7 +248,6 @@ public class SyncReactorImpl implements SyncReactor {
             final List<ItemSyncBox<Group>> groupsAddPlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupOperationalMap, pendingGroups);
             if (!groupsAddPlan.isEmpty()) {
-                // TODO: handle update
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
                     chainedResult = Futures.transform(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -256,7 +255,6 @@ public class SyncReactorImpl implements SyncReactor {
                         public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                             final ListenableFuture<RpcResult<Void>> result;
                             if (input.isSuccessful()) {
-                                // TODO: handle update
                                 result = flushAddGroupPortionAndBarrier(nodeIdent, groupsPortion);
                             } else {
                                 // pass through original unsuccessful rpcResult
@@ -301,13 +299,14 @@ public class SyncReactorImpl implements SyncReactor {
         }
 
 
-        final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
+        final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults), ReconcileUtil.<AddGroupOutput>createRpcResultCondenser("group add"));
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults), ReconcileUtil.<UpdateGroupOutput>createRpcResultCondenser("group update"));
 
-        final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(Futures.allAsList(singleVoidResult, singleVoidUpdateResult),
+        final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(
+                Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("group add/update"));
 
 
@@ -362,14 +361,14 @@ public class SyncReactorImpl implements SyncReactor {
             }
         }
 
-        final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
+        final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults), ReconcileUtil.<AddMeterOutput>createRpcResultCondenser("meter add"));
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults), ReconcileUtil.<UpdateMeterOutput>createRpcResultCondenser("meter update"));
 
         final ListenableFuture<RpcResult<Void>> summaryResults = Futures.transform(
-                Futures.allAsList(singleVoidUpdateResult, singleVoidResult),
+                Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"));
 
         return Futures.transform(summaryResults,
@@ -444,11 +443,19 @@ public class SyncReactorImpl implements SyncReactor {
             }
         }
 
-        final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
+        final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults),
                 ReconcileUtil.<AddFlowOutput>createRpcResultCondenser("flow adding"));
 
-        return Futures.transform(singleVoidResult,
+        final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
+                Futures.allAsList(allUpdateResults),
+                ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("flow updating"));
+
+        final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(
+                Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
+                ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"));
+
+        return Futures.transform(summaryResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 

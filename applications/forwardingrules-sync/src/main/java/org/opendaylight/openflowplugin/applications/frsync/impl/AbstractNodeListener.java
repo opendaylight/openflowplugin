@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * given node and delegates synchronization to {@link SyncReactor}
  */
 public abstract class AbstractNodeListener implements NodeListener {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeListenerConfigImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractNodeListener.class);
     protected final SyncReactor reactor;
     private final DataBroker dataBroker;
     private final SemaphoreKeeper<NodeId> semaphoreKeeper;
