@@ -121,7 +121,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkTransactionProvider.class);
     private DataBroker dataBroker;
     private final BundleContext ctx;
     private NodeBuilder testNode;

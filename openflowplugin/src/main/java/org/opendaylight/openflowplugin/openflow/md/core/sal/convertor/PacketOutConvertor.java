@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class PacketOutConvertor {
-    private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
 
     private PacketOutConvertor() {
 
