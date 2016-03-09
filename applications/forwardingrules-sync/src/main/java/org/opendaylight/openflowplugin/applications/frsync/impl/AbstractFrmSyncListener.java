@@ -8,35 +8,28 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import java.util.ArrayList;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
-import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Abstract Listener for node changes
@@ -62,6 +55,7 @@ public abstract class AbstractFrmSyncListener implements NodeListener {
 
                 final Optional<ListenableFuture<RpcResult<Void>>> endResult = processNodeModification(modification);
                 if (!endResult.isPresent()) {
+                    lockReleaseForNodeId(nodeId, guard);
                     continue;
                 }
 
@@ -79,8 +73,10 @@ public abstract class AbstractFrmSyncListener implements NodeListener {
                         lockReleaseForNodeId(nodeId, guard);
                     }
                 });
+            } catch (InterruptedException e) {
+                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId);
             } catch (Exception e) {
-                LOG.error("error processing inventory node modification" + nodeId, e);
+                LOG.error("error processing inventory node modification: {}", nodeId, e);
             }
         }
     }
@@ -89,35 +85,29 @@ public abstract class AbstractFrmSyncListener implements NodeListener {
             DataTreeModification<FlowCapableNode> modification) throws ReadFailedException;
 
     /**
-     * lock per node
-     * 
+     * get guard and lock per node
+     *
      * @param nodeId
-     * @param guard
      * @return
      */
-    protected Semaphore lockAcquireForNodeId(final NodeId nodeId) {
-        final Semaphore guard = semaphoreKeeper.summonGuard(nodeId);
-        // try {
-        // guard.acquire();
-        // } catch (InterruptedException e) {
-        // LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId);
-        // continue;
-        // }
+    protected Semaphore lockAcquireForNodeId(final NodeId nodeId) throws InterruptedException {
+        final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(nodeId));
+        guard.acquire();
         return guard;
     }
 
     /**
      * unlock per node
-     * 
+     *
      * @param nodeId
      * @param guard
      */
     protected void lockReleaseForNodeId(final NodeId nodeId,
-            final Semaphore guard) {
+                                        final Semaphore guard) {
         if (guard == null) {
             return;
         }
-        //guard.release();
+        guard.release();
     }
 
     public abstract LogicalDatastoreType dsType();
