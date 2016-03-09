@@ -178,4 +178,20 @@ public class ReconcileUtil {
         }
         return okToInstall;
     }
+
+    public static <E> int countTotalAdds(final List<ItemSyncBox<E>> groupsAddPlan) {
+        int count = 0;
+        for (ItemSyncBox<E> groupItemSyncBox : groupsAddPlan) {
+            count += groupItemSyncBox.getItemsToAdd().size();
+        }
+        return count;
+    }
+
+    public static <E> int countTotalUpdated(final List<ItemSyncBox<E>> groupsAddPlan) {
+        int count = 0;
+        for (ItemSyncBox<E> groupItemSyncBox : groupsAddPlan) {
+            count += groupItemSyncBox.getItemsToUpdate().size();
+        }
+        return count;
+    }
 }

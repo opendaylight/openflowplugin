@@ -245,13 +245,13 @@ public class SyncReactorImpl implements SyncReactor {
         }
 
         final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
-        
+
         return addMissingGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
     }
-    
+
     protected ListenableFuture<RpcResult<Void>> addMissingGroups(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final List<Group> groupsConfigured,
-            final List<Group> groupsOperational) {
+                                                                 final List<Group> groupsConfigured,
+                                                                 final List<Group> groupsOperational) {
 
         final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
 
@@ -262,6 +262,12 @@ public class SyncReactorImpl implements SyncReactor {
         try {
             final List<ItemSyncBox<Group>> groupsAddPlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupOperationalMap, pendingGroups);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("adding groups: inputGroups={}, planSteps={}, toAddTotal={}, toUpdateTotal={}",
+                        pendingGroups.size(), groupsAddPlan.size(),
+                        ReconcileUtil.countTotalAdds(groupsAddPlan),
+                        ReconcileUtil.countTotalUpdated(groupsAddPlan));
+            }
             if (!groupsAddPlan.isEmpty()) {
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
@@ -339,16 +345,16 @@ public class SyncReactorImpl implements SyncReactor {
             LOG.debug("no meters configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
-        
+
         final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
 
         return addMissingMeters(nodeId, nodeIdent, metersConfigured, metersOperational);
     }
-    
+
 
     protected ListenableFuture<RpcResult<Void>> addMissingMeters(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Meter> metersConfigured,
-            List<Meter> metersOperational) {
+                                                                 List<Meter> metersConfigured,
+                                                                 List<Meter> metersOperational) {
 
         final Map<MeterId, Meter> meterOperationalMap = FlowCapableNodeLookups.wrapMetersToMap(metersOperational);
 
@@ -400,14 +406,14 @@ public class SyncReactorImpl implements SyncReactor {
             LOG.debug("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
-        
-        final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);        
+
+        final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);
 
         return addMissingFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
     }
-    
+
     protected ListenableFuture<RpcResult<Void>> addMissingFlows(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Table> tablesConfigured, List<Table> tablesOperational) {
+                                                                List<Table> tablesConfigured, List<Table> tablesOperational) {
 
         final Map<Short, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(tablesOperational);
         final List<ListenableFuture<RpcResult<AddFlowOutput>>> allResults = new ArrayList<>();
@@ -486,7 +492,7 @@ public class SyncReactorImpl implements SyncReactor {
             LOG.debug("no tables in operational for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
-        
+
         final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
 
         return removeRedundantFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
@@ -549,16 +555,16 @@ public class SyncReactorImpl implements SyncReactor {
             LOG.debug("no meters on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
-        
+
         final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
 
-        return removeRedundantMeters(nodeId, nodeIdent, metersConfigured , metersOperational);
+        return removeRedundantMeters(nodeId, nodeIdent, metersConfigured, metersOperational);
     }
-        
+
 
     protected ListenableFuture<RpcResult<Void>> removeRedundantMeters(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Meter> metersConfigured,
-            List<Meter> metersOperational) {
+                                                                      List<Meter> metersConfigured,
+                                                                      List<Meter> metersOperational) {
 
         final Map<MeterId, Meter> meterConfigMap = FlowCapableNodeLookups.wrapMetersToMap(metersConfigured);
 
@@ -594,13 +600,13 @@ public class SyncReactorImpl implements SyncReactor {
         }
 
         final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
-        
+
         return removeRedundantGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
     }
-    
+
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Group> groupsConfigured, List<Group> groupsOperational) {
-        
+                                                            List<Group> groupsConfigured, List<Group> groupsOperational) {
+
         final Map<Long, Group> groupConfigMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);
 
         final List<Group> pendingGroups = new ArrayList<>();
@@ -610,6 +616,11 @@ public class SyncReactorImpl implements SyncReactor {
         try {
             final List<ItemSyncBox<Group>> groupsRemovePlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupConfigMap, pendingGroups, false);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("removing groups: inputGroups={}, planSteps={}, toRemoveTotal={}",
+                        pendingGroups.size(), groupsRemovePlan.size(),
+                        ReconcileUtil.countTotalAdds(groupsRemovePlan));
+            }
             if (!groupsRemovePlan.isEmpty()) {
                 Collections.reverse(groupsRemovePlan);
                 chainedResult = flushRemoveGroupPortionAndBarrier(nodeIdent, groupsRemovePlan.get(0));
