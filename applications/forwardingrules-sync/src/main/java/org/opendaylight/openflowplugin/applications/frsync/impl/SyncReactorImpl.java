@@ -8,14 +8,21 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.FlowCapableNodeLookups;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
@@ -54,16 +61,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * Synchronization reactor implementation, applicable for both - syncup and reconciliation
  */
@@ -80,9 +77,9 @@ public class SyncReactorImpl implements SyncReactor {
     @Override
     public ListenableFuture<RpcResult<Void>> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
-        
+
         LOG.trace("syncup {} {} {}", nodeIdent, configTree, operationalTree);
-        
+
         /** reconciliation strategy - phase 1:
          *  - add/update missing objects in following order
          *    - table features
@@ -98,18 +95,27 @@ public class SyncReactorImpl implements SyncReactor {
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return addMissingGroups(nodeIdent, configTree, operationalTree);
             }
         });
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return addMissingMeters(nodeIdent, configTree, operationalTree);
             }
         });
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return addMissingFlows(nodeIdent, configTree, operationalTree);
             }
         });
@@ -123,18 +129,27 @@ public class SyncReactorImpl implements SyncReactor {
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return removeRedundantFlows(nodeIdent, configTree, operationalTree);
             }
         });
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return removeRedundantMeters(nodeIdent, configTree, operationalTree);
             }
         });
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
+                if (!input.isSuccessful()) {
+                    return Futures.immediateFuture(input);
+                }
                 return removeRedundantGroups(nodeIdent, configTree, operationalTree);
             }
         });
@@ -266,7 +281,7 @@ public class SyncReactorImpl implements SyncReactor {
                     });
                 }
             } else {
-                chainedResult = Futures.immediateFuture(null);
+                chainedResult = RpcResultBuilder.<Void>success().buildFuture();
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
@@ -615,7 +630,7 @@ public class SyncReactorImpl implements SyncReactor {
                     });
                 }
             } else {
-                chainedResult = Futures.immediateFuture(null);
+                chainedResult = RpcResultBuilder.<Void>success().buildFuture();
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
@@ -627,29 +642,29 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     static List<Group> safeGroups(FlowCapableNode node) {
-        if(node == null) {
+        if (node == null) {
             return Collections.emptyList();
         }
-        
+
         return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.<Group>of());
     }
-    
+
     static List<Table> safeTables(FlowCapableNode node) {
-        if(node == null) {
+        if (node == null) {
             return Collections.emptyList();
         }
-        
+
         return MoreObjects.firstNonNull(node.getTable(), ImmutableList.<Table>of());
     }
-    
+
     static List<Meter> safeMeters(FlowCapableNode node) {
-        if(node == null) {
+        if (node == null) {
             return Collections.emptyList();
         }
-        
+
         return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.<Meter>of());
     }
-    
+
     private ListenableFuture<RpcResult<Void>> flushRemoveGroupPortionAndBarrier(
             final InstanceIdentifier<FlowCapableNode> nodeIdent,
             final ItemSyncBox<Group> groupsPortion) {
