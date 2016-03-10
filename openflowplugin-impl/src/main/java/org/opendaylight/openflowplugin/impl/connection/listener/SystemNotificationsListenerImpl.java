@@ -61,7 +61,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
                 if (ConnectionContext.CONNECTION_STATE.WORKING.equals(connectionContext.getConnectionState())) {
                     FeaturesReply features = connectionContext.getFeatures();
-                    LOG.debug("Switch Idle state occured, node={}|auxId={}", remoteAddress, features.getAuxiliaryId());
+                    LOG.info("Switch Idle state occurred, node={}|auxId={}", remoteAddress, features.getAuxiliaryId());
                     connectionContext.changeStateToTimeouting();
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(features.getVersion());
