@@ -8,10 +8,10 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 
 /**
  * The RPC Manager will maintain an RPC Context for each online switch. RPC context for device is created when
@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler, AutoCloseable, DeviceContextClosedHandler {
+public interface RpcManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable, DeviceTerminationPhaseHandler {
 
     void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 

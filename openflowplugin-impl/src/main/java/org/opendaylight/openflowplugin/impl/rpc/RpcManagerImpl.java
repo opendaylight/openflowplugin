@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
@@ -30,6 +31,7 @@ public class RpcManagerImpl implements RpcManager {
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private final int maxRequestsQuota;
     private final ConcurrentMap<DeviceContext, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
@@ -86,7 +88,7 @@ public class RpcManagerImpl implements RpcManager {
 
 
     @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final RpcContext removedContext = contexts.remove(deviceContext);
         if (removedContext != null) {
             LOG.info("Unregister RPCs services for device context closure");
@@ -101,5 +103,10 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
         this.notificationPublishService = notificationPublishService;
+    }
+
+    @Override
+    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
+        this.deviceTerminPhaseHandler = handler;
     }
 }
