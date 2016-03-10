@@ -59,7 +59,7 @@ public class RpcManagerImpl implements RpcManager {
         deviceContext.addDeviceContextClosedHandler(this);
 
         if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
-            LOG.info("Registering Openflow RPCs for node:{}, role:{}", nodeId, ofpRole);
+            LOG.info("Registering Openflow Master RPCs for node:{}, role:{}", nodeId, ofpRole);
             MdSalRegistratorUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
 
         } else if(OfpRole.BECOMESLAVE.equals(ofpRole)) {

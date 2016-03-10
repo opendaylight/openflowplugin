@@ -368,7 +368,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.warn("Delete Node {} fail.", deviceState.getNodeId(), t);
+                LOG.error("Delete Node " + deviceState.getNodeId() + " failed.", t);
             }
         });
         return delFuture;

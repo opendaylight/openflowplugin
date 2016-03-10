@@ -20,11 +20,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -137,7 +134,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
+    private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>(4);
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
@@ -243,7 +240,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.trace("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (role.equals(oldRole)) {
-            LOG.debug("Demanded role change for device {} is not change OldRole: {}, NewRole {}", deviceState.getNodeId(), oldRole, role);
+            LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", deviceState.getNodeId(), oldRole, role);
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
@@ -607,9 +604,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
         transactionChainManager.close();
 
-        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
-        Collections.reverse(reversedCloseHandlers);
-        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
+        // call closeHandlers in the reverse order
+        for (int i=(closeHandlers.size() - 1); i >=0; i--) {
+            DeviceContextClosedHandler deviceContextClosedHandler = closeHandlers.get(i);
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
         closeHandlers.clear();
