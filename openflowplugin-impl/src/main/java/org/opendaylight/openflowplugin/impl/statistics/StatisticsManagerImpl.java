@@ -157,8 +157,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             return;
         }
-        if (OfpRole.BECOMESLAVE.equals(deviceContext.getDeviceState().getRole())) {
-            LOG.debug("Role is SLAVE so we don't want to poll any stat for device: {}", deviceContext.getDeviceState().getNodeId());
+        if (!OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
+            LOG.debug("Role is not Master so we don't want to poll any stat for device: {}", deviceContext.getDeviceState().getNodeId());
             scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             return;
         }
