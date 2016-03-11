@@ -74,7 +74,7 @@ import com.google.common.base.Preconditions;
 public class StatListenCommitGroup extends StatAbstractListenCommit<Group, OpendaylightGroupStatisticsListener>
                                                     implements OpendaylightGroupStatisticsListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitMeter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitGroup.class);
 
     public StatListenCommitGroup(final StatisticsManager manager,  final DataBroker db,
             final NotificationProviderService nps,
