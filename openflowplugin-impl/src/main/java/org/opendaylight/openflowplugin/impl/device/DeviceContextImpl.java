@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -222,31 +220,13 @@ public class DeviceContextImpl implements DeviceContext {
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
             if (!deviceState.deviceSynchronized()) {
                 //TODO: no necessary code for yet - it needs for initialization phase only
                 LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
             }
-            /* Relevant for no initial Slave-to-Master scenario in cluster */
-            final ListenableFuture<Void> deviceInitialization = asyncClusterRoleChange();
-            Futures.addCallback(deviceInitialization, new FutureCallback<Void>() {
-
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    //No operation
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
-                    MdSalRegistrationUtils.unregisterServices(getRpcContext());
-                }
-
-            });
-
-            return deviceInitialization;
+            return asyncClusterRoleChange(role);
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
@@ -333,6 +313,8 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 transactionChainManager.activateTransactionManager();
+                MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+                getRpcContext().registerStatCompatibilityServices();
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
