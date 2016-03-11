@@ -63,15 +63,13 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     private final ConcurrentMap<Entity, RoleContext> txContexts = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
-    private final boolean switchFeaturesMandatory;
 
-    public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker, final boolean switchFeaturesMandatory) {
+    public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.entityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(RoleManager.ENTITY_TYPE, this));
         this.txEntityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(TX_ENTITY_TYPE, this));
-        LOG.debug("Registering OpenflowOwnershipListener listening to all entity ownership changes");
+        LOG.debug("Register OpenflowOwnershipListener to all entity ownership changes");
     }
 
     @Override
@@ -81,14 +79,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
 
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceContext deviceContext) throws Exception {
-        LOG.debug("RoleManager called for device:{}", deviceContext.getPrimaryConnectionContext().getNodeId());
+        LOG.trace("Role manager called for device:{}", deviceContext.getPrimaryConnectionContext().getNodeId());
         final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
                 makeEntity(deviceContext.getDeviceState().getNodeId()),
                 makeTxEntity(deviceContext.getDeviceState().getNodeId()));
 
-        Verify.verify(contexts.putIfAbsent(roleContext.getEntity(), roleContext) == null, "RoleCtx for master Node {} is still not closed.", deviceContext.getDeviceState().getNodeId());
+        Verify.verify(contexts.putIfAbsent(roleContext.getEntity(), roleContext) == null, "Role context for master Node {} is still not closed.", deviceContext.getDeviceState().getNodeId());
         Verify.verify(!txContexts.containsKey(roleContext.getTxEntity()),
-                "RoleCtx for master Node {} is still not closed. TxEntity was not unregistered yet.", deviceContext.getDeviceState().getNodeId());
+                "Role context for master Node {} is still not closed. TxEntity was not unregistered yet.", deviceContext.getDeviceState().getNodeId());
 
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(this);
@@ -124,7 +122,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        LOG.debug("onDeviceContextClosed for node {}", nodeId);
+        LOG.trace("onDeviceContextClosed for node {}", nodeId);
         final Entity entity = makeEntity(nodeId);
         final RoleContext roleContext = contexts.get(entity);
         if (roleContext != null) {
@@ -148,7 +146,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                     // TODO : is there a chance to have TxEntity ?
                 }
             } else {
-                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close proces", entity);
+                LOG.warn("EntityOwnershipService doesn't return state for entity: {} in close process", entity);
             }
             roleContext.close();
         }
@@ -380,14 +378,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         Futures.addCallback(removeDeviceFromOperDS(roleContext), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void aVoid) {
-                LOG.debug("Freeing roleContext slot for device: {}", roleContext.getDeviceState().getNodeId());
+                LOG.debug("Removing context for device: {}", roleContext.getDeviceState().getNodeId());
                 contexts.remove(ownershipChange.getEntity(), roleContext);
                 roleContext.suspendTxCandidate();
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.warn("NOT freeing roleContext slot for device: {}, {}", roleContext.getDeviceState()
+                LOG.warn("Removing role context for device: {}, but {}", roleContext.getDeviceState()
                         .getNodeId(), throwable.getMessage());
                 contexts.remove(ownershipChange.getEntity(), roleContext);
                 roleContext.suspendTxCandidate();
