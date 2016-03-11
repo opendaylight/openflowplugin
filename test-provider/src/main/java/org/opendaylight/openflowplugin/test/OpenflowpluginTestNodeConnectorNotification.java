@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowpluginTestNodeConnectorNotification {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestNodeConnectorNotification.class);
 
     private DataBroker dataBroker;
     private ProviderContext pc;

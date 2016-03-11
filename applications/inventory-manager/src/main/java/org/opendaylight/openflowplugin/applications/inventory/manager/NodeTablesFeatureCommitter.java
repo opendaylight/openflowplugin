@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class NodeTablesFeatureCommitter implements SalTableListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeChangeCommiter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeTablesFeatureCommitter.class);
 
     private final FlowCapableInventoryProvider manager;
 

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandlerSimpleImpl.class);
 
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
 
