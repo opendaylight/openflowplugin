@@ -83,6 +83,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private boolean skipTableFeatures = false;
 
     private final LifecycleConductor conductor;
 
@@ -177,6 +178,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setSkipTableFeatures(final boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
+    }
+
+    @Override
     public void initialize() {
 
         Preconditions.checkNotNull(dataBroker, "missing data broker");
@@ -197,7 +203,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 switchFeaturesMandatory,
                 barrierInterval,
                 barrierCountLimit,
-                conductor);
+                conductor,
+                skipTableFeatures);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         conductor.setSafelyDeviceManager(deviceManager);
