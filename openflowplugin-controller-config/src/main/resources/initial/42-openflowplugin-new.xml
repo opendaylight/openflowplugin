@@ -93,6 +93,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                     <barrier-interval-timeout-limit>500</barrier-interval-timeout-limit>
                     <barrier-count-limit>25600</barrier-count-limit>
                     <echo-reply-timeout>2000</echo-reply-timeout>
+                    <skip-table-features>false</skip-table-features>
                 </module>
             </modules>
 

@@ -62,6 +62,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static final long TICK_DURATION = 10; // 0.5 sec.
     private final long globalNotificationQuota;
+    private final boolean skipTableFeatures;
     private final boolean switchFeaturesMandatory;
 
     private ScheduledThreadPoolExecutor spyPool;
@@ -85,9 +86,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
-                             final long barrierInterval, final int barrierCountLimit) {
+                             final long barrierInterval, final int barrierCountLimit,
+                             final boolean skipTableFeatures) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
+        this.skipTableFeatures = skipTableFeatures;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
@@ -170,8 +173,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 
-    private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
-        return new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+    private DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
+        final DeviceStateImpl deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+        deviceState.setSkipTableFeatures(skipTableFeatures);
+        return deviceState;
     }
 
     private void updatePacketInRateLimiters() {
