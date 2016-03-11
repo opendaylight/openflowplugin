@@ -83,6 +83,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private boolean skipTableFeatures = false;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
@@ -174,6 +175,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setSkipTableFeatures(final boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
+    }
+
+    @Override
     public void initialize() {
 
         Preconditions.checkNotNull(dataBroker, "missing data broker");
@@ -190,7 +196,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         registerMXBean(messageIntelligenceAgency);
 
         deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota,
-                switchFeaturesMandatory, barrierInterval, barrierCountLimit);
+                switchFeaturesMandatory, barrierInterval, barrierCountLimit, skipTableFeatures);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
