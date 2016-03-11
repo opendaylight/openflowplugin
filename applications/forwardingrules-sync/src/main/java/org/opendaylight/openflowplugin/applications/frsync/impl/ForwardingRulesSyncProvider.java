@@ -99,7 +99,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         // wire synchronization reactor
-        final SyncReactor reactor = new SyncReactorImpl();
+        final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
+        final SyncReactor reactor = new SyncReactorGuardDecorator(new SyncReactorImpl(), semaphoreKeeper);
         reactor.setFlowForwarder(flowForwarder);
         reactor.setGroupForwarder(groupForwarder);
         reactor.setMeterForwarder(meterForwarder);
@@ -112,10 +113,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
             final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
             final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
             
-            final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
-            final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, semaphoreKeeper, configSnaphot, operationalDao); 
-            //new NodeListenerConfigImpl(reactor, dataService, semaphoreKeeper);
-            final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, dataService, semaphoreKeeper, operationalSnaphot, configDao);
+            final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnaphot, operationalDao); 
+            final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
 
             try {
                 SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);

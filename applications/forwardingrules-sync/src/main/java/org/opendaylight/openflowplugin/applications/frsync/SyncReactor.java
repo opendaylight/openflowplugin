@@ -29,7 +29,7 @@ public interface SyncReactor {
      * @return synchronization outcome
      */
     ListenableFuture<RpcResult<Void>> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                             FlowCapableNode configTree, FlowCapableNode operationalTree);
+                                             FlowCapableNode configTree, FlowCapableNode operationalTree) throws InterruptedException;
 
     void setFlowForwarder(FlowForwarder flowForwarder);
 

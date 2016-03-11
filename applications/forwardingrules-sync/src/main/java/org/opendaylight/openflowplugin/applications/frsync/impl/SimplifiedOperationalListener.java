@@ -8,21 +8,14 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import java.util.Collection;
-
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
-import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
-import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
-import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -40,35 +33,31 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
 
     protected final SyncReactor reactor;
-    private final DataBroker dataBroker;
 
     private FlowCapableNodeSnapshotDao operationalSnaphot;
 
     private FlowCapableNodeDao configDao;
 
-    public SimplifiedOperationalListener(SyncReactor reactor, DataBroker dataBroker,
-            final SemaphoreKeeperImpl<NodeId> semaphoreKeeper, FlowCapableNodeSnapshotDao operationalSnaphot, FlowCapableNodeDao configDao) {
-        super(semaphoreKeeper);
+    public SimplifiedOperationalListener(SyncReactor reactor,
+            FlowCapableNodeSnapshotDao operationalSnaphot, FlowCapableNodeDao configDao) {
         this.reactor = reactor;
-        this.dataBroker = dataBroker;
         this.operationalSnaphot = operationalSnaphot;
         this.configDao = configDao;
     }
-    
+
     /**
      * If node is added to operational store than Inventory RPCs are called (reconciliation).
+     * 
+     * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<RpcResult<Void>>> processNodeModification(
-            DataTreeModification<FlowCapableNode> modification) throws ReadFailedException {
+            DataTreeModification<FlowCapableNode> modification) throws ReadFailedException, InterruptedException {
         operationalSnaphot.modification(modification);
-        
+
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
-        final boolean nodeAppearedInOperational = modification.getRootNode().getDataBefore() == null
-                && modification.getRootNode().getDataAfter() != null;
-        if (!nodeAppearedInOperational) {
-            LOG.trace("Skipping Inventory Operational modification {}", nodeId);
+        if(skipIfNecessary(modification, nodeId)) {
             return Optional.absent();// skip processing
         }
 
@@ -77,6 +66,16 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
         final ListenableFuture<RpcResult<Void>> rpcResult =
                 reactor.syncup(nodePath, nodeConfiguration.orNull(), operationalModification.getDataAfter());
         return Optional.of(rpcResult);
+    }
+
+    private boolean skipIfNecessary(DataTreeModification<FlowCapableNode> modification, final NodeId nodeId) {
+        final boolean nodeAppearedInOperational = modification.getRootNode().getDataBefore() == null
+                && modification.getRootNode().getDataAfter() != null;
+        if (!nodeAppearedInOperational) {
+            LOG.trace("Skipping Inventory Operational modification {}", nodeId);
+            return true;
+        }
+        return false;
     }
 
     @Override
