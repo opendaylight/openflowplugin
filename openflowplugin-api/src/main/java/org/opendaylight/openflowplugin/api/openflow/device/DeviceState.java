@@ -131,4 +131,5 @@ public interface DeviceState {
 
     void setStatisticsPollingEnabledProp(boolean statPollEnabled);
 
+    boolean isSkipTableFeatures();
 }
