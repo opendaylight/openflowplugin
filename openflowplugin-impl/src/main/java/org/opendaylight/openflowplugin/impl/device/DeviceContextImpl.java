@@ -14,7 +14,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -30,8 +29,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -247,32 +244,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
-            getRpcContext().registerStatCompatibilityServices();
             if (!deviceState.deviceSynchronized()) {
                 //TODO: no necessary code for yet - it needs for initialization phase only
                 LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
             }
-            /* Relevant for no initial Slave-to-Master scenario in cluster */
-            final ListenableFuture<Void> deviceInitialization = asyncClusterRoleChange();
-            Futures.addCallback(deviceInitialization, new FutureCallback<Void>() {
-
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    //No operation
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
-                    MdSalRegistratorUtils.unregisterServices(getRpcContext());
-                }
-
-            });
-
-            return deviceInitialization;
+            return asyncClusterRoleChange(role);
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
@@ -293,7 +271,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
      * check all NodeInformation for statistics otherwise statistics will not contains
      * all possible MultipartTypes for polling in StatTypeList
      */
-    private ListenableFuture<Void> asyncClusterRoleChange() {
+    private ListenableFuture<Void> asyncClusterRoleChange(final OfpRole role) {
         if (statCtx == null) {
             final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceState.getNodeId());
             LOG.warn(errMsg);
@@ -359,6 +337,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 transactionChainManager.activateTransactionManager();
+                MdSalRegistratorUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, role);
+                getRpcContext().registerStatCompatibilityServices();
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;

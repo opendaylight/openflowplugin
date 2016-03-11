@@ -110,6 +110,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
+                this.submitIsEnabled = false;
                 createTxChain();
             } else {
                 LOG.debug("Transaction is active {}", nodeId());
