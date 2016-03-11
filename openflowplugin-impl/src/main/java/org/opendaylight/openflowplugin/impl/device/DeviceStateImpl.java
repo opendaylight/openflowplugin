@@ -50,6 +50,8 @@ class DeviceStateImpl implements DeviceState {
     private volatile OfpRole role;
     private volatile boolean statPollEnabled;
 
+    private boolean skipTableFeatures;
+
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
@@ -180,5 +182,14 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
         this.statPollEnabled = statPollEnabled;
+    }
+
+    @Override
+    public boolean isSkipTableFeatures() {
+        return skipTableFeatures;
+    }
+
+    public void setSkipTableFeatures(final boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
     }
 }

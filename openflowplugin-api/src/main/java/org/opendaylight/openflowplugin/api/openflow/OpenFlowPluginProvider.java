@@ -40,6 +40,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
+    void setSkipTableFeatures(boolean skipTableFeatures);
+
     /**
      * Method initializes all DeviceManager, RpcManager and related contexts.
      */
