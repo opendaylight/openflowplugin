@@ -8,6 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -221,9 +227,14 @@ public class DeviceInitializationUtils {
                         createSuccessProcessingCallback(MultipartType.OFPMPGROUPFEATURES, deviceContext,
                                 deviceState.getNodeInstanceIdentifier(), replyGroupFeatures);
 
-                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(
-                                MultipartType.OFPMPTABLEFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures;
+                        if (deviceState.isSkipTableFeatures()) {
+                            replyTableFeatures = RpcResultBuilder.<List<MultipartReply>>success().buildFuture();
+                        } else {
+                            replyTableFeatures = getNodeStaticInfo(
+                                    MultipartType.OFPMPTABLEFEATURES, deviceContext,
+                                    deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                        }
                         createSuccessProcessingCallback(MultipartType.OFPMPTABLEFEATURES, deviceContext,
                                 deviceState.getNodeInstanceIdentifier(), replyTableFeatures);
 
