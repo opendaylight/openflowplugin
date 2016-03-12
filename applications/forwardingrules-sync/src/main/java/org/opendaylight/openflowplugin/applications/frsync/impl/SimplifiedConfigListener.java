@@ -58,20 +58,68 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
-            LOG.info("Skip inventory RPC {} operational is not present", nodeId);
-            return Optional.absent();
+            LOG.info("Skip syncup, {} operational is not present", nodeId.getValue());
+            return Optional.absent();// we try to reconfigure switch is alive
         }
 
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
-
-        // INFO: better preformance needed just compare config after and before
-        final ListenableFuture<RpcResult<Void>> endResult =
-                reactor.syncup(nodePath, configModification.getDataAfter(), configModification.getDataBefore());
-        // INFO: operational store is also async
-        // INFO: conf listener should not be dependent on operational store writer
-        // reactor.syncup(nodePath, configModification.getDataAfter(), operationalNode.get());
+        final FlowCapableNode dataBefore = configModification.getDataBefore();
+        final FlowCapableNode dataAfter = configModification.getDataAfter();
+        final ListenableFuture<RpcResult<Void>> endResult;
+        if (dataBefore == null && dataAfter != null) {
+            endResult = onNodeAdded(nodePath, dataBefore, dataAfter, operationalNode.get());
+        } else if (dataBefore != null && dataAfter == null) {
+            endResult = onNodeDeleted(nodePath, dataBefore, operationalNode.get());
+        } else {
+            endResult = onNodeUpdated(nodePath, dataBefore, dataAfter, operationalNode.get());
+        }
 
         return Optional.of(endResult);
+    }
+
+    /**
+     * Add only what is missing in operational store. Config. node could be added in two situations:
+     * <ul>
+     * <li>Note very first time after restart was handled by operational listener. Syncup should
+     * calculate no delta (we don want to reconfigure switch if not necessary).</li>
+     * <li>But later the config. node could be deleted, after that config node added again. Syncup
+     * should calculate that everything needs to be added. Operational store should be empty in
+     * optimal case (but the switch could be reprogrammed by another person/system.</li>
+     * </ul>
+     */
+    protected ListenableFuture<RpcResult<Void>> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
+            FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNode)
+                    throws InterruptedException {
+        final ListenableFuture<RpcResult<Void>> endResult =
+                reactor.syncup(nodePath, dataAfter, operationalNode);
+        return endResult;
+    }
+
+    /**
+     * Apply minimal changes very fast. For better performance needed just compare config
+     * after+before. Config listener should not be dependent on operational flows/groups while
+     * updating config because operational store is highly async and it depends on another module in
+     * system which is updating operational store (that components is also trying to solve
+     * scale/performance issues on several layers).
+     */
+    protected ListenableFuture<RpcResult<Void>> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
+            FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNodeNode)
+                    throws InterruptedException {
+        final ListenableFuture<RpcResult<Void>> endResult =
+                reactor.syncup(nodePath, dataAfter, dataBefore);
+        return endResult;
+    }
+
+    /**
+     * Remove values that are being deleted in the config from the switch. Note, this could be
+     * probably optimized using dedicated wipe-out RPC, but it has impact on switch if it is
+     * programmed by two person/system
+     */
+    protected ListenableFuture<RpcResult<Void>> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
+            FlowCapableNode dataBefore, FlowCapableNode operationalNode) throws InterruptedException {
+        final ListenableFuture<RpcResult<Void>> endResult =
+                reactor.syncup(nodePath, null, dataBefore);
+        return endResult;
     }
 
     @Override
