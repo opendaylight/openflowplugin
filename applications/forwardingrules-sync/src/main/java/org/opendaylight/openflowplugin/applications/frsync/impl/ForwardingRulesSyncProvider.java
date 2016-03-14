@@ -111,7 +111,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     // TODO improve log in ThreadPoolExecutor.afterExecute
                     // TODO max bloking queue size
                     // TODO core/min pool size
-                    .newFixedThreadPool(3, new ThreadFactoryBuilder()
+                    .newFixedThreadPool(6, new ThreadFactoryBuilder()
                             .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
                             .setDaemon(true)
                             .build());
