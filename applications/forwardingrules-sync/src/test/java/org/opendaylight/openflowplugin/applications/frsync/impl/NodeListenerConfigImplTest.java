@@ -8,10 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,18 +24,24 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
-import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.Futures;
 
 /**
  * Test for {@link NodeListenerConfigImpl}.
  */
+@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerConfigImplTest {
 
@@ -53,30 +57,25 @@ public class NodeListenerConfigImplTest {
     private DataObjectModification<FlowCapableNode> configModification;
 
     private InstanceIdentifier<FlowCapableNode> nodePath;
-    private NodeListenerConfigImpl nodeListenerConfig;
+    private SimplifiedConfigListener nodeListenerConfig;
 
     @Before
     public void setUp() throws Exception {
-        nodeListenerConfig = new NodeListenerConfigImpl(reactor, db, new SemaphoreKeeperImpl<NodeId>(1, true));
+        final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot,
+                new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
+
+        
+        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnaphot, operationalDao);
         nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("testNode")))
                 .augmentation(FlowCapableNode.class);
     }
 
     @Test
-    public void testGetCounterpartDSLogicalType() throws Exception {
-        Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, nodeListenerConfig.getCounterpartDSLogicalType());
-    }
-
-    @Test
-    public void testCreateNextStepFunction() throws Exception {
-        final FlowCapableNode flowModOperational = Mockito.mock(FlowCapableNode.class);
-        final FlowCapableNode flowModConfig = Mockito.mock(FlowCapableNode.class);
-        final AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>> nextStepFunction =
-                nodeListenerConfig.createNextStepFunction(nodePath, Optional.of(flowModConfig));
-
-        nextStepFunction.apply(Optional.of(flowModOperational));
-        Mockito.verify(reactor).syncup(nodePath, flowModConfig, flowModOperational);
+    public void testDSLogicalType() throws Exception {
+        Assert.assertEquals(LogicalDatastoreType.CONFIGURATION, nodeListenerConfig.dsType());
     }
 
     @Test

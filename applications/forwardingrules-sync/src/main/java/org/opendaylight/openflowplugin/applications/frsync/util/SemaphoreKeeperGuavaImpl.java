@@ -17,12 +17,14 @@ import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 
 /**
  * key-based semaphore provider
+ * 
+ * @author Michal Rehak
  */
-public class SemaphoreKeeperImpl<K> implements SemaphoreKeeper<K> {
+public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
 
     private LoadingCache<K, Semaphore> semaphoreCache;
 
-    public SemaphoreKeeperImpl(final int permits, final boolean fair) {
+    public SemaphoreKeeperGuavaImpl(final int permits, final boolean fair) {
         semaphoreCache = CacheBuilder.newBuilder()
                 .concurrencyLevel(1)
                 .weakValues()

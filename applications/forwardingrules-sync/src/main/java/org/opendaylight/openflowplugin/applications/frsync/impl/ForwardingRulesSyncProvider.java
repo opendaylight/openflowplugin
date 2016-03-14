@@ -1,9 +1,9 @@
 /**
- * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
@@ -22,13 +22,12 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
-import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
+import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
@@ -59,17 +58,21 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     /** wildcard path to flow-capable-node augmentation of inventory node */
     private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
             InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class);
+    /** wildcard path to node (not flow-capable-node augmentation) of inventory node */
+    private static final InstanceIdentifier<Node> NODE_WC_PATH =
+            InstanceIdentifier.create(Nodes.class).child(Node.class);
+
 
     private final DataTreeIdentifier<FlowCapableNode> nodeConfigDataTreePath;
-    private final DataTreeIdentifier<FlowCapableNode> nodeOperationalDataTreePath;
+    private final DataTreeIdentifier<Node> nodeOperationalDataTreePath;
 
     private ListenerRegistration<NodeListener> dataTreeConfigChangeListener;
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
 
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
-                                       final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry) {
+            final DataBroker dataBroker,
+            final RpcConsumerRegistry rpcRegistry) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
@@ -82,11 +85,13 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.transactionService = Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
-                "RPC SalTableService not found.");
+        this.transactionService =
+                Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
+                        "RPC SalTableService not found.");
 
-        nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
-        nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, FLOW_CAPABLE_NODE_WC_PATH);
+        nodeConfigDataTreePath =
+                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
+        nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
         broker.registerProvider(this);
     }
@@ -99,8 +104,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         // wire synchronization reactor
-        final SemaphoreKeeperImpl<NodeId> semaphoreKeeper = new SemaphoreKeeperImpl<>(1, true);
-        final SyncReactor reactor = new SyncReactorGuardDecorator(new SyncReactorImpl(), semaphoreKeeper);
+        final SyncReactor reactor =
+                new SyncReactorGuardDecorator(
+                        new SyncReactorImpl(),
+                        new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true),
+                        FrmExecutors.instance()
+                        //TODO improve log in ThreadPoolExecutor.afterExecute
+                        //TODO max bloking queue size
+                        //TODO core/min pool size
+                        .newFixedThreadPool(3));
+        // new SyncReactorImpl();//unsynchronized
         reactor.setFlowForwarder(flowForwarder);
         reactor.setGroupForwarder(groupForwarder);
         reactor.setMeterForwarder(meterForwarder);
@@ -110,11 +123,15 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         {
             final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
-            final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
-            final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot, new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
-            
-            final NodeListener nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnaphot, operationalDao); 
-            final NodeListener nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
+            final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot,
+                    new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
+            final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot,
+                    new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
+
+            final NodeListener nodeListenerConfig =
+                    new SimplifiedConfigListener(reactor, configSnaphot, operationalDao);
+            final NodeListener nodeListenerOperational =
+                    new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
 
             try {
                 SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
@@ -126,7 +143,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                                         nodeConfigDataTreePath, nodeListenerConfig);
                             }
                         });
-    
+
                 SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
                 dataTreeOperationalChangeListener = looper2.loopUntilNoException(
                         new Callable<ListenerRegistration<NodeListener>>() {

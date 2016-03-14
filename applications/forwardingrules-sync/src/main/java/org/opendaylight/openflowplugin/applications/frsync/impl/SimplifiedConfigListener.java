@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import java.util.Collection;
+
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -18,7 +20,6 @@ import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * 
  * @author joslezak
  */
-public class SimplifiedConfigListener extends AbstractFrmSyncListener {
+public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedConfigListener.class);
     protected final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao configSnaphot;
@@ -43,18 +44,25 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
         this.operationalDao = operationalDao;
     }
 
+    @Override
+    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
+        LOG.trace("Inventory Config changes {}", modifications.size());
+        super.onDataTreeChanged(modifications);
+    }
+    
     /**
      * Compare cached operational with current config modification. If operational is not present
      * skip calling Inventory RPCs.
      * 
      * @throws InterruptedException from syncup
      */
-    protected Optional<ListenableFuture<RpcResult<Void>>> processNodeModification(
+    protected Optional<ListenableFuture<Boolean>> processNodeModification(
             DataTreeModification<FlowCapableNode> modification) throws InterruptedException {
-        configSnaphot.modification(modification);
-
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
+
+        configSnaphot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
+
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
@@ -65,7 +73,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
         final FlowCapableNode dataBefore = configModification.getDataBefore();
         final FlowCapableNode dataAfter = configModification.getDataAfter();
-        final ListenableFuture<RpcResult<Void>> endResult;
+        final ListenableFuture<Boolean> endResult;
         if (dataBefore == null && dataAfter != null) {
             endResult = onNodeAdded(nodePath, dataBefore, dataAfter, operationalNode.get());
         } else if (dataBefore != null && dataAfter == null) {
@@ -87,10 +95,10 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
      * optimal case (but the switch could be reprogrammed by another person/system.</li>
      * </ul>
      */
-    protected ListenableFuture<RpcResult<Void>> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
+    protected ListenableFuture<Boolean> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNode)
                     throws InterruptedException {
-        final ListenableFuture<RpcResult<Void>> endResult =
+        final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, dataAfter, operationalNode);
         return endResult;
     }
@@ -102,10 +110,10 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
      * system which is updating operational store (that components is also trying to solve
      * scale/performance issues on several layers).
      */
-    protected ListenableFuture<RpcResult<Void>> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
+    protected ListenableFuture<Boolean> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNodeNode)
                     throws InterruptedException {
-        final ListenableFuture<RpcResult<Void>> endResult =
+        final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, dataAfter, dataBefore);
         return endResult;
     }
@@ -115,9 +123,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener {
      * probably optimized using dedicated wipe-out RPC, but it has impact on switch if it is
      * programmed by two person/system
      */
-    protected ListenableFuture<RpcResult<Void>> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
+    protected ListenableFuture<Boolean> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode operationalNode) throws InterruptedException {
-        final ListenableFuture<RpcResult<Void>> endResult =
+        final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, null, dataBefore);
         return endResult;
     }

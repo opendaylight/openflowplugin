@@ -8,13 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,9 +88,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 /**
  * Test for {@link SyncReactorImpl}.
+ * 
+ * @author Michal Rehak
  */
+@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorImplTest {
 
@@ -730,10 +735,10 @@ public class SyncReactorImplTest {
                 .setMeter(Collections.singletonList(createMeter(2L)))
                 .build();
 
-        final ListenableFuture<RpcResult<Void>> syncupResult = reactor.syncup(NODE_IDENT, configFcn, operationalFcn);
+        final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, configFcn, operationalFcn);
         try {
-            final RpcResult<Void> voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);
-            Assert.assertTrue(voidRpcResult.isSuccessful());
+            final Boolean voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);
+            Assert.assertTrue(voidRpcResult);
 
             final InOrder inOrder = Mockito.inOrder(flowCommitter, meterCommitter, groupCommitter,
                     tableCommitter, flowCapableTxService);

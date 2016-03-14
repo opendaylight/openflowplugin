@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.frsync;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.impl.FlowForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.impl.GroupForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.impl.MeterForwarder;
@@ -16,7 +15,8 @@ import org.opendaylight.openflowplugin.applications.frsync.impl.TableForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * device synchronization API
@@ -28,9 +28,8 @@ public interface SyncReactor {
      * @param operationalTree     device reflection
      * @return synchronization outcome
      */
-    ListenableFuture<RpcResult<Void>> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    ListenableFuture<Boolean> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                              FlowCapableNode configTree, FlowCapableNode operationalTree) throws InterruptedException;
-
     void setFlowForwarder(FlowForwarder flowForwarder);
 
     void setTableForwarder(TableForwarder tableForwarder);

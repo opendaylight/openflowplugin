@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Preconditions;
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -34,6 +34,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * wrapper for add, remove, update methods for {@link Flow}
  */
@@ -50,7 +52,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<RemoveFlowOutput>> remove(final InstanceIdentifier<Flow> identifier,
                                                       final Flow removeDataObj,
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Flow REMOVE request [Tbl id, node Id {} {}",
+        LOG.trace("Received the Flow REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
         
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
@@ -74,8 +76,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<UpdateFlowOutput>> update(final InstanceIdentifier<Flow> identifier,
                                                       final Flow original, final Flow update,
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Flow UPDATE request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
+        LOG.trace("Received the Flow UPDATE request [Tbl id, node Id {} {} {}",
+                identifier, nodeIdent, update);
         
         final Future<RpcResult<UpdateFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
@@ -103,8 +105,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier,
                                                 final Flow addDataObj,
                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Flow ADD request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
+        LOG.trace("Received the Flow ADD request [Tbl id, node Id {} {} {}",
+                identifier, nodeIdent, addDataObj);
         
         final Future<RpcResult<AddFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);

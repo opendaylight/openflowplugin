@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
@@ -51,7 +52,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Table REMOVE request [Tbl id, node Id {} {}",
+        LOG.trace("Received the Table REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
         
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(removeDataObj);
@@ -65,8 +66,8 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
                                                        final Group original, final Group update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Group UPDATE request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
+        LOG.trace("Received the Group UPDATE request [Tbl id, node Id {} {} {}",
+                identifier, nodeIdent, update);
         
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
 
@@ -81,8 +82,8 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Group ADD request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
+        LOG.trace("Received the Group ADD request [Tbl id, node Id {} {} {}",
+                identifier, nodeIdent, addDataObj);
         
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(addDataObj);
 

@@ -8,21 +8,14 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import javax.annotation.Nullable;
+
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.FlowCapableNodeLookups;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
@@ -61,8 +54,21 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+
 /**
  * Synchronization reactor implementation, applicable for both - syncup and reconciliation
+ * 
+ * @author Michal Rehak
  */
 public class SyncReactorImpl implements SyncReactor {
 
@@ -75,7 +81,7 @@ public class SyncReactorImpl implements SyncReactor {
     private FlowCapableTransactionService transactionService;
 
     @Override
-    public ListenableFuture<RpcResult<Void>> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
 
         LOG.trace("syncup {} {} {}", nodeIdent, configTree, operationalTree);
@@ -174,8 +180,17 @@ public class SyncReactorImpl implements SyncReactor {
                 LOG.debug("reconciliation failed seriously: {}", nodeId.getValue(), t);
             }
         });
-
-        return resultVehicle;
+        
+        return Futures.transform(resultVehicle, new Function<RpcResult<Void>, Boolean>() {
+            @Override
+            public Boolean apply(RpcResult<Void> input) {
+                if(input == null) {
+                    return false;
+                }
+                
+                return input.isSuccessful();
+            }
+        });
     }
 
     @Override
@@ -240,7 +255,7 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
         if (groupsConfigured.isEmpty()) {
-            LOG.debug("no groups configured for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no groups configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -262,13 +277,13 @@ public class SyncReactorImpl implements SyncReactor {
         try {
             final List<ItemSyncBox<Group>> groupsAddPlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupOperationalMap, pendingGroups);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("adding groups: inputGroups={}, planSteps={}, toAddTotal={}, toUpdateTotal={}",
-                        pendingGroups.size(), groupsAddPlan.size(),
-                        ReconcileUtil.countTotalAdds(groupsAddPlan),
-                        ReconcileUtil.countTotalUpdated(groupsAddPlan));
-            }
             if (!groupsAddPlan.isEmpty()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("adding groups: inputGroups={}, planSteps={}, toAddTotal={}, toUpdateTotal={}",
+                            pendingGroups.size(), groupsAddPlan.size(),
+                            ReconcileUtil.countTotalAdds(groupsAddPlan),
+                            ReconcileUtil.countTotalUpdated(groupsAddPlan));
+                }
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
                     chainedResult = Futures.transform(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -342,7 +357,7 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
         if (metersConfigured.isEmpty()) {
-            LOG.debug("no meters configured for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no meters configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -365,7 +380,7 @@ public class SyncReactorImpl implements SyncReactor {
             final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, meter.getKey());
 
             if (existingMeter == null) {
-                LOG.trace("adding meter {} - absent on device {}",
+                LOG.debug("adding meter {} - absent on device {}",
                         meter.getMeterId(), nodeId);
                 allResults.add(JdkFutureAdapters.listenInPoolThread(
                         meterForwarder.add(meterIdent, meter, nodeIdent)));
@@ -403,7 +418,7 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
         if (tablesConfigured.isEmpty()) {
-            LOG.debug("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -442,7 +457,7 @@ public class SyncReactorImpl implements SyncReactor {
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, flow.getKey());
 
                 if (existingFlow == null) {
-                    LOG.trace("adding flow {} in table {} - absent on device {}",
+                    LOG.debug("adding flow {} in table {} - absent on device {}",
                             flow.getId(), tableConfigured.getKey(), nodeId);
 
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
@@ -489,7 +504,7 @@ public class SyncReactorImpl implements SyncReactor {
         final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);
 
         if (tablesOperational.isEmpty()) {
-            LOG.debug("no tables in operational for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no tables in operational for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -552,7 +567,7 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
         if (metersOperational.isEmpty()) {
-            LOG.debug("no meters on device for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no meters on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -595,7 +610,7 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
         if (groupsOperational == null || groupsOperational.isEmpty()) {
-            LOG.debug("no groups on device for node: {} -> SKIPPING", nodeId.getValue());
+            LOG.trace("no groups on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
         }
 
@@ -616,12 +631,12 @@ public class SyncReactorImpl implements SyncReactor {
         try {
             final List<ItemSyncBox<Group>> groupsRemovePlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupConfigMap, pendingGroups, false);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("removing groups: inputGroups={}, planSteps={}, toRemoveTotal={}",
-                        pendingGroups.size(), groupsRemovePlan.size(),
-                        ReconcileUtil.countTotalAdds(groupsRemovePlan));
-            }
             if (!groupsRemovePlan.isEmpty()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("removing groups: inputGroups={}, planSteps={}, toRemoveTotal={}",
+                            pendingGroups.size(), groupsRemovePlan.size(),
+                            ReconcileUtil.countTotalAdds(groupsRemovePlan));
+                }
                 Collections.reverse(groupsRemovePlan);
                 chainedResult = flushRemoveGroupPortionAndBarrier(nodeIdent, groupsRemovePlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsRemovePlan, 1)) {

@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +24,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
-import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperImpl;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -35,9 +36,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.Futures;
+
 /**
  * Test for {@link NodeListenerOperationalImpl}.
  */
+@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerOperationalImplTest {
 
@@ -46,56 +52,55 @@ public class NodeListenerOperationalImplTest {
     @Mock
     private DataBroker db;
     @Mock
-    private DataTreeModification<FlowCapableNode> dataTreeModification;
+    private DataTreeModification<Node> dataTreeModification;
     @Mock
     private ReadOnlyTransaction roTx;
     @Mock
-    private DataObjectModification<FlowCapableNode> operationalModification;
+    private DataObjectModification<Node> operationalModification;
 
-    private InstanceIdentifier<FlowCapableNode> nodePath;
-    private NodeListenerOperationalImpl nodeListenerOperational;
+    private InstanceIdentifier<Node> nodePath;
+    private SimplifiedOperationalListener nodeListenerOperational;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
-        nodeListenerOperational = new NodeListenerOperationalImpl(reactor, db, new SemaphoreKeeperImpl<NodeId>(1, true));
+        final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot,
+                new FlowCapableNodeOdlDao(db, LogicalDatastoreType.CONFIGURATION));
+
+
+        nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
         nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("testNode")))
-                .augmentation(FlowCapableNode.class);
+                .child(Node.class, new NodeKey(new NodeId("testNode")));
     }
 
     @Test
-    public void testGetCounterpartDSLogicalType() throws Exception {
-        Assert.assertEquals(LogicalDatastoreType.CONFIGURATION, nodeListenerOperational.getCounterpartDSLogicalType());
-    }
-
-    @Test
-    public void testCreateNextStepFunction() throws Exception {
-        final FlowCapableNode flowModOperational = Mockito.mock(FlowCapableNode.class);
-        final FlowCapableNode flowModConfig = Mockito.mock(FlowCapableNode.class);
-        final AsyncFunction<Optional<FlowCapableNode>, RpcResult<Void>> nextStepFunction =
-                nodeListenerOperational.createNextStepFunction(nodePath, Optional.of(flowModOperational));
-
-        nextStepFunction.apply(Optional.of(flowModConfig));
-        Mockito.verify(reactor).syncup(nodePath, flowModConfig, flowModOperational);
+    public void testDSLogicalType() throws Exception {
+        Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, nodeListenerOperational.dsType());
     }
 
     @Test
     public void testOnDataTreeChanged() throws Exception {
         final FlowCapableNode configTree = Mockito.mock(FlowCapableNode.class);
-        final FlowCapableNode operationalTree = Mockito.mock(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
+        final Node mockOperationalNode = Mockito.mock(Node.class);
+        final FlowCapableNode mockOperationalFlowCapableNode = Mockito.mock(FlowCapableNode.class);
+        Mockito.when(mockOperationalNode.getAugmentation(FlowCapableNode.class))
+            .thenReturn(mockOperationalFlowCapableNode);
+        
+        final DataTreeIdentifier<Node> dataTreeIdentifier =
                 new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, nodePath);
 
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
-        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalTree);
+        Mockito.when(operationalModification.getDataAfter()).thenReturn(mockOperationalNode);
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.doReturn(Futures.immediateCheckedFuture(Optional.of(configTree))).when(
                 roTx).read(LogicalDatastoreType.CONFIGURATION, nodePath);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(nodePath, configTree, operationalTree);
+        Mockito.verify(reactor).syncup(nodePath.augmentation(FlowCapableNode.class), configTree, mockOperationalFlowCapableNode);
         Mockito.verify(roTx).close();
     }
 }

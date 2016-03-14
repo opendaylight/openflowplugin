@@ -8,18 +8,23 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import java.util.List;
+
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
-import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +33,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Listens to operational new nodes and delegates add/remove/update/barrier to {@link SyncReactor}
+ * 
+ * @author joslezak
  */
-public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
+@SuppressWarnings("deprecation")
+public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
 
     protected final SyncReactor reactor;
@@ -46,36 +54,152 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener {
     }
 
     /**
-     * If node is added to operational store than Inventory RPCs are called (reconciliation).
+     * This method behaves like this:
+     * <ul>
+     * <li>If node is added to operational store then reconciliation.</li>
+     * <li>Node is deleted from operational cache is removed.</li>
+     * <li>Skip this event otherwise.</li>
+     * </ul>
      * 
      * @throws InterruptedException from syncup
      */
-    protected Optional<ListenableFuture<RpcResult<Void>>> processNodeModification(
-            DataTreeModification<FlowCapableNode> modification) throws ReadFailedException, InterruptedException {
-        operationalSnaphot.modification(modification);
+    protected Optional<ListenableFuture<Boolean>> processNodeModification(
+            DataTreeModification<Node> modification) throws ReadFailedException, InterruptedException {
+        updateCache(modification);
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
-        final NodeId nodeId = PathUtil.digNodeId(nodePath);
-
-        if(skipIfNecessary(modification, nodeId)) {
-            return Optional.absent();// skip processing
+        if (isAdd(modification) || isAddLogical(modification)) {
+            return reconciliation(modification);
         }
 
-        final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
-        final DataObjectModification<FlowCapableNode> operationalModification = modification.getRootNode();
-        final ListenableFuture<RpcResult<Void>> rpcResult =
-                reactor.syncup(nodePath, nodeConfiguration.orNull(), operationalModification.getDataAfter());
+        return skipModification(modification);
+    }
+
+    /**
+     * Remove if delete. Update only if FlowCapableNode Augmentation modified.
+     * 
+     * @param modification
+     */
+    protected void updateCache(DataTreeModification<Node> modification) {
+        boolean isDelete = isDelete(modification) || isDeleteLogical(modification);
+        if (isDelete) {
+            operationalSnaphot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
+            return;
+        }
+
+        operationalSnaphot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
+    }
+
+    protected Optional<ListenableFuture<Boolean>> skipModification(DataTreeModification<Node> modification) {
+        LOG.trace("Skipping Inventory Operational modification {}", nodeIdValue(modification));
+        return Optional.absent();// skip otherwise event
+    }
+
+    /**
+     * ModificationType.DELETE
+     */
+    protected boolean isDelete(DataTreeModification<Node> modification) {
+        if (ModificationType.DELETE == modification.getRootNode().getModificationType()) {
+            LOG.trace("Delete {} (physical)", nodeIdValue(modification));
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * All connectors disappeared from operational store (logical delete).
+     */
+    protected boolean isDeleteLogical(DataTreeModification<Node> modification) {
+        final DataObjectModification<Node> rootNode = modification.getRootNode();
+        if (!safeConnectorsEmpty(rootNode.getDataBefore()) && safeConnectorsEmpty(rootNode.getDataAfter())) {
+            LOG.trace("Delete {} (logical)", nodeIdValue(modification));
+            return true;
+        }
+
+        return false;
+    }
+
+    protected boolean isAdd(DataTreeModification<Node> modification) {
+        final DataObjectModification<Node> rootNode = modification.getRootNode();
+        final Node dataAfter = rootNode.getDataAfter();
+        final Node dataBefore = rootNode.getDataBefore();
+
+        final boolean nodeAppearedInOperational = dataBefore == null && dataAfter != null;
+        if (nodeAppearedInOperational) {
+            LOG.trace("Add {} (physical)", nodeIdValue(modification));
+        }
+        return nodeAppearedInOperational;
+    }
+
+    /**
+     * All connectors appeared in operational store (logical add).
+     */
+    protected boolean isAddLogical(DataTreeModification<Node> modification) {
+        final DataObjectModification<Node> rootNode = modification.getRootNode();
+        if (safeConnectorsEmpty(rootNode.getDataBefore()) && !safeConnectorsEmpty(rootNode.getDataAfter())) {
+            LOG.trace("Add {} (logical)", nodeIdValue(modification));
+            return true;
+        }
+
+        return false;
+    }
+
+    protected Optional<ListenableFuture<Boolean>> reconciliation(
+            DataTreeModification<Node> modification) throws InterruptedException {
+        final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId(modification));
+        final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId(modification))).augmentation(FlowCapableNode.class);
+        final ListenableFuture<Boolean> rpcResult =
+                reactor.syncup(nodePath, nodeConfiguration.orNull(), flowCapableNodeAfter(modification));
         return Optional.of(rpcResult);
     }
 
-    private boolean skipIfNecessary(DataTreeModification<FlowCapableNode> modification, final NodeId nodeId) {
-        final boolean nodeAppearedInOperational = modification.getRootNode().getDataBefore() == null
-                && modification.getRootNode().getDataAfter() != null;
-        if (!nodeAppearedInOperational) {
-            LOG.trace("Skipping Inventory Operational modification {}", nodeId);
+    static FlowCapableNode flowCapableNodeAfter(DataTreeModification<Node> modification) {
+        final Node dataAfter = modification.getRootNode().getDataAfter();
+        if (dataAfter == null) {
+            return null;
+        }
+        return dataAfter.getAugmentation(FlowCapableNode.class);
+    }
+
+    static boolean safeConnectorsEmpty(Node node) {
+        if (node == null) {
             return true;
         }
+
+        final List<NodeConnector> nodeConnectors = node.getNodeConnector();
+        if (nodeConnectors == null || nodeConnectors.isEmpty()) {
+            return true;
+        }
+
         return false;
+    }
+
+    static String nodeIdValue(DataTreeModification<Node> modification) {
+        final NodeId nodeId = nodeId(modification);
+
+        if (nodeId == null) {
+            return null;
+        }
+
+        return nodeId.getValue();
+    }
+
+    static NodeId nodeId(DataTreeModification<Node> modification) {
+        final DataObjectModification<Node> rootNode = modification.getRootNode();
+        final Node dataAfter = rootNode.getDataAfter();
+
+
+        if (dataAfter != null) {
+            return dataAfter.getId();
+        }
+
+        final Node dataBefore = rootNode.getDataBefore();
+        if (dataBefore != null) {
+            return dataBefore.getId();
+        }
+
+        return null;
     }
 
     @Override

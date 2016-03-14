@@ -4,11 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import com.google.common.base.Optional;
 
@@ -17,23 +14,18 @@ import com.google.common.base.Optional;
  */
 public class FlowCapableNodeSnapshotDao implements FlowCapableNodeDao {
 
-    private final ConcurrentHashMap<NodeId, FlowCapableNode> cache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, FlowCapableNode> cache = new ConcurrentHashMap<>();
 
-    public void modification(@Nonnull DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
-        final NodeId nodeId = PathUtil.digNodeId(nodePath);
-
-        final FlowCapableNode dataAfter = modification.getRootNode().getDataAfter();
-        if (dataAfter == null) {
-            cache.remove(nodeId);
+    public void updateCache(@Nonnull NodeId nodeId, Optional<FlowCapableNode> dataAfter) {
+        if (dataAfter.isPresent()) {
+            cache.put(nodeId.getValue(), dataAfter.get());
         } else {
-            cache.put(nodeId, dataAfter);
+            cache.remove(nodeId.getValue());
         }
     }
 
     public Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId) {
-        final FlowCapableNode node = cache.get(nodeId);
+        final FlowCapableNode node = cache.get(nodeId.getValue());
         return Optional.fromNullable(node);
     }
-
 }

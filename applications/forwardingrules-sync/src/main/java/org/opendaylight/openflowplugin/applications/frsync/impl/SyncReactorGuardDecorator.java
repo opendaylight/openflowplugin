@@ -1,7 +1,8 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +13,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * NodeId level locking
@@ -28,65 +29,104 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 public class SyncReactorGuardDecorator implements SyncReactor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyncReactorGuardDecorator.class);
 
     private final SyncReactor delegate;
-    private final SemaphoreKeeper<NodeId> semaphoreKeeper;
+    private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
 
-    public SyncReactorGuardDecorator(SyncReactor delegate, SemaphoreKeeper<NodeId> semaphoreKeeper) {
+    private ListeningExecutorService executorService;
+
+    public SyncReactorGuardDecorator(SyncReactor delegate,
+            SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper,
+            ListeningExecutorService executorService) {
         this.delegate = delegate;
         this.semaphoreKeeper = semaphoreKeeper;
+        this.executorService = executorService;
     }
 
-    public ListenableFuture<RpcResult<Void>> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            FlowCapableNode configTree, FlowCapableNode operationalTree) throws InterruptedException {
+    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+            final FlowCapableNode configTree, final FlowCapableNode operationalTree) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-
         LOG.trace("syncup {}", nodeId.getValue());
 
+        final Semaphore guard = summonGuard(flowcapableNodePath);
 
-        final long stampBeforeGuard = System.currentTimeMillis();
-        final Semaphore guard = lockAcquireForNodeId(nodeId);
-        final long stampAfterGuard = System.currentTimeMillis();
-        
-        LOG.debug("syncup start {} waiting:{}ms", nodeId.getValue(), stampAfterGuard - stampBeforeGuard);
+        final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                final long stampBeforeGuard = System.nanoTime();
+                acquire(guard);
+                final long stampAfterGuard = System.nanoTime();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("syncup start {} waiting:{} guard:{}", nodeId.getValue(),
+                            formatNanos(stampAfterGuard - stampBeforeGuard),
+                            guard);
+                }
 
-        final ListenableFuture<RpcResult<Void>> endResult = delegate.syncup(flowcapableNodePath, configTree, operationalTree);
+                final ListenableFuture<Boolean> endResult =
+                        delegate.syncup(flowcapableNodePath, configTree, operationalTree);
 
-        @SuppressWarnings("unchecked")
-        final ListenableFuture<List<RpcResult<Void>>> finalResult = Futures.allAsList(endResult);
-        Futures.addCallback(finalResult, new FutureCallback<List<RpcResult<Void>>>() {
-            @Override
-            public void onSuccess(@Nullable final List<RpcResult<Void>> result) {
-                final long stampFinished = System.currentTimeMillis();
-                LOG.debug("syncup finished {} took:{}ms", nodeId, stampFinished - stampAfterGuard);
-                
-                lockReleaseForNodeId(nodeId, guard);
+                Futures.addCallback(endResult, new FutureCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(@Nullable final Boolean result) {
+                        if (LOG.isDebugEnabled()) {
+                            final long stampFinished = System.nanoTime();
+                            LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
+                                    formatNanos(stampFinished - stampBeforeGuard),
+                                    formatNanos(stampFinished - stampAfterGuard),
+                                    formatNanos(stampAfterGuard - stampBeforeGuard),
+                                    guard);
+                        }
+
+                        lockReleaseForNodeId(nodeId, guard);
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        if (LOG.isDebugEnabled()) {
+                            final long stampFinished = System.nanoTime();
+                            LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
+                                    formatNanos(stampFinished - stampBeforeGuard),
+                                    formatNanos(stampFinished - stampAfterGuard),
+                                    formatNanos(stampAfterGuard - stampBeforeGuard),
+                                    guard);
+                        }
+
+                        lockReleaseForNodeId(nodeId, guard);
+                    }
+                });
+
+                return null;
             }
 
-            @Override
-            public void onFailure(final Throwable t) {
-                final long stampFinished = System.currentTimeMillis();
-                LOG.warn("syncup failed {} took:{}ms" + nodeId, stampFinished - stampAfterGuard);
-                
-                lockReleaseForNodeId(nodeId, guard);
-            }
+
         });
-        
-        return endResult;
+
+        return syncup;
     }
-    
+
+    protected String formatNanos(long nanos) {
+        return "'" + TimeUnit.NANOSECONDS.toMillis(nanos) + " ms'";
+        // return "'" + NumberFormat.getNumberInstance().format(nanos) + " sec'";
+    }
+
     /**
-     * get guard and lock per node
+     * get guard
      *
-     * @param nodeId
+     * @param flowcapableNodePath
      * @return
      */
-    protected Semaphore lockAcquireForNodeId(final NodeId nodeId) throws InterruptedException {
-        final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(nodeId));
-        guard.acquire();
-        return guard;
+    protected Semaphore summonGuard(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
+            throws InterruptedException {
+        return Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath), 
+                "no guard for " + flowcapableNodePath);
     }
+
+    private void acquire(final Semaphore guard) throws InterruptedException {
+        if (guard == null) {
+            return;
+        }
+        guard.acquire();
+    };
 
     /**
      * unlock per node
@@ -95,7 +135,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param guard
      */
     protected void lockReleaseForNodeId(final NodeId nodeId,
-                                        final Semaphore guard) {
+            final Semaphore guard) {
         if (guard == null) {
             return;
         }
