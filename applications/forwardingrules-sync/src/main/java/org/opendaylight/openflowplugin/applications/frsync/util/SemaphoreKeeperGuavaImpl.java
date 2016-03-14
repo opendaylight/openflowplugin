@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+
+import java.util.Collection;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
@@ -31,7 +33,29 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
                 .build(new CacheLoader<K, Semaphore>() {
                     @Override
                     public Semaphore load(final K key) throws Exception {
-                        return new Semaphore(permits, fair);
+                        return new Semaphore(permits, fair) {
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public String toString() {
+                                final StringBuilder str = new StringBuilder();
+                                str.append(super.toString());
+                                str.append("[");
+                                final Collection<Thread> queuedThreads = getQueuedThreads();
+                                boolean qtdelim = false;
+                                for (Thread thread : queuedThreads) {
+                                    if(qtdelim) {
+                                        str.append(", ");
+                                    } else {
+                                        qtdelim = true;
+                                        str.append(thread.getName());
+                                    }
+                                }
+                                str.append("]");
+                                str.append(queuedThreads);
+                                return str.toString();
+                            }
+                        };
                     }
                 });
     }
