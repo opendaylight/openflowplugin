@@ -12,14 +12,14 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 
-import static org.mockito.Mockito.any;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -51,7 +51,7 @@ public class MdSalRegistrationUtilsTest {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         MdSalRegistrationUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
-                any(RpcService.class.getClass()), any(RpcService.class));
+                Matchers.<Class<RpcService>> any(), any(RpcService.class));
     }
 
 }

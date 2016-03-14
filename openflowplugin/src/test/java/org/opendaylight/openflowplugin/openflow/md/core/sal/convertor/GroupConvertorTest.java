@@ -9,12 +9,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.collect.ImmutableList;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -44,8 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
-import com.google.common.collect.ImmutableList;
-
 public class GroupConvertorTest {
 
     /**
@@ -54,63 +53,63 @@ public class GroupConvertorTest {
     @Test
     public void testGroupModConvertorwithallParameters() {
 
-        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        List<Bucket> bucketList = new ArrayList<Bucket>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<Bucket>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
         int actionOrder = 0;
 
         // Action1
-        GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+        final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup("005");
-        GroupAction groupIdaction = groupActionBuilder.build();
-        ActionBuilder actionsB = new ActionBuilder();
+        final GroupAction groupIdaction = groupActionBuilder.build();
+        final ActionBuilder actionsB = new ActionBuilder();
         actionsB.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
 
         // Action2:
-        GroupActionBuilder groupActionBuilder1 = new GroupActionBuilder();
+        final GroupActionBuilder groupActionBuilder1 = new GroupActionBuilder();
         groupActionBuilder1.setGroup("006");
-        GroupAction groupIdaction1 = groupActionBuilder.build();
-        ActionBuilder actionsB1 = new ActionBuilder();
+        final GroupAction groupIdaction1 = groupActionBuilder.build();
+        final ActionBuilder actionsB1 = new ActionBuilder();
         actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
 
         actionsList.add(actionsB.build());
         actionsList.add(actionsB1.build());
 
 
-        BucketsBuilder bucketsB = new BucketsBuilder();
+        final BucketsBuilder bucketsB = new BucketsBuilder();
 
-        BucketBuilder bucketB = new BucketBuilder();
+        final BucketBuilder bucketB = new BucketBuilder();
         bucketB.setWeight(10);
         bucketB.setWatchPort(20L);
         bucketB.setWatchGroup(22L);
 
         bucketB.setAction(actionsList);
-        Bucket bucket = bucketB.build();
+        final Bucket bucket = bucketB.build();
 
         bucketList.add(bucket); // List of bucket
 
-        BucketBuilder bucketB1 = new BucketBuilder();
+        final BucketBuilder bucketB1 = new BucketBuilder();
         bucketB1.setWeight(50);
         bucketB1.setWatchPort(60L);
         bucketB1.setWatchGroup(70L);
 
         // Action1
-        CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
-        CopyTtlIn copyTtl = copyTtlB.build();
-        ActionBuilder actionsB2 = new ActionBuilder();
+        final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
+        final CopyTtlIn copyTtl = copyTtlB.build();
+        final ActionBuilder actionsB2 = new ActionBuilder();
         actionsB2.setOrder(actionOrder++).setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
 
         // Action2:
-        SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
+        final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
-        SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
-        ActionBuilder actionsB3 = new ActionBuilder();
+        final SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
+        final ActionBuilder actionsB3 = new ActionBuilder();
 
         actionsB3.setOrder(actionOrder++).setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
 
@@ -120,16 +119,16 @@ public class GroupConvertorTest {
 
         bucketB1.setAction(actionsList);
 
-        Bucket bucket1 = bucketB1.build(); // second bucket
+        final Bucket bucket1 = bucketB1.build(); // second bucket
 
         bucketList.add(bucket1);
 
         bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
-        Buckets buckets = bucketsB.build();
+        final Buckets buckets = bucketsB.build();
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
+        final GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
@@ -139,9 +138,9 @@ public class GroupConvertorTest {
         Assert.assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
         Assert.assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
 
-        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
+        final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            Action action = outActionList
+            final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
                 Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
@@ -153,9 +152,9 @@ public class GroupConvertorTest {
         Assert.assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
         Assert.assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
         Assert.assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
-        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
+        final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            Action action = outActionList1
+            final Action action = outActionList1
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
 
@@ -173,13 +172,13 @@ public class GroupConvertorTest {
      */
     @Test
     public void testGroupModConvertorNoBucket() {
-        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
 
-        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
+        final GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
@@ -193,14 +192,14 @@ public class GroupConvertorTest {
 
         int actionOrder = 0;
 
-        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupFf);
-        List<Bucket> bucketList = new ArrayList<Bucket>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<Bucket>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
         // Action1: 005
         actionsList.add(assembleActionBuilder("005", actionOrder++).build());
@@ -208,17 +207,17 @@ public class GroupConvertorTest {
         actionsList.add(assembleActionBuilder("006", actionOrder++).build());
         // .. and mr.Bond is not coming today
 
-        BucketsBuilder bucketsB = new BucketsBuilder();
+        final BucketsBuilder bucketsB = new BucketsBuilder();
 
-        BucketBuilder bucketB = new BucketBuilder();
+        final BucketBuilder bucketB = new BucketBuilder();
 
         bucketB.setAction(actionsList);
-        Bucket bucket = bucketB.build();
+        final Bucket bucket = bucketB.build();
 
         bucketList.add(bucket); // List of bucket
 
 
-        BucketBuilder bucketB1 = new BucketBuilder();
+        final BucketBuilder bucketB1 = new BucketBuilder();
 
         // Action1
         actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
@@ -227,34 +226,34 @@ public class GroupConvertorTest {
 
         bucketB1.setAction(actionsList1);
 
-        Bucket bucket1 = bucketB1.build(); // second bucket
+        final Bucket bucket1 = bucketB1.build(); // second bucket
 
         bucketList.add(bucket1);
 
         bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
-        Buckets buckets = bucketsB.build();
+        final Buckets buckets = bucketsB.build();
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
+        final GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTFF, outAddGroupInput.getType());
 
         Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
-        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
+        final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            Action action = outActionList
+            final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
                 Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
 
-        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
+        final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            Action action = outActionList1
+            final Action action = outActionList1
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
                 Assert.assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
@@ -268,9 +267,9 @@ public class GroupConvertorTest {
     @Test
     public void testGroupModConvertSortedBuckets() {
 
-        int actionOrder = 0;
+        final int actionOrder = 0;
 
-        ArrayList<Bucket> bucket = new ArrayList<Bucket>();
+        final ArrayList<Bucket> bucket = new ArrayList<Bucket>();
 
         bucket.add(new BucketBuilder()
                         .setBucketId(new BucketId((long) 4))
@@ -343,7 +342,7 @@ public class GroupConvertorTest {
                     .build());
 
 
-        AddGroupInput input = new AddGroupInputBuilder()
+        final AddGroupInput input = new AddGroupInputBuilder()
                                     .setGroupId(new GroupId((long) 1))
                                     .setGroupName("Foo")
                                     .setGroupType(GroupTypes.GroupFf)
@@ -352,9 +351,11 @@ public class GroupConvertorTest {
                                                        .build())
                                     .build();
 
-        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(input, (short) 0X4, BigInteger.valueOf(1));
+        OpenflowPortsUtil.init();
 
-        List<BucketsList> bucketList = outAddGroupInput.getBucketsList();
+        final GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(input, (short) 0X4, BigInteger.valueOf(1));
+
+        final List<BucketsList> bucketList = outAddGroupInput.getBucketsList();
         Assert.assertEquals( Long.valueOf(1), bucketList.get(0).getWatchGroup());
         Assert.assertEquals( Long.valueOf(3), bucketList.get(0).getWatchPort().getValue());
 
@@ -376,12 +377,12 @@ public class GroupConvertorTest {
     /**
      * @return
      */
-    private static ActionBuilder assembleSetMplsTtlActionBuilder(int actionOrder) {
-        SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
+    private static ActionBuilder assembleSetMplsTtlActionBuilder(final int actionOrder) {
+        final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
-        SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
+        final SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
         setMplsTtlActionCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
-        ActionBuilder actionsB3 = new ActionBuilder();
+        final ActionBuilder actionsB3 = new ActionBuilder();
         actionsB3.setOrder(actionOrder).setAction(setMplsTtlActionCaseBuilder.build());
         return actionsB3;
     }
@@ -389,11 +390,11 @@ public class GroupConvertorTest {
     /**
      * @return
      */
-    private static ActionBuilder assembleCopyTtlInBuilder(int actionOrder) {
-        CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
-        CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
+    private static ActionBuilder assembleCopyTtlInBuilder(final int actionOrder) {
+        final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
+        final CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
         copyTtlInCaseBuilder.setCopyTtlIn(copyTtlB.build());
-        ActionBuilder actionsB2 = new ActionBuilder();
+        final ActionBuilder actionsB2 = new ActionBuilder();
         actionsB2.setOrder(actionOrder).setAction(copyTtlInCaseBuilder.build());
         return actionsB2;
     }
@@ -402,12 +403,12 @@ public class GroupConvertorTest {
      * @param groupName name of group
      * @return
      */
-    private static ActionBuilder assembleActionBuilder(String groupName, int actionOrder) {
-        GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+    private static ActionBuilder assembleActionBuilder(final String groupName, final int actionOrder) {
+        final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup(groupName);
-        GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
+        final GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
         groupActionCaseBuilder.setGroupAction(groupActionBuilder.build());
-        ActionBuilder actionsBld = new ActionBuilder();
+        final ActionBuilder actionsBld = new ActionBuilder();
         actionsBld.setOrder(actionOrder).setAction(groupActionCaseBuilder.build());
         return actionsBld;
     }
@@ -420,30 +421,30 @@ public class GroupConvertorTest {
 
         int actionOrder = 0;
 
-        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        List<Bucket> bucketList = new ArrayList<Bucket>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<Bucket>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
         // Action1
         actionsList.add(assembleActionBuilder("005", actionOrder++).build());
         // Action2:
         actionsList.add(assembleActionBuilder("006", actionOrder++).build());
 
-        BucketsBuilder bucketsB = new BucketsBuilder();
+        final BucketsBuilder bucketsB = new BucketsBuilder();
 
-        BucketBuilder bucketB = new BucketBuilder();
+        final BucketBuilder bucketB = new BucketBuilder();
 
         bucketB.setAction(actionsList);
-        Bucket bucket = bucketB.build();
+        final Bucket bucket = bucketB.build();
 
         bucketList.add(bucket); // List of bucket
 
-        BucketBuilder bucketB1 = new BucketBuilder();
+        final BucketBuilder bucketB1 = new BucketBuilder();
 
         // Action1
         actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
@@ -452,25 +453,25 @@ public class GroupConvertorTest {
 
         bucketB1.setAction(actionsList);
 
-        Bucket bucket1 = bucketB1.build(); // second bucket
+        final Bucket bucket1 = bucketB1.build(); // second bucket
 
         bucketList.add(bucket1);
 
         bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
-        Buckets buckets = bucketsB.build();
+        final Buckets buckets = bucketsB.build();
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
+        final GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4, BigInteger.valueOf(1));
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
         Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
-        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
+        final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            Action action = outActionList
+            final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
                 Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
@@ -479,9 +480,9 @@ public class GroupConvertorTest {
 
         }
 
-        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
+        final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            Action action = outActionList1
+            final Action action = outActionList1
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
 
