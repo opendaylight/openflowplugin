@@ -2,6 +2,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -21,9 +22,7 @@ public final class FrmExecutors {
 
     public interface PceExecursFactory {
 
-        public ListeningExecutorService newSingleThreadExecutor();
-
-        public ListeningExecutorService newFixedThreadPool(int nThreads);
+        public ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory factory);
     }
 
     /**
@@ -31,13 +30,9 @@ public final class FrmExecutors {
      */
     @VisibleForTesting // should not be private and final
     static PceExecursFactory DEFAULT_EXECUTORS = new PceExecursFactory() {
-        public ListeningExecutorService newSingleThreadExecutor() {
-            final ExecutorService executorService = Executors.newSingleThreadExecutor();
-            return MoreExecutors.listeningDecorator(executorService);
-        }
 
-        public ListeningExecutorService newFixedThreadPool(int nThreads) {
-            final ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        public ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory factory) {
+            final ExecutorService executorService = Executors.newFixedThreadPool(nThreads, factory);
             return MoreExecutors.listeningDecorator(executorService);
         }
     };

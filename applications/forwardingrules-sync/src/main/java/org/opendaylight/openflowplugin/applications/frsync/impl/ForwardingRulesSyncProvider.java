@@ -38,10 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * top provider of forwarding rules synchronization functionality
  */
+@SuppressWarnings("deprecation")
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
@@ -103,24 +106,29 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
-        // wire synchronization reactor
-        final SyncReactor reactor =
-                new SyncReactorGuardDecorator(
-                        new SyncReactorImpl(),
-                        new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true),
-                        FrmExecutors.instance()
-                        //TODO improve log in ThreadPoolExecutor.afterExecute
-                        //TODO max bloking queue size
-                        //TODO core/min pool size
-                        .newFixedThreadPool(3));
-        // new SyncReactorImpl();//unsynchronized
-        reactor.setFlowForwarder(flowForwarder);
-        reactor.setGroupForwarder(groupForwarder);
-        reactor.setMeterForwarder(meterForwarder);
-        reactor.setTableForwarder(tableForwarder);
-        reactor.setTransactionService(transactionService);
-
         {
+            final ListeningExecutorService syncThreadPool = FrmExecutors.instance()
+                    // TODO improve log in ThreadPoolExecutor.afterExecute
+                    // TODO max bloking queue size
+                    // TODO core/min pool size
+                    .newFixedThreadPool(3, new ThreadFactoryBuilder()
+                            .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                            .setDaemon(true)
+                            .build());
+            final SyncReactor commonReactor = new SyncReactorGuardDecorator(new SyncReactorImpl()
+                    .setFlowForwarder(flowForwarder)
+                    .setGroupForwarder(groupForwarder)
+                    .setMeterForwarder(meterForwarder).setTableForwarder(tableForwarder)
+                    .setTransactionService(transactionService),
+                    new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
+
+            final SyncReactor cfgReactor =
+                    new SyncReactorFutureDecorator(commonReactor, syncThreadPool);
+            // new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+            final SyncReactor operReactor =
+                    new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+            // new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+
             final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot,
@@ -129,9 +137,11 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
             final NodeListener nodeListenerConfig =
-                    new SimplifiedConfigListener(reactor, configSnaphot, operationalDao);
+                    new SimplifiedConfigListener(
+                            cfgReactor,
+                            configSnaphot, operationalDao);
             final NodeListener nodeListenerOperational =
-                    new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
+                    new SimplifiedOperationalListener(operReactor, operationalSnaphot, configDao);
 
             try {
                 SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);

@@ -1,6 +1,5 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -10,7 +9,6 @@ import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -20,7 +18,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * NodeId level locking
@@ -34,14 +31,10 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     private final SyncReactor delegate;
     private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
 
-    private ListeningExecutorService executorService;
-
     public SyncReactorGuardDecorator(SyncReactor delegate,
-            SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper,
-            ListeningExecutorService executorService) {
+            SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper) {
         this.delegate = delegate;
         this.semaphoreKeeper = semaphoreKeeper;
-        this.executorService = executorService;
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
@@ -49,59 +42,50 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup {}", nodeId.getValue());
 
-        final Semaphore guard = summonGuard(flowcapableNodePath);
+        final long stampBeforeGuard = System.nanoTime();
+        final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);
+        final long stampAfterGuard = System.nanoTime();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("syncup start {} waiting:{} guard:{}", nodeId.getValue(),
+                    formatNanos(stampAfterGuard - stampBeforeGuard),
+                    guard);
+        }
 
-        final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                final long stampBeforeGuard = System.nanoTime();
-                acquire(guard);
-                final long stampAfterGuard = System.nanoTime();
+
+        final ListenableFuture<Boolean> endResult =
+                delegate.syncup(flowcapableNodePath, configTree, operationalTree);
+
+        Futures.addCallback(endResult, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(@Nullable final Boolean result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("syncup start {} waiting:{} guard:{}", nodeId.getValue(),
+                    final long stampFinished = System.nanoTime();
+                    LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
+                            formatNanos(stampFinished - stampBeforeGuard),
+                            formatNanos(stampFinished - stampAfterGuard),
                             formatNanos(stampAfterGuard - stampBeforeGuard),
                             guard);
                 }
 
-                final ListenableFuture<Boolean> endResult =
-                        delegate.syncup(flowcapableNodePath, configTree, operationalTree);
-
-                Futures.addCallback(endResult, new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(@Nullable final Boolean result) {
-                        if (LOG.isDebugEnabled()) {
-                            final long stampFinished = System.nanoTime();
-                            LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
-                                    formatNanos(stampFinished - stampBeforeGuard),
-                                    formatNanos(stampFinished - stampAfterGuard),
-                                    formatNanos(stampAfterGuard - stampBeforeGuard),
-                                    guard);
-                        }
-
-                        lockReleaseForNodeId(nodeId, guard);
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        if (LOG.isDebugEnabled()) {
-                            final long stampFinished = System.nanoTime();
-                            LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
-                                    formatNanos(stampFinished - stampBeforeGuard),
-                                    formatNanos(stampFinished - stampAfterGuard),
-                                    formatNanos(stampAfterGuard - stampBeforeGuard),
-                                    guard);
-                        }
-
-                        lockReleaseForNodeId(nodeId, guard);
-                    }
-                });
-
-                return null;
+                lockReleaseForNodeId(nodeId, guard);
             }
 
+            @Override
+            public void onFailure(final Throwable t) {
+                if (LOG.isDebugEnabled()) {
+                    final long stampFinished = System.nanoTime();
+                    LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{}", nodeId.getValue(),
+                            formatNanos(stampFinished - stampBeforeGuard),
+                            formatNanos(stampFinished - stampAfterGuard),
+                            formatNanos(stampAfterGuard - stampBeforeGuard),
+                            guard);
+                }
 
+                lockReleaseForNodeId(nodeId, guard);
+            }
         });
 
-        return syncup;
+        return endResult;
     }
 
     protected String formatNanos(long nanos) {
@@ -115,18 +99,23 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param flowcapableNodePath
      * @return
      */
-    protected Semaphore summonGuard(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
+    protected Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
             throws InterruptedException {
-        return Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath), 
+        final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath),
                 "no guard for " + flowcapableNodePath);
-    }
-
-    private void acquire(final Semaphore guard) throws InterruptedException {
-        if (guard == null) {
-            return;
+        
+        if (LOG.isDebugEnabled()) {
+            final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
+            try {
+                LOG.debug("syncup summon {} guard:{}", nodeId.getValue(), guard);
+            } catch (Exception e) {
+                LOG.error("error logging guard after summon before aquiring {}", nodeId);
+            }
         }
+        
         guard.acquire();
-    };
+        return guard;
+    }
 
     /**
      * unlock per node
@@ -140,25 +129,5 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             return;
         }
         guard.release();
-    }
-
-    public void setFlowForwarder(FlowForwarder flowForwarder) {
-        delegate.setFlowForwarder(flowForwarder);
-    }
-
-    public void setTableForwarder(TableForwarder tableForwarder) {
-        delegate.setTableForwarder(tableForwarder);
-    }
-
-    public void setMeterForwarder(MeterForwarder meterForwarder) {
-        delegate.setMeterForwarder(meterForwarder);
-    }
-
-    public void setGroupForwarder(GroupForwarder groupForwarder) {
-        delegate.setGroupForwarder(groupForwarder);
-    }
-
-    public void setTransactionService(FlowCapableTransactionService transactionService) {
-        delegate.setTransactionService(transactionService);
     }
 }
