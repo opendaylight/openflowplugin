@@ -2,6 +2,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -27,10 +28,10 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureWithCompressionDecorator.class);
 
-    @GuardedBy("beforeCompressionMutex")
+    @GuardedBy("beforeCompressionGuard")
     final Map<InstanceIdentifier<FlowCapableNode>, Pair<FlowCapableNode, FlowCapableNode>> beforeCompression =
             new HashMap<>();
-    final Object beforeCompressionMutex = new Object();
+    final Semaphore beforeCompressionGuard = new Semaphore(1, false);
 
     public SyncReactorFutureWithCompressionDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
         super(delegate, executorService);
@@ -67,7 +68,13 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
 
     protected boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
             final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
-        synchronized (beforeCompressionMutex) {
+        try {
+            try {
+                beforeCompressionGuard.acquire();
+            } catch (InterruptedException e) {
+                return false;
+            }
+            
             final Pair<FlowCapableNode, FlowCapableNode> previous = beforeCompression.get(flowcapableNodePath);
             if (previous != null) {
                 beforeCompression.put(flowcapableNodePath, Pair.of(configTree, previous.getRight()));
@@ -76,13 +83,23 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
                 beforeCompression.put(flowcapableNodePath, Pair.of(configTree, operationalTree));
                 return true;
             }
+        } finally {
+            beforeCompressionGuard.release();
         }
     }
 
     protected Pair<FlowCapableNode, FlowCapableNode> removeLastCompressionState(
             final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
-        synchronized (beforeCompressionMutex) {
+        try {
+            try {
+                beforeCompressionGuard.acquire();
+            } catch (InterruptedException e) {
+                return null;
+            }
+            
             return beforeCompression.remove(flowcapableNodePath);
+        } finally {
+            beforeCompressionGuard.release();
         }
     }
 }

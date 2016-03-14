@@ -39,10 +39,15 @@ public class SyncReactorFutureDecorator implements SyncReactor {
 
         final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                
-                doSyncupInFuture(flowcapableNodePath, configTree, operationalTree);
+                final String oldThreadName = updateThreadName(nodeId);
 
-                return true;// TODO forward doSyncup Future.get() ???
+                try {
+                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree).get();
+                    LOG.trace("ret {} {}", nodeId.getValue(), ret);
+                    return ret;
+                } finally {
+                    updateThreadName(oldThreadName);
+                }
             }
         });
 
@@ -55,7 +60,41 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("doSyncupInFuture {}", nodeId.getValue());
         
-        // TODO final ListenableFuture<Boolean> endResult =
         return delegate.syncup(flowcapableNodePath, configTree, operationalTree);
+    }
+
+    static String threadName() {
+        final Thread currentThread = Thread.currentThread();
+        return currentThread.getName();
+    }
+
+    protected String updateThreadName(NodeId nodeId) {
+        final Thread currentThread = Thread.currentThread();
+        final String oldName = currentThread.getName();
+        try {
+            if(oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+                currentThread.setName(oldName + "@" + nodeId.getValue());
+            } else {
+                LOG.warn("try to update foreign thread name {} {}", nodeId, oldName);
+            }
+        } catch (Exception e) {
+            LOG.error("failed updating threadName {}", nodeId, e);
+        }
+        return oldName;
+    }
+    
+    protected String updateThreadName(String name) {
+        final Thread currentThread = Thread.currentThread();
+        final String oldName = currentThread.getName();
+        try {
+            if(oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+                currentThread.setName(name);
+            } else {
+                LOG.warn("try to update foreign thread name {} {}", oldName, name);
+            }
+        } catch (Exception e) {
+            LOG.error("failed updating threadName {}", name, e);
+        }
+        return oldName;
     }
 }

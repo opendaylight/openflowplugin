@@ -161,7 +161,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = nodeId(modification);
 
-        LOG.trace("reconciliation {}", nodeId.getValue());
+        LOG.debug("reconciliation {}", nodeId.getValue());
 
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
         final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)

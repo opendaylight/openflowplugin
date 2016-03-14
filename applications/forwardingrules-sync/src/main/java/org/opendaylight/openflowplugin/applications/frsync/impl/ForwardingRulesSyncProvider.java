@@ -122,12 +122,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     .setTransactionService(transactionService),
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
 
-            final SyncReactorFutureDecorator commonFutureReactor =
-                    new SyncReactorFutureDecorator(commonReactor, syncThreadPool);
-            final SyncReactor cfgReactor = commonFutureReactor;
-            // new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
-            final SyncReactor operReactor = commonFutureReactor;
-            // new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+            //final SyncReactorFutureDecorator commonFutureReactor =
+            //        new SyncReactorFutureDecorator(commonReactor, syncThreadPool);
+            final SyncReactor cfgReactor = //commonFutureReactor;
+                    new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+            final SyncReactor operReactor = //commonFutureReactor;
+                    new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
 
             final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();

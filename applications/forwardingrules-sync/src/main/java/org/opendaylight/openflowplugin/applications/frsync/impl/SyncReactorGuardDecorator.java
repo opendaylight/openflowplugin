@@ -47,8 +47,6 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         final long stampBeforeGuard = System.nanoTime();
         final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);
         
-        final String oldThreadName = updateThreadName(nodeId);
-        
         final long stampAfterGuard = System.nanoTime();
         if (LOG.isDebugEnabled()) {
             LOG.debug("syncup start {} waiting:{} guard:{} thread:{}", nodeId.getValue(),
@@ -72,7 +70,6 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                             guard, threadName());
                 }
 
-                updateThreadName(oldThreadName);
                 lockReleaseForNodeId(nodeId, guard);
             }
 
@@ -87,7 +84,6 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                             guard, threadName());
                 }
 
-                updateThreadName(oldThreadName);
                 lockReleaseForNodeId(nodeId, guard);
             }
         });
@@ -141,28 +137,6 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     static String threadName() {
         final Thread currentThread = Thread.currentThread();
         return currentThread.getName();
-    }
-
-    protected String updateThreadName(NodeId nodeId) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        try {
-            currentThread.setName(oldName + "@" + nodeId.getValue());
-        } catch (Exception e) {
-            LOG.error("failed updating threadName");
-        }
-        return oldName;
-    }
-
-    protected String updateThreadName(String name) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        try {
-            currentThread.setName(name);
-        } catch (Exception e) {
-            LOG.error("failed updating threadName");
-        }
-        return oldName;
     }
 
 }
