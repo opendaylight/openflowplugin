@@ -2,8 +2,6 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nullable;
-
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -12,8 +10,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 
@@ -43,49 +39,14 @@ public class SyncReactorFutureDecorator implements SyncReactor {
 
         final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                final String oldThreadName = updateThreadName(nodeId);
                 
-                final ListenableFuture<Boolean> endResult = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree);
+                doSyncupInFuture(flowcapableNodePath, configTree, operationalTree);
 
-                Futures.addCallback(endResult, new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(@Nullable final Boolean result) {
-                        updateThreadName(oldThreadName);
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        updateThreadName(oldThreadName);
-                    }
-                });
-
-                return true;// TODO forward doSyncup Future???
+                return true;// TODO forward doSyncup Future.get() ???
             }
         });
 
         return syncup;
-    }
-
-    protected String updateThreadName(NodeId nodeId) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        try {
-            currentThread.setName(oldName + "@" + nodeId.getValue());
-        } catch (Exception e) {
-            LOG.error("failed updating threadName");
-        }
-        return oldName;
-    }
-    
-    protected String updateThreadName(String name) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        try {
-            currentThread.setName(name);
-        } catch (Exception e) {
-            LOG.error("failed updating threadName");
-        }
-        return oldName;
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,

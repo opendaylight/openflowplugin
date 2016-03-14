@@ -36,7 +36,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
                         return new Semaphore(permits, fair) {
                             private static final long serialVersionUID = 1L;
 
-                            @Override
+                            /*@Override
                             public String toString() {
                                 final StringBuilder str = new StringBuilder();
                                 str.append(super.toString());
@@ -54,7 +54,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
                                 str.append("]");
                                 str.append(queuedThreads);
                                 return str.toString();
-                            }
+                            }*/
                         };
                     }
                 });
