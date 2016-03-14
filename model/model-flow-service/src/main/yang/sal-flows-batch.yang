@@ -1,7 +1,8 @@
 module sal-flows-batch {
-    namespace "urn:opendaylight:flow:service";
+    namespace "urn:opendaylight:flows:service";
     prefix flows;
 
+    import batch-common {prefix bc;revision-date "2016-03-15";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
     import flow-node-inventory {prefix flow-inv; revision-date "2013-08-19";}
@@ -13,6 +14,8 @@ module sal-flows-batch {
     }
 
     grouping batch-flow-id-grouping {
+        description "General flow-id leaf.";
+
         leaf flow-id {
             type flow-inv:flow-id;
         }
@@ -29,10 +32,10 @@ module sal-flows-batch {
         description "Openflow flow structure suitable for batch rpc input.";
 
         uses batch-flow-id-grouping;
-        container original-flow {
+        container original-batched-flow {
             uses types:flow;
         }
-        container updated-flow {
+        container updated-batched-flow {
             uses types:flow;
         }
     }
@@ -53,6 +56,7 @@ module sal-flows-batch {
             key flow-id;
             uses batch-flow-output-grouping;
          }
+         uses bc:barrier-after-state-grouping;
     }
 
 
@@ -61,10 +65,11 @@ module sal-flows-batch {
         input {
             uses "inv:node-context-ref";
 
-            list batch-flows {
+            list batch-add-flows {
                 key flow-id;
                 uses batch-flow-input-grouping;
             }
+            uses bc:barrier-suffix;
         }
         output {
             uses batch-flow-output-list-grouping;
@@ -76,10 +81,11 @@ module sal-flows-batch {
         input {
             uses "inv:node-context-ref";
 
-            list batch-flows {
+            list batch-remove-flows {
                 key flow-id;
                 uses batch-flow-input-grouping;
             }
+            uses bc:barrier-suffix;
         }
         output {
             uses batch-flow-output-list-grouping;
@@ -91,10 +97,11 @@ module sal-flows-batch {
         input {
             uses "inv:node-context-ref";
 
-            list batch-flows {
+            list batch-update-flows {
                 key flow-id;
                 uses batch-flow-input-update-grouping;
             }
+            uses bc:barrier-suffix;
         }
         output {
             uses batch-flow-output-list-grouping;

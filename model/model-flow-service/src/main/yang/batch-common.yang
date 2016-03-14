@@ -1,0 +1,26 @@
+module batch-common {
+    namespace "urn:opendaylight:batch:service:common";
+    prefix batch-common;
+
+    description "Openflow batch - common groupings.";
+
+    revision "2016-03-15" {
+        description "Initial revision of batch common groupings.";
+    }
+
+    grouping barrier-suffix {
+        description "Flag indicating that barrier will be attached after action.";
+
+        leaf barrier-after {
+            type boolean;
+        }
+    }
+
+    grouping barrier-after-state-grouping {
+        description "Flag indicating that appended barrier passed successfully.";
+
+        leaf barrier-after-passed {
+            type boolean;
+        }
+    }
+}
