@@ -8,14 +8,15 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
+import java.util.concurrent.Semaphore;
+
+import javax.annotation.Nonnull;
+
+import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
-import java.util.Collection;
-import java.util.concurrent.Semaphore;
-import javax.annotation.Nonnull;
-import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 
 /**
  * key-based semaphore provider
@@ -63,5 +64,10 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
     @Override
     public Semaphore summonGuard(final @Nonnull K key) {
         return semaphoreCache.getUnchecked(key);
+    }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " size:" + (semaphoreCache == null ? null : semaphoreCache.size()) + " " + semaphoreCache;
     }
 }

@@ -98,6 +98,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     protected ListenableFuture<Boolean> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNode)
                     throws InterruptedException {
+        LOG.trace("onNodeAdded {}", nodePath);
+        
         final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, dataAfter, operationalNode);
         return endResult;
@@ -113,6 +115,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     protected ListenableFuture<Boolean> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNodeNode)
                     throws InterruptedException {
+        LOG.trace("onNodeUpdated {}", nodePath);
+        
         final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, dataAfter, dataBefore);
         return endResult;
@@ -125,6 +129,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      */
     protected ListenableFuture<Boolean> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode operationalNode) throws InterruptedException {
+        LOG.trace("onNodeDeleted {}", nodePath);
+        
         final ListenableFuture<Boolean> endResult =
                 reactor.syncup(nodePath, null, dataBefore);
         return endResult;

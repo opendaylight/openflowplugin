@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
@@ -53,6 +54,12 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         this.configDao = configDao;
     }
 
+    @Override
+    public void onDataTreeChanged(Collection<DataTreeModification<Node>> modifications) {
+        LOG.trace("Inventory Operational changes {}", modifications.size());
+        super.onDataTreeChanged(modifications);
+    }
+
     /**
      * This method behaves like this:
      * <ul>
@@ -80,17 +87,23 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @param modification
      */
     protected void updateCache(DataTreeModification<Node> modification) {
-        boolean isDelete = isDelete(modification) || isDeleteLogical(modification);
-        if (isDelete) {
-            operationalSnaphot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
-            return;
+        try {
+            boolean isDelete = isDelete(modification) || isDeleteLogical(modification);
+            if (isDelete) {
+                operationalSnaphot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
+                return;
+            }
+            
+            operationalSnaphot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
+        } catch(Exception e) {
+            LOG.error("update cache failed {}", nodeId(modification), e);
         }
-
-        operationalSnaphot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
     }
 
     protected Optional<ListenableFuture<Boolean>> skipModification(DataTreeModification<Node> modification) {
-        LOG.trace("Skipping Inventory Operational modification {}", nodeIdValue(modification));
+        LOG.trace("Skipping Inventory Operational modification {}, before {}, after {}", nodeIdValue(modification),
+                modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
+                modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
         return Optional.absent();// skip otherwise event
     }
 
@@ -146,7 +159,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
 
     protected Optional<ListenableFuture<Boolean>> reconciliation(
             DataTreeModification<Node> modification) throws InterruptedException {
-        final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId(modification));
+        final NodeId nodeId = nodeId(modification);
+
+        LOG.trace("reconciliation {}", nodeId.getValue());
+
+        final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
         final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(nodeId(modification))).augmentation(FlowCapableNode.class);
         final ListenableFuture<Boolean> rpcResult =
