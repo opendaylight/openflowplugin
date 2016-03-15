@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_17d1c822",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 369,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-15T07:57:58Z",
+      "side": 1,
+      "message": "I have been told we are using ERROR only for non recoverable failures, otherwise we should use warning",
+      "revId": "c89fef011ebebe4c993cf1e6d28623e6600db689",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
