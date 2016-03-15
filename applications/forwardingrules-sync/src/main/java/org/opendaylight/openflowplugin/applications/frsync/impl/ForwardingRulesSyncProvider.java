@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -114,20 +115,26 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     .newFixedThreadPool(6, new ThreadFactoryBuilder()
                             .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
                             .setDaemon(true)
+                            .setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                                @Override
+                                public void uncaughtException(Thread thread, Throwable e) {
+                                    LOG.error("uncaught exception {}", thread, e);
+                                }
+                            })
                             .build());
-            final SyncReactor commonReactor = new SyncReactorGuardDecorator(new SyncReactorImpl()
+            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl();
+            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl
                     .setFlowForwarder(flowForwarder)
                     .setGroupForwarder(groupForwarder)
                     .setMeterForwarder(meterForwarder).setTableForwarder(tableForwarder)
                     .setTransactionService(transactionService),
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
-
-            final SyncReactorFutureDecorator commonFutureReactor =
-                    new SyncReactorFutureDecorator(commonReactor, syncThreadPool);
-            final SyncReactor cfgReactor = commonFutureReactor;
-                    //new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
-            final SyncReactor operReactor = commonFutureReactor;
-                    //new SyncReactorFutureWithCompressionDecorator(commonReactor, syncThreadPool);
+            final SyncReactorFutureDecorator syncFutureReactor =
+                    new SyncReactorFutureDecorator(syncReactorImpl, syncThreadPool);
+            final SyncReactor cfgReactor = syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
+                    //new SyncReactorFutureWithCompressionDecorator(commonFutureReactor, syncThreadPool);
+            final SyncReactor operReactor = syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
+                    //new SyncReactorFutureWithCompressionDecorator(syncFutureReactor, syncThreadPool);
 
             final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
