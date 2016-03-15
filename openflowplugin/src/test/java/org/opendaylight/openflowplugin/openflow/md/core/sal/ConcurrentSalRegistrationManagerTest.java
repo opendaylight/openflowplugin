@@ -110,7 +110,7 @@ public class ConcurrentSalRegistrationManagerTest {
         Mockito.when(connectionConductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         // provider context - registration responder
-        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(Matchers.any(Class.class), Matchers.any(RpcService.class)))
+        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
         .then(new Answer<RoutedRpcRegistration<?>>() {
             @Override
             public RoutedRpcRegistration<?> answer(InvocationOnMock invocation) {

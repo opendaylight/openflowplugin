@@ -64,7 +64,7 @@ public class InventoryDataServiceUtilTest {
     @Before
     public void setupEnvironment() {
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.any(InstanceIdentifier.class))).thenReturn(Futures.immediateCheckedFuture(Optional.of(nodes)));
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(nodes)));
 
         OpenflowPortsUtil.init();
         OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
@@ -91,7 +91,7 @@ public class InventoryDataServiceUtilTest {
      */
     @Test
     public void testReadNode(){
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.any(InstanceIdentifier.class))).thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
         InstanceIdentifier<Node> instanceId = InstanceIdentifier.create(Node.class);
         Node node = InventoryDataServiceUtil.readNode(instanceId);
         assertNotNull(node);

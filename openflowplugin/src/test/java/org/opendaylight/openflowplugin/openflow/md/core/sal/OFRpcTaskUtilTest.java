@@ -71,28 +71,28 @@ public class OFRpcTaskUtilTest {
         when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(messageDispatchService.barrier(Mockito.any(BarrierInput.class), Mockito.any(SwitchConnectionDistinguisher.class))).thenReturn(resultListenableFuture);
         when(ofRpcTaskContext.getRpcPool()).thenReturn(executorService);
-        when(executorService.submit(Mockito.any(Callable.class))).thenReturn(updateFlowRpcResultListenableFuture);
+        when(executorService.submit(Mockito.<Callable<RpcResult<UpdateFlowOutput>>> any())).thenReturn(updateFlowRpcResultListenableFuture);
     }
 
 
     @Test
     public void testManageBarrier() throws Exception {
-        Collection<RpcError> rpcErrors = OFRpcTaskUtil.manageBarrier(taskContext, true, connectionDistinguisher);
+        final Collection<RpcError> rpcErrors = OFRpcTaskUtil.manageBarrier(taskContext, true, connectionDistinguisher);
         assertNotNull(rpcErrors);
     }
 
     @Test
     public void testHookFutureNotification() throws Exception {
-        AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
-        OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        final AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
+        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
         OFRpcTaskUtil.hookFutureNotification(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture, notificationProviderService, notificationComposer);
     }
 
     @Test
     public void testChainFutureBarrier() throws Exception {
-        AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
+        final AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
         flowInputBuilder.setBarrier(true);
-        OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
         OFRpcTaskUtil.chainFutureBarrier(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture);
     }
 }
