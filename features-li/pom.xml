@@ -17,7 +17,7 @@
     <properties>
         <yangtools.version>1.0.0-SNAPSHOT</yangtools.version>
         <config.version>0.5.0-SNAPSHOT</config.version>
-        <mdsal.version>1.4.0-SNAPSHOT</mdsal.version>
+        <controller.mdsal.version>1.4.0-SNAPSHOT</controller.mdsal.version>
         <openflowjava.version>0.8.0-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.3.0-SNAPSHOT</openflowplugin.version>
         <dlux.version>0.4.0-SNAPSHOT</dlux.version>
@@ -60,7 +60,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>${mdsal.version}</version>
+                <version>${controller.mdsal.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

@@ -3,14 +3,14 @@
 <features name="odl-flow-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${controller.mdsal.version}/xml/features</repository>
     <feature name='odl-flow-model' version='${project.version}' description="OpenDaylight :: Flow :: Model">
         <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-base/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-service/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-statistics/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.controller.model/model-inventory/${mdsal.version}</bundle>
-        <bundle>mvn:org.opendaylight.controller.model/model-topology/${mdsal.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-inventory/${controller.mdsal.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-topology/${controller.mdsal.version}</bundle>
     </feature>
     <feature name='odl-flow-services' version='${project.version}' description="OpenDaylight :: Flow :: Services">
         <feature version='${project.version}'>odl-mdsal-broker</feature>

@@ -11,7 +11,7 @@
 <features name="openflowplugin-li-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${controller.mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
@@ -27,7 +27,7 @@
     </feature>
 
     <feature name='odl-openflowplugin-southbound-li' description="OpenDaylight :: Openflow Plugin :: Li southBound API implementation " version='${project.version}'>
-        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${controller.mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-services-li</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
@@ -50,7 +50,7 @@
 
     <feature name='odl-openflowplugin-nsf-services-li' version='${project.version}'
              description="OpenDaylight :: OpenflowPlugin :: NSF :: Services">
-        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-openflowplugin-nsf-model-li</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}</bundle>
@@ -82,7 +82,7 @@
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest-li</feature>
         <feature version="${dlux.version}">odl-dlux-core</feature>
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
-        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+        <feature version="${controller.mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
     <!-- CBENCH TESTING -->
@@ -119,7 +119,7 @@
     </feature>
 
     <feature name='odl-openflowplugin-old-notifications-li' description="OpenDaylight :: Openflow Plugin :: app old notifications supplier" version='${project.version}'>
-        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-model-li</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/old-notification-supplier/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/73-old-notification-supplier.xml">mvn:org.opendaylight.openflowplugin.applications/old-notification-supplier/{{VERSION}}/xml/config</configfile>
