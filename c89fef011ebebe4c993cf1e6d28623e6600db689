@@ -16,6 +16,29 @@
       "revId": "c89fef011ebebe4c993cf1e6d28623e6600db689",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_57da3017",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-15T08:11:41Z",
+      "side": 1,
+      "message": "This is incorrect - role can be NOCHANGE and eventually null. Please change log according to if clause - like role is NOT master.",
+      "range": {
+        "startLine": 161,
+        "startChar": 23,
+        "endLine": 161,
+        "endChar": 36
+      },
+      "revId": "c89fef011ebebe4c993cf1e6d28623e6600db689",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
