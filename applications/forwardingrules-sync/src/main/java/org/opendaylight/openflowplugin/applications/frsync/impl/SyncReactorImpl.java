@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class SyncReactorImpl implements SyncReactor {
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
             final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
 
-        LOG.trace("syncup {} {} {}", nodeIdent, configTree, operationalTree);
+        LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
 
         /**
          * reconciliation strategy - phase 1: - add/update missing objects in following order -
@@ -99,7 +100,10 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
+                    //        Arrays.asList(input, output),
+                    //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
                 }
                 return addMissingGroups(nodeIdent, configTree, operationalTree);
             }
@@ -108,7 +112,7 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
                 return addMissingMeters(nodeIdent, configTree, operationalTree);
             }
@@ -117,7 +121,7 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
                 return addMissingFlows(nodeIdent, configTree, operationalTree);
             }
@@ -131,7 +135,7 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
                 return removeRedundantFlows(nodeIdent, configTree, operationalTree);
             }
@@ -140,7 +144,7 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
                 return removeRedundantMeters(nodeIdent, configTree, operationalTree);
             }
@@ -149,7 +153,7 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                    return Futures.immediateFuture(input);
+                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
                 return removeRedundantGroups(nodeIdent, configTree, operationalTree);
             }
