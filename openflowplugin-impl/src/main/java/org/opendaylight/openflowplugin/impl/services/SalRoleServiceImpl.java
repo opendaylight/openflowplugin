@@ -85,8 +85,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             return RpcResultBuilder.<SetRoleOutput> success().buildFuture();
         }
 
-        final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture
-                .<RpcResult<SetRoleOutput>> create();
+        final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture.<RpcResult<SetRoleOutput>> create();
         repeaterForChangeRole(resultFuture, input, 0);
         /* Add Callback for release Guard */
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
@@ -138,14 +137,19 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         }
 
         LOG.info("Requesting state change to {}", input.getControllerRole());
-        final ListenableFuture<SetRoleOutput> changeRoleFuture = tryToChangeRole(input.getControllerRole());
-        Futures.addCallback(changeRoleFuture, new FutureCallback<SetRoleOutput>() {
+        final ListenableFuture<RpcResult<SetRoleOutput>> changeRoleFuture = tryToChangeRole(input.getControllerRole());
+        Futures.addCallback(changeRoleFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
 
             @Override
-            public void onSuccess(final SetRoleOutput result) {
-                LOG.info("setRoleOutput received after roleChangeTask execution:{}", result);
-                currentRole = input.getControllerRole();
-                future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result).build());
+            public void onSuccess(final RpcResult<SetRoleOutput> result) {
+                if (result.isSuccessful()) {
+                    LOG.debug("setRoleOutput received after roleChangeTask execution:{}", result);
+                    currentRole = input.getControllerRole();
+                    future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result.getResult()).build());
+                } else {
+                    LOG.info("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
+                    repeaterForChangeRole(future, input, (retryCounter + 1));
+                }
             }
 
             @Override
@@ -156,21 +160,17 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         });
     }
 
-    private ListenableFuture<SetRoleOutput> tryToChangeRole(final OfpRole role) {
+    private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
         LOG.info("RoleChangeTask called on device:{} OFPRole:{}", nodeId.getValue(), role);
 
         final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(version);
 
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), new AsyncFunction<BigInteger, SetRoleOutput>() {
-
-            @Override
-            public ListenableFuture<SetRoleOutput> apply(final BigInteger generationId) throws Exception {
-                LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", nodeId.getValue(), generationId);
-                final BigInteger nextGenerationId = getNextGenerationId(generationId);
-                LOG.debug("nextGenerationId received from device:{} is {}", nodeId.getValue(), nextGenerationId);
-                final Future<SetRoleOutput> submitRoleFuture = roleService.submitRoleChange(role, version, nextGenerationId);
-                return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
-            }
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
+            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", nodeId.getValue(), generationId);
+            final BigInteger nextGenerationId = getNextGenerationId(generationId);
+            LOG.debug("nextGenerationId received from device:{} is {}", nodeId.getValue(), nextGenerationId);
+            final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, version, nextGenerationId);
+            return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
         });
     }
 
