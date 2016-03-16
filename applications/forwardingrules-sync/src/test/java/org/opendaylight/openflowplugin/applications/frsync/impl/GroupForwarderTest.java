@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
@@ -59,6 +60,7 @@ public class GroupForwarderTest {
     private final Group group = new GroupBuilder()
             .setGroupId(groupId)
             .setGroupName("test-group")
+            .setBuckets(new BucketsBuilder().build())
             .build();
 
     private final KeyedInstanceIdentifier<Node, NodeKey> nodePath = InstanceIdentifier.create(Nodes.class)
@@ -108,6 +110,7 @@ public class GroupForwarderTest {
 
         final RemoveGroupInput removeGroupInput = removeGroupInputCpt.getValue();
         Assert.assertEquals(groupPath, removeGroupInput.getGroupRef().getValue());
+        Assert.assertNull(removeGroupInput.getBuckets());
         Assert.assertEquals(nodePath, removeGroupInput.getNode().getValue());
         Assert.assertEquals("test-group", removeGroupInput.getGroupName());
     }
@@ -138,12 +141,14 @@ public class GroupForwarderTest {
 
         Assert.assertEquals(1, result.getResult().getTransactionId().getValue().intValue());
 
-        final UpdateGroupInput addGroupInput = updateGroupInputCpt.getValue();
-        Assert.assertEquals(groupPath, addGroupInput.getGroupRef().getValue());
-        Assert.assertEquals(nodePath, addGroupInput.getNode().getValue());
+        final UpdateGroupInput updateGroupInput = updateGroupInputCpt.getValue();
+        Assert.assertEquals(groupPath, updateGroupInput.getGroupRef().getValue());
+        Assert.assertEquals(nodePath, updateGroupInput.getNode().getValue());
+        Assert.assertNotNull(updateGroupInput.getOriginalGroup().getBuckets());
+        Assert.assertNotNull(updateGroupInput.getUpdatedGroup().getBuckets());
 
-        Assert.assertEquals("test-group", addGroupInput.getOriginalGroup().getGroupName());
-        Assert.assertEquals("another-test", addGroupInput.getUpdatedGroup().getGroupName());
+        Assert.assertEquals("test-group", updateGroupInput.getOriginalGroup().getGroupName());
+        Assert.assertEquals("another-test", updateGroupInput.getUpdatedGroup().getGroupName());
     }
 
     @Test
@@ -169,6 +174,7 @@ public class GroupForwarderTest {
         final AddGroupInput addGroupInput = addGroupInputCpt.getValue();
         Assert.assertEquals(groupPath, addGroupInput.getGroupRef().getValue());
         Assert.assertEquals(nodePath, addGroupInput.getNode().getValue());
+        Assert.assertNotNull(addGroupInput.getBuckets());
         Assert.assertEquals("test-group", addGroupInput.getGroupName());
     }
 }

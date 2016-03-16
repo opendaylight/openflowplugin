@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
@@ -55,11 +54,13 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
-        
+
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(removeDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
+        // fix group removal - no buckets allowed
+        builder.setBuckets(null);
         return salGroupService.removeGroup(builder.build());
     }
 
@@ -69,7 +70,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, update);
-        
+
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -85,7 +86,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, addDataObj);
-        
+
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(addDataObj);
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
