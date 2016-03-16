@@ -100,6 +100,20 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         broker.registerProvider(this);
     }
 
+    private final ListeningExecutorService syncThreadPool = FrmExecutors.instance()
+            // TODO improve log in ThreadPoolExecutor.afterExecute
+            // TODO max bloking queue size
+            // TODO core/min pool size
+            .newFixedThreadPool(6, new ThreadFactoryBuilder()
+                    .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                    .setDaemon(false)
+                    .setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread thread, Throwable e) {
+                            LOG.error("uncaught exception {}", thread, e);
+                        }
+                    })
+                    .build());
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
         final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
@@ -108,20 +122,6 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         {
-            final ListeningExecutorService syncThreadPool = FrmExecutors.instance()
-                    // TODO improve log in ThreadPoolExecutor.afterExecute
-                    // TODO max bloking queue size
-                    // TODO core/min pool size
-                    .newFixedThreadPool(6, new ThreadFactoryBuilder()
-                            .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
-                            .setDaemon(true)
-                            .setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                                @Override
-                                public void uncaughtException(Thread thread, Throwable e) {
-                                    LOG.error("uncaught exception {}", thread, e);
-                                }
-                            })
-                            .build());
             final SyncReactorImpl syncReactorImpl = new SyncReactorImpl();
             final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl
                     .setFlowForwarder(flowForwarder)
@@ -187,6 +187,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
             dataTreeOperationalChangeListener.close();
             dataTreeOperationalChangeListener = null;
         }
+        
+        syncThreadPool.shutdown();
     }
 }
 

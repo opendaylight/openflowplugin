@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.Collections;
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesUpdateCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -27,6 +28,10 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Michal Rehak
+ */
+@SuppressWarnings("deprecation")
 public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatures, UpdateTableOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
@@ -40,14 +45,14 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     public Future<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
                                                        final TableFeatures original, final TableFeatures update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Table Update request [Tbl id, node Id {} {}",
+        LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
 
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
 
-        InstanceIdentifier<Table> iiToTable = identifier.firstIdentifierOf(Table.class);
+        final InstanceIdentifier<Table> iiToTable = identifier.firstIdentifierOf(Table.class);
         builder.setTableRef(new TableRef(iiToTable));
 
         builder.setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(

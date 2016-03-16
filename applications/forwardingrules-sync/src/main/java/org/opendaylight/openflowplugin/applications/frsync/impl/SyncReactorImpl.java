@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,12 +103,13 @@ public class SyncReactorImpl implements SyncReactor {
                 if (!input.isSuccessful()) {
                     //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                     //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
-                    //        Arrays.asList(input, output),
+                    //        Futures.asList Arrays.asList(input, output),
                     //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
                 }
                 return addMissingGroups(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingGroups"));
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -117,6 +119,7 @@ public class SyncReactorImpl implements SyncReactor {
                 return addMissingMeters(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingMeters"));
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -126,6 +129,7 @@ public class SyncReactorImpl implements SyncReactor {
                 return addMissingFlows(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingFlows"));
 
         /**
          * reconciliation strategy - phase 2: - remove redundand objects in following order - flows
@@ -140,6 +144,7 @@ public class SyncReactorImpl implements SyncReactor {
                 return removeRedundantFlows(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantFlows"));
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -149,6 +154,7 @@ public class SyncReactorImpl implements SyncReactor {
                 return removeRedundantMeters(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantMeters"));
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -158,27 +164,10 @@ public class SyncReactorImpl implements SyncReactor {
                 return removeRedundantGroups(nodeIdent, configTree, operationalTree);
             }
         });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantGroups"));
 
         // log final result
-        Futures.addCallback(resultVehicle, new FutureCallback<RpcResult<Void>>() {
-            @Override
-            public void onSuccess(@Nullable final RpcResult<Void> result) {
-                if (result != null) {
-                    if (result.isSuccessful())
-                        LOG.debug("reconciliation finished successfully: {}", nodeId.getValue());
-                    else {
-                        LOG.debug("reconciliation failed: {} -> ", nodeId.getValue(), result.getErrors());
-                    }
-                } else {
-                    LOG.debug("reconciliation failed: {} -> null result", nodeId.getValue());
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.debug("reconciliation failed seriously: {}", nodeId.getValue(), t);
-            }
-        });
+        Futures.addCallback(resultVehicle, logResultCallback(nodeId, "final result"));
 
         return Futures.transform(resultVehicle, new Function<RpcResult<Void>, Boolean>() {
             @Override
@@ -190,6 +179,29 @@ public class SyncReactorImpl implements SyncReactor {
                 return input.isSuccessful();
             }
         });
+    }
+
+    private FutureCallback<RpcResult<Void>> logResultCallback(final NodeId nodeId, final String prefix) {
+        return new FutureCallback<RpcResult<Void>>() {
+            @Override
+            public void onSuccess(@Nullable final RpcResult<Void> result) {
+                if (result != null) {
+                    if (result.isSuccessful()) {
+                        LOG.debug(prefix + " finished successfully: {}", nodeId.getValue());
+                    } else {
+                        final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(), ImmutableList.<RpcError>of());
+                        LOG.debug(prefix + " failed: {} -> {}", nodeId.getValue(), Arrays.toString(errors.toArray()));
+                    }
+                } else {
+                    LOG.debug(prefix + "reconciliation failed: {} -> null result", nodeId.getValue());
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.debug(prefix + "reconciliation failed seriously: {}", nodeId.getValue(), t);
+            }
+        };
     }
 
     public SyncReactorImpl setFlowForwarder(final FlowForwarder flowForwarder) {
@@ -336,7 +348,6 @@ public class SyncReactorImpl implements SyncReactor {
             allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                     groupForwarder.update(groupIdent, existingGroup, group, nodeIdent)));
         }
-
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults), ReconcileUtil.<AddGroupOutput>createRpcResultCondenser("group add"));

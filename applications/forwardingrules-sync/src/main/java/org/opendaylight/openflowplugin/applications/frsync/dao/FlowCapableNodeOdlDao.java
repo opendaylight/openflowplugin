@@ -1,6 +1,10 @@
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
 import com.google.common.base.Optional;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -36,9 +40,9 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
         try (final ReadOnlyTransaction roTx = dataBroker.newReadOnlyTransaction()) {
             final InstanceIdentifier<FlowCapableNode> path =
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-            return roTx.read(logicalDatastoreType, path).checkedGet();
-        } catch (ReadFailedException e) {
-            LOG.error("error reading " + nodeId, e);
+            return roTx.read(logicalDatastoreType, path).checkedGet(5000, TimeUnit.MILLISECONDS);
+        } catch (ReadFailedException | TimeoutException e) {
+            LOG.error("error reading {}", nodeId, e);
         }
 
         return Optional.absent();

@@ -42,53 +42,54 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup {}", nodeId.getValue());
 
-
-
         final long stampBeforeGuard = System.nanoTime();
-        final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);
-        
-        final long stampAfterGuard = System.nanoTime();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("syncup start {} waiting:{} guard:{} thread:{}", nodeId.getValue(),
-                    formatNanos(stampAfterGuard - stampBeforeGuard),
-                    guard, threadName());
+        final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);//TODO handle InteruptedException
+
+        try {
+            final long stampAfterGuard = System.nanoTime();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("syncup start {} waiting:{} guard:{} thread:{}", nodeId.getValue(),
+                        formatNanos(stampAfterGuard - stampBeforeGuard),
+                        guard, threadName());
+            }
+            
+            final ListenableFuture<Boolean> endResult =
+                    delegate.syncup(flowcapableNodePath, configTree, operationalTree);//TODO handle InteruptedException
+            
+            Futures.addCallback(endResult, new FutureCallback<Boolean>() {
+                @Override
+                public void onSuccess(@Nullable final Boolean result) {
+                    if (LOG.isDebugEnabled()) {
+                        final long stampFinished = System.nanoTime();
+                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}, thread:{}", nodeId.getValue(),
+                                formatNanos(stampFinished - stampBeforeGuard),
+                                formatNanos(stampFinished - stampAfterGuard),
+                                formatNanos(stampAfterGuard - stampBeforeGuard),
+                                guard, threadName());
+                    }
+                    
+                    lockReleaseForNodeId(nodeId, guard);
+                }
+                
+                @Override
+                public void onFailure(final Throwable t) {
+                    if (LOG.isDebugEnabled()) {
+                        final long stampFinished = System.nanoTime();
+                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} thread:{}", nodeId.getValue(),
+                                formatNanos(stampFinished - stampBeforeGuard),
+                                formatNanos(stampFinished - stampAfterGuard),
+                                formatNanos(stampAfterGuard - stampBeforeGuard),
+                                guard, threadName());
+                    }
+                    
+                    lockReleaseForNodeId(nodeId, guard);
+                }
+            });
+            return endResult;
+        } catch(InterruptedException e) {
+            lockReleaseForNodeId(nodeId, guard);
+            throw e;
         }
-
-
-        final ListenableFuture<Boolean> endResult =
-                delegate.syncup(flowcapableNodePath, configTree, operationalTree);
-
-        Futures.addCallback(endResult, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(@Nullable final Boolean result) {
-                if (LOG.isDebugEnabled()) {
-                    final long stampFinished = System.nanoTime();
-                    LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}, thread:{}", nodeId.getValue(),
-                            formatNanos(stampFinished - stampBeforeGuard),
-                            formatNanos(stampFinished - stampAfterGuard),
-                            formatNanos(stampAfterGuard - stampBeforeGuard),
-                            guard, threadName());
-                }
-
-                lockReleaseForNodeId(nodeId, guard);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                if (LOG.isDebugEnabled()) {
-                    final long stampFinished = System.nanoTime();
-                    LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} thread:{}", nodeId.getValue(),
-                            formatNanos(stampFinished - stampBeforeGuard),
-                            formatNanos(stampFinished - stampAfterGuard),
-                            formatNanos(stampAfterGuard - stampBeforeGuard),
-                            guard, threadName());
-                }
-
-                lockReleaseForNodeId(nodeId, guard);
-            }
-        });
-
-        return endResult;
     }
 
     protected String formatNanos(long nanos) {

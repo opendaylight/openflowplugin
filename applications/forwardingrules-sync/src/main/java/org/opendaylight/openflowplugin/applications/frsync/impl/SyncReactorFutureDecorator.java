@@ -1,6 +1,8 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -42,15 +44,19 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                 final String oldThreadName = updateThreadName(nodeId);
 
                 try {
-                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree).get();
+                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree)
+                            .get(10000, TimeUnit.MILLISECONDS);
                     LOG.trace("ret {} {}", nodeId.getValue(), ret);
-                    return ret;
+                    return true;
+                } catch (TimeoutException e) {
+                    LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
+                    return false;
                 } finally {
                     updateThreadName(oldThreadName);
                 }
             }
         });
-
+        
         return syncup;
     }
 
@@ -59,7 +65,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                     throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("doSyncupInFuture {}", nodeId.getValue());
-        
+
         return delegate.syncup(flowcapableNodePath, configTree, operationalTree);
     }
 
@@ -72,7 +78,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
         try {
-            if(oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+            if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
                 currentThread.setName(oldName + "@" + nodeId.getValue());
             } else {
                 LOG.warn("try to update foreign thread name {} {}", nodeId, oldName);
@@ -82,12 +88,12 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         }
         return oldName;
     }
-    
+
     protected String updateThreadName(String name) {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
         try {
-            if(oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+            if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
                 currentThread.setName(name);
             } else {
                 LOG.warn("try to update foreign thread name {} {}", oldName, name);

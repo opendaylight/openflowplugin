@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
+@SuppressWarnings("deprecation")
 public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupOutput, RemoveGroupOutput, UpdateGroupOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
@@ -52,7 +53,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Received the Table REMOVE request [Tbl id, node Id {} {}",
+        LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
         
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(removeDataObj);
@@ -66,7 +67,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
                                                        final Group original, final Group update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Received the Group UPDATE request [Tbl id, node Id {} {} {}",
+        LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, update);
         
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
@@ -82,7 +83,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     @Override
     public Future<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Received the Group ADD request [Tbl id, node Id {} {} {}",
+        LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, addDataObj);
         
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(addDataObj);
@@ -92,4 +93,3 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
         return salGroupService.addGroup(builder.build());
     }
 }
-

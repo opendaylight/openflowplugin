@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
@@ -39,7 +40,12 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
             final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
 
             try {
-                processNodeModification(modification);
+                final Optional<ListenableFuture<Boolean>> optFuture = processNodeModification(modification);
+                if (optFuture.isPresent()) {
+                    final ListenableFuture<Boolean> future = optFuture.get();
+                    final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
+                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId, threadName());
+                }
             } catch (InterruptedException e) {
                 LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId);
             } catch (Exception e) {
@@ -52,4 +58,9 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
             DataTreeModification<T> modification) throws ReadFailedException, InterruptedException;
 
     public abstract LogicalDatastoreType dsType();
+    
+    static String threadName() {
+        final Thread currentThread = Thread.currentThread();
+        return currentThread.getName();
+    }
 }
