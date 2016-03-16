@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6Arbitrary;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -46,6 +47,7 @@ public final class IpConversionUtil {
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
     private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
+    private static final String DEFAULT_IPV6_ARBITRARY_BITMASK = "FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF";
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -670,5 +672,21 @@ public final class IpConversionUtil {
             }
         }
         return false;
+    }
+
+    public static final byte[] convertIpv6ArbitraryMaskToByteArray(Ipv6Arbitrary mask) {
+        String maskValue;
+        if(mask.getValue() != null && mask != null){
+           maskValue  = mask.getValue();
+        }
+        else maskValue = DEFAULT_IPV6_ARBITRARY_BITMASK;
+        InetAddress maskInIpFormat = null;
+        try {
+            maskInIpFormat = InetAddress.getByName(maskValue);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        byte[] bytes = maskInIpFormat.getAddress();
+        return bytes;
     }
 }
