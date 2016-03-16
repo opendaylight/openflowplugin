@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutputBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,9 +112,20 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                 LOG.info("submitRoleChange onSuccess for device:{}, role:{}",
                         deviceContext.getPrimaryConnectionContext().getNodeId(), ofpRole);
                 final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
-                final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
-                setRoleOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
-               finalFuture.set(setRoleOutputBuilder.build());
+                final Collection<RpcError> rpcErrors = roleRequestOutputRpcResult.getErrors();
+                if (roleRequestOutput != null) {
+                    final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
+                    setRoleOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
+                    finalFuture.set(setRoleOutputBuilder.build());
+
+                } else if (rpcErrors != null) {
+                    LOG.trace("roleRequestOutput is null , rpcErrors={}", rpcErrors);
+                    for (RpcError rpcError : rpcErrors) {
+                        LOG.warn("RpcError on submitRoleChange for {}: {}",
+                                deviceContext.getPrimaryConnectionContext().getNodeId(), rpcError.toString());
+                    }
+                    finalFuture.set(null);
+                }
             }
 
             @Override
