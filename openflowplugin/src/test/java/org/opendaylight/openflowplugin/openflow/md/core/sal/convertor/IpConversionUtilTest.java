@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6Arbitrary;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,5 +149,15 @@ public class IpConversionUtilTest {
         DottedQuad dottedQuad;
         dottedQuad = IpConversionUtil.extractIpv4AddressMask(new Ipv4Prefix("1.1.1.1/24"));
         Assert.assertEquals(dottedQuad.getValue(),"255.255.255.0");
+    }
+    
+    @Test
+    public void convertipv6ArbitraryMaskToByteArrayTest() {
+        byte[] bytes = {-5,-96,-1,-74,-1,-16,-1,-16, -1,-16,-1,-16,-1,-16,-91,85};
+        byte[] maskBytes = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(new Ipv6Arbitrary("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
+        for(int i=0; i<bytes.length;i++){
+            int mask = maskBytes[i];
+            Assert.assertEquals(bytes[i],mask);
+        }
     }
 }
