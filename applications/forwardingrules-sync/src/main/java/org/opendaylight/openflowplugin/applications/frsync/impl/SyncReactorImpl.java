@@ -477,7 +477,7 @@ public class SyncReactorImpl implements SyncReactor {
 
                 if (existingFlow == null) {
                     LOG.debug("adding flow {} in table {} - absent on device {} match{}",
-                            flow.getId(), tableConfigured.getKey(), nodeId);
+                            flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
 
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
                             flowForwarder.add(flowIdent, flow, nodeIdent)));
