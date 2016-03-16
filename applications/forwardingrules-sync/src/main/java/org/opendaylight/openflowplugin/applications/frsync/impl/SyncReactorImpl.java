@@ -8,6 +8,16 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,15 +25,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
+import org.opendaylight.openflowplugin.applications.frsync.util.CrudCounts;
 import org.opendaylight.openflowplugin.applications.frsync.util.FlowCapableNodeLookups;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -56,20 +66,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * Synchronization reactor implementation, applicable for both - syncup and reconciliation
- * 
+ *
  * @author Michal Rehak
  */
 public class SyncReactorImpl implements SyncReactor {
@@ -84,10 +83,10 @@ public class SyncReactorImpl implements SyncReactor {
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
+                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
 
         LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
-
+        final SyncCrudCounters counters = new SyncCrudCounters();
         /**
          * reconciliation strategy - phase 1: - add/update missing objects in following order -
          * table features - groups (reordered) - meters - flows
@@ -106,7 +105,7 @@ public class SyncReactorImpl implements SyncReactor {
                     //        Futures.asList Arrays.asList(input, output),
                     //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
                 }
-                return addMissingGroups(nodeIdent, configTree, operationalTree);
+                return addMissingGroups(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingGroups"));
@@ -114,9 +113,9 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
-                return addMissingMeters(nodeIdent, configTree, operationalTree);
+                return addMissingMeters(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingMeters"));
@@ -124,9 +123,9 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
-                return addMissingFlows(nodeIdent, configTree, operationalTree);
+                return addMissingFlows(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "addMissingFlows"));
@@ -139,9 +138,9 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
-                return removeRedundantFlows(nodeIdent, configTree, operationalTree);
+                return removeRedundantFlows(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantFlows"));
@@ -149,9 +148,9 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
-                return removeRedundantMeters(nodeIdent, configTree, operationalTree);
+                return removeRedundantMeters(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantMeters"));
@@ -159,9 +158,9 @@ public class SyncReactorImpl implements SyncReactor {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
-                  //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                    //TODO michal.rehak chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 }
-                return removeRedundantGroups(nodeIdent, configTree, operationalTree);
+                return removeRedundantGroups(nodeIdent, configTree, operationalTree, counters);
             }
         });
         Futures.addCallback(resultVehicle, logResultCallback(nodeId, "removeRedundantGroups"));
@@ -174,6 +173,24 @@ public class SyncReactorImpl implements SyncReactor {
             public Boolean apply(RpcResult<Void> input) {
                 if (input == null) {
                     return false;
+                }
+
+                if (LOG.isDebugEnabled()) {
+                    final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
+                    final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
+                    final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
+                    LOG.debug("sync-outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}",
+                            nodeId.getValue(),
+                            flowCrudCounts.getAdded(),
+                            flowCrudCounts.getUpdated(),
+                            flowCrudCounts.getRemoved(),
+                            meterCrudCounts.getAdded(),
+                            meterCrudCounts.getUpdated(),
+                            meterCrudCounts.getRemoved(),
+                            groupCrudCounts.getAdded(),
+                            groupCrudCounts.getUpdated(),
+                            groupCrudCounts.getRemoved()
+                    );
                 }
 
                 return input.isSuccessful();
@@ -230,7 +247,7 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     ListenableFuture<RpcResult<Void>> updateTableFeatures(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured) {
+                                                          final FlowCapableNode flowCapableNodeConfigured) {
         // CHECK if while pushing the update, updateTableInput can be null to emulate a table add
         final List<Table> tableList = safeTables(flowCapableNodeConfigured);
 
@@ -262,8 +279,9 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     ListenableFuture<RpcResult<Void>> addMissingGroups(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+                                                       final FlowCapableNode flowCapableNodeConfigured,
+                                                       final FlowCapableNode flowCapableNodeOperational,
+                                                       final SyncCrudCounters counters) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
         if (groupsConfigured.isEmpty()) {
@@ -273,13 +291,14 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
 
-        return addMissingGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
+        return addMissingGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational, counters);
     }
 
     protected ListenableFuture<RpcResult<Void>> addMissingGroups(NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final List<Group> groupsConfigured,
-            final List<Group> groupsOperational) {
+                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                 final List<Group> groupsConfigured,
+                                                                 final List<Group> groupsOperational,
+                                                                 final SyncCrudCounters counters) {
 
         final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
 
@@ -291,12 +310,17 @@ public class SyncReactorImpl implements SyncReactor {
             final List<ItemSyncBox<Group>> groupsAddPlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupOperationalMap, pendingGroups);
             if (!groupsAddPlan.isEmpty()) {
+                final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
+                groupCrudCounts.setAdded(ReconcileUtil.countTotalAdds(groupsAddPlan));
+                groupCrudCounts.setUpdated(ReconcileUtil.countTotalUpdated(groupsAddPlan));
+
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("adding groups: inputGroups={}, planSteps={}, toAddTotal={}, toUpdateTotal={}",
                             pendingGroups.size(), groupsAddPlan.size(),
-                            ReconcileUtil.countTotalAdds(groupsAddPlan),
-                            ReconcileUtil.countTotalUpdated(groupsAddPlan));
+                            groupCrudCounts.getAdded(),
+                            groupCrudCounts.getUpdated());
                 }
+
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
                     chainedResult =
@@ -367,8 +391,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     ListenableFuture<RpcResult<Void>> addMissingMeters(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+                                                       final FlowCapableNode flowCapableNodeConfigured,
+                                                       final FlowCapableNode flowCapableNodeOperational,
+                                                       final SyncCrudCounters counters) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
         if (metersConfigured.isEmpty()) {
@@ -378,16 +403,18 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
 
-        return addMissingMeters(nodeId, nodeIdent, metersConfigured, metersOperational);
+        return addMissingMeters(nodeId, nodeIdent, metersConfigured, metersOperational, counters);
     }
 
 
     protected ListenableFuture<RpcResult<Void>> addMissingMeters(NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Meter> metersConfigured,
-            List<Meter> metersOperational) {
+                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                 List<Meter> metersConfigured,
+                                                                 List<Meter> metersOperational,
+                                                                 final SyncCrudCounters counters) {
 
         final Map<MeterId, Meter> meterOperationalMap = FlowCapableNodeLookups.wrapMetersToMap(metersOperational);
+        final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
 
         final List<ListenableFuture<RpcResult<AddMeterOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateMeterOutput>>> allUpdateResults = new ArrayList<>();
@@ -400,6 +427,7 @@ public class SyncReactorImpl implements SyncReactor {
                         meter.getMeterId(), nodeId);
                 allResults.add(JdkFutureAdapters.listenInPoolThread(
                         meterForwarder.add(meterIdent, meter, nodeIdent)));
+                meterCrudCounts.incAdded();
             } else {
                 // compare content and eventually update
                 LOG.trace("meter {} - already present on device {} .. comparing", meter.getMeterId(), nodeId);
@@ -407,6 +435,7 @@ public class SyncReactorImpl implements SyncReactor {
                     LOG.trace("meter {} - needs update on device {}", meter.getMeterId(), nodeId);
                     allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                             meterForwarder.update(meterIdent, existingMeter, meter, nodeIdent)));
+                    meterCrudCounts.incUpdated();
                 } else {
                     LOG.trace("meter {} - on device {} is equal to the configured one", meter.getMeterId(), nodeId);
                 }
@@ -430,8 +459,9 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     ListenableFuture<RpcResult<Void>> addMissingFlows(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+                                                      final FlowCapableNode flowCapableNodeConfigured,
+                                                      final FlowCapableNode flowCapableNodeOperational,
+                                                      final SyncCrudCounters counters) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
         if (tablesConfigured.isEmpty()) {
@@ -441,16 +471,18 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);
 
-        return addMissingFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
+        return addMissingFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational, counters);
     }
 
     protected ListenableFuture<RpcResult<Void>> addMissingFlows(NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Table> tablesConfigured, List<Table> tablesOperational) {
+                                                                final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                List<Table> tablesConfigured, List<Table> tablesOperational,
+                                                                final SyncCrudCounters counters) {
 
         final Map<Short, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(tablesOperational);
         final List<ListenableFuture<RpcResult<AddFlowOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateFlowOutput>>> allUpdateResults = new ArrayList<>();
+        final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
 
         for (final Table tableConfigured : tablesConfigured) {
             final List<Flow> flowsConfigured = tableConfigured.getFlow();
@@ -481,6 +513,7 @@ public class SyncReactorImpl implements SyncReactor {
 
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
                             flowForwarder.add(flowIdent, flow, nodeIdent)));
+                    flowCrudCounts.incAdded();
                 } else {
                     LOG.trace("flow {} in table {} - already present on device {} .. comparing match{}",
                             flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
@@ -490,6 +523,7 @@ public class SyncReactorImpl implements SyncReactor {
                                 flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
                         allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                                 flowForwarder.update(flowIdent, existingFlow, flow, nodeIdent)));
+                        flowCrudCounts.incUpdated();
                     } else {
                         LOG.trace("flow {} in table {} - is equal to configured one on device {} match{}",
                                 flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
@@ -518,7 +552,8 @@ public class SyncReactorImpl implements SyncReactor {
     ListenableFuture<RpcResult<Void>> removeRedundantFlows(
             final InstanceIdentifier<FlowCapableNode> nodeIdent,
             final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+            final FlowCapableNode flowCapableNodeOperational,
+            final SyncCrudCounters counters) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Table> tablesOperational = safeTables(flowCapableNodeOperational);
 
@@ -529,14 +564,15 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Table> tablesConfigured = safeTables(flowCapableNodeConfigured);
 
-        return removeRedundantFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational);
+        return removeRedundantFlows(nodeId, nodeIdent, tablesConfigured, tablesOperational, counters);
     }
 
     protected ListenableFuture<RpcResult<Void>> removeRedundantFlows(
             NodeId nodeId, final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final List<Table> tablesConfigured, final List<Table> tablesOperational) {
+            final List<Table> tablesConfigured, final List<Table> tablesOperational, final SyncCrudCounters counters) {
         final Map<Short, Table> tableConfigMap = FlowCapableNodeLookups.wrapTablesToMap(tablesConfigured);
         final List<ListenableFuture<RpcResult<RemoveFlowOutput>>> allResults = new ArrayList<>();
+        final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
 
         for (final Table tableOperational : tablesOperational) {
             final List<Flow> flowsOperational = tableOperational.getFlow();
@@ -558,7 +594,7 @@ public class SyncReactorImpl implements SyncReactor {
             // loop flows on device and check if the are configured
             for (final Flow flow : flowsOperational) {
                 final Flow existingFlow = FlowCapableNodeLookups.flowMapLookupExisting(flow, flowConfigMap);
-                if (existingFlow != null) {
+                if (existingFlow == null) {
                     LOG.trace("removing flow {} in table {} - absent in config {}, match {}",
                             flow.getId(), tableOperational.getKey(), nodeId, flow.getMatch());
 
@@ -566,6 +602,7 @@ public class SyncReactorImpl implements SyncReactor {
                             tableIdent.child(Flow.class, flow.getKey());
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
                             flowForwarder.remove(flowIdent, flow, nodeIdent)));
+                    flowCrudCounts.incRemoved();
                 } else {
                     LOG.trace("skipping flow {} in table {} - present in config {}, match {}",
                             flow.getId(), tableOperational.getKey(), nodeId, flow.getMatch());
@@ -582,8 +619,9 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     ListenableFuture<RpcResult<Void>> removeRedundantMeters(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+                                                            final FlowCapableNode flowCapableNodeConfigured,
+                                                            final FlowCapableNode flowCapableNodeOperational,
+                                                            final SyncCrudCounters counters) {
 
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Meter> metersOperational = safeMeters(flowCapableNodeOperational);
@@ -594,16 +632,18 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Meter> metersConfigured = safeMeters(flowCapableNodeConfigured);
 
-        return removeRedundantMeters(nodeId, nodeIdent, metersConfigured, metersOperational);
+        return removeRedundantMeters(nodeId, nodeIdent, metersConfigured, metersOperational, counters);
     }
 
 
     protected ListenableFuture<RpcResult<Void>> removeRedundantMeters(NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Meter> metersConfigured,
-            List<Meter> metersOperational) {
+                                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                      List<Meter> metersConfigured,
+                                                                      List<Meter> metersOperational,
+                                                                      final SyncCrudCounters counters) {
 
         final Map<MeterId, Meter> meterConfigMap = FlowCapableNodeLookups.wrapMetersToMap(metersConfigured);
+        final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
 
         final List<ListenableFuture<RpcResult<RemoveMeterOutput>>> allResults = new ArrayList<>();
         for (Meter meter : metersOperational) {
@@ -614,6 +654,7 @@ public class SyncReactorImpl implements SyncReactor {
                         nodeIdent.child(Meter.class, meter.getKey());
                 allResults.add(JdkFutureAdapters.listenInPoolThread(
                         meterForwarder.remove(meterIdent, meter, nodeIdent)));
+                meterCrudCounts.incRemoved();
             } else {
                 LOG.trace("skipping meter {} - present in config {}",
                         meter.getMeterId(), nodeId);
@@ -629,8 +670,9 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final FlowCapableNode flowCapableNodeConfigured,
-            final FlowCapableNode flowCapableNodeOperational) {
+                                                            final FlowCapableNode flowCapableNodeConfigured,
+                                                            final FlowCapableNode flowCapableNodeOperational,
+                                                            final SyncCrudCounters counters) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         final List<Group> groupsOperational = safeGroups(flowCapableNodeOperational);
         if (groupsOperational == null || groupsOperational.isEmpty()) {
@@ -640,14 +682,16 @@ public class SyncReactorImpl implements SyncReactor {
 
         final List<Group> groupsConfigured = safeGroups(flowCapableNodeConfigured);
 
-        return removeRedundantGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational);
+        return removeRedundantGroups(nodeId, nodeIdent, groupsConfigured, groupsOperational, counters);
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            List<Group> groupsConfigured, List<Group> groupsOperational) {
+                                                            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                            List<Group> groupsConfigured, List<Group> groupsOperational,
+                                                            final SyncCrudCounters counters) {
 
         final Map<Long, Group> groupConfigMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);
+        final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.addAll(groupsOperational);
@@ -657,10 +701,11 @@ public class SyncReactorImpl implements SyncReactor {
             final List<ItemSyncBox<Group>> groupsRemovePlan =
                     ReconcileUtil.resolveAndDivideGroups(nodeId, groupConfigMap, pendingGroups, false);
             if (!groupsRemovePlan.isEmpty()) {
+                groupCrudCounts.setRemoved(ReconcileUtil.countTotalAdds(groupsRemovePlan));
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("removing groups: inputGroups={}, planSteps={}, toRemoveTotal={}",
                             pendingGroups.size(), groupsRemovePlan.size(),
-                            ReconcileUtil.countTotalAdds(groupsRemovePlan));
+                            groupCrudCounts.getRemoved());
                 }
                 Collections.reverse(groupsRemovePlan);
                 chainedResult = flushRemoveGroupPortionAndBarrier(nodeIdent, groupsRemovePlan.get(0));

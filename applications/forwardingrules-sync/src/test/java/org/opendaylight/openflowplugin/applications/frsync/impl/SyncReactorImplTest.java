@@ -8,13 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +29,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -88,11 +89,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * Test for {@link SyncReactorImpl}.
- * 
+ *
  * @author Michal Rehak
  */
 @SuppressWarnings("deprecation")
@@ -133,6 +132,8 @@ public class SyncReactorImplTest {
     private ArgumentCaptor<Meter> meterUpdateCaptor;
     @Captor
     private ArgumentCaptor<TableFeatures> tableFeaturesCaptor;
+
+    private SyncCrudCounters counters;
 
     @Before
     public void setUp() throws Exception {
@@ -179,6 +180,8 @@ public class SyncReactorImplTest {
         reactor.setGroupForwarder(groupCommitter);
         reactor.setFlowForwarder(flowCommitter);
         reactor.setTransactionService(flowCapableTxService);
+
+        counters = new SyncCrudCounters();
     }
 
     private <O> Answer<Future<RpcResult<O>>> createSalServiceFutureAnswer() {
@@ -324,7 +327,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.removeRedundantFlows(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -366,7 +369,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingFlows(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -414,7 +417,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingFlows(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -460,7 +463,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingMeters(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -500,7 +503,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingMeters(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -545,7 +548,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.removeRedundantMeters(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -580,7 +583,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingGroups(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -632,7 +635,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.addMissingGroups(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -688,7 +691,7 @@ public class SyncReactorImplTest {
                 .build();
 
         final ListenableFuture<RpcResult<Void>> result = reactor.removeRedundantGroups(
-                NODE_IDENT, config, operational);
+                NODE_IDENT, config, operational, counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
