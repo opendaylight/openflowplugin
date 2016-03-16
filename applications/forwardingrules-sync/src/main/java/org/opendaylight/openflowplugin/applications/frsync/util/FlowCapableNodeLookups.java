@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -53,8 +55,8 @@ public final class FlowCapableNodeLookups {
     }
 
     @Nonnull
-    public static Map<FlowId, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
-        final Map<FlowId, Flow> flowMap;
+    public static Map<SwitchFlowId, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
+        final Map<SwitchFlowId, Flow> flowMap;
 
         if (flows == null) {
             flowMap = Collections.emptyMap();
@@ -62,11 +64,15 @@ public final class FlowCapableNodeLookups {
             LOG.trace("flows found: {}", flows.size());
             flowMap = new HashMap<>();
             for (Flow flow : flows) {
-                flowMap.put(flow.getId(), flow);
+                flowMap.put(new SwitchFlowId(flow), flow);
             }
         }
 
         return flowMap;
+    }
+    
+    public static Flow flowMapLookupExisting(Flow flow, Map<SwitchFlowId, Flow> flowConfigMap) {
+        return flowConfigMap.get(new SwitchFlowId(flow));
     }
 
     @Nonnull

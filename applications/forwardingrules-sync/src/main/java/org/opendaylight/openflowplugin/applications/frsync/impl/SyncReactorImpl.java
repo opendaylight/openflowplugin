@@ -19,12 +19,12 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
 import org.opendaylight.openflowplugin.applications.frsync.util.FlowCapableNodeLookups;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -464,7 +464,7 @@ public class SyncReactorImpl implements SyncReactor {
             // lookup table (on device)
             final Table tableOperational = tableOperationalMap.get(tableConfigured.getId());
             // wrap existing (on device) flows in current table into map
-            final Map<FlowId, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
+            final Map<SwitchFlowId, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
                     tableOperational != null
                             ? tableOperational.getFlow()
                             : null);
@@ -472,27 +472,27 @@ public class SyncReactorImpl implements SyncReactor {
 
             // loop configured flows and check if already present on device
             for (final Flow flow : flowsConfigured) {
-                final Flow existingFlow = flowOperationalMap.get(flow.getId());
+                final Flow existingFlow = FlowCapableNodeLookups.flowMapLookupExisting(flow, flowOperationalMap);
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, flow.getKey());
 
                 if (existingFlow == null) {
-                    LOG.debug("adding flow {} in table {} - absent on device {}",
+                    LOG.debug("adding flow {} in table {} - absent on device {} match{}",
                             flow.getId(), tableConfigured.getKey(), nodeId);
 
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
                             flowForwarder.add(flowIdent, flow, nodeIdent)));
                 } else {
-                    LOG.trace("flow {} in table {} - already present on device {} .. comparing",
-                            flow.getId(), tableConfigured.getKey(), nodeId);
+                    LOG.trace("flow {} in table {} - already present on device {} .. comparing match{}",
+                            flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
                     // check instructions and eventually update
                     if (!Objects.equals(flow.getInstructions(), existingFlow.getInstructions())) {
-                        LOG.trace("flow {} in table {} - needs update on device {}",
-                                flow.getId(), tableConfigured.getKey(), nodeId);
+                        LOG.trace("flow {} in table {} - needs update on device {} match{}",
+                                flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
                         allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                                 flowForwarder.update(flowIdent, existingFlow, flow, nodeIdent)));
                     } else {
-                        LOG.trace("flow {} in table {} - is equal to configured one on device {}",
-                                flow.getId(), tableConfigured.getKey(), nodeId);
+                        LOG.trace("flow {} in table {} - is equal to configured one on device {} match{}",
+                                flow.getId(), tableConfigured.getKey(), nodeId, flow.getMatch());
                     }
                 }
             }
@@ -550,25 +550,25 @@ public class SyncReactorImpl implements SyncReactor {
             // lookup configured table
             final Table tableConfig = tableConfigMap.get(tableOperational.getId());
             // wrap configured flows in current table into map
-            final Map<FlowId, Flow> flowConfigMap = FlowCapableNodeLookups.wrapFlowsToMap(
+            final Map<SwitchFlowId, Flow> flowConfigMap = FlowCapableNodeLookups.wrapFlowsToMap(
                     tableConfig != null
                             ? tableConfig.getFlow()
                             : null);
 
             // loop flows on device and check if the are configured
             for (final Flow flow : flowsOperational) {
-                if (!flowConfigMap.containsKey(flow.getId())) {
-                    LOG.trace("removing flow {} in table {} - absent in config {}",
-                            flow.getId(), tableOperational.getKey(), nodeId);
+                final Flow existingFlow = FlowCapableNodeLookups.flowMapLookupExisting(flow, flowConfigMap);
+                if (existingFlow != null) {
+                    LOG.trace("removing flow {} in table {} - absent in config {}, match {}",
+                            flow.getId(), tableOperational.getKey(), nodeId, flow.getMatch());
 
                     final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
                             tableIdent.child(Flow.class, flow.getKey());
                     allResults.add(JdkFutureAdapters.listenInPoolThread(
                             flowForwarder.remove(flowIdent, flow, nodeIdent)));
-
                 } else {
-                    LOG.trace("skipping flow {} in table {} - present in config {}",
-                            flow.getId(), tableOperational.getKey(), nodeId);
+                    LOG.trace("skipping flow {} in table {} - present in config {}, match {}",
+                            flow.getId(), tableOperational.getKey(), nodeId, flow.getMatch());
                 }
             }
         }
