@@ -129,12 +129,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     .setMeterForwarder(meterForwarder).setTableForwarder(tableForwarder)
                     .setTransactionService(transactionService),
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
-            final SyncReactorFutureDecorator syncFutureReactor =
-                    new SyncReactorFutureDecorator(syncReactorImpl, syncThreadPool);
-            final SyncReactor cfgReactor = syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
-                    //new SyncReactorFutureWithCompressionDecorator(commonFutureReactor, syncThreadPool);
-            final SyncReactor operReactor = syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
-                    //new SyncReactorFutureWithCompressionDecorator(syncFutureReactor, syncThreadPool);
+            //final SyncReactorFutureDecorator syncFutureReactor =
+            //        new SyncReactorFutureDecorator(syncReactorGuard, syncThreadPool);
+            final SyncReactor cfgReactor = //syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
+                    new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
+            final SyncReactor operReactor = //syncReactorImpl; // syncReactorGuard; //syncFutureReactor;
+                    new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
 
             final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
