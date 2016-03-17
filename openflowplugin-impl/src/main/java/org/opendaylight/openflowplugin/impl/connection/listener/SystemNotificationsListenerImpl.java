@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -44,6 +45,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
+        LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
         connectionContext.onConnectionClosed();
     }
 
@@ -97,6 +100,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     }
                 }
                 if (shouldBeDisconnected) {
+                    LOG.info("ConnectionEvent:Closing connection as device is idle. Echo sent at {}. Device:{}, NodeId:{}",
+                            new Date((new Date()).getTime() - echoReplyTimeout), remoteAddress, connectionContext.getNodeId());
                     connectionContext.closeConnection(true);
                 }
             }
