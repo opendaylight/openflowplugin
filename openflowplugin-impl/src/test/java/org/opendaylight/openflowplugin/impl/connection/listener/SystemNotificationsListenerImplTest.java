@@ -56,10 +56,11 @@ public class SystemNotificationsListenerImplTest {
         connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
         connectionContextGolem.changeStateToWorking();
         connectionContextGolem.setNodeId(nodeId);
+        connectionContext = Mockito.spy(connectionContextGolem);
 
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
                 InetSocketAddress.createUnresolved("unit-odl.example.org", 4242));
-        connectionContext = Mockito.spy(connectionContextGolem);
+
         Mockito.when(features.getAuxiliaryId()).thenReturn((short) 0);
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
@@ -88,6 +89,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
+        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionContext).getNodeId();
     }
 
     /**
@@ -105,6 +108,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
+        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionContext).getNodeId();
     }
 
     /**
@@ -124,6 +129,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
+        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionContext).getNodeId();
     }
 
     /**
@@ -141,6 +148,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
+        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionContext).getNodeId();
     }
 
     /**
@@ -190,6 +199,8 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).changeStateToTimeouting();
         Mockito.verify(connectionContext).closeConnection(true);
+        Mockito.verify(connectionContext).getNodeId();
+
     }
 
     private void verifyCommonInvocations() {
