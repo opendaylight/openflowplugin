@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a42497e_24e2b6d5",
+        "filename": "model/model-flow-service/src/main/yang/batch-common.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-03-17T09:43:51Z",
+      "side": 1,
+      "message": "I would rename this to \"batch-barrier\" because \"common\" is too general and in future there can be everythink.",
+      "revId": "d6cdbf19f1d848742832040327b77e6730b7d3c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a42497e_a4f40688",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowsBatchServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-03-17T09:43:51Z",
+      "side": 1,
+      "message": "Please static fields first, after that non static. It might be better to move these static functions to util class.",
+      "revId": "d6cdbf19f1d848742832040327b77e6730b7d3c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a42497e_64031e74",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowsBatchServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-03-17T09:43:51Z",
+      "side": 1,
+      "message": "please extract: \na/ the loop and removeFlowsBulkFuture tu one method\nb/ the if barrier and chain to another method\n\nMethod removeFlowsBatch would look like thisthis:\nremoveFlowsBulkFuture \u003d callAllIndividualRemoval(input)\nremoveFlowsBulkFuture \u003d chainBarrierIfNecessary(input, removeFlowsBulkFuture)",
+      "revId": "d6cdbf19f1d848742832040327b77e6730b7d3c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a42497e_c4f7928b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowsBatchServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-03-17T09:43:51Z",
+      "side": 1,
+      "message": "please move this to util class but add there if statements to ensure that NullPointerExecption can happen",
+      "revId": "d6cdbf19f1d848742832040327b77e6730b7d3c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
