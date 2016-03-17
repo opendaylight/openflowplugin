@@ -619,6 +619,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        LOG.info("ConnectionEvent: Device disconnected from controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
         if (getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 tearDown();

@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetSocketAddress;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,21 +55,17 @@ public class SystemNotificationsListenerImplTest {
         connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
         connectionContextGolem.changeStateToWorking();
         connectionContextGolem.setNodeId(nodeId);
+        connectionContext = Mockito.spy(connectionContextGolem);
 
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
                 InetSocketAddress.createUnresolved("unit-odl.example.org", 4242));
-        connectionContext = Mockito.spy(connectionContextGolem);
+
         Mockito.when(features.getAuxiliaryId()).thenReturn((short) 0);
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
         systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Mockito.verifyNoMoreInteractions(connectionContext);
     }
 
     /**

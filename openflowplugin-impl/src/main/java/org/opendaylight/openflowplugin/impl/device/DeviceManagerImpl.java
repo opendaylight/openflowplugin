@@ -124,7 +124,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 "Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
                 connectionContext.getNodeId()
         );
-        LOG.info("Initializing New Connection DeviceContext for node:{}", connectionContext.getNodeId());
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
 
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
