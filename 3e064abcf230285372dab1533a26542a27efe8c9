@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a42497e_8d35ad48",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/RoleService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-03-18T11:26:45Z",
+      "side": 1,
+      "message": "wy should return Future\u003cRpcResult\u003cSetRoleOutput\u003e\u003e here in order not to throw away errors. Anyway - returning null value inside sounds like bad contract.",
+      "range": {
+        "startLine": 127,
+        "startChar": 36,
+        "endLine": 127,
+        "endChar": 40
+      },
+      "revId": "3e064abcf230285372dab1533a26542a27efe8c9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
