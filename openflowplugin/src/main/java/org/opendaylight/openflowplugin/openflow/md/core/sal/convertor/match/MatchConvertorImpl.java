@@ -10,13 +10,14 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
-import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.annotation.Nonnull;
+
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -69,7 +70,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -257,6 +267,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -1318,14 +1330,44 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 if (ipv4Address != null) {
                     byte[] mask = ipv4Address.getMask();
                     if (mask != null && IpConversionUtil.isArbitraryBitMask(mask)) {
-                        DottedQuad dottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
-                        String Ipv4Address = ipv4Address.getIpv4Address().getValue();
-                        setIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch, dottedQuadMask, Ipv4Address);
+                        // case where ipv4dst is of type ipv4MatchBuilder and ipv4src is of type ipv4MatchArbitrary.
+                        // Needs to convert ipv4dst to ipv4MatchArbitrary.
+                        if(ipv4MatchBuilder.getIpv4Destination() != null) {
+                            Ipv4Prefix ipv4PrefixDestinationAddress = ipv4MatchBuilder.getIpv4Destination();
+                            Ipv4Address ipv4DstAddress = IpConversionUtil.extractIpv4Address(ipv4PrefixDestinationAddress);
+                            DottedQuad dstDottedQuadMask = IpConversionUtil.extractIpv4AddressMask(ipv4PrefixDestinationAddress);
+                            setDstIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch,
+                                    dstDottedQuadMask, ipv4DstAddress.getValue());
+                        }
+                        DottedQuad srcDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String stringIpv4SrcAddress = ipv4Address.getIpv4Address().getValue();
+                        setSrcIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch,
+                                srcDottedQuadMask, stringIpv4SrcAddress);
+                        matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+                    } else if (ipv4MatchArbitraryBitMaskBuilder.getIpv4DestinationAddressNoMask() != null) {
+                         /*
+                        Case where destination is of type ipv4MatchArbitraryBitMask already exists in Layer3Match,
+                        source which of type ipv4Match needs to be converted to ipv4MatchArbitraryBitMask.
+                        We convert 36.36.36.0/24 to 36.36.0/255.255.255.0
+                        expected output example:-
+                        <ipv4-destination>36.36.36.0/24</ipv4-destination>
+                        <ipv4-source-address-no-mask>36.36.36.0</ipv4-source-address-no-mask>
+                        <ipv4-source-arbitrary-bitmask>255.0.255.0</ipv4-source-arbitrary-bitmask>
+                        after conversion output example:-
+                        <ipv4-destination-address-no-mask>36.36.36.0</ipv4-destination-address-no-mask>
+                        <ipv4-destination-arbitrary-bitmask>255.255.255.0</ipv4-destination-arbitrary-bitmask>
+                        <ipv4-source-address-no-mask>36.36.36.0</ipv4-source-address-no-mask>
+                        <ipv4-source-arbitrary-bitmask>255.0.255.0</ipv4-source-arbitrary-bitmask>
+                        */
+                        DottedQuad srcDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String stringIpv4SrcAddress = ipv4Address.getIpv4Address().getValue();
+                        setSrcIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch,
+                                srcDottedQuadMask, stringIpv4SrcAddress);
                         matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
                     }
                     else {
-                        String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
-                        setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, ipv4PrefixStr);
+                        String stringIpv4SrcAddress = ipv4Address.getIpv4Address().getValue();
+                        setIpv4MatchBuilderFields(ipv4MatchBuilder, ofMatch, mask, stringIpv4SrcAddress);
                         matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
                     }
                 }
@@ -1334,9 +1376,39 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 if (ipv4Address != null) {
                     byte[] mask = ipv4Address.getMask();
                     if(mask != null && IpConversionUtil.isArbitraryBitMask(mask)) {
-                        DottedQuad dottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
-                        String Ipv4Address = ipv4Address.getIpv4Address().getValue();
-                        setIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch, dottedQuadMask, Ipv4Address);
+                        // case where ipv4src is of type ipv4MatchBuilder and ipv4dst is of type ipv4MatchArbitrary.
+                        // Needs to convert ipv4src to ipv4MatchArbitrary.
+                        if(ipv4MatchBuilder.getIpv4Source() != null) {
+                            Ipv4Prefix ipv4PrefixSourceAddress = ipv4MatchBuilder.getIpv4Source();
+                            Ipv4Address ipv4SourceAddress = IpConversionUtil.extractIpv4Address(ipv4PrefixSourceAddress);
+                            DottedQuad srcDottedQuad = IpConversionUtil.extractIpv4AddressMask(ipv4PrefixSourceAddress);
+                            setSrcIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder,ofMatch,
+                                    srcDottedQuad, ipv4SourceAddress.getValue());
+                        }
+                        DottedQuad dstDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String stringIpv4DstAddress = ipv4Address.getIpv4Address().getValue();
+                        setDstIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch,
+                                dstDottedQuadMask, stringIpv4DstAddress);
+                        matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
+                    } else if (ipv4MatchArbitraryBitMaskBuilder.getIpv4SourceAddressNoMask() != null) {
+                        /*
+                        Case where source is of type ipv4MatchArbitraryBitMask already exists in Layer3Match,
+                        destination which of type ipv4Match needs to be converted to ipv4MatchArbitraryBitMask.
+                        We convert 36.36.36.0/24 to 36.36.0/255.255.255.0
+                        expected output example:-
+                        <ipv4-source>36.36.36.0/24</ipv4-source>
+                        <ipv4-destination-address-no-mask>36.36.36.0</ipv4-destination-address-no-mask>
+                        <ipv4-destination-arbitrary-bitmask>255.0.255.0</ipv4-destination-arbitrary-bitmask>
+                        after conversion output example:-
+                        <ipv4-source-address-no-mask>36.36.36.0</ipv4-source-address-no-mask>
+                        <ipv4-source-arbitrary-bitmask>255.255.255.0</ipv4-source-arbitrary-bitmask>
+                        <ipv4-destination-address-no-mask>36.36.36.0</ipv4-destination-address-no-mask>
+                        <ipv4-destination-arbitrary-bitmask>255.0.255.0</ipv4-destination-arbitrary-bitmask>
+                        */
+                        DottedQuad dstDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
+                        String stringIpv4DstAddress = ipv4Address.getIpv4Address().getValue();
+                        setDstIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder, ofMatch,
+                                dstDottedQuadMask, stringIpv4DstAddress);
                         matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
                     }
                     else {
@@ -1573,25 +1645,32 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         }
     }
 
-    private static void setIpv4MatchArbitraryBitMaskBuilderFields(final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder, final MatchEntry ofMatch, final DottedQuad mask, final String ipv4AddressStr) {
+    private static void setSrcIpv4MatchArbitraryBitMaskBuilderFields(
+            final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder,
+            final MatchEntry ofMatch, final DottedQuad mask, final String ipv4AddressStr) {
         Ipv4Address ipv4Address;
         DottedQuad dottedQuad;
         if (mask != null) {
             dottedQuad = mask;
-            if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
-                ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(dottedQuad);
-            }
-            if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
-                ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(dottedQuad);
-            }
+            ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(dottedQuad);
         }
         ipv4Address = new Ipv4Address(ipv4AddressStr);
-        if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
-            ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(ipv4Address);
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(ipv4Address);
+    }
+
+    private static void setDstIpv4MatchArbitraryBitMaskBuilderFields(
+            final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder,
+            final MatchEntry ofMatch, final DottedQuad mask, final String ipv4AddressStr) {
+
+        Ipv4Address ipv4Address;
+        DottedQuad dottedQuad;
+        if (mask != null) {
+            dottedQuad = mask;
+            ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(dottedQuad);
+
         }
-        if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
-            ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(ipv4Address);
-        }
+        ipv4Address = new Ipv4Address(ipv4AddressStr);
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(ipv4Address);
     }
 
 

@@ -15,19 +15,21 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 
 
 /**
@@ -602,6 +604,25 @@ public final class IpConversionUtil {
         return new Ipv6Address(addressParts.next());
     }
 
+    public static Ipv4Address extractIpv4Address(final Ipv4Prefix ipv4Prefix) {
+        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
+        return new Ipv4Address(addressParts.next());
+    }
+
+    public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
+        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
+        addressParts.next();
+        Integer cidrMask =0;
+        if (addressParts.hasNext()) {
+            cidrMask = Integer.parseInt(addressParts.next());
+        }
+        long maskBits = 0;
+        maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
+        String mask = String.format("%d.%d.%d.%d", (maskBits & 0x0000000000ff000000L) >> 24, (maskBits & 0x0000000000ff0000) >> 16, (maskBits & 0x0000000000ff00) >> 8, maskBits & 0xff);
+        DottedQuad netMask = new DottedQuad(mask);
+        return netMask;
+    }
+
     public static Integer extractIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
         Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
         addressParts.next();
@@ -658,7 +679,7 @@ public final class IpConversionUtil {
 
     private static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
         // checks 0*1* case - Leading zeros in arrayList are truncated
-        if(arrayList.size()>0 && arrayList.size()<32) {
+        if(arrayList.size()>0 && arrayList.size()<IPV4_ADDRESS_LENGTH) {
             return true;
         }
         //checks 1*0*1 case

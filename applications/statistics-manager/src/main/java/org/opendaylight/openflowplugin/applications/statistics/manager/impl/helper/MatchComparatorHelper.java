@@ -7,17 +7,13 @@
  */
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper;
 
-import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.primitives.UnsignedBytes;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -27,8 +23,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.net.InetAddresses;
+import com.google.common.primitives.UnsignedBytes;
 
 /**
  * @author joe
@@ -141,12 +143,14 @@ public class MatchComparatorHelper {
             if((storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null |
                     storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null)) {
                 if(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null) {
-                        String storedIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                        String storedDstIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
                                 storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
+                        String statsDstIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                                statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
                         if(MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue(),
                                 statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedIpAddress,
-                                    statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask().getValue());
+                            verdict = MatchComparatorHelper.compareStringNullSafe(storedDstIpAddress,
+                                    statsDstIpAddress);
                         }
                         else {
                             verdict = false;
@@ -154,12 +158,14 @@ public class MatchComparatorHelper {
                         }
                 }
                 if(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null) {
-                        String storedIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                        String storedSrcIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
                                 ,storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
+                        String statsSrcIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                                ,statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
                         if(MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue(),
                                 statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedIpAddress,
-                                    statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask().getValue());
+                            verdict = MatchComparatorHelper.compareStringNullSafe(storedSrcIpAddress,
+                                    statsSrcIpAddress);
                         }
                         else {
                             verdict = false;
@@ -399,7 +405,7 @@ public class MatchComparatorHelper {
     }
 
 
-    static String extractIpv4Address(Ipv4Address ipAddress, DottedQuad netMask) {
+    static String normalizeIpv4Address(Ipv4Address ipAddress, DottedQuad netMask) {
         String actualIpAddress="";
         String[] netMaskParts = netMask.getValue().split("\\.");
         String[] ipAddressParts = ipAddress.getValue().split("\\.");

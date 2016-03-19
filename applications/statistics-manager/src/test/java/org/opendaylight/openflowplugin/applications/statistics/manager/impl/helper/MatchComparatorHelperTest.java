@@ -273,7 +273,7 @@ public class MatchComparatorHelperTest {
         Ipv4Address ipAddress = new Ipv4Address("1.1.1.1");
         DottedQuad netMask = new DottedQuad("255.255.255.0");
         String extractedIpAddress;
-        extractedIpAddress = MatchComparatorHelper.extractIpv4Address(ipAddress,netMask);
+        extractedIpAddress = MatchComparatorHelper.normalizeIpv4Address(ipAddress,netMask);
         assertEquals(extractedIpAddress,"1.1.1.0");
     }
 
