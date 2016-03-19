@@ -141,12 +141,14 @@ public class MatchComparatorHelper {
             if((storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null |
                     storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null)) {
                 if(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null) {
-                        String storedIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                        String storedDstIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
                                 storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
+                        String statsDstIpAddress = extractIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                                statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
                         if(MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue(),
                                 statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedIpAddress,
-                                    statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask().getValue());
+                            verdict = MatchComparatorHelper.compareStringNullSafe(storedDstIpAddress,
+                                    statsDstIpAddress);
                         }
                         else {
                             verdict = false;
@@ -154,12 +156,14 @@ public class MatchComparatorHelper {
                         }
                 }
                 if(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null) {
-                        String storedIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                        String storedSrcIpAddress = extractIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
                                 ,storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
+                        String statsSrcIpAddress = extractIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                                ,statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
                         if(MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue(),
                                 statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedIpAddress,
-                                    statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask().getValue());
+                            verdict = MatchComparatorHelper.compareStringNullSafe(storedSrcIpAddress,
+                                    statsSrcIpAddress);
                         }
                         else {
                             verdict = false;
