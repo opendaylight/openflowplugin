@@ -13,6 +13,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
@@ -133,4 +135,19 @@ public class IpConversionUtilTest {
         arbitraryBitMask = IpConversionUtil.isArbitraryBitMask(null);
         Assert.assertEquals(arbitraryBitMask,false);
     }
+
+    @Test
+    public void extractIpv4AddressTest() {
+        Ipv4Address ipv4Address;
+        ipv4Address = IpConversionUtil.extractIpv4Address(new Ipv4Prefix("1.0.1.0/16"));
+        Assert.assertEquals(ipv4Address.getValue(),"1.0.1.0");
+    }
+
+    @Test
+    public void extractIpv4AddressMaskTest() {
+        DottedQuad dottedQuad;
+        dottedQuad = IpConversionUtil.extractIpv4AddressMask(new Ipv4Prefix("1.1.1.1/24"));
+        Assert.assertEquals(dottedQuad.getValue(),"255.255.255.0");
+    }
+
 }
