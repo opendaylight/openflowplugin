@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_fd8fc773",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "please rename this method to normalizeIpv6Address.",
+      "range": {
+        "startLine": 146,
+        "startChar": 51,
+        "endLine": 146,
+        "endChar": 69
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_7df3b70a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "change this to 0xffffffff \u003c\u003c 32 - cidrMask",
+      "range": {
+        "startLine": 620,
+        "startChar": 19,
+        "endLine": 620,
+        "endChar": 56
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_dd8c8b82",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "use the alredy defined constant - IPV4_ADDRESS_LENGTH",
+      "range": {
+        "startLine": 620,
+        "startChar": 38,
+        "endLine": 620,
+        "endChar": 40
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_5df87be5",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1346,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "why do you need this block, when you are taking care of it in \n \"else if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class))\" block?",
+      "range": {
+        "startLine": 1346,
+        "startChar": 20,
+        "endLine": 1346,
+        "endChar": 104
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_9dd96386",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1376,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "please use best practices and put else block on the same like as closing brackets.",
+      "range": {
+        "startLine": 1374,
+        "startChar": 20,
+        "endLine": 1376,
+        "endChar": 28
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_bddc1f76",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1376,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "why do you need this block, when you are already taking care of it in \"else if (ofMatch.getOxmMatchField().equals(Ipv4Src.class))\" block?",
+      "range": {
+        "startLine": 1376,
+        "startChar": 20,
+        "endLine": 1376,
+        "endChar": 100
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_fde6a743",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1616,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-03-21T19:38:27Z",
+      "side": 1,
+      "message": "please break it this logic in two method setSourceIpv4MatchArbitraryBitMaskBuilderFields and setDestinationIpv4MatchArbitraryBitMaskBuilderFields, and get rid of inverse flag. In the above logic just use the relevant method rather then using flag \u003d true of false.",
+      "range": {
+        "startLine": 1616,
+        "startChar": 24,
+        "endLine": 1616,
+        "endChar": 65
+      },
+      "revId": "ac057e74b7edfb59ae01c6a49e85597e11341496",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
