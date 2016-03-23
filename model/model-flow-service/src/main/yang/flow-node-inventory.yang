@@ -108,8 +108,6 @@ module flow-node-inventory {
                     type uint8;
             }
 
-            uses table:table-features;
-
             list flow {
                 key "id";
 
@@ -179,6 +177,7 @@ module flow-node-inventory {
         }
 
         uses tables;
+        uses table:table-features;
         uses group:groups;
         uses meters;
         uses ip-address-grouping;
