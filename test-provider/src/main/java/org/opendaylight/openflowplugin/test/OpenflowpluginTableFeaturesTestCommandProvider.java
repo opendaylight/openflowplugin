@@ -29,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
@@ -66,11 +63,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.osgi.framework.BundleContext;
 
 
@@ -79,7 +78,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     private DataBroker dataBroker;
     private ProviderContext pc;
     private final BundleContext ctx;
-    private Table testTable;
+    private TableFeatures testTable;
     private Node testNode;
     private final String originalTableName = "Foo";
     private final String updatedTableName = "Bar";
@@ -93,7 +92,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         // createTestNode();
-        // createTestTable();
+        // createTestTableFeatures();
     }
 
     private void createUserNode(String nodeRef) {
@@ -114,38 +113,27 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
-    private TableBuilder createTestTable(String tableFeatureTypeArg) {
+    private TableFeaturesBuilder createTestTableFeatures(String tableFeatureTypeArg) {
 
         String tableFeatureType = tableFeatureTypeArg;
         if (tableFeatureType == null) {
             tableFeatureType = "t1";
         }
+
+        final TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         // Sample data , committing to DataStore
-        short id = 12;
-        TableKey key = new TableKey(id);
-
-        TableBuilder table = new TableBuilder();
-        table.setId((short) 12);
-        table.setId(id);
-        table.setKey(key);
-
-
-        List<TableFeatures> ofTablefeatures = new ArrayList<TableFeatures>();
-
-        // Skip this to send empty table features
         if (!tableFeatureType.equals("t1")) {
 
 
-            TableFeaturesBuilder tableFeature1 = new TableFeaturesBuilder();
-            tableFeature1.setTableId((short) 0);
-            tableFeature1.setName("Table 0");
+            tableFeature.setTableId((short) 0);
+            tableFeature.setName("Table 0");
 
 
-            tableFeature1.setMetadataMatch(BigInteger.valueOf(10));
-            tableFeature1.setMetadataWrite(BigInteger.valueOf(10));
-            tableFeature1.setMaxEntries(10000L);
+            tableFeature.setMetadataMatch(BigInteger.valueOf(10));
+            tableFeature.setMetadataWrite(BigInteger.valueOf(10));
+            tableFeature.setMaxEntries(10000L);
 
-            tableFeature1.setConfig(new TableConfig(false));
+            tableFeature.setConfig(new TableConfig(false));
 
             List<TableFeatureProperties> properties = new ArrayList<TableFeatureProperties>();
 
@@ -212,16 +200,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
             TablePropertiesBuilder propertyBld = new TablePropertiesBuilder();
             propertyBld.setTableFeatureProperties(properties);
-            tableFeature1.setTableProperties(propertyBld.build());
-
-
-            ofTablefeatures.add(tableFeature1.build());
-
+            tableFeature.setTableProperties(propertyBld.build());
         }
-        table.setTableFeatures(ofTablefeatures);
-
-        testTable = table.build();
-        return table;
+        testTable = tableFeature.build();
+        return tableFeature;
     }
 
     private TableFeaturePropertiesBuilder createApplyActionsMissTblFeatureProp() {
@@ -593,18 +575,18 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     }
 
 
-    private void writeTable(final CommandInterpreter ci, Table table) {
+    private void writeTableFeatures(final CommandInterpreter ci, TableFeatures tableFeatures) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
-        InstanceIdentifier<Table> path1 = InstanceIdentifier.create(Nodes.class)
+        KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class).
-                        child(Table.class, new TableKey(table.getId()));
+                        child(TableFeatures.class, new TableFeaturesKey(tableFeatures.getTableId()));
 
 
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path1, table, true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, path1, tableFeatures, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, table, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, tableFeatures, true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
@@ -631,9 +613,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
             createUserNode(nref);
         }
         String tableFeatureType = ci.nextArgument();
-        TableBuilder table = createTestTable(tableFeatureType);
+        TableFeaturesBuilder tableFeaturesBld = createTestTableFeatures(tableFeatureType);
 
-        writeTable(ci, table.build());
+        writeTableFeatures(ci, tableFeaturesBld.build());
     }
 
     @Override

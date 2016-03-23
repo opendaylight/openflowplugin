@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -20,7 +19,6 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -41,7 +39,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
-    public TableForwarder (final ForwardingRulesManager manager, final DataBroker db) {
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, TableFeatures.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
@@ -78,35 +76,35 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     @Override
     protected InstanceIdentifier<TableFeatures> getWildCardPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class).child(Table.class).child(TableFeatures.class);
+                .augmentation(FlowCapableNode.class).child(TableFeatures.class);
     }
 
     @Override
     public void remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-      // DO Nothing
+        // DO Nothing
     }
 
     @Override
     public void update(final InstanceIdentifier<TableFeatures> identifier,
                        final TableFeatures original, final TableFeatures update,
                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug( "Received the Table Update request [Tbl id, node Id, original, upd" +
-                       " " + identifier + " " + nodeIdent + " " + original + " " + update );
+        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd" +
+                " " + identifier + " " + nodeIdent + " " + original + " " + update);
 
         final TableFeatures originalTableFeatures = original;
-        TableFeatures updatedTableFeatures ;
-        if( null == update)
-          updatedTableFeatures = original;
+        TableFeatures updatedTableFeatures;
+        if (null == update)
+            updatedTableFeatures = original;
         else
-          updatedTableFeatures = update;
+            updatedTableFeatures = update;
 
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
 
-        InstanceIdentifier<Table> iiToTable = identifier.firstIdentifierOf(Table.class);
-        builder.setTableRef(new TableRef(iiToTable));
+        // TODO: reconsider model - this particular field is not used in service implementation
+        builder.setTableRef(new TableRef(identifier));
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
@@ -115,10 +113,10 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
         builder.setOriginalTable(new OriginalTableBuilder().setTableFeatures(
                 Collections.singletonList(originalTableFeatures)).build());
-        LOG.debug( "Invoking SalTableService " ) ;
+        LOG.debug("Invoking SalTableService ");
 
-        if( this.provider.getSalTableService() != null )
-        	LOG.debug( " Handle to SalTableServices" + this.provider.getSalTableService()) ;
+        if (this.provider.getSalTableService() != null)
+            LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
         this.provider.getSalTableService().updateTable(builder.build());
 
     }
@@ -126,7 +124,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     @Override
     public void add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
                     final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-       //DO NOthing
+        //DO NOthing
     }
 
     @Override
