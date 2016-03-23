@@ -28,6 +28,9 @@
         <command name="ofp/reset-session-stats">
             <action class="org.opendaylight.openflowplugin.impl.karaf.ResetSessionStatsComandProvider"/>
         </command>
+        <command name="ofp/list-devices">
+            <action class="org.opendaylight.openflowplugin.impl.karaf.ListDevicesCommandProvider"/>
+        </command>
     </command-bundle>
 
 
