@@ -75,6 +75,15 @@ public final class EventsTimeCounter {
         return dump;
     }
 
+    public static List<String> provideDevices() {
+        List<String> dump = new ArrayList<>();
+        for (Map.Entry<String, Map<String, EventTimeCounter>> deviceEntry : devicesEvents.entrySet()) {
+            dump.add("================================================");
+            dump.add(String.format("DEVICE : %s", deviceEntry.getKey()));
+        }
+        return dump;
+    }
+
     public static void resetAllCounters() {
         devicesEvents = new HashMap<>();
     }
