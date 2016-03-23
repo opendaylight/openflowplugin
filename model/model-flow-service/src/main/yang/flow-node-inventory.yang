@@ -10,66 +10,66 @@ module flow-node-inventory {
     import opendaylight-flow-types {prefix flow;revision-date "2013-10-26";}
     import opendaylight-group-types {prefix group;revision-date "2013-10-18";}
     import opendaylight-meter-types {prefix meter;revision-date "2013-09-18";}
-    
+
     description "Flow Capable Node extensions to the Inventory model";
 
     revision "2013-08-19" {
         description "added descriptions";
     }
-    
+
     identity feature-capability {
     }
-    
+
     identity flow-feature-capability-flow-stats {
-        description "Flow statistics"; 
-        base feature-capability;      
+        description "Flow statistics";
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-table-stats {
         description "Table statistics";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-port-stats {
         description "Port statistics";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-stp {
         description "802.1d spanning tree";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-reserved {
         description "Reserved, must be zero";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-ip-reasm {
         description "Can reassemble IP fragments";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-queue-stats {
         description "Queue statistics";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-arp-match-ip {
         description "Match IP addresses in ARP pkts";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-group-stats {
         description "Group statistics";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     identity flow-feature-capability-port-blocked {
         description "Switch will block looping ports";
-        base feature-capability;        
+        base feature-capability;
     }
-    
+
     grouping feature {
         description "Features supported by openflow device.";
         leaf support-state {
@@ -81,7 +81,7 @@ module flow-node-inventory {
         leaf queue-id {
             type uint32;
             description "id for the specific queue";
-            mandatory true; 
+            mandatory true;
         }
         container properties {
             leaf minimum-rate {
@@ -101,21 +101,19 @@ module flow-node-inventory {
     grouping tables {
         description "Openflow table structure. Here flows are contained.";
         list table {
-            key "id"; 
-    
+            key "id";
+
             leaf id {
                     type uint8;
-            }            
-    
-            uses table:table-features;
-    
+            }
+
             list flow {
-                key "id"; 
-    
+                key "id";
+
                 leaf id {
                     type flow-id;
-                }           
-    
+                }
+
                 uses flow:flow;
             }
             // BE-RECON: Modification for including stale-flow for Reconciliation
@@ -130,7 +128,7 @@ module flow-node-inventory {
             }
         }
     }
-    
+
     grouping meters {
         description "Openflow meter list.";
         list meter {
@@ -178,6 +176,7 @@ module flow-node-inventory {
         }
 
         uses tables;
+        uses table:table-features;
         uses group:groups;
         uses meters;
         uses ip-address-grouping;
@@ -190,10 +189,10 @@ module flow-node-inventory {
                 leaf match {
                     type string; // FIXME: Add identity
                 }
-                
+
             }
         }
-        
+
         container supported-instructions {
             list instruction-type {
 		key "instruction";
@@ -214,23 +213,23 @@ module flow-node-inventory {
                 }
             }
         }
-        
+
         container switch-features {
-            
+
             leaf max_buffers {
                 type uint32;
             }
-            
+
             leaf max_tables {
                 type uint8;
             }
-            
+
             leaf-list capabilities {
                 type identityref {
                     base feature-capability;
                 }
             }
-            
+
         }
     }
 
@@ -263,7 +262,7 @@ module flow-node-inventory {
         description "Openflow port into node notification.";
         uses flow-node-connector;
     }
-    
+
     augment "/inv:node-connector-updated" {
         ext:augment-identifier "flow-capable-node-connector-updated";
         description "Openflow port into node-connector notification.";

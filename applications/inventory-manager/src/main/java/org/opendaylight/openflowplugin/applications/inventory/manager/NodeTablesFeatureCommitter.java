@@ -9,25 +9,22 @@
 package org.opendaylight.openflowplugin.applications.inventory.manager;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Class receives and processes table feature updates. It augment table feature on table node
@@ -61,7 +58,6 @@ public class NodeTablesFeatureCommitter implements SalTableListener {
                 for (final TableFeatures tableFeatureData : swTablesFeatures) {
                     final Short tableId = tableFeatureData.getTableId();
                     final KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = flowCapableNodeII
-                            .child(Table.class, new TableKey(tableId))
                             .child(TableFeatures.class,new TableFeaturesKey(tableId));
 
                     LOG.trace("Updating table feature for table {} of node {}", tableId, nodeId.getValue());
