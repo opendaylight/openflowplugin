@@ -91,12 +91,15 @@ public final class GroupConvertor {
 
         groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
         // Only if the bucket is configured for the group then add it
-        if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+        // During group deletion donot push the buckets
+        if(groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
+            if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
 
-            Collections.sort(source.getBuckets().getBucket(), comparator);
+                Collections.sort(source.getBuckets().getBucket(), comparator);
 
-            bucketLists = salToOFBucketList(source.getBuckets(), version, source.getGroupType().getIntValue(),datapathid);
-            groupModInputBuilder.setBucketsList(bucketLists);
+                bucketLists = salToOFBucketList(source.getBuckets(), version, source.getGroupType().getIntValue(), datapathid);
+                groupModInputBuilder.setBucketsList(bucketLists);
+            }
         }
         groupModInputBuilder.setVersion(version);
         return groupModInputBuilder;
