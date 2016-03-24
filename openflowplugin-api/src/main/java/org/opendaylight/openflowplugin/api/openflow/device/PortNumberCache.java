@@ -22,11 +22,13 @@ public interface PortNumberCache {
      * @return corresponding nodeConnectorRef if present
      */
     @Nullable
+    @Deprecated
     NodeConnectorRef lookupNodeConnectorRef(Long portNumber);
 
     /**
      * @param portNumber       protocol port number
      * @param nodeConnectorRef corresponding value of {@link NodeConnectorRef}
      */
+    @Deprecated
     void storeNodeConnectorRef(@Nonnull Long portNumber, @Nonnull NodeConnectorRef nodeConnectorRef);
 }

@@ -2,6 +2,9 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.collect.Lists;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -50,13 +55,21 @@ public class PacketReceivedTranslatorTest {
     @Mock
     FeaturesReply featuresReply;
     @Mock
+    GetFeaturesOutput getFeaturesOutput;
+    @Mock
     DeviceState deviceState;
     @Mock
     DataBroker dataBroker;
     @Mock
     DeviceContext deviceContext;
+    @Mock
+    List<PhyPort> phyPorts;
+    @Mock
+    PhyPort phyPort;
 
-    final String data = "Test_Data";
+    static final Long PORT_NO = 5l;
+    static final String DATA = "Test_Data";
+    static final Long PORT_NUM_VALUE = 11l;
 
     public PacketReceivedTranslatorTest() {
         OpenflowPortsUtil.init();
@@ -64,10 +77,17 @@ public class PacketReceivedTranslatorTest {
 
     @Before
     public void setUp() throws Exception {
+        final List<PhyPort> phyPorts = Arrays.asList(phyPort);
+
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(featuresReply.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
+        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.TEN);
+        Mockito.when(getFeaturesOutput.getPhyPort()).thenReturn(phyPorts);
+        Mockito.when(phyPort.getPortNo()).thenReturn(PORT_NO);
     }
 
     @Test
@@ -76,7 +96,7 @@ public class PacketReceivedTranslatorTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
         final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator();
-        final PacketInMessage packetInMessage = createPacketInMessage(data.getBytes(), 5L);
+        final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
         final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceContext, null);
@@ -84,7 +104,7 @@ public class PacketReceivedTranslatorTest {
         Assert.assertArrayEquals(packetInMessage.getData(), packetReceived.getPayload());
         Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",
                 packetReceived.getPacketInReason().getName());
-        Assert.assertEquals("openflow:10:5",
+        Assert.assertEquals("openflow:10:" + PORT_NO,
                 packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
                         .getId().getValue());
         Assert.assertEquals(0L, packetReceived.getFlowCookie().getValue().longValue());
@@ -112,9 +132,7 @@ public class PacketReceivedTranslatorTest {
 
     @Test
     public void testGetPacketInMatch() throws Exception {
-        final long portNumValue = 11L;
-
-        MatchEntryBuilder matchEntryBuilder = assembleMatchEntryBld(portNumValue);
+        MatchEntryBuilder matchEntryBuilder = assembleMatchEntryBld(PORT_NUM_VALUE);
         MatchBuilder packetInMatchBld = new MatchBuilder()
                 .setMatchEntry(Lists.newArrayList(matchEntryBuilder.build()));
         PacketInMessageBuilder inputBld = new PacketInMessageBuilder()
@@ -125,7 +143,7 @@ public class PacketReceivedTranslatorTest {
         final Match packetInMatch = PacketReceivedTranslator.getPacketInMatch(inputBld.build(), dpid);
 
         Assert.assertNotNull(packetInMatch.getInPort());
-        Assert.assertEquals("openflow:10:11", packetInMatch.getInPort().getValue());
+        Assert.assertEquals("openflow:10:" + PORT_NUM_VALUE, packetInMatch.getInPort().getValue());
     }
 
     private static MatchEntryBuilder assembleMatchEntryBld(long portNumValue) {
