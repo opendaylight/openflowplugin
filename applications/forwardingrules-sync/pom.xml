@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>applications</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.2.2-SNAPSHOT</version>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>forwardingrules-sync</artifactId>
@@ -21,22 +21,22 @@
 	<openflowplugin.version>0.2.${sr}</openflowplugin.version>
 	<openflowjava.version>0.7.${sr}</openflowjava.version>
 	<restconf.version>1.3.${sr}</restconf.version>
-	<features.restconf.groupid>org.opendaylight.netconf</features.restconf.groupid>	
+	<features.restconf.groupid>org.opendaylight.netconf</features.restconf.groupid>
 	<config.version>0.4.${sr}</config.version>
     <lldp.version>0.10.${sr}</lldp.version>
-	
+
 	<jacoco.version>0.7.5.201505241946</jacoco.version>
 	<!-- see property sonar.jacoco.reportPath (it overriden in JENKINS) -->
 	<jacoco.append>false</jacoco.append><!-- overriden in JENKINS -->
 	<jacoco.inclBootstrapClasses>true</jacoco.inclBootstrapClasses>
 	<jacoco.inclNoLocationClasses>true</jacoco.inclNoLocationClasses>
-	
+
 	<odl-models>odl-mdsal-models</odl-models>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-		<!-- 
+		<!--
       <dependency>
         <groupId>org.opendaylight.controller</groupId>
         <artifactId>netconf-artifacts</artifactId>
@@ -44,8 +44,8 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
-		<dependency> <groupId>${project.groupId}</groupId> <artifactId>commons-dependency-management</artifactId> 
-			<version>${project.version}</version> <scope>import</scope> <type>pom</type> 
+		<dependency> <groupId>${project.groupId}</groupId> <artifactId>commons-dependency-management</artifactId>
+			<version>${project.version}</version> <scope>import</scope> <type>pom</type>
 			</dependency>
 		<dependency>
 			<groupId>org.opendaylight.controller</groupId>
@@ -191,7 +191,7 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
       <artifactId>sonar-jacoco-listeners</artifactId>
@@ -290,7 +290,7 @@
 								</goals>
 								<configuration>
 									<propertyName>surefireArgLine</propertyName>
-									<!-- <includes> <include>*</include> </includes> <excludes> <exclude>java.*</exclude> 
+									<!-- <includes> <include>*</include> </includes> <excludes> <exclude>java.*</exclude>
 										<exclude>sun.*</exclude> </excludes> -->
 								</configuration>
 							</execution>
