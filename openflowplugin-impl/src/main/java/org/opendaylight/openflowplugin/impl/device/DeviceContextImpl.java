@@ -220,9 +220,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        if (null != connectionDistinguisher) {
-            auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
+        auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
@@ -237,7 +235,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onClusterRoleChange(final OfpRole oldRole, @CheckForNull final OfpRole role) {
-        LOG.trace("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
+        LOG.trace("onClusterRoleChange {} for node:{}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (role.equals(oldRole)) {
             LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", deviceState.getNodeId(), oldRole, role);
@@ -254,13 +252,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
-                MdSalRegistrationUtils.registerSlaveServices(rpcContext, role);
+                MdSalRegistrationUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, role);
             }
             return transactionChainManager.deactivateTransactionManager();
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (null != rpcContext) {
-                MdSalRegistrationUtils.unregisterServices(rpcContext);
+                MdSalRegistrationUtils.unregisterServices(rpcContext, DeviceContextImpl.this);
             }
             return transactionChainManager.deactivateTransactionManager();
         }
@@ -286,6 +284,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final InstanceIdentifier<FlowCapableNode> ofNodeII = deviceState.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         final ReadOnlyTransaction readTx = getReadTransaction();
+
+        LOG.debug("Reading Device from inventory-operational, Device:{}", ofNodeII);
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readOfNodeFuture = readTx.read(
                 LogicalDatastoreType.OPERATIONAL, ofNodeII);
 
@@ -299,6 +299,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                             getDeviceState().setDeviceSynchronized(false);
                             transactionChainManager.activateTransactionManager();
                         }
+                        LOG.info("Initializing all NodeInformation and creating node in inventory-operational, Device:{}", deviceState.getNodeId());
                         return DeviceInitializationUtils.initializeNodeInformation(DeviceContextImpl.this, switchFeaturesMandatory);
                     }
                 });
@@ -327,7 +328,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     transactionChainManager.clearUnsubmittedTransaction();
                     throw new IllegalStateException(errMsg);
                 }
-                if (!input.booleanValue()) {
+                if (!input) {
                     final String errMsg = String.format("Get Initial Device %s information fails",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
@@ -463,7 +464,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
         } else {
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
@@ -476,7 +477,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return;
         }
 
-        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(packetReceived);
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
@@ -663,7 +664,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void storeNodeConnectorRef(final Long portNumber, final NodeConnectorRef nodeConnectorRef) {
+    public void storeNodeConnectorRef(@Nonnull final Long portNumber, @Nonnull final NodeConnectorRef nodeConnectorRef) {
         nodeConnectorCache.put(
                 Preconditions.checkNotNull(portNumber),
                 Preconditions.checkNotNull(nodeConnectorRef));
