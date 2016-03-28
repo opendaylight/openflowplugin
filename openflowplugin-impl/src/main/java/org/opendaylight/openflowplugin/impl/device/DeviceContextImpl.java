@@ -20,10 +20,8 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -225,11 +223,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        if (null != connectionDistinguisher) {
-            LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                    .getRemoteAddress(), getDeviceState().getNodeId());
-            auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
+        LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
+                .getRemoteAddress(), getDeviceState().getNodeId());
+        auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
@@ -244,7 +240,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onClusterRoleChange(final OfpRole oldRole, @CheckForNull final OfpRole role) {
-        LOG.trace("onClusterRoleChange {} for node:", role, deviceState.getNodeId());
+        LOG.trace("onClusterRoleChange {} for node:{}", role, deviceState.getNodeId());
         Preconditions.checkArgument(role != null);
         if (role.equals(oldRole)) {
             LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", deviceState.getNodeId(), oldRole, role);
@@ -254,10 +250,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return onDeviceTakeClusterLeadership();
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             return onDeviceLostClusterLeadership();
+
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (null != rpcContext) {
-                MdSalRegistrationUtils.unregisterServices(rpcContext);
+                MdSalRegistrationUtils.unregisterServices(rpcContext, DeviceContextImpl.this);
             }
             return transactionChainManager.deactivateTransactionManager();
         }
@@ -267,7 +264,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public ListenableFuture<Void> onDeviceLostClusterLeadership() {
         LOG.trace("onDeviceLostClusterLeadership for node: {}", deviceState.getNodeId());
         if (null != rpcContext) {
-            MdSalRegistrationUtils.registerSlaveServices(rpcContext, OfpRole.BECOMESLAVE);
+            MdSalRegistrationUtils.registerSlaveServices(rpcContext, DeviceContextImpl.this, OfpRole.BECOMESLAVE);
         }
         return transactionChainManager.deactivateTransactionManager();
     }
@@ -317,7 +314,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.warn(errMsg);
                     throw new IllegalStateException(errMsg);
                 }
-                if (!input.booleanValue()) {
+                if (!input) {
                     final String errMsg = String.format("Get Initial Device %s information fails",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
@@ -449,7 +446,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
         } else {
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
@@ -462,7 +459,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return;
         }
 
-        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(packetReceived);
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
@@ -586,7 +583,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void storeNodeConnectorRef(final Long portNumber, final NodeConnectorRef nodeConnectorRef) {
+    public void storeNodeConnectorRef(@Nonnull final Long portNumber, @Nonnull final NodeConnectorRef nodeConnectorRef) {
         nodeConnectorCache.put(
                 Preconditions.checkNotNull(portNumber),
                 Preconditions.checkNotNull(nodeConnectorRef));

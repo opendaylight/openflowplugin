@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -59,6 +61,13 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     private final ConcurrentMap<Entity, RoleContext> txContexts = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
+
+    // In a multi-node cluster, when a switch is disconnected from all the nodes, EOS throws ownership around.
+    // It can happen that when the last cluster-node becomes the owner , the device disconnection for this node is already processed
+    // and the contexts hashmap is cleaned.
+    // We still need to clear inventory-operational, so we store the context temporarily
+    private Cache<Entity, RoleContext> removedContexts = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+
 
     public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
@@ -115,7 +124,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        LOG.trace("onDeviceContextLevelDown for node {}", nodeId);
+        LOG.info("onDeviceContextLevelDown for node {}", nodeId);
         final Entity entity = makeEntity(nodeId);
         final RoleContext roleContext = contexts.get(entity);
         if (roleContext != null) {
@@ -131,6 +140,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                     if (roleContext.equals(foundMainRoleCtx)) {
                         LOG.info("OldRoleCtx was not remove for entity {} from contexts", roleContext.getEntity());
                         contexts.remove(roleContext.getEntity(), roleContext);
+                        removedContexts.put(roleContext.getEntity(), roleContext);
                         foundMainRoleCtx.close();
                     }
 
@@ -139,6 +149,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                         txContexts.remove(roleContext.getTxEntity(), roleContext);
                         foundTxRoleCtx.close();
                     }
+
                 }
             };
             deviceContext.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
@@ -177,13 +188,26 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             }
         }
 
-        LOG.debug("We are not able to find Entity {} ownershipChange {} - disregarding ownership notification",
-                ownershipChange.getEntity(), ownershipChange);
+        if (isLastNodeClosureNotification(ownershipChange)) {
+            LOG.info("LastNodeClosureNotification, we are not able to find Entity for ownershipChange:{}", ownershipChange);
+            final RoleContext removedRoleContext = removedContexts.getIfPresent(ownershipChange.getEntity());
+            if (removedRoleContext != null) {
+                LOG.debug("LastNodeClosureNotification, Found removedRoleContext. Entity for ownershipChange:{}", ownershipChange);
+                removeDeviceFromOperDS(removedRoleContext);
+                removedContexts.invalidate(ownershipChange.getEntity());
+                return;
+            }
+        }
+        LOG.debug("We are not able to find Entity - disregarding ownership notification. ownershipChange:{}", ownershipChange);
+    }
+
+    private boolean isLastNodeClosureNotification(@Nonnull final EntityOwnershipChange ownershipChange) {
+        return !ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner() &&
+                RoleManager.ENTITY_TYPE.equals(ownershipChange.getEntity().getType());
     }
 
     private void changeOwnershipForMainEntity(final EntityOwnershipChange ownershipChange,
             @CheckForNull final RoleContext roleContext) {
-
         LOG.debug("Received Main-EntityOwnershipChange:{}", ownershipChange);
         Preconditions.checkArgument(roleContext != null);
         if (roleContext.isMainCandidateRegistered()) {
@@ -201,6 +225,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
         } else {
             LOG.debug("Main-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity());
             contexts.remove(ownershipChange.getEntity(), roleContext);
+            removedContexts.put(ownershipChange.getEntity(), roleContext);
+
             if (!ownershipChange.hasOwner() && !ownershipChange.isOwner() && ownershipChange.wasOwner()) {
                 /* Method has to clean all context and registrations */
                 unregistrationHelper(ownershipChange, roleContext);
@@ -232,11 +258,13 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity());
             txContexts.remove(ownershipChange.getEntity(), roleContext);
         }
+
     }
 
     private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperDS(
             final RoleChangeListener roleChangeListener) {
         Preconditions.checkArgument(roleChangeListener != null);
+        LOG.info("removeDeviceFromOperDS called for device:{}", roleChangeListener.getDeviceState().getNodeId());
         final DeviceState deviceState = roleChangeListener.getDeviceState();
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier());
@@ -273,6 +301,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                         throwable.getMessage());
                 txContexts.remove(roleContext.getTxEntity(), roleContext);
                 roleContext.close();
+
             }
         });
     }

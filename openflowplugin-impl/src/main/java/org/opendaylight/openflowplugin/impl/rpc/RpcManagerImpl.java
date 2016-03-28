@@ -65,12 +65,12 @@ public class RpcManagerImpl implements RpcManager {
 
         } else if(OfpRole.BECOMESLAVE.equals(ofpRole)) {
             // if slave, we need to de-register rpcs if any have been registered, in case of master to slave
-            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistrationUtils.registerSlaveServices(rpcContext, ofpRole);
+            LOG.info("Unregistering RPC registration (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
+            MdSalRegistrationUtils.registerSlaveServices(rpcContext, deviceContext, ofpRole);
         } else {
             // if we don't know role, we need to unregister rpcs if any have been registered
-            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistrationUtils.unregisterServices(rpcContext);
+            LOG.info("Unregister RPC services (if any) for un-known role for node:{}", deviceContext.getDeviceState().getNodeId());
+            MdSalRegistrationUtils.unregisterServices(rpcContext, deviceContext);
         }
 
         // finish device initialization cycle back to DeviceManager

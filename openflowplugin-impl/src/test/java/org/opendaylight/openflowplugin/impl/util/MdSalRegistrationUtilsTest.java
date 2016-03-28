@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -29,7 +30,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 public class MdSalRegistrationUtilsTest {
 
     /**
-     * Number of currently registrated services (can be changed) in {@link MdSalRegistrationUtils#registerServices
+     * Number of currently registrated services (can be changed) in {@link MdSalRegistrationUtils#registerMasterServices
      * (RpcContext, DeviceContext)}
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 11;
@@ -40,6 +41,7 @@ public class MdSalRegistrationUtilsTest {
         final RpcContext mockedRpcContext = mock(RpcContext.class);
         final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
+        final DeviceState deviceState = mock(DeviceState.class);
 
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
@@ -48,6 +50,7 @@ public class MdSalRegistrationUtilsTest {
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(deviceState);
         MdSalRegistrationUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(RpcService.class.getClass()), any(RpcService.class));

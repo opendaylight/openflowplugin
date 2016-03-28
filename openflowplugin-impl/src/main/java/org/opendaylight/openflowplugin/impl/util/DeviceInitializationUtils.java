@@ -8,6 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -18,14 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Future;
-
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -137,8 +135,7 @@ public class DeviceInitializationUtils {
                 try {
                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                 } catch (final Exception e) {
-                    LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(),
-                            e);
+                    LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(), e);
                 }
 
             }
@@ -155,16 +152,15 @@ public class DeviceInitializationUtils {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                LOG.debug("All init data for node {} is in submited.", deviceState.getNodeId());
+                LOG.debug("All init data for device is in submitted. Device:{}", deviceState.getNodeId());
                 returnFuture.set(null);
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 // FIXME : remove session
-                LOG.trace("Device capabilities gathering future failed.");
-                LOG.trace("more info in exploration failure..", t);
-                LOG.debug("All init data for node {} was not submited correctly - connection has to go down.", deviceState.getNodeId());
+                LOG.trace("Device capabilities gathering future failed. More info in exploration failure..", t);
+                LOG.debug("All init data for node {} was not submitted correctly - connection has to go down.", deviceState.getNodeId());
                 returnFuture.setException(t);
             }
         });
