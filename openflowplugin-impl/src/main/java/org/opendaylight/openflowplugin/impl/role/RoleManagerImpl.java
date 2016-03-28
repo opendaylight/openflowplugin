@@ -90,13 +90,16 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceContext deviceContext) throws Exception {
         LOG.trace("Role manager called for device:{}", deviceContext.getPrimaryConnectionContext().getNodeId());
-        final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
-                makeEntity(deviceContext.getDeviceState().getNodeId()),
-                makeTxEntity(deviceContext.getDeviceState().getNodeId()));
 
-        Verify.verify(contexts.putIfAbsent(roleContext.getEntity(), roleContext) == null, "Role context for master Node {} is still not closed.", deviceContext.getDeviceState().getNodeId());
-        Verify.verify(!txContexts.containsKey(roleContext.getTxEntity()),
+        final Entity txEntity = makeTxEntity(deviceContext.getDeviceState().getNodeId());
+        Verify.verify(!txContexts.containsKey(txEntity),
                 "Role context for master Node {} is still not closed. TxEntity was not unregistered yet.", deviceContext.getDeviceState().getNodeId());
+
+        final RoleContext roleContext = new RoleContextImpl(deviceContext, entityOwnershipService,
+                makeEntity(deviceContext.getDeviceState().getNodeId()), txEntity);
+
+        Verify.verify(contexts.putIfAbsent(roleContext.getEntity(), roleContext) == null,
+                "Role context for master Node {} is still not closed.", deviceContext.getDeviceState().getNodeId());
 
         // if the device context gets closed (mostly on connection close), we would need to cleanup
         deviceContext.addDeviceContextClosedHandler(this);
