@@ -134,7 +134,7 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public void setupTxCandidate() throws CandidateAlreadyRegisteredException {
-        LOG.debug("setupTxCandidate for entity {} and Transaction entity {}", entity, txEntity);
+        LOG.info("setupTxCandidate for entity {} and Transaction entity {}", entity, txEntity);
         Verify.verify(txEntity != null);
 
         txEntityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(txEntity);
@@ -143,7 +143,7 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void close() {
         if (entityOwnershipCandidateRegistration != null) {
-            LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
+            LOG.info("Closing EntityOwnershipCandidateRegistration for {}", entity);
             entityOwnershipCandidateRegistration.close();
         }
     }
@@ -187,6 +187,7 @@ public class RoleContextImpl implements RoleContext {
     @Override
     public void suspendTxCandidate() {
         if (txEntityOwnershipCandidateRegistration != null) {
+            LOG.info("Closing Tx-EntityOwnershipCandidateRegistration for {}", txEntity);
             txEntityOwnershipCandidateRegistration.close();
             txEntityOwnershipCandidateRegistration = null;
         }
