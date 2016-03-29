@@ -41,6 +41,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -66,6 +67,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private HashedWheelTimer hashedWheelTimer;
 
@@ -251,7 +253,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final StatisticsContext statisticsContext = contexts.remove(deviceContext);
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
@@ -320,5 +322,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 .consumingIterator(contexts.entrySet().iterator()); iterator.hasNext();) {
             iterator.next().getValue().close();
         }
+    }
+
+    @Override
+    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
+        this.deviceTerminPhaseHandler = handler;
     }
 }

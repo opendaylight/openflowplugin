@@ -35,6 +35,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -66,6 +67,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final HashedWheelTimer hashedWheelTimer;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
 
@@ -221,7 +223,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         LOG.trace("onDeviceContextClosed for Node {}", deviceContext.getDeviceState().getNodeId());
         deviceContexts.remove(deviceContext.getPrimaryConnectionContext().getNodeId());
         updatePacketInRateLimiters();
@@ -241,5 +243,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public ExtensionConverterProvider getExtensionConverterProvider() {
         return extensionConverterProvider;
+    }
+
+    @Override
+    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
+        this.deviceTerminPhaseHandler = handler;
     }
 }
