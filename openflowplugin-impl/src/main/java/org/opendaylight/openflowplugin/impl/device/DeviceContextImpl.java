@@ -9,10 +9,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,13 +21,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -242,36 +238,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            if (!deviceState.deviceSynchronized()) {
-                //TODO: no necessary code for yet - it needs for initialization phase only
-                LOG.debug("Setup Empty TxManager {} for initialization phase", getDeviceState().getNodeId());
-                transactionChainManager.activateTransactionManager();
-                return Futures.immediateCheckedFuture(null);
-            }
-            /* Relevant for no initial Slave-to-Master scenario in cluster */
-            final ListenableFuture<Void> deviceInitialization = asyncClusterRoleChange();
-            Futures.addCallback(deviceInitialization, new FutureCallback<Void>() {
-
-                @Override
-                public void onSuccess(@Nullable final Void aVoid) {
-                    //No operation
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
-                    MdSalRegistrationUtils.unregisterServices(getRpcContext());
-                }
-
-            });
-
-            return deviceInitialization;
-
+            return onDeviceTakeClusterLeadership();
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            if (null != rpcContext) {
-                MdSalRegistrationUtils.registerSlaveServices(rpcContext, role);
-            }
-            return transactionChainManager.deactivateTransactionManager();
+            return onDeviceLostClusterLeadership();
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceState.getNodeId());
             if (null != rpcContext) {
@@ -281,12 +250,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
     }
 
-    /*
-     * we don't have active TxManager so anything will not be stored to DS yet, but we have
-     * check all NodeInformation for statistics otherwise statistics will not contains
-     * all possible MultipartTypes for polling in StatTypeList
-     */
-    private ListenableFuture<Void> asyncClusterRoleChange() {
+    @Override
+    public ListenableFuture<Void> onDeviceLostClusterLeadership() {
+        LOG.trace("onDeviceLostClusterLeadership for node: {}", deviceState.getNodeId());
+        if (null != rpcContext) {
+            MdSalRegistrationUtils.registerSlaveServices(rpcContext, OfpRole.BECOMESLAVE);
+        }
+        return transactionChainManager.deactivateTransactionManager();
+    }
+
+    @Override
+    public ListenableFuture<Void> onDeviceTakeClusterLeadership() {
+        LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceState.getNodeId());
+        /* validation */
         if (statisticsContext == null) {
             final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceState.getNodeId());
             LOG.warn(errMsg);
@@ -297,36 +273,23 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
+        /* Routed RPC registration */
+        MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
+        getRpcContext().registerStatCompatibilityServices();
 
-        final InstanceIdentifier<FlowCapableNode> ofNodeII = deviceState.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
-        final ReadOnlyTransaction readTx = getReadTransaction();
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> readOfNodeFuture = readTx.read(
-                LogicalDatastoreType.OPERATIONAL, ofNodeII);
-
-        final ListenableFuture<Void> nodeInitInfoFuture = Futures.transform(readOfNodeFuture,
-                new AsyncFunction<Optional<FlowCapableNode>, Void>() {
-                    @Override
-                    public ListenableFuture<Void> apply(final Optional<FlowCapableNode> input) throws Exception {
-                        if (!input.isPresent() || input.get().getTable() == null || input.get().getTable().isEmpty()) {
-                            /* Last master close fail scenario so we would like to activate TxManager */
-                            LOG.debug("Operational DS for Device {} has to be replaced", deviceState.getNodeId());
-                            getDeviceState().setDeviceSynchronized(false);
-                            transactionChainManager.activateTransactionManager();
-                        }
-                        return DeviceInitializationUtils.initializeNodeInformation(DeviceContextImpl.this, switchFeaturesMandatory);
-                    }
-                });
-
-        final ListenableFuture<Boolean> statPollFuture = Futures.transform(nodeInitInfoFuture,
+        /* Prepare init info collecting */
+        getDeviceState().setDeviceSynchronized(false);
+        transactionChainManager.activateTransactionManager();
+        /* Init Collecting NodeInfo */
+        final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
+                DeviceContextImpl.this, switchFeaturesMandatory);
+        /* Init Collecting StatInfo */
+        final ListenableFuture<Boolean> statPollFuture = Futures.transform(initCollectingDeviceInfo,
                 new AsyncFunction<Void, Boolean>() {
 
                     @Override
                     public ListenableFuture<Boolean> apply(final Void input) throws Exception {
                         getStatisticsContext().statListForCollectingInitialization();
-                        if (getDeviceState().deviceSynchronized()) {
-                            return Futures.immediateFuture(Boolean.TRUE);
-                        }
                         return getStatisticsContext().gatherDynamicData();
                     }
                 });
@@ -339,21 +302,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     final String errMsg = String.format("We lost connection for Device %s, context has to be closed.",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
-                    transactionChainManager.clearUnsubmittedTransaction();
                     throw new IllegalStateException(errMsg);
                 }
                 if (!input.booleanValue()) {
                     final String errMsg = String.format("Get Initial Device %s information fails",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
-                    transactionChainManager.clearUnsubmittedTransaction();
                     throw new IllegalStateException(errMsg);
                 }
                 LOG.debug("Get Initial Device {} information is successful", getDeviceState().getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
-                transactionChainManager.activateTransactionManager();
-                MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
-                getRpcContext().registerStatCompatibilityServices();
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
                 return null;
@@ -722,5 +680,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public StatisticsContext getStatisticsContext() {
         return statisticsContext;
+    }
+
+    @Override
+    public void shutdownConnection() {
+        LOG.trace("shutdown method for node {}", deviceState.getNodeId());
+        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
+            connectionContext.closeConnection(false);
+        }
+        getPrimaryConnectionContext().closeConnection(true);
+    }
+
+    @Override
+    public DEVICE_CONTEXT_STATE getDeviceContextState() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
