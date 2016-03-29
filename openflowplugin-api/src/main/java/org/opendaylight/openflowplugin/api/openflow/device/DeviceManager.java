@@ -11,9 +11,9 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 
 /**
@@ -24,8 +24,8 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  */
 public interface DeviceManager extends DeviceConnectedHandler,
         TranslatorLibrarian,
-        DeviceInitializator,
-        DeviceInitializationPhaseHandler, DeviceContextClosedHandler,
+        DeviceLifecycleSupervisor,
+        DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler,
         AutoCloseable {
 
     /**

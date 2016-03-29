@@ -39,6 +39,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
@@ -57,6 +58,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
 
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
+    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private final DataBroker dataBroker;
     private final EntityOwnershipService entityOwnershipService;
     private final ConcurrentMap<Entity, RoleContext> contexts = new ConcurrentHashMap<>();
@@ -120,7 +122,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
     }
 
     @Override
-    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
         LOG.trace("onDeviceContextClosed for node {}", nodeId);
         final Entity entity = makeEntity(nodeId);
@@ -391,5 +393,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
                 roleContext.suspendTxCandidate();
             }
         });
+    }
+
+    @Override
+    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
+        deviceTerminationPhaseHandler = handler;
     }
 }

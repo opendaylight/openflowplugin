@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -48,7 +47,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -136,7 +135,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
+    private final Collection<DeviceTerminationPhaseHandler> closeHandlers = new HashSet<>();
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
@@ -262,12 +261,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             Futures.addCallback(deviceInitialization, new FutureCallback<Void>() {
 
                 @Override
-                public void onSuccess(@Nullable Void aVoid) {
+                public void onSuccess(@Nullable final Void aVoid) {
                     //No operation
                 }
 
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
                     MdSalRegistrationUtils.unregisterServices(getRpcContext());
                 }
@@ -609,10 +608,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
         transactionChainManager.close();
 
-        final LinkedList<DeviceContextClosedHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+        final LinkedList<DeviceTerminationPhaseHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
         Collections.reverse(reversedCloseHandlers);
-        for (final DeviceContextClosedHandler deviceContextClosedHandler : reversedCloseHandlers) {
-            deviceContextClosedHandler.onDeviceContextClosed(this);
+        for (final DeviceTerminationPhaseHandler deviceContextClosedHandler : reversedCloseHandlers) {
+            deviceContextClosedHandler.onDeviceContextLevelDown(this);
         }
         closeHandlers.clear();
     }
@@ -660,7 +659,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
+    public void addDeviceContextClosedHandler(final DeviceTerminationPhaseHandler deviceContextClosedHandler) {
         closeHandlers.add(deviceContextClosedHandler);
     }
 
