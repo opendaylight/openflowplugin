@@ -453,8 +453,12 @@ public class SyncReactorImpl implements SyncReactor {
                 Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"));
 
+        return summaryResults;
+
+        /*
         return Futures.transform(summaryResults,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                */
     }
 
     @VisibleForTesting
@@ -544,8 +548,12 @@ public class SyncReactorImpl implements SyncReactor {
                 Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"));
 
+        return summaryResult;
+
+        /*
         return Futures.transform(summaryResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                */
     }
 
     @VisibleForTesting
@@ -664,8 +672,11 @@ public class SyncReactorImpl implements SyncReactor {
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
                 ReconcileUtil.<RemoveMeterOutput>createRpcResultCondenser("meter remove"));
+        return singleVoidResult;
+        /*
         return Futures.transform(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                */
     }
 
     @VisibleForTesting

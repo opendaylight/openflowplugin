@@ -47,10 +47,9 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
 
             final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, configTree, operationalTree);
             if (newFutureNecessary) {
-                return super.syncup(flowcapableNodePath, configTree, operationalTree);
-            } else {
-                return Futures.immediateFuture(true);
+                super.syncup(flowcapableNodePath, configTree, operationalTree);
             }
+            return Futures.immediateFuture(true);
         } finally {
             beforeCompressionGuard.release();
         }
