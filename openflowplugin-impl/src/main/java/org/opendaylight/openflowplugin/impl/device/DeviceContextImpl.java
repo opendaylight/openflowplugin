@@ -666,6 +666,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
+        deviceState.setValid(false);
         return transactionChainManager.shuttingDown();
     }
 }
