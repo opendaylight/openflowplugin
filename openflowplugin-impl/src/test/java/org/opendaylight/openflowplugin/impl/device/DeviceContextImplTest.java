@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
@@ -510,38 +509,5 @@ public class DeviceContextImplTest {
 
     }
 
-    @Test
-    @Deprecated
-    @Ignore
-    public void testDeviceDisconnectedHandlerExecutionOrder() throws Exception {
-        DeviceState deviceState = new DeviceStateImpl(mock(FeaturesReply.class), mock(NodeId.class));
-        DeviceContext deviceContext1 = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer,
-                messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false);
-
-        deviceState.setValid(true);
-        when(txChainManager.shuttingDown()).thenReturn(Futures.immediateFuture((Void) null));
-
-        List<Integer> executionOrderList = new ArrayList<>(4);
-
-//        DeviceContextClosedHandler deviceContextClosedHandler1 = new OrderedDeviceContextClosedHandler(1, executionOrderList);
-//        DeviceContextClosedHandler deviceContextClosedHandler2 = new OrderedDeviceContextClosedHandler(2, executionOrderList);
-//        DeviceContextClosedHandler deviceContextClosedHandler3 = new OrderedDeviceContextClosedHandler(3, executionOrderList);
-//        DeviceContextClosedHandler deviceContextClosedHandler4 = new OrderedDeviceContextClosedHandler(4, executionOrderList);
-//
-//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler1);
-//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler2);
-//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler3);
-//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler4);
-
-        deviceContext1.onDeviceDisconnected(connectionContext);
-
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-
-        assertEquals("Not all DeviceContextClosedHandler got executed", 4, executionOrderList.size());
-        assertEquals("DeviceContextClosedHandler execution is not correct", 4, executionOrderList.get(0).intValue());
-        assertEquals("DeviceContextClosedHandler execution is not correct", 3, executionOrderList.get(1).intValue());
-        assertEquals("DeviceContextClosedHandler execution is not correct", 2, executionOrderList.get(2).intValue());
-        assertEquals("DeviceContextClosedHandler execution is not correct", 1, executionOrderList.get(3).intValue());
-    }
 
 }
