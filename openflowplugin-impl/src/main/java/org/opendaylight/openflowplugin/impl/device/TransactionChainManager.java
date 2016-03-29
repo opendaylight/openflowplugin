@@ -132,7 +132,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
-                LOG.debug("Transaction Factory delete for Node {}", nodeId());
+                LOG.debug("Transaction Factory deactivate for Node {}", nodeId());
                 Futures.addCallback(future, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final Void result) {

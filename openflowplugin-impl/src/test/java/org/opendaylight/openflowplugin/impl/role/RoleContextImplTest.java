@@ -108,7 +108,7 @@ public class RoleContextImplTest {
             .thenReturn(Futures.immediateFuture((Void) null));
 
         roleContext = new RoleContextImpl(deviceContext, entityOwnershipService, entity, txEntity);
-        roleContext.initialization();
+        roleContext.initializationRoleContext();
     }
 
     @Test

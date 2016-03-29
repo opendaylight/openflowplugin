@@ -227,8 +227,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        LOG.trace("onDeviceContextClosed for Node {}", deviceContext.getDeviceState().getNodeId());
-        deviceContexts.remove(deviceContext.getPrimaryConnectionContext().getNodeId());
+        LOG.debug("onDeviceContextClosed for Node {}", deviceContext.getDeviceState().getNodeId());
+        deviceContexts.remove(deviceContext.getPrimaryConnectionContext().getNodeId(), deviceContext);
         updatePacketInRateLimiters();
     }
 
