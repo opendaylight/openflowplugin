@@ -134,17 +134,17 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setBarrierCountLimit(int barrierCountLimit) {
+    public void setBarrierCountLimit(final int barrierCountLimit) {
         this.barrierCountLimit = barrierCountLimit;
     }
 
     @Override
-    public void setBarrierInterval(long barrierTimeoutLimit) {
+    public void setBarrierInterval(final long barrierTimeoutLimit) {
         this.barrierInterval = barrierTimeoutLimit;
     }
 
     @Override
-    public void setEchoReplyTimeout(long echoReplyTimeout) {
+    public void setEchoReplyTimeout(final long echoReplyTimeout) {
         this.echoReplyTimeout = echoReplyTimeout;
     }
 
@@ -196,12 +196,19 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
+        /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(roleManager);
         roleManager.setDeviceInitializationPhaseHandler(deviceManager);
+
+        /* Termination Phase ordering - OFP Device Context suite */
+        deviceManager.setDeviceTerminationPhaseHandler(roleManager);
+        roleManager.setDeviceTerminationPhaseHandler(rpcManager);
+        rpcManager.setDeviceTerminationPhaseHandler(statisticsManager);
+        statisticsManager.setDeviceTerminationPhaseHandler(deviceManager);
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
         rpcManager.setNotificationPublishService(notificationPublishService);

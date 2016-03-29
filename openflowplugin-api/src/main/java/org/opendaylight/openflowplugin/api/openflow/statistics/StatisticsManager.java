@@ -8,15 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler,
-        DeviceContextClosedHandler, AutoCloseable {
+public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler,
+        DeviceTerminationPhaseHandler, AutoCloseable {
 
     @Override
     void close();
