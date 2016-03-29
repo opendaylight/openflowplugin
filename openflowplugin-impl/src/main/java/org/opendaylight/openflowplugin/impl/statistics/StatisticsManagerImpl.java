@@ -20,8 +20,6 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -36,6 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -62,7 +61,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private HashedWheelTimer hashedWheelTimer;
 
-    private final ConcurrentMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<NodeId, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
@@ -78,30 +77,34 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry, final boolean shuttingDownStatisticsPolling) {
+    public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry,
+                                               final boolean shuttingDownStatisticsPolling) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
-        controlServiceRegistration = rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this);
+        this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry.addRpcImplementation(
+                StatisticsManagerControlService.class, this));
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
     }
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
-        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", deviceContext.getDeviceState().getNodeId(),
-                deviceContext.getDeviceState().getRole());
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
+        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
+
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
         }
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, shuttingDownStatisticsPolling);
 
-        Verify.verify(contexts.putIfAbsent(deviceContext, statisticsContext) == null, "StatisticsCtx still not closed for Node {}",deviceContext.getDeviceState().getNodeId());
+        Verify.verify(contexts.putIfAbsent(nodeId, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", nodeId);
         deviceContext.addDeviceContextClosedHandler(this);
 
         if (shuttingDownStatisticsPolling) {
             LOG.info("Statistics is shutdown for node:{}", deviceContext.getDeviceState().getNodeId());
         } else {
             LOG.info("Schedule Statistics poll for node:{}", deviceContext.getDeviceState().getNodeId());
-            if (OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
+            if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
                 initialStatPollForMaster(statisticsContext, deviceContext);
                 /* we want to wait for initial statCollecting response */
                 return;
@@ -127,21 +130,21 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
                     } catch (final Exception e) {
                         LOG.info("failed to complete levelUp on next handler for device {}", deviceContext.getDeviceState().getNodeId());
-                        deviceContext.close();
+                        deviceContext.shutdownConnection();
                         return;
                     }
                     deviceContext.getDeviceState().setDeviceSynchronized(true);
                 } else {
                     final String deviceAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
                     LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAddress);
-                    deviceContext.close();
+                    deviceContext.shutdownConnection();
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
-                deviceContext.close();
+                deviceContext.shutdownConnection();
             }
         });
     }
@@ -245,11 +248,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        final StatisticsContext statisticsContext = contexts.remove(deviceContext);
+        final StatisticsContext statisticsContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             statisticsContext.close();
         }
+        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceContext);
     }
 
     @Override
@@ -268,9 +272,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             if (!workMode.equals(targetWorkMode)) {
                 shuttingDownStatisticsPolling = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
                 // iterate through stats-ctx: propagate mode
-                for (final Map.Entry<DeviceContext, StatisticsContext> contextEntry : contexts.entrySet()) {
-                    final DeviceContext deviceContext = contextEntry.getKey();
-                    final StatisticsContext statisticsContext = contextEntry.getValue();
+                for (final StatisticsContext statisticsContext : contexts.values()) {
+                    final DeviceContext deviceContext = statisticsContext.getDeviceContext();
                     switch (targetWorkMode) {
                         case COLLECTALL:
                             scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
@@ -309,9 +312,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             controlServiceRegistration.close();
             controlServiceRegistration = null;
         }
-        for (final Iterator<Entry<DeviceContext, StatisticsContext>> iterator = Iterators
-                .consumingIterator(contexts.entrySet().iterator()); iterator.hasNext();) {
-            iterator.next().getValue().close();
+        for (final Iterator<StatisticsContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
+                iterator.hasNext();) {
+            iterator.next().close();
         }
     }
 

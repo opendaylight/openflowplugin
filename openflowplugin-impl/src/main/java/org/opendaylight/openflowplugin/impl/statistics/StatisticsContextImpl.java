@@ -159,8 +159,9 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() {
-        for (final RequestContext<?> requestContext : requestContexts) {
-            RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
+        for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
+                iterator.hasNext();) {
+            RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
         }
         if (null != pollTimeout && !pollTimeout.isExpired()) {
             pollTimeout.cancel();
@@ -286,5 +287,10 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ItemLifecycleListener getItemLifeCycleListener() {
         return itemLifeCycleListener;
+    }
+
+    @Override
+    public DeviceContext getDeviceContext() {
+        return deviceContext;
     }
 }
