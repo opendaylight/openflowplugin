@@ -27,7 +27,6 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -62,6 +61,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private BindingTransactionChain txChainFactory;
     @GuardedBy("txLock")
     private boolean submitIsEnabled;
+    @GuardedBy("txLock")
+    private ListenableFuture<Void> lastSubmittedFuture;
 
     public TransactionChainManagerStatus getTransactionChainManagerStatus() {
         return transactionChainManagerStatus;
@@ -77,6 +78,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+        lastSubmittedFuture = Futures.immediateFuture(null);
         LOG.debug("created txChainManager");
     }
 
@@ -178,6 +180,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
                 }
             });
+            lastSubmittedFuture = submitFuture;
             wTx = null;
         }
         return true;
@@ -256,19 +259,18 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         return future;
     }
 
+    @GuardedBy("txLock")
     private ListenableFuture<Void> txChainShuttingDown() {
         submitIsEnabled = false;
         ListenableFuture<Void> future;
         if (txChainFactory == null) {
             // stay with actual thread
             future = Futures.immediateCheckedFuture(null);
+        } else if (wTx == null) {
+            // hijack md-sal thread
+            future = lastSubmittedFuture;
         } else {
             // hijack md-sal thread
-            if (wTx == null) {
-                wTx = txChainFactory.newWriteOnlyTransaction();
-            }
-            final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId());
-            wTx.merge(LogicalDatastoreType.OPERATIONAL, nodeII, nodeBuilder.build());
             future = wTx.submit();
             wTx = null;
         }
