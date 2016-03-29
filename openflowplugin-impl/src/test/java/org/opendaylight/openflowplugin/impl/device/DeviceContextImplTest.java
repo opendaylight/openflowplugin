@@ -59,7 +59,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -263,20 +263,20 @@ public class DeviceContextImplTest {
 
     @Test
     public void testAuxiliaryConnectionContext() {
-        ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
+        final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
         final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
         assertEquals(mockedConnectionContext, pickedConnectiobContexts);
     }
 
     private ConnectionContext addDummyAuxiliaryConnectionContext() {
-        ConnectionContext mockedConnectionContext = prepareConnectionContext();
+        final ConnectionContext mockedConnectionContext = prepareConnectionContext();
         deviceContext.addAuxiliaryConnectionContext(mockedConnectionContext);
         return mockedConnectionContext;
     }
 
     private ConnectionContext prepareConnectionContext() {
-        ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
-        FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
+        final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
+        final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
         return mockedConnectionContext;
@@ -289,7 +289,7 @@ public class DeviceContextImplTest {
     @Ignore
     @Test
     public void testAddDeleteToTxChain() throws Exception{
-        InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         verify(txChainManager).addDeleteOperationTotTxChain(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
     }
@@ -331,26 +331,26 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply() {
-        Error mockedError = mock(Error.class);
+        final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
-        OfHeader mockedOfHeader = mock(OfHeader.class);
+        final OfHeader mockedOfHeader = mock(OfHeader.class);
         deviceContext.processReply(mockedOfHeader);
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
     public void testProcessReply2() {
-        MultipartReply mockedMultipartReply = mock(MultipartReply.class);
-        Xid dummyXid = new Xid(DUMMY_XID);
+        final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
+        final Xid dummyXid = new Xid(DUMMY_XID);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
     }
 
     @Test
     public void testProcessPacketInMessageFutureSuccess() {
-        PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
-        NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        final PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
         final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
@@ -361,8 +361,8 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessPacketInMessageFutureFailure() {
-        PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
-        NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        final PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
         final ListenableFuture dummyFuture = Futures.immediateFailedFuture(new IllegalStateException());
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
@@ -385,17 +385,17 @@ public class DeviceContextImplTest {
 
     @Test
     public void testClose() {
-        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
-        InetSocketAddress mockRemoteAddress = InetSocketAddress.createUnresolved("odl-unit.example.org",999);
+        final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
+        final InetSocketAddress mockRemoteAddress = InetSocketAddress.createUnresolved("odl-unit.example.org",999);
         when(mockedConnectionAdapter.getRemoteAddress()).thenReturn(mockRemoteAddress);
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
-        NodeId dummyNodeId = new NodeId("dummyNodeId");
+        final NodeId dummyNodeId = new NodeId("dummyNodeId");
         when(deviceState.getNodeId()).thenReturn(dummyNodeId);
 
-        ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
+        final ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
         deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
-        DeviceContextClosedHandler mockedDeviceContextClosedHandler = mock(DeviceContextClosedHandler.class);
+        final DeviceTerminationPhaseHandler mockedDeviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
         deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
         when(deviceState.isValid()).thenReturn(true);
         deviceContext.close();
@@ -404,7 +404,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testBarrierFieldSetGet() {
-        Timeout mockedTimeout = mock(Timeout.class);
+        final Timeout mockedTimeout = mock(Timeout.class);
         deviceContext.setCurrentBarrierTimeout(mockedTimeout);
         final Timeout pickedBarrierTimeout = deviceContext.getBarrierTaskTimeout();
         assertEquals(mockedTimeout, pickedBarrierTimeout);
@@ -418,7 +418,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testNodeConnector() {
-        NodeConnectorRef mockedNodeConnectorRef = mock(NodeConnectorRef.class);
+        final NodeConnectorRef mockedNodeConnectorRef = mock(NodeConnectorRef.class);
         deviceContext.storeNodeConnectorRef(DUMMY_PORT_NUMBER, mockedNodeConnectorRef);
         final NodeConnectorRef nodeConnectorRef = deviceContext.lookupNodeConnectorRef(DUMMY_PORT_NUMBER);
         assertEquals(mockedNodeConnectorRef, nodeConnectorRef);
@@ -429,10 +429,10 @@ public class DeviceContextImplTest {
     public void testOnPublished() {
         final ConnectionContext auxiliaryConnectionContext = addDummyAuxiliaryConnectionContext();
 
-        ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
+        final ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
         when(auxiliaryConnectionContext.getConnectionAdapter()).thenReturn(mockedAuxConnectionAdapter);
 
-        ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
+        final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
         deviceContext.onPublished();
@@ -442,12 +442,12 @@ public class DeviceContextImplTest {
 
     @Test
     public void testPortStatusMessage() {
-        PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
-        Class dummyClass = Class.class;
+        final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
+        final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
 
 
-        GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
+        final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
         when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(deviceState.getFeatures()).thenReturn(mockedFeature);
 
@@ -472,13 +472,13 @@ public class DeviceContextImplTest {
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry
-        FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedMdsalBld.build());
-        FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
+        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedMdsalBld.build());
+        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().store(flowRegKey, flowDescriptor);
 
         // plug in lifecycleListener
         final ItemLifecycleListener itemLifecycleListener = Mockito.mock(ItemLifecycleListener.class);
-        for (ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+        for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
             lifeCycleSource.setItemLifecycleListener(itemLifecycleListener);
         }
 
@@ -486,7 +486,7 @@ public class DeviceContextImplTest {
         final FlowRemovedMessageBuilder flowRemovedBld = new FlowRemovedMessageBuilder();
 
         // prepare path to flow to be removed
-        KeyedInstanceIdentifier<Flow, FlowKey> flowToBeRemovedPath = nodeKeyIdent
+        final KeyedInstanceIdentifier<Flow, FlowKey> flowToBeRemovedPath = nodeKeyIdent
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
@@ -497,7 +497,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testOnDeviceDisconnected() throws Exception {
-        DeviceContextClosedHandler deviceContextClosedHandler = mock(DeviceContextClosedHandler.class);
+        final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
         deviceContext.addDeviceContextClosedHandler(deviceContextClosedHandler);
 
         deviceContext.onDeviceDisconnected(connectionContext);
@@ -511,6 +511,8 @@ public class DeviceContextImplTest {
     }
 
     @Test
+    @Deprecated
+    @Ignore
     public void testDeviceDisconnectedHandlerExecutionOrder() throws Exception {
         DeviceState deviceState = new DeviceStateImpl(mock(FeaturesReply.class), mock(NodeId.class));
         DeviceContext deviceContext1 = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer,
@@ -521,15 +523,15 @@ public class DeviceContextImplTest {
 
         List<Integer> executionOrderList = new ArrayList<>(4);
 
-        DeviceContextClosedHandler deviceContextClosedHandler1 = new OrderedDeviceContextClosedHandler(1, executionOrderList);
-        DeviceContextClosedHandler deviceContextClosedHandler2 = new OrderedDeviceContextClosedHandler(2, executionOrderList);
-        DeviceContextClosedHandler deviceContextClosedHandler3 = new OrderedDeviceContextClosedHandler(3, executionOrderList);
-        DeviceContextClosedHandler deviceContextClosedHandler4 = new OrderedDeviceContextClosedHandler(4, executionOrderList);
-
-        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler1);
-        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler2);
-        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler3);
-        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler4);
+//        DeviceContextClosedHandler deviceContextClosedHandler1 = new OrderedDeviceContextClosedHandler(1, executionOrderList);
+//        DeviceContextClosedHandler deviceContextClosedHandler2 = new OrderedDeviceContextClosedHandler(2, executionOrderList);
+//        DeviceContextClosedHandler deviceContextClosedHandler3 = new OrderedDeviceContextClosedHandler(3, executionOrderList);
+//        DeviceContextClosedHandler deviceContextClosedHandler4 = new OrderedDeviceContextClosedHandler(4, executionOrderList);
+//
+//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler1);
+//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler2);
+//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler3);
+//        deviceContext1.addDeviceContextClosedHandler(deviceContextClosedHandler4);
 
         deviceContext1.onDeviceDisconnected(connectionContext);
 
@@ -542,20 +544,4 @@ public class DeviceContextImplTest {
         assertEquals("DeviceContextClosedHandler execution is not correct", 1, executionOrderList.get(3).intValue());
     }
 
-    private class OrderedDeviceContextClosedHandler implements DeviceContextClosedHandler {
-
-        private final int order;
-        private final List<Integer> executionOrderList;
-
-        public OrderedDeviceContextClosedHandler(int order, List<Integer> executionOrderList ) {
-
-            this.order = order;
-            this.executionOrderList = executionOrderList;
-        }
-
-        @Override
-        public void onDeviceContextClosed(DeviceContext deviceContext) {
-            executionOrderList.add(order);
-        }
-    }
 }
