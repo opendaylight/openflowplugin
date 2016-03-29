@@ -380,7 +380,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testClose() {
+    public void testShutdownConnection() {
         final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
         final InetSocketAddress mockRemoteAddress = InetSocketAddress.createUnresolved("odl-unit.example.org",999);
         when(mockedConnectionAdapter.getRemoteAddress()).thenReturn(mockRemoteAddress);
@@ -394,8 +394,8 @@ public class DeviceContextImplTest {
         final DeviceTerminationPhaseHandler mockedDeviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
         deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
         when(deviceState.isValid()).thenReturn(true);
-        deviceContext.close();
-        verify(connectionContext).closeConnection(false);
+        deviceContext.shutdownConnection();
+        verify(connectionContext).closeConnection(true);
     }
 
     @Test
@@ -495,8 +495,6 @@ public class DeviceContextImplTest {
     public void testOnDeviceDisconnected() throws Exception {
         final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
         deviceContext.addDeviceContextClosedHandler(deviceContextClosedHandler);
-
-        deviceContext.onDeviceDisconnected(connectionContext);
 
 //        Mockito.verify(deviceState).setValid(false);
 //        Mockito.verify(deviceContextClosedHandler).onDeviceContextClosed(deviceContext);
