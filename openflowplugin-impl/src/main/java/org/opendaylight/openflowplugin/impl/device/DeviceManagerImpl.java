@@ -10,10 +10,14 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -107,7 +111,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-        deviceInitPhaseHandler = handler;
+        this.deviceInitPhaseHandler = handler;
     }
 
     @Override
@@ -129,6 +133,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
 
+        // Add Disconnect handler
+        connectionContext.setDeviceDisconnectedHandler(DeviceManagerImpl.this);
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
 
@@ -159,8 +165,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionAdapter, deviceContext);
         connectionAdapter.setMessageListener(messageListener);
+        deviceState.setValid(true);
 
-        deviceCtxLevelUp(deviceContext);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 
     private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
@@ -181,12 +188,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 }
             }
         }
-    }
-
-    private void deviceCtxLevelUp(final DeviceContext deviceContext) throws Exception {
-        deviceContext.getDeviceState().setValid(true);
-        LOG.trace("Device context level up called.");
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 
     @Override
@@ -211,9 +212,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void close() {
-        for (final Iterator<Entry<NodeId, DeviceContext>> iterator = Iterators
-                .consumingIterator(deviceContexts.entrySet().iterator()); iterator.hasNext();) {
-            iterator.next().getValue().close();
+        for (final Iterator<DeviceContext> iterator = Iterators.consumingIterator(deviceContexts.values().iterator());
+                iterator.hasNext();) {
+            final DeviceContext deviceCtx = iterator.next();
+            deviceCtx.shutdownConnection();
+            deviceCtx.shuttingDownDataStoreTransactions();
         }
     }
 
@@ -243,5 +246,54 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
         this.deviceTerminPhaseHandler = handler;
+    }
+
+    @Override
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
+        Preconditions.checkArgument(connectionContext != null);
+        final NodeId nodeId = connectionContext.getNodeId();
+        final DeviceContext deviceCtx = this.deviceContexts.get(nodeId);
+
+        if (null == deviceCtx) {
+            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.",
+                    connectionContext.getNodeId());
+            return;
+        }
+
+        if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
+            /* Connection is not PrimaryConnection so try to remove from Auxiliary Connections */
+            deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
+        } else {
+            /* Device is disconnected and so we need to close TxManager */
+            final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.debug("TxChainManager for device {} is closed successful.", deviceCtx.getDeviceState().getNodeId());
+                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("TxChainManager for device {} failed by closing.", deviceCtx.getDeviceState().getNodeId(), t);
+                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
+                }
+            });
+            /* Add timer for Close TxManager because it could fain ind cluster without notification */
+            final TimerTask timerTask = new TimerTask() {
+
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    if (!future.isDone()) {
+                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.",
+                                deviceCtx.getDeviceState().getNodeId());
+                        future.cancel(false);
+                    }
+                }
+            };
+            deviceCtx.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
+        }
     }
 }
