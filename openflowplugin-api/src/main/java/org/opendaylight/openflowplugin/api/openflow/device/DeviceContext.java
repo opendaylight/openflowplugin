@@ -118,6 +118,7 @@ public interface DeviceContext extends AutoCloseable,
      * @param oldRole - old role for quick validation for needed processing
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      * @return RoleChangeTxChainManager future for activation/deactivation
+     * @deprecated replaced by method onDeviceTakeClusterLeadership and onDevicLostClusterLeadership
      */
     @Deprecated
     ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
