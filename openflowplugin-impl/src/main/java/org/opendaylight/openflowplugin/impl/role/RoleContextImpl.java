@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -56,13 +56,17 @@ public class RoleContextImpl implements RoleContext {
 
     private final DeviceContext deviceContext;
 
+    @GuardedBy("mainCandidateGuard")
     private final Entity entity;
+    @GuardedBy("txCandidateGuard")
     private final Entity txEntity;
 
     private SalRoleService salRoleService;
 
-    private final Semaphore mainCandidateGuard = new Semaphore(1, true);
-    private final Semaphore txCandidateGuard = new Semaphore(1, true);
+    private final Semaphore roleChangeGuard = new Semaphore(1, true);
+
+    @GuardedBy("roleChangeGuard")
+    private OfpRole clusterRole;
 
     public RoleContextImpl(final DeviceContext deviceContext, final EntityOwnershipService entityOwnershipService,
                            final Entity entity, final Entity txEntity) {
@@ -71,11 +75,12 @@ public class RoleContextImpl implements RoleContext {
         this.entity = Preconditions.checkNotNull(entity);
         this.txEntity = Preconditions.checkNotNull(txEntity);
         salRoleService = new SalRoleServiceImpl(this, deviceContext);
+        clusterRole = OfpRole.BECOMESLAVE;
     }
 
     @Override
-    public void initialization() throws CandidateAlreadyRegisteredException {
-        LOG.debug("Initialization RoleContext for Node {}", deviceContext.getDeviceState().getNodeId());
+    public void initializationRoleContext() {
+        LOG.trace("Initialization MainCandidate for Node {}", deviceContext.getDeviceState().getNodeId());
         final AsyncFunction<RpcResult<SetRoleOutput>, Void> initFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
             @Override
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> input) throws Exception {
@@ -87,44 +92,196 @@ public class RoleContextImpl implements RoleContext {
                 return Futures.immediateFuture(null);
             }
         };
-        final ListenableFuture<Void> roleChange = sendRoleChangeToDevice(OfpRole.BECOMESLAVE, initFunction);
-        Futures.addCallback(roleChange, new FutureCallback<Void>() {
 
-            @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("Initial RoleContext for Node {} is successful", deviceContext.getDeviceState().getNodeId());
-            }
+        try {
+            roleChangeGuard.acquire();
+            final ListenableFuture<Void> roleChange = sendRoleChangeToDevice(OfpRole.BECOMESLAVE, initFunction);
+            Futures.addCallback(roleChange, new FutureCallback<Void>() {
 
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("Initial RoleContext for Node {} fail", deviceContext.getDeviceState().getNodeId(), t);
-                deviceContext.close();
-            }
-        });
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.debug("Initial RoleContext for Node {} is successful", deviceContext.getDeviceState().getNodeId());
+                    roleChangeGuard.release();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("Initial RoleContext for Node {} fail", deviceContext.getDeviceState().getNodeId(), t);
+                    roleChangeGuard.release();
+                    deviceContext.shutdownConnection();
+                }
+            });
+        } catch (final Exception e) {
+            LOG.warn("Unexpected exception bu Initialization RoleContext for Node {}", deviceContext.getDeviceState().getNodeId(), e);
+            roleChangeGuard.release();
+            deviceContext.shutdownConnection();
+        }
     }
 
     @Override
-    public ListenableFuture<Void> onRoleChanged(final OfpRole oldRole, final OfpRole newRole) {
+    public void terminationRoleContext() {
+        LOG.trace("Termination MainCandidate for Node {}", deviceContext.getDeviceState().getNodeId());
+        if (null != entityOwnershipCandidateRegistration) {
+            LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
+            try {
+                roleChangeGuard.acquire();
+            } catch (final InterruptedException e) {
+                LOG.warn("Unexpected exception in closing EntityOwnershipCandidateRegistration process for entity {}", entity);
+            } finally {
+                entityOwnershipCandidateRegistration.close();
+                entityOwnershipCandidateRegistration = null;
+                // FIXME: call suspendTxCandidate here means lost protection for possible Delete Node before take ownership
+                // by another ClusterNode, but it stabilized cluster behavior in general - So try to find another solution
+                suspendTxCandidate();
+                roleChangeGuard.release();
+            }
+        }
+    }
+
+    @Override
+    public void onDeviceTryToTakeClusterLeadership() {
+        LOG.trace("onDeviceTryToTakeClusterLeadership method call for Entity {}", entity);
+        boolean callShutdown = false;
+        try {
+            roleChangeGuard.acquire();
+            Verify.verify(null != entityOwnershipCandidateRegistration);
+            Verify.verify(OfpRole.BECOMESLAVE.equals(clusterRole));
+
+            clusterRole = OfpRole.BECOMEMASTER;
+            /* register TxCandidate and wait for mainCandidateGuard release from onDeviceTakeLeadership method */
+            setupTxCandidate();
+
+        } catch (final Exception e) {
+            LOG.warn("Unexpected exception in roleChange process for entity {}", entity);
+            callShutdown = true;
+        } finally {
+            roleChangeGuard.release();
+        }
+        if (callShutdown) {
+            deviceContext.shutdownConnection();
+        }
+    }
+
+    @Override
+    public void onDeviceTakeClusterLeadership() {
+        LOG.trace("onDeviceTakeClusterLeadership for entity {}", txEntity);
+        try {
+            roleChangeGuard.acquire();
+            Verify.verify(null != txEntityOwnershipCandidateRegistration);
+            Verify.verify(OfpRole.BECOMEMASTER.equals(clusterRole));
+
+            if (null == entityOwnershipCandidateRegistration) {
+                LOG.debug("EntityOwnership candidate for entity {} is closed.", txEntity);
+                suspendTxCandidate();
+                roleChangeGuard.release();
+                return;
+            }
+
+            final ListenableFuture<Void> future = onRoleChanged(OfpRole.BECOMESLAVE, OfpRole.BECOMEMASTER);
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.debug("Take Leadership for node {} was successful", getDeviceState().getNodeId());
+                    roleChangeGuard.release();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.warn("Take Leadership for node {} failed", getDeviceState().getNodeId(), t);
+                    roleChangeGuard.release();
+                    deviceContext.shutdownConnection();
+                }
+            });
+
+        } catch (final Exception e) {
+            LOG.warn("Unexpected exception in roleChange process for entity {}", txEntity);
+            roleChangeGuard.release();
+            deviceContext.shutdownConnection();
+        }
+    };
+
+    @Override
+    public void onDeviceLostClusterLeadership() {
+        LOG.trace("onDeviceLostClusterLeadership method call for Entity {}", entity);
+        try {
+            roleChangeGuard.acquire();
+            Verify.verify(null != entityOwnershipCandidateRegistration);
+            Verify.verify(null != txEntityOwnershipCandidateRegistration);
+            Verify.verify(OfpRole.BECOMEMASTER.equals(clusterRole));
+
+            clusterRole = OfpRole.BECOMESLAVE;
+
+            final ListenableFuture<Void> future = onRoleChanged(OfpRole.BECOMEMASTER, OfpRole.BECOMESLAVE);
+            Futures.addCallback(future, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(final Void result) {
+                    LOG.debug("Lost Leadership for node {} was successful", getDeviceState().getNodeId());
+                    suspendTxCandidate();
+                    roleChangeGuard.release();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.debug("Lost Leadership for node {} faild", getDeviceState().getNodeId(), t);
+                    roleChangeGuard.release();
+                    deviceContext.shutdownConnection();
+                }
+
+            });
+
+        } catch (final Exception e) {
+            LOG.warn("Unexpected exception in roleChange process for entity {}", entity);
+            roleChangeGuard.release();
+            deviceContext.shutdownConnection();
+        }
+    }
+
+    @Override
+    public boolean isMainCandidateRegistered() {
+        final boolean result;
+        try {
+            roleChangeGuard.acquire();
+        } catch (final InterruptedException e) {
+            LOG.warn("Unexpected exception in check EntityOwnershipCandidateRegistration process for entity {}", entity);
+        } finally {
+            result = entityOwnershipCandidateRegistration != null;
+            roleChangeGuard.release();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isTxCandidateRegistered() {
+        final boolean result;
+        try {
+            roleChangeGuard.acquire();
+        } catch (final InterruptedException e) {
+            LOG.warn("Unexpected exception in check TxEntityOwnershipCandidateRegistration process for txEntity {}", txEntity);
+        } finally {
+            result = txEntityOwnershipCandidateRegistration != null;
+            roleChangeGuard.release();
+        }
+        return result;
+    }
+
+    @VisibleForTesting
+    ListenableFuture<Void> onRoleChanged(final OfpRole oldRole, final OfpRole newRole) {
         LOG.trace("onRoleChanged method call for Entity {}", entity);
 
         if (!isDeviceConnected()) {
             // this can happen as after the disconnect, we still get a last message from EntityOwnershipService.
-            LOG.info("Device {} is disconnected from this node. Hence not attempting a role change.",
-                    deviceContext.getPrimaryConnectionContext().getNodeId());
-            LOG.debug("SetRole cancelled for entity [{}], reason = device disconnected.", entity);
-            return Futures.immediateFailedFuture(new Exception(
-                    "Device disconnected - stopped by setRole: " + deviceContext
-                            .getPrimaryConnectionContext().getNodeId()));
+            LOG.debug("Device {} is disconnected from this node. Hence not attempting a role change.", deviceContext
+                    .getPrimaryConnectionContext().getNodeId());
+            // we don't need to do anything
+            return Futures.immediateFuture(null);
         }
-
-        LOG.debug("Role change received from ownership listener from {} to {} for device:{}", oldRole, newRole,
-                deviceContext.getPrimaryConnectionContext().getNodeId());
 
         final AsyncFunction<RpcResult<SetRoleOutput>, Void> roleChangeFunction = new AsyncFunction<RpcResult<SetRoleOutput>, Void>() {
             @Override
             public ListenableFuture<Void> apply(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) throws Exception {
-                LOG.debug("Role change {} successful made on switch :{}", newRole, deviceContext.getDeviceState()
-                        .getNodeId());
+                LOG.debug("Role change {} successful made on switch :{}", newRole, deviceContext.getDeviceState().getNodeId());
                 getDeviceState().setRole(newRole);
                 return deviceContext.onClusterRoleChange(oldRole, newRole);
             }
@@ -132,19 +289,37 @@ public class RoleContextImpl implements RoleContext {
         return sendRoleChangeToDevice(newRole, roleChangeFunction);
     }
 
-    @Override
-    public void setupTxCandidate() throws CandidateAlreadyRegisteredException {
+    @GuardedBy("roleChangeGuard")
+    private void setupTxCandidate() throws Exception {
         LOG.debug("setupTxCandidate for entity {} and Transaction entity {}", entity, txEntity);
         Verify.verify(txEntity != null);
-
+        Verify.verify(entityOwnershipCandidateRegistration != null);
+        Verify.verify(txEntityOwnershipCandidateRegistration == null);
         txEntityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(txEntity);
+    }
+
+    @GuardedBy("roleChangeGuard")
+    private void suspendTxCandidate() {
+        LOG.trace("Suspend TxCandidate for Node {}", deviceContext.getDeviceState().getNodeId());
+        if (null != txEntityOwnershipCandidateRegistration) {
+            LOG.debug("Closing TxEntityOwnershipCandidateRegistration for {}", txEntity);
+            txEntityOwnershipCandidateRegistration.close();
+            txEntityOwnershipCandidateRegistration = null;
+        }
     }
 
     @Override
     public void close() {
-        if (entityOwnershipCandidateRegistration != null) {
-            LOG.debug("Closing EntityOwnershipCandidateRegistration for {}", entity);
+        LOG.trace("Close RoleCtx for Node {}", deviceContext.getDeviceState().getNodeId());
+        if (null != entityOwnershipCandidateRegistration) {
+            LOG.info("Close Node Entity {} registration", entity);
             entityOwnershipCandidateRegistration.close();
+            entityOwnershipCandidateRegistration = null;
+        }
+        if (null != txEntityOwnershipCandidateRegistration) {
+            LOG.info("Close Tx Entity {} registration", txEntity);
+            txEntityOwnershipCandidateRegistration.close();
+            txEntityOwnershipCandidateRegistration = null;
         }
     }
 
@@ -185,26 +360,8 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void suspendTxCandidate() {
-        if (txEntityOwnershipCandidateRegistration != null) {
-            txEntityOwnershipCandidateRegistration.close();
-            txEntityOwnershipCandidateRegistration = null;
-        }
-    }
-
-    @Override
     public DeviceContext getDeviceContext() {
         return deviceContext;
-    }
-
-    @Override
-    public Semaphore getMainCandidateGuard() {
-        return mainCandidateGuard;
-    }
-
-    @Override
-    public Semaphore getTxCandidateGuard() {
-        return txCandidateGuard;
     }
 
     private ListenableFuture<Void> sendRoleChangeToDevice(final OfpRole newRole, final AsyncFunction<RpcResult<SetRoleOutput>, Void> function) {
@@ -224,7 +381,7 @@ public class RoleContextImpl implements RoleContext {
                     if (!setRoleOutputFuture.isDone()) {
                         LOG.info("New role {} was not propagated to device {} during 10 sec. Close connection immediately.",
                                 newRole, deviceContext.getDeviceState().getNodeId());
-                        deviceContext.close();
+                        setRoleOutputFuture.cancel(true);
                     }
                 }
             };
@@ -232,4 +389,20 @@ public class RoleContextImpl implements RoleContext {
         }
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture), function);
     }
+
+
+    @Override
+    public OfpRole getClusterRole() {
+        final OfpRole role;
+        try {
+            roleChangeGuard.acquire();
+        } catch (final InterruptedException e) {
+            LOG.warn("Unexpected exception in get ClusterRole process for entity {}", entity);
+        } finally {
+            role = OfpRole.forValue(clusterRole.getIntValue());
+            roleChangeGuard.release();
+        }
+        return role;
+    }
+
 }
