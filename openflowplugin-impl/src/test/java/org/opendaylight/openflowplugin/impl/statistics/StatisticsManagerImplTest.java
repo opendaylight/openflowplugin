@@ -203,7 +203,7 @@ public class StatisticsManagerImplTest {
         contextsMap.put(mockedDeviceContext, statisticContext);
         Assert.assertEquals(1, contextsMap.size());
 
-        statisticsManager.onDeviceContextClosed(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelDown(mockedDeviceContext);
         verify(statisticContext).close();
         Assert.assertEquals(0, contextsMap.size());
     }
