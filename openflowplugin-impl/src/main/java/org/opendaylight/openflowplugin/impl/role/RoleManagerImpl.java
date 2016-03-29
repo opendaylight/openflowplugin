@@ -152,6 +152,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener {
             }
             roleContext.close();
         }
+        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceContext);
     }
 
     private static Entity makeEntity(final NodeId nodeId) {
