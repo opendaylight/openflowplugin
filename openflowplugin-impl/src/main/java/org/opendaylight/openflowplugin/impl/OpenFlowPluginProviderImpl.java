@@ -205,10 +205,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         roleManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         /* Termination Phase ordering - OFP Device Context suite */
-        deviceManager.setDeviceTerminationPhaseHandler(roleManager);
-        roleManager.setDeviceTerminationPhaseHandler(rpcManager);
+        deviceManager.setDeviceTerminationPhaseHandler(rpcManager);
         rpcManager.setDeviceTerminationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceTerminationPhaseHandler(deviceManager);
+        statisticsManager.setDeviceTerminationPhaseHandler(roleManager);
+        roleManager.setDeviceTerminationPhaseHandler(deviceManager);
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
         rpcManager.setNotificationPublishService(notificationPublishService);
