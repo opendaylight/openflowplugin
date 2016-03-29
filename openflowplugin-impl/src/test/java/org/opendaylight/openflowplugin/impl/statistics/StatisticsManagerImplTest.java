@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
@@ -84,6 +85,8 @@ public class StatisticsManagerImplTest {
     DeviceState mockedDeviceState;
     @Mock
     DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
+    @Mock
+    DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
     @Mock
     private RpcProviderRegistry rpcProviderRegistry;
     @Mock
@@ -174,7 +177,7 @@ public class StatisticsManagerImplTest {
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(final InvocationOnMock invocation) throws Throwable {
                 final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
                 LOG.debug("committing entry: {}", ((MultipartRequestInput) invocation.getArguments()[1]).getType());
                 callback.onSuccess(null);
@@ -196,23 +199,26 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testOnDeviceContextClosed() throws Exception {
-        StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        final Map<DeviceContext, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
+        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        final Map<NodeId, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
 
-        contextsMap.put(mockedDeviceContext, statisticContext);
+        contextsMap.put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
         Assert.assertEquals(1, contextsMap.size());
 
+        statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
         statisticsManager.onDeviceContextLevelDown(mockedDeviceContext);
         verify(statisticContext).close();
+        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(mockedDeviceContext);
         Assert.assertEquals(0, contextsMap.size());
     }
 
-    private static Map<DeviceContext, StatisticsContext> getContextsMap(StatisticsManagerImpl statisticsManager) throws NoSuchFieldException, IllegalAccessException {
+    private static Map<NodeId, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
+            throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts map for testing shall be accessed in some more civilized way
         final Field contextsField = StatisticsManagerImpl.class.getDeclaredField("contexts");
         Assert.assertNotNull(contextsField);
         contextsField.setAccessible(true);
-        return (Map<DeviceContext, StatisticsContext>) contextsField.get(statisticsManager);
+        return (Map<NodeId, StatisticsContext>) contextsField.get(statisticsManager);
     }
 
     @Test
@@ -231,13 +237,14 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
-        StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
                 Optional.<Timeout>absent());
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext, statisticContext);
+        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -264,15 +271,16 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
-        Timeout pollTimeout = Mockito.mock(Timeout.class);
-        ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
-        StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        final Timeout pollTimeout = Mockito.mock(Timeout.class);
+        final ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
+        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
                 Optional.of(pollTimeout));
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext, statisticContext);
+        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -300,7 +308,8 @@ public class StatisticsManagerImplTest {
         Mockito.doNothing().when(itemLifecycleSource)
                 .setItemLifecycleListener(itemLifeCycleListenerCapt.capture());
 
-        StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
                 Optional.of(pollTimeout));
         when(statisticContext.getItemLifeCycleListener()).thenReturn(
@@ -308,7 +317,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext, statisticContext);
+        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -342,7 +351,7 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testCalculateTimerDelay() throws Exception {
-        TimeCounter timeCounter = Mockito.mock(TimeCounter.class);
+        final TimeCounter timeCounter = Mockito.mock(TimeCounter.class);
         when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(2000L, 4000L);
 
         statisticsManager.calculateTimerDelay(timeCounter);

@@ -63,7 +63,8 @@ public class RpcManagerImplTest {
 
     @Before
     public void setUp() {
-        nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow-junit:1")));
+        final NodeKey nodeKey = new NodeKey(new NodeId("openflow-junit:1"));
+        nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
         FeaturesReply features = new GetFeaturesOutputBuilder()
@@ -76,6 +77,7 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
+        Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
     }
 
     @Test

@@ -146,25 +146,26 @@ public class StatisticsContextImpl implements StatisticsContext {
         }
 
 
-        @Override
-        public <T> RequestContext<T> createRequestContext() {
-            final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceContext.reservedXidForDeviceMessage()) {
-                @Override
-                public void close() {
-                    requestContexts.remove(this);
-                }
-            };
-            requestContexts.add(ret);
-            return ret;
-        }
-
-        @Override
-        public void close () {
-            for (final RequestContext<?> requestContext : requestContexts) {
-                RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
+    @Override
+    public <T> RequestContext<T> createRequestContext() {
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceContext.reservedXidForDeviceMessage()) {
+            @Override
+            public void close() {
+                requestContexts.remove(this);
             }
-            if (null != pollTimeout && !pollTimeout.isExpired()) {
-                pollTimeout.cancel();
+        };
+        requestContexts.add(ret);
+        return ret;
+    }
+
+    @Override
+    public void close() {
+        for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
+                iterator.hasNext();) {
+            RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
+        }
+        if (null != pollTimeout && !pollTimeout.isExpired()) {
+            pollTimeout.cancel();
             }
         }
 
@@ -287,8 +288,14 @@ public class StatisticsContextImpl implements StatisticsContext {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
-        @Override
-        public ItemLifecycleListener getItemLifeCycleListener () {
-            return itemLifeCycleListener;
-        }
+    @Override
+    public ItemLifecycleListener getItemLifeCycleListener () {
+        return itemLifeCycleListener;
     }
+
+
+    @Override
+    public DeviceContext getDeviceContext() {
+        return deviceContext;
+    }
+}
