@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.FutureFallback;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -152,6 +155,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final boolean switchFeaturesMandatory;
     private StatisticsContext statisticsContext;
 
+    private volatile DEVICE_CONTEXT_STATE deviceCtxState;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -168,7 +173,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        primaryConnectionContext.setDeviceDisconnectedHandler(DeviceContextImpl.this);
         this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
@@ -193,6 +197,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
+        deviceCtxState = DEVICE_CONTEXT_STATE.INITIALIZATION;
     }
 
     /**
@@ -222,6 +227,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
         if (null != connectionDistinguisher) {
+            LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
+                    .getRemoteAddress(), getDeviceState().getNodeId());
             auxiliaryConnectionContexts.remove(connectionDistinguisher);
         }
     }
@@ -525,73 +532,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.debug("closing deviceContext: {}, nodeId:{}",
                 getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
                 getDeviceState().getNodeId());
-
-        if (deviceState.isValid()) {
-            primaryConnectionContext.closeConnection(false);
-            tearDown();
-        }
-    }
-
-    private synchronized void tearDown() {
-        LOG.trace("tearDown method for node {}", deviceState.getNodeId());
-        if (deviceState.isValid()) {
-            deviceState.setValid(false);
-
-            for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
-                connectionContext.closeConnection(false);
-            }
-
-            deviceGroupRegistry.close();
-            deviceFlowRegistry.close();
-            deviceMeterRegistry.close();
-
-            final ListenableFuture<Void> future = transactionChainManager.shuttingDown();
-            Futures.addCallback(future, new FutureCallback<Void>() {
-
-                @Override
-                public void onSuccess(final Void result) {
-                    LOG.info("TxChain {} was shutdown successful.", getDeviceState().getNodeId());
-                    tearDownClean();
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    LOG.warn("Shutdown TxChain {} fail.", getDeviceState().getNodeId(), t);
-                    tearDownClean();
-                }
-            });
-        }
-    }
-
-    private void tearDownClean() {
-        LOG.info("Closing transaction chain manager without cleaning inventory operational");
-        transactionChainManager.close();
-
-        final LinkedList<DeviceTerminationPhaseHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
-        Collections.reverse(reversedCloseHandlers);
-        for (final DeviceTerminationPhaseHandler deviceContextClosedHandler : reversedCloseHandlers) {
-            deviceContextClosedHandler.onDeviceContextLevelDown(this);
-        }
-        closeHandlers.clear();
-    }
-
-    @Override
-    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        LOG.info("ConnectionEvent: Device disconnected from controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
-        if (getPrimaryConnectionContext().equals(connectionContext)) {
-            try {
-                tearDown();
-            } catch (final Exception e) {
-                LOG.trace("Error closing device context.");
-            }
-        } else {
-            LOG.debug("auxiliary connection dropped: {}, nodeId:{}",
-                    connectionContext.getConnectionAdapter().getRemoteAddress(),
-                    getDeviceState().getNodeId());
-            final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-            auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
+        // NOOP
+        throw new UnsupportedOperationException("Autocloseble.close will be removed soon");
     }
 
     @Override
@@ -626,6 +568,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
+        Verify.verify(DEVICE_CONTEXT_STATE.INITIALIZATION.equals(deviceCtxState));
+        deviceCtxState = DEVICE_CONTEXT_STATE.WORKING;
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
@@ -690,17 +634,41 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void shutdownConnection() {
+    public synchronized void shutdownConnection() {
         LOG.trace("shutdown method for node {}", deviceState.getNodeId());
+        deviceState.setValid(false);
+        if (DEVICE_CONTEXT_STATE.TERMINATION.equals(deviceCtxState)) {
+            LOG.debug("DeviceCtx for Node {} is in termination process.", deviceState.getNodeId());
+            return;
+        }
+        deviceCtxState = DEVICE_CONTEXT_STATE.TERMINATION;
+        for (final Iterator<ConnectionContext> iterator = Iterators.consumingIterator(auxiliaryConnectionContexts
+                .values().iterator()); iterator.hasNext();) {
+            iterator.next().closeConnection(false);
+        }
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
+            LOG.debug("ConnectionCtx for Node {} is in RIP state.", deviceState.getNodeId());
+            return;
+        }
+        /* Terminate Auxiliary Connection */
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             connectionContext.closeConnection(false);
         }
+        /* Terminate Primary Connection */
         getPrimaryConnectionContext().closeConnection(true);
+        /* Close all Group Registry */
+        deviceGroupRegistry.close();
+        deviceFlowRegistry.close();
+        deviceMeterRegistry.close();
     }
 
     @Override
     public DEVICE_CONTEXT_STATE getDeviceContextState() {
-        // TODO Auto-generated method stub
-        return null;
+        return deviceCtxState;
+    }
+
+    @Override
+    public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
+        return transactionChainManager.shuttingDown();
     }
 }

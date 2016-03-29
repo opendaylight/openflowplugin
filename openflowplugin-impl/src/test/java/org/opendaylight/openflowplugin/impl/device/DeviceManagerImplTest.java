@@ -51,6 +51,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -90,6 +91,8 @@ public class DeviceManagerImplTest {
     private OutboundQueue outboundQueueProvider;
     @Mock
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    @Mock
+    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     @Mock
     private TranslatorLibrary translatorLibrary;
     @Mock
@@ -149,6 +152,7 @@ public class DeviceManagerImplTest {
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
+        deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
 
         return deviceManager;
     }
@@ -256,7 +260,8 @@ public class DeviceManagerImplTest {
 
         deviceManager.close();
 
-        Mockito.verify(deviceContext).close();
+        Mockito.verify(deviceContext).shutdownConnection();
+        Mockito.verify(deviceContext, Mockito.never()).close();
     }
 
     private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {

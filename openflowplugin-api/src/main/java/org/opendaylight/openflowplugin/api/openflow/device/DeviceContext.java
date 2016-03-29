@@ -20,7 +20,6 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -56,7 +55,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         DeviceReplyProcessor,
-        DeviceDisconnectedHandler,
         PortNumberCache {
 
     /**
@@ -102,7 +100,6 @@ public interface DeviceContext extends AutoCloseable,
      * @param connectionContext
      */
     void removeAuxiliaryConnectionContext(ConnectionContext connectionContext);
-
 
     /**
      * Method provides state of device represented by this device context.
@@ -153,6 +150,12 @@ public interface DeviceContext extends AutoCloseable,
      * @return transaction is submitted successfully
      */
     boolean submitTransaction();
+
+    /**
+     * Method has to close TxManager ASAP we are notified about Closed Connection
+     * @return sync. future for Slave and MD-SAL completition for Master
+     */
+    ListenableFuture<Void> shuttingDownDataStoreTransactions();
 
     /**
      * Method exposes transaction created for device
