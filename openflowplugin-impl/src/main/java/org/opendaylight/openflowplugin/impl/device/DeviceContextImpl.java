@@ -19,13 +19,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -43,7 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -131,7 +129,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>(4);
+    private final Collection<DeviceTerminationPhaseHandler> closeHandlers = new HashSet<>();
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
@@ -250,7 +248,24 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 transactionChainManager.activateTransactionManager();
                 return Futures.immediateCheckedFuture(null);
             }
-            return asyncClusterRoleChange();
+            /* Relevant for no initial Slave-to-Master scenario in cluster */
+            final ListenableFuture<Void> deviceInitialization = asyncClusterRoleChange();
+            Futures.addCallback(deviceInitialization, new FutureCallback<Void>() {
+
+                @Override
+                public void onSuccess(@Nullable final Void aVoid) {
+                    //No operation
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    LOG.debug("Device {} init unexpected fail. Unregister RPCs", getDeviceState().getNodeId());
+                    MdSalRegistrationUtils.unregisterServices(getRpcContext());
+                }
+
+            });
+
+            return deviceInitialization;
 
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             if (null != rpcContext) {
@@ -587,10 +602,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.info("Closing transaction chain manager without cleaning inventory operational");
         transactionChainManager.close();
 
-        // call closeHandlers in the reverse order
-        for (int i=(closeHandlers.size() - 1); i >=0; i--) {
-            DeviceContextClosedHandler deviceContextClosedHandler = closeHandlers.get(i);
-            deviceContextClosedHandler.onDeviceContextClosed(this);
+        final LinkedList<DeviceTerminationPhaseHandler> reversedCloseHandlers = new LinkedList<>(closeHandlers);
+        Collections.reverse(reversedCloseHandlers);
+        for (final DeviceTerminationPhaseHandler deviceContextClosedHandler : reversedCloseHandlers) {
+            deviceContextClosedHandler.onDeviceContextLevelDown(this);
         }
         closeHandlers.clear();
     }
@@ -640,7 +655,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
+    public void addDeviceContextClosedHandler(final DeviceTerminationPhaseHandler deviceContextClosedHandler) {
         closeHandlers.add(deviceContextClosedHandler);
     }
 
