@@ -14,16 +14,15 @@ import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -60,6 +59,35 @@ public interface DeviceContext extends AutoCloseable,
         DeviceDisconnectedHandler,
         PortNumberCache {
 
+    /**
+     * distinguished device context states
+     */
+    enum DEVICE_CONTEXT_STATE {
+        /**
+         * initial phase of talking to switch
+         */
+        INITIALIZATION,
+        /**
+         * standard phase - interacting with switch
+         */
+        WORKING,
+        /**
+         * termination phase of talking to switch
+         */
+        TERMINATION
+    }
+
+    /**
+     * Method returns current device context state.
+     *
+     * @return {@link DeviceContext.DEVICE_CONTEXT_STATE}
+     */
+    DEVICE_CONTEXT_STATE getDeviceContextState();
+
+    /**
+     * Method close all auxiliary connections and primary connection.
+     */
+    void shutdownConnection();
 
     /**
      * Method add auxiliary connection contexts to this context representing single device connection.
@@ -93,7 +121,22 @@ public interface DeviceContext extends AutoCloseable,
      * @param oldRole - old role for quick validation for needed processing
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      */
+    @Deprecated
     ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
+
+    /**
+     * Method has to activate TransactionChainManager and prepare all Contexts from Device Contects suite
+     * to Taking ClusterLeadership role {@link OfpRole#BECOMEMASTER} (e.g. Routed RPC registration, StatPolling ...)
+     * @return DeviceInitialization furure
+     */
+    ListenableFuture<Void> onDeviceTakeClusterLeadership();
+
+    /**
+     * Method has to deactivate TransactionChainManager and prepare all Contexts from Device Contects suite
+     * to Lost ClusterLeadership role {@link OfpRole#BECOMESLAVE} (e.g. Stop RPC rounting, stop StatPolling ...)
+     * @return RoleChangeTxChainManager future for deactivation
+     */
+    ListenableFuture<Void> onDeviceLostClusterLeadership();
 
     /**
      * Method creates put operation using provided data in underlying transaction chain.
