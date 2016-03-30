@@ -109,11 +109,15 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedFeaturesReply.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
 
         when(mocketGetFeaturesOutput.getTables()).thenReturn(tableId);
+        when(mocketGetFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(mocketGetFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnection);
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
         when(mockedDeviceState.getFeatures()).thenReturn(mocketGetFeaturesOutput);
         when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
+        when(mockedDeviceState.getNodeId()).thenReturn(mockedNodeId);
+
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
 
@@ -132,7 +136,9 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 //NOOP
             }
         };
-        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class, mockedDeviceContext, dummyEventIdentifier);
+        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
+                mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceContext.getDeviceState(),
+                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext);
     }
 
 

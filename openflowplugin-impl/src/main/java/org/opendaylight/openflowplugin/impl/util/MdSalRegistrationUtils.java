@@ -77,12 +77,19 @@ public class MdSalRegistrationUtils {
         Preconditions.checkArgument(newRole != null);
         Verify.verify(OfpRole.BECOMEMASTER.equals(newRole), "Service call with bad Role {} we expect role BECOMEMASTER", newRole);
 
+        // create service instances
+        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext);
+        final FlowCapableTransactionServiceImpl flowCapableTransactionService = new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
+        final SalGroupServiceImpl salGroupService = new SalGroupServiceImpl(rpcContext, deviceContext);
+        final SalMeterServiceImpl salMeterService = new SalMeterServiceImpl(rpcContext, deviceContext);
+
+        // register routed service instances
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalFlowService.class, salFlowService);
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
-        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
+        rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
+        rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
