@@ -15,10 +15,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -31,8 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * <p>
@@ -53,7 +47,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface DeviceContext extends AutoCloseable,
         DeviceReplyProcessor,
-        PortNumberCache {
+        PortNumberCache,
+        TxFacade,
+        XidSequencer {
+
+    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 
     /**
      * distinguished device context states
@@ -136,37 +134,10 @@ public interface DeviceContext extends AutoCloseable,
     ListenableFuture<Void> onDeviceLostClusterLeadership();
 
     /**
-     * Method creates put operation using provided data in underlying transaction chain.
-     */
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data) throws Exception;
-
-    /**
-     * Method creates delete operation for provided path in underlying transaction chain.
-     */
-    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws Exception;
-
-    /**
-     * Method submits Transaction to DataStore.
-     * @return transaction is submitted successfully
-     */
-    boolean submitTransaction();
-
-    /**
      * Method has to close TxManager ASAP we are notified about Closed Connection
      * @return sync. future for Slave and MD-SAL completition for Master
      */
     ListenableFuture<Void> shuttingDownDataStoreTransactions();
-
-    /**
-     * Method exposes transaction created for device
-     * represented by this context. This read only transaction has a fresh dataStore snapshot.
-     * There is a possibility to get different data set from  DataStore
-     * as write transaction in this context.
-     * @return readOnlyTransaction - Don't forget to close it after finish reading
-     */
-    ReadOnlyTransaction getReadTransaction();
-
-
     /**
      * Method provides current devices connection context.
      *
