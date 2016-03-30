@@ -96,7 +96,7 @@ public class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
-        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext, deviceContext.getPrimaryConnectionContext().getNodeId()));
         rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));

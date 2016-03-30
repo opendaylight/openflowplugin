@@ -94,7 +94,10 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyFlow(), MultipartType.OFPMPFLOW);
 
-        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(mockedDeviceContext, multipartReplyMessage);
+        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
+                multipartReplyMessage);
 
         DataObject dataObject = validateOutput(result);
         assertTrue(dataObject instanceof FlowsStatisticsUpdate);
@@ -106,7 +109,10 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyAggregate(), MultipartType.OFPMPAGGREGATE);
 
-        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(mockedDeviceContext, multipartReplyMessage);
+        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
+                multipartReplyMessage);
 
         DataObject dataObject = validateOutput(result);
         assertTrue(dataObject instanceof AggregateFlowStatisticsUpdate);
@@ -123,7 +129,10 @@ public class SinglePurposeMultipartReplyTranslatorTest {
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyPortStats(), MultipartType.OFPMPPORTSTATS);
 
         OpenflowPortsUtil.init();
-        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(mockedDeviceContext, multipartReplyMessage);
+        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
+                multipartReplyMessage);
 
         DataObject dataObject = validateOutput(result);
         assertTrue(dataObject instanceof NodeConnectorStatisticsUpdate);
@@ -152,7 +161,10 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyGroup(), MultipartType.OFPMPGROUP);
 
-        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(mockedDeviceContext, multipartReplyMessage);
+        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
+                multipartReplyMessage);
 
         DataObject dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupStatisticsUpdated);
@@ -175,7 +187,10 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyGroupDesc(), MultipartType.OFPMPGROUPDESC);
 
-        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(mockedDeviceContext, multipartReplyMessage);
+        List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
+                mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
+                multipartReplyMessage);
 
         DataObject dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupDescStatsUpdated);

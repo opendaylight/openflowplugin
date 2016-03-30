@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
@@ -52,9 +53,14 @@ import org.slf4j.Logger;
 
 public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTableInput> implements SalTableService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalTableServiceImpl.class);
+    private final TxFacade txFacade;
+    private final NodeId nodeId;
 
-    public SalTableServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalTableServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                               final NodeId nodeId) {
         super(requestContextStack, deviceContext);
+        this.txFacade = deviceContext;
+        this.nodeId = nodeId;
     }
 
     @Override
@@ -113,7 +119,6 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
 
-        final DeviceContext deviceContext = getDeviceContext();
         final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(getNodeId())).augmentation(FlowCapableNode.class);
         for (final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeatureData : salTableFeatures) {
@@ -121,10 +126,11 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
             final KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures, TableFeaturesKey> tableFeaturesII = flowCapableNodeII
                     .child(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures.class,
                             new TableFeaturesKey(tableId));
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII,
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII,
                     tableFeatureData);
         }
-        deviceContext.submitTransaction();
+
+        txFacade.submitTransaction();
     }
 
     protected static List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
