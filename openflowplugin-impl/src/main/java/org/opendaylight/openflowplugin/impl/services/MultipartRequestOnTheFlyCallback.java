@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.statistics.SinglePurposeMultipartReplyTranslator;
@@ -37,14 +38,17 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
     private boolean virgin = true;
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
+    private final TxFacade txFacade;
 
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
                                             final Class<?> requestType,
                                             final DeviceContext deviceContext,
-                                            final EventIdentifier eventIdentifier) {
+                                            final EventIdentifier eventIdentifier,
+                                            final TxFacade txFacade) {
         super(context, requestType, deviceContext.getMessageSpy(), eventIdentifier);
         this.deviceContext = deviceContext;
+        this.txFacade = txFacade;
         //TODO: this is focused on flow stats only - need more general approach if used for more than flow stats
         doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceContext.getPrimaryConnectionContext().getNodeId().toString());
     }
@@ -110,7 +114,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
         spyMessage(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
         setResult(rpcResult);
-        deviceContext.submitTransaction();
+        txFacade.submitTransaction();
         finished = true;
     }
 }

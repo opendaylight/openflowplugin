@@ -58,7 +58,8 @@ public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         DeviceReplyProcessor,
         DeviceDisconnectedHandler,
-        PortNumberCache {
+        PortNumberCache,
+        TxFacade {
 
 
     /**
@@ -94,31 +95,6 @@ public interface DeviceContext extends AutoCloseable,
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      */
     ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
-
-    /**
-     * Method creates put operation using provided data in underlying transaction chain.
-     */
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
-
-    /**
-     * Method creates delete operation for provided path in underlying transaction chain.
-     */
-    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
-
-    /**
-     * Method submits Transaction to DataStore.
-     * @return transaction is submitted successfully
-     */
-    boolean submitTransaction();
-
-    /**
-     * Method exposes transaction created for device
-     * represented by this context. This read only transaction has a fresh dataStore snapshot.
-     * There is a possibility to get different data set from  DataStore
-     * as write transaction in this context.
-     * @return readOnlyTransaction - Don't forget to close it after finish reading
-     */
-    ReadOnlyTransaction getReadTransaction();
 
 
     /**

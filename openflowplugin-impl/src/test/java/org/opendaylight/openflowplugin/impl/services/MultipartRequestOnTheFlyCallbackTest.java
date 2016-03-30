@@ -132,7 +132,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 //NOOP
             }
         };
-        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class, mockedDeviceContext, dummyEventIdentifier);
+        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class, mockedDeviceContext, dummyEventIdentifier, mockedDeviceContext);
     }
 
 
