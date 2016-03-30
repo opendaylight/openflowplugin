@@ -12,8 +12,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.statistics.SinglePurposeMultipartReplyTranslator;
@@ -32,21 +35,30 @@ import org.slf4j.LoggerFactory;
 
 final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<List<MultipartReply>> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartRequestOnTheFlyCallback.class);
-    private final DeviceContext deviceContext;
     private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
+    private final DeviceState deviceState;
+    private final DeviceFlowRegistry registry;
     private boolean virgin = true;
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
+    private final TxFacade txFacade;
 
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
                                             final Class<?> requestType,
-                                            final DeviceContext deviceContext,
-                                            final EventIdentifier eventIdentifier) {
-        super(context, requestType, deviceContext.getMessageSpy(), eventIdentifier);
-        this.deviceContext = deviceContext;
+                                            final MessageSpy messageSpy,
+                                            final EventIdentifier eventIdentifier,
+                                            final DeviceState deviceState,
+                                            final DeviceFlowRegistry registry,
+                                            final TxFacade txFacade) {
+        super(context, requestType, messageSpy, eventIdentifier);
+
+        this.deviceState = deviceState;
+        this.registry = registry;
+        this.txFacade = txFacade;
+
         //TODO: this is focused on flow stats only - need more general approach if used for more than flow stats
-        doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceContext.getPrimaryConnectionContext().getNodeId().toString());
+        doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceState.getNodeId().toString());
     }
 
     public EventIdentifier getDoneEventIdentifier() {
@@ -77,13 +89,14 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
             final MultipartReply multipartReply = (MultipartReply) result;
 
             final MultipartReply singleReply = multipartReply;
-            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
+            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(
+                    deviceState.getFeatures().getDatapathId(), deviceState.getFeatures().getVersion(), singleReply);
             final Iterable<? extends DataObject> allMultipartData = multipartDataList;
 
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
             ListenableFuture<Void> future;
             if (virgin) {
-                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
+                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceState, registry, txFacade);
                 virgin = false;
             } else {
                 future = Futures.immediateFuture(null);
@@ -93,7 +106,8 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
                 @Override
                 public Void apply(final Void input) {
-                    StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,deviceContext);
+                    StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,
+                            deviceState, registry, txFacade);
 
                     if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
                         endCollecting();
@@ -109,8 +123,8 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
         EventsTimeCounter.markEnd(getEventIdentifier());
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
         spyMessage(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+        txFacade.submitTransaction();
         setResult(rpcResult);
-        deviceContext.submitTransaction();
         finished = true;
     }
 }

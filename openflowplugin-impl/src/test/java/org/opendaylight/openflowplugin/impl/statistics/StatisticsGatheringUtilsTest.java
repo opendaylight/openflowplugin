@@ -193,7 +193,8 @@ public class StatisticsGatheringUtilsTest {
         final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
-        StatisticsGatheringUtils.writeFlowStatistics(prepareFlowStatisticsData(), deviceContext);
+        StatisticsGatheringUtils.writeFlowStatistics(prepareFlowStatisticsData(),
+                deviceContext.getDeviceState(), deviceContext.getDeviceFlowRegistry(), deviceContext);
 
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
@@ -493,7 +494,8 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testDeleteAllKnownFlowsNotSync() throws Exception {
         when(deviceState.deviceSynchronized()).thenReturn(false);
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceState(),
+                deviceContext.getDeviceFlowRegistry(), deviceContext);
         Mockito.verifyNoMoreInteractions(deviceFlowRegistry);
     }
 
@@ -512,7 +514,8 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceState.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext);
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceState(),
+                deviceContext.getDeviceFlowRegistry(), deviceContext);
 
         verify(deviceContext).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,
