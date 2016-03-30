@@ -111,16 +111,15 @@ public class SinglePurposeMultipartReplyTranslator {
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
 
-    public List<DataObject> translate(final DeviceContext deviceContext, final OfHeader msg) {
+    public List<DataObject> translate(final BigInteger datapathId, final short version, final OfHeader msg) {
 
         List<DataObject> listDataObject = new ArrayList<>();
 
-        OpenflowVersion ofVersion = OpenflowVersion.get(deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+        OpenflowVersion ofVersion = OpenflowVersion.get(version);
 
-        final FeaturesReply features = deviceContext.getPrimaryConnectionContext().getFeatures();
         if (msg instanceof MultipartReplyMessage) {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
-            NodeId node = SinglePurposeMultipartReplyTranslator.nodeIdFromDatapathId(features.getDatapathId());
+            NodeId node = SinglePurposeMultipartReplyTranslator.nodeIdFromDatapathId(datapathId);
             switch (mpReply.getType()) {
                 case OFPMPFLOW: {
                     FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
@@ -129,7 +128,7 @@ public class SinglePurposeMultipartReplyTranslator {
                     message.setTransactionId(generateTransactionId(mpReply.getXid()));
                     MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                     MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                    message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), features.getDatapathId(), ofVersion));
+                    message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), datapathId, ofVersion));
 
                     listDataObject.add(message.build());
                     return listDataObject;
@@ -167,7 +166,7 @@ public class SinglePurposeMultipartReplyTranslator {
                         NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                                 new NodeConnectorStatisticsAndPortNumberMapBuilder();
                         statsBuilder.setNodeConnectorId(
-                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(features.getDatapathId(),
+                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
                                         portStats.getPortNo(), ofVersion));
 
                         BytesBuilder bytesBuilder = new BytesBuilder();
@@ -396,7 +395,7 @@ public class SinglePurposeMultipartReplyTranslator {
                         QueueIdAndStatisticsMapBuilder statsBuilder =
                                 new QueueIdAndStatisticsMapBuilder();
                         statsBuilder.setNodeConnectorId(
-                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(features.getDatapathId(),
+                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
                                         queueStats.getPortNo(), ofVersion));
                         statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
                         statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
@@ -408,7 +407,7 @@ public class SinglePurposeMultipartReplyTranslator {
                         statsBuilder.setDuration(durationBuilder.build());
 
                         statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
-                        statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(features.getDatapathId(),
+                        statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
                                 queueStats.getPortNo(), ofVersion));
 
                         statsMap.add(statsBuilder.build());
