@@ -55,7 +55,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         DeviceReplyProcessor,
-        PortNumberCache {
+        PortNumberCache,
+        TxFacade {
 
     /**
      * distinguished device context states
@@ -138,37 +139,10 @@ public interface DeviceContext extends AutoCloseable,
     ListenableFuture<Void> onDeviceLostClusterLeadership();
 
     /**
-     * Method creates put operation using provided data in underlying transaction chain.
-     */
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
-
-    /**
-     * Method creates delete operation for provided path in underlying transaction chain.
-     */
-    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
-
-    /**
-     * Method submits Transaction to DataStore.
-     * @return transaction is submitted successfully
-     */
-    boolean submitTransaction();
-
-    /**
      * Method has to close TxManager ASAP we are notified about Closed Connection
      * @return sync. future for Slave and MD-SAL completition for Master
      */
     ListenableFuture<Void> shuttingDownDataStoreTransactions();
-
-    /**
-     * Method exposes transaction created for device
-     * represented by this context. This read only transaction has a fresh dataStore snapshot.
-     * There is a possibility to get different data set from  DataStore
-     * as write transaction in this context.
-     * @return readOnlyTransaction - Don't forget to close it after finish reading
-     */
-    ReadOnlyTransaction getReadTransaction();
-
-
     /**
      * Method provides current devices connection context.
      *
