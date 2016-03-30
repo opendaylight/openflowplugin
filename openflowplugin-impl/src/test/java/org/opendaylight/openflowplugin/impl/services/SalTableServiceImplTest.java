@@ -63,7 +63,8 @@ public class SalTableServiceImplTest extends ServiceMocking {
                 .when(mockedOutboundQueue).commitEntry(
                 Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
-        salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
+                mockedDeviceContext.getPrimaryConnectionContext().getNodeId());
     }
 
     @Test
