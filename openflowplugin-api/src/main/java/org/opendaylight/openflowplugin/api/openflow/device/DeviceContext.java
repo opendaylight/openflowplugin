@@ -225,13 +225,6 @@ public interface DeviceContext extends AutoCloseable,
     MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
 
     /**
-     * Method is reserved unique XID for Device Message.
-     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
-     * @return Reserved XID
-     */
-    Long reserveXidForDeviceMessage();
-
-    /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)
      */
     void onPublished();

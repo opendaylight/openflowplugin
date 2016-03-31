@@ -47,5 +47,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * @return device context or null
      */
     DeviceContext getDeviceContextFromNodeId(NodeId nodeId);
+
+    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 }
 
