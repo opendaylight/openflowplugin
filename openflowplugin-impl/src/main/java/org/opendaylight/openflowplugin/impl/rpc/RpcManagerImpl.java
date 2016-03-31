@@ -54,7 +54,10 @@ public class RpcManagerImpl implements RpcManager {
 
         LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
         final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry,
-                deviceContext, maxRequestsQuota, isStatisticsRpcEnabled, notificationPublishService);
+                deviceContext.getDeviceState(), deviceContext, maxRequestsQuota, isStatisticsRpcEnabled,
+                notificationPublishService);
+
+        deviceContext.setRpcContext(rpcContext);
 
         Verify.verify(contexts.putIfAbsent(nodeId, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
         deviceContext.addDeviceContextClosedHandler(this);

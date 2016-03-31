@@ -55,7 +55,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         DeviceReplyProcessor,
-        PortNumberCache {
+        PortNumberCache,
+        XidSequencer {
 
     /**
      * distinguished device context states
@@ -237,13 +238,6 @@ public interface DeviceContext extends AutoCloseable,
     void addDeviceContextClosedHandler(DeviceTerminationPhaseHandler deviceContextClosedHandler);
 
     MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
-
-    /**
-     * Method is reserved unique XID for Device Message.
-     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
-     * @return Reserved XID
-     */
-    Long reservedXidForDeviceMessage();
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)
