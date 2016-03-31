@@ -59,11 +59,6 @@ public class RpcContextImplTest {
     }
 
     @Test
-    public void invokeRpcTest() {
-
-    }
-
-    @Test
     public void testStoreOrFail() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext,
                 100, false, notificationPublishService)) {
