@@ -67,6 +67,6 @@ public final class AllFlowsInAllTablesService extends AbstractCompatibleStatServ
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext(), getOfVersion(), emulatedTxId);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext().getDeviceState(), getOfVersion(), emulatedTxId);
     }
 }

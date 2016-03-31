@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
@@ -34,18 +34,18 @@ public class QueueStatisticsToNotificationTransformer {
 
     /**
      * @param mpReplyList   raw multipart response from device
-     * @param deviceContext device context
+     * @param deviceState   device state
      * @param ofVersion     device version
      * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static QueueStatisticsUpdate transformToNotification(final List<MultipartReply> mpReplyList,
-                                                                final DeviceContext deviceContext,
+                                                                final DeviceState deviceState,
                                                                 final OpenflowVersion ofVersion,
                                                                 final TransactionId emulatedTxId) {
 
         QueueStatisticsUpdateBuilder notification = new QueueStatisticsUpdateBuilder();
-        notification.setId(deviceContext.getDeviceState().getNodeId());
+        notification.setId(deviceState.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
@@ -61,7 +61,7 @@ public class QueueStatisticsToNotificationTransformer {
                         new QueueIdAndStatisticsMapBuilder();
                 statsBuilder.setNodeConnectorId(
                         InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                                deviceContext.getDeviceState().getFeatures().getDatapathId(),
+                                deviceState.getFeatures().getDatapathId(),
                                 queueStats.getPortNo(), ofVersion));
                 statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
                 statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
