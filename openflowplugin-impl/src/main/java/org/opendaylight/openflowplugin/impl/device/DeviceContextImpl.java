@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -65,6 +65,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -147,6 +148,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final NodeId nodeId;
 
     private volatile DEVICE_CONTEXT_STATE deviceCtxState;
+    private boolean isStatisticsRpcEnabled;
 
 
     @VisibleForTesting
@@ -278,7 +280,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
         /* Routed RPC registration */
         MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
-        getRpcContext().registerStatCompatibilityServices();
+
+        if (isStatisticsRpcEnabled) {
+            MdSalRegistrationUtils.registerStatCompatibilityServices(getRpcContext(), this,
+                    notificationPublishService, new AtomicLong());
+        }
 
         /* Prepare init info collecting */
         getDeviceState().setDeviceSynchronized(false);
@@ -636,6 +642,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
+    }
+
+    @Override
+    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
     }
 
     @Override

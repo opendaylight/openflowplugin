@@ -20,6 +20,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -36,15 +37,13 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 public class RpcContextImplTest {
 
     @Mock
-    private BindingAwareBroker.ProviderContext mockedRpcProviderRegistry;
+    private BindingAwareBroker.ProviderContext rpcProviderRegistry;
     @Mock
     private DeviceState deviceState;
     @Mock
-    private DeviceContext deviceContext;
+    private XidSequencer xidSequencer;
     @Mock
     private MessageSpy messageSpy;
-    @Mock
-    private NotificationPublishService notificationPublishService;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
@@ -52,21 +51,12 @@ public class RpcContextImplTest {
     public void setup() {
         final NodeId nodeId = new NodeId("openflow:1");
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-
-        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-    }
-
-    @Test
-    public void invokeRpcTest() {
-
     }
 
     @Test
     public void testStoreOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext,
-                100, false, notificationPublishService)) {
+        try (final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, xidSequencer,
+                messageSpy, 100, nodeInstanceIdentifier)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -74,8 +64,8 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext, 0,
-                false, notificationPublishService)) {
+        try (final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, xidSequencer,
+                messageSpy, 0, nodeInstanceIdentifier)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }

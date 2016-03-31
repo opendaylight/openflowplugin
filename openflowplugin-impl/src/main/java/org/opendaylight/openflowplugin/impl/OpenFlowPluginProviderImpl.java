@@ -208,7 +208,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         roleManager.addRoleChangeListener((RoleChangeListener) conductor);
 
-
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
         connectionManager.setDeviceConnectedHandler(deviceManager);
@@ -223,10 +222,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager.setDeviceTerminationPhaseHandler(roleManager);
         roleManager.setDeviceTerminationPhaseHandler(deviceManager);
 
-        rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
-        rpcManager.setNotificationPublishService(notificationPublishService);
-
-        deviceManager.setNotificationPublishService(this.notificationPublishService);
+        deviceManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
+        deviceManager.setNotificationPublishService(notificationPublishService);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();

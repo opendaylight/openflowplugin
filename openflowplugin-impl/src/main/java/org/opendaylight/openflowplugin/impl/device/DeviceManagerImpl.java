@@ -79,6 +79,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ScheduledThreadPoolExecutor spyPool;
 
     private final LifecycleConductor conductor;
+    private boolean isStatisticsRpcEnabled;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
@@ -168,6 +169,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
+        deviceContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
         deviceContext.setNotificationPublishService(notificationPublishService);
 
         updatePacketInRateLimiters();
@@ -247,6 +249,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public DeviceContext getDeviceContextFromNodeId(final NodeId nodeId) {
         return deviceContexts.get(nodeId);
+    }
+
+    @Override
+    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
     }
 
     @Override
