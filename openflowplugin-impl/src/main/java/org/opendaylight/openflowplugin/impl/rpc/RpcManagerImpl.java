@@ -33,8 +33,6 @@ public class RpcManagerImpl implements RpcManager {
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private final int maxRequestsQuota;
     private final ConcurrentMap<NodeId, RpcContext> contexts = new ConcurrentHashMap<>();
-    private boolean isStatisticsRpcEnabled;
-    private NotificationPublishService notificationPublishService;
 
     private final LifecycleConductor conductor;
 
@@ -59,9 +57,11 @@ public class RpcManagerImpl implements RpcManager {
         final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 deviceContext,
+                deviceContext.getMessageSpy(),
                 maxRequestsQuota,
-                isStatisticsRpcEnabled,
-                notificationPublishService);
+                deviceContext.getDeviceState().getNodeInstanceIdentifier());
+
+        deviceContext.setRpcContext(rpcContext);
 
         Verify.verify(contexts.putIfAbsent(nodeId, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
 
@@ -77,7 +77,6 @@ public class RpcManagerImpl implements RpcManager {
         }
     }
 
-
     @Override
     public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final RpcContext removedContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
@@ -86,15 +85,6 @@ public class RpcManagerImpl implements RpcManager {
             removedContext.close();
         }
         deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceContext);
-    }
-    @Override
-    public void setStatisticsRpcEnabled(final boolean isStatisticsRpcEnabled) {
-        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
-    }
-
-    @Override
-    public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
-        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
