@@ -7,10 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
-import java.util.concurrent.Future;
-import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * Created by kramesha on 9/12/15.
@@ -19,30 +18,29 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
 
     /**
      * Initialization method is responsible for a registration of
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listen for notification from service.
-     * {@link Future} returned object is used primary
-     * for new connection initialization phase where we have to wait for actual Role.
-     * The {@link Future} has to be canceled if device is in disconnected state or when
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService} returns
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException}
+     * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listener
+     * for notification from service
+     * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService}
+     * returns Role which has to be applied for responsible Device Context suite. Any Exception
+     * state has to close Device connection channel.
      */
-    void initialization() throws CandidateAlreadyRegisteredException;
+    void initializationRoleContext();
 
     /**
-     * Transaction Candidate will provide safe way to correctly finish TxChainManager from
-     * last Node Master. It means only Master of TxEntity could hold TxChainFactory and
-     * active TransactionChain to write Data to Distributed DataStore.
+     * Termination method is responsible for an unregistrion of
+     * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listener
+     * for notification from service
+     * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService}
+     * returns notification "Someone else take Leadership" or "I'm last"
+     * and we need to clean Oper. DS.
      */
-    void setupTxCandidate() throws CandidateAlreadyRegisteredException;
-
-    /**
-     * UnregistrationTxCandidate from OwnershipService
-     */
-    void suspendTxCandidate();
+    void terminationRoleContext();
 
     @Override
     void close();
 
     DeviceContext getDeviceContext();
+
+    OfpRole getClusterRole();
 
 }
