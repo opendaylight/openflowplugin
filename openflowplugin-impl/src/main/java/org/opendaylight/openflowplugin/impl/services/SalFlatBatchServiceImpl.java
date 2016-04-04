@@ -119,6 +119,9 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                         return Futures.immediateFuture(chainInput);
                     }
 
+                    LOG.trace("batch progressing on step type {}", planStep.getStepType());
+                    LOG.trace("batch progressing previous step result: {}", chainInput.isSuccessful());
+
                     final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainOutput;
                     switch (planStep.getStepType()) {
                         case FLOW_ADD:
