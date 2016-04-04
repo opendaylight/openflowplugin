@@ -1,0 +1,134 @@
+= Bulk-o-matic Usage
+Faiz Ilahi Kothari <faiz.ilahi.k.kothari@ericsson.com>
+:rest-interface: http://localhost:8181/restconf/operations/sal-bulk-flow
+:perf-write-ds: http://localhost:8181/restconf/operations/sal-bulk-flow:flow-test
+:perf-read-ds: http://localhost:8181/restconf/operations/sal-bulk-flow:read-flow-test
+:perf-write-switch: http://localhost:8181/restconf/operations/sal-bulk-flow:flow-rpc-add-multiple
+
+
+Bulk-o-matic has a {rest-interface}[REST interface] to submit test configuration data. Rest call returns immediately and results are printed to karaf.log.
+
+== Rationale
+- Most of applications use Binding Aware approach for pushing flows so using a stress test approach based on this would be more relevant. Moreover, RESTCONF usage MAY introduce additional skews in pushing flows
+- Applications which test openflow interface can choose Datastore as well as RPC and we need a simpler interface to trigger stress testing for these two approaches
+- Applications may not be typically aware of using constructs like TransactionChain and facilities pingpong broker and these are valuable in high throughput scenarios. New RPCs added to bulk-o-matic provides rpc inputs which enable these capabilities for specific stress runs
+
+== Data Store stress test
+
+=== Writing to the Data Store
+
+The data pushed to the config store is a Flow object. No openflow switches are connected.
+
+Use operation `POST {perf-write-ds}` with the following JSON:
+
+[source, json]
+----
+{
+"input" :
+  {
+   "sal-bulk-flow:is-add" : "true",
+   "sal-bulk-flow:dpn-count" : "1",
+   "sal-bulk-flow:flows-per-dpn" : "1",
+   "sal-bulk-flow:batch-size" : "1",
+   "sal-bulk-flow:seq" : "true",
+   "sal-bulk-flow:tx-chain" : "false",
+   "sal-bulk-flow:sleep-for" : "0",
+   "sal-bulk-flow:sleep-after" : "1",
+   "sal-bulk-flow:start-table-id" : "0",
+   "sal-bulk-flow:end-table-id" : "1"
+  }
+}
+----
+
+Description:
+
+- *is-add*: if true, add flows else delete from DS.
+
+- *dpn-count*: Number of openflow switches to push the flows to.
+
+- *flows-per-dpn*: Number of flows to push per switch.
+
+- *batch-size*:	Number of flows to push in one transaction.
+
+- *seq*: if true, push the flows sequentially and stop at the first instance of failure. If false, fire the transaction but don't wait for success or failure.
+
+- *tx-chain*: if true, use transaction chaining.
+
+- *sleep-for*: Number of milli seconds to sleep for between transactions in case of `seq = true`. Number of milli seconds to sleep for after `sleep-after` in case of `seq = false`.
+
+- *sleep-after*: Number of transactions to sleep after. Used in case of `seq = false`. Ignored of `seq = true`.
+
+- *start-table-id*: Start with this table id and push flows in round robin fashion.
+
+- *end-table-id*: Last table id to push flows to. After that wrap around.
+
+Once the test is complete, check the karaf.log file. Results are printed per switch id. Sample output:
+
+`Completed all flows installation for: dpid: openflow:1 in 134369423ns`
+
+=== Reading from the Data Store
+
+Flows are hard read from the Data Store sequentially. This operation might be slow depending upon the number of flows present in the input range provided.
+
+Use operation `POST {perf-read-ds}` with the following JSON:
+
+[source, json]
+----
+{
+"input" :
+  {
+   "sal-bulk-flow:verbose" : "false",
+   "sal-bulk-flow:dpn-count" : "1",
+   "sal-bulk-flow:is-config-ds" : "true",
+   "sal-bulk-flow:flows-per-dpn" : "1",
+   "sal-bulk-flow:start-table-id" : "0",
+   "sal-bulk-flow:end-table-id" : "1"
+  }
+}
+----
+
+Description:
+
+- *verbose*: If true, print each flow read.
+
+- *dpn-count*: Number of switch nodes to read from.
+
+- *is-config-ds*: If, true read from config data store, else read from operational.
+
+- *start-table-id*: Start reading in round robin fashion from this table id.
+
+- *end-table-id*: Wrap around after this table id.
+
+Once the read task is done, check the karaf.log file. Sample output:
+
+`Total Flows read: 1`
+
+== Pushing flows to openflow switch using RPC
+
+=== Writing flows to the switch
+
+First connect the switch to the controller. Upon calling the API, it will read the operational data store for all the connected switches. If no switches found it will stop, else it will push fire flows using salFlow RPC.
+
+Use operation `POST {perf-write-switch}` with the following JSON:
+
+[source, json]
+----
+{
+	"input":
+	{
+		"sal-bulk-flow:flow-count":"100",
+		"sal-bulk-flow:rpc-batch-size":"100"
+	}
+}
+----
+
+Description:
+
+- *flow-count*: Number of flows to push per switch
+
+- *rpc-batch-size*: Pause for 40 ms after pushing these many flows.
+
+The throughput is to be measured at the switch end. No instrumentation is present at the controller end.
+
+== Soon coming up
+- A better way to collect the test results using JMX (and hence can be used in conjunction with Jolokia) instead of examining logs
