@@ -114,7 +114,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
 
         final DeviceContext deviceContext = getDeviceContext();
-        final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
+        final NodeId nodeId = getNodeId();
         final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
         for (final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeatureData : salTableFeatures) {

@@ -58,8 +58,8 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
-        nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
-        version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
+        nodeId = getNodeId();
+        version = getVersion();
     }
 
     @Override
