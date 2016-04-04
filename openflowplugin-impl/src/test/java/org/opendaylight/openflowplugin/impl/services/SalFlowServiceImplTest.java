@@ -50,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -92,14 +93,18 @@ public class SalFlowServiceImplTest extends TestCase {
     private SalFlowServiceImpl salFlowService;
 
     @Mock
-    DeviceState mockedDeviceState;
+    private DeviceState mockedDeviceState;
     @Mock
     private DeviceFlowRegistry deviceFlowRegistry;
+    @Mock
+    private GetFeaturesOutput mockedFeaturesOutput;
 
     @Before
     public void initialization() {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
+        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
 
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
@@ -114,11 +119,11 @@ public class SalFlowServiceImplTest extends TestCase {
         when(requestContext.getXid()).thenReturn(new Xid(84L));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
 
-        salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-
-
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_II);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
+        salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test

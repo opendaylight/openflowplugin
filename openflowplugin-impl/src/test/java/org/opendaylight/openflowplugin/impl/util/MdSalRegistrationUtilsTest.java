@@ -22,8 +22,10 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -42,14 +44,21 @@ public class MdSalRegistrationUtilsTest {
         final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
 
+        final DeviceState mockedDeviceState = mock(DeviceState.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
 
+        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+
         final BigInteger mockedDataPathId = mock(BigInteger.class);
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
+        when(mockedFeaturesOutput.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        MdSalRegistrationUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
+        MdSalRegistrationUtils.registerMasterServices(mockedRpcContext, mockedDeviceContext, OfpRole.BECOMEMASTER);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 Matchers.<Class<RpcService>> any(), any(RpcService.class));
     }
