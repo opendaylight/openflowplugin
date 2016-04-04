@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -56,6 +57,8 @@ public abstract class ServiceMocking {
     @Mock
     protected FeaturesReply mockedFeatures;
     @Mock
+    protected GetFeaturesOutput mockedFeaturesOutput;
+    @Mock
     protected ConnectionAdapter mockedConnectionAdapter;
     @Mock
     protected MessageSpy mockedMessagSpy;
@@ -80,13 +83,16 @@ public abstract class ServiceMocking {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
 
+        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
+
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_II);
-
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);

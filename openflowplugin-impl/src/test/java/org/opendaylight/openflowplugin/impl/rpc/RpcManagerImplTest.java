@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -67,15 +68,20 @@ public class RpcManagerImplTest {
         nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
-        FeaturesReply features = new GetFeaturesOutputBuilder()
+
+        GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
                 .build();
+
+        FeaturesReply features = featuresOutput;
+
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
     }

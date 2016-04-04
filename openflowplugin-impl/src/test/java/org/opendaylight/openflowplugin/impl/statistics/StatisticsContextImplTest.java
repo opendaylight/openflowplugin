@@ -95,6 +95,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testGatherDynamicData_all() throws Exception {
         Mockito.reset(mockedDeviceState);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isGroupAvailable()).thenReturn(true);

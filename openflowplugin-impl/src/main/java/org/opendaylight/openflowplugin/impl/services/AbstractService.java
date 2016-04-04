@@ -14,15 +14,14 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import javax.annotation.Nonnull;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.*;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -40,18 +39,20 @@ abstract class AbstractService<I, O> {
     private final BigInteger datapathId;
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
-    private final ConnectionAdapter primaryConnectionAdapter;
     private final MessageSpy messageSpy;
+    private final NodeId nodeId;
     private EventIdentifier eventIdentifier;
 
     public AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        final DeviceState deviceState = deviceContext.getDeviceState();
+        final GetFeaturesOutput features = deviceState.getFeatures();
+
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
-        final FeaturesReply features = this.deviceContext.getPrimaryConnectionContext().getFeatures();
         this.datapathId = features.getDatapathId();
         this.version = features.getVersion();
-        this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
         this.messageSpy = deviceContext.getMessageSpy();
+        this.nodeId = deviceState.getNodeId();
     }
 
     public EventIdentifier getEventIdentifier() {
@@ -68,6 +69,10 @@ abstract class AbstractService<I, O> {
 
     public BigInteger getDatapathId() {
         return datapathId;
+    }
+
+    public NodeId getNodeId() {
+        return nodeId;
     }
 
     public RequestContextStack getRequestContextStack() {
@@ -101,16 +106,16 @@ abstract class AbstractService<I, O> {
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
         if (requestContext == null) {
             LOG.trace("Request context refused.");
-            deviceContext.getMessageSpy().spyMessage(AbstractService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            getMessageSpy().spyMessage(AbstractService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
             return failedFuture();
         }
 
         if (requestContext.getXid() == null) {
-            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
+            getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
 
-        messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
+        getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
 
         final Xid xid = requestContext.getXid();
         OfHeader request = null;
