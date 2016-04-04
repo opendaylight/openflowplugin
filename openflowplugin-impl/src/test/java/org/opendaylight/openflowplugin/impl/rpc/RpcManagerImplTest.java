@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.mockito.Mockito.times;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +39,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 @RunWith(MockitoJUnitRunner.class)
 public class RpcManagerImplTest {
 
-    private static final int AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 11;
+    private static final int AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 12;
 
     private RpcManagerImpl rpcManager;
     @Mock
