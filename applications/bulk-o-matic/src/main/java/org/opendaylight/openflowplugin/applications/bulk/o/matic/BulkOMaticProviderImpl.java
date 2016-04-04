@@ -29,6 +29,7 @@ public class BulkOMaticProviderImpl implements BulkOMaticProvider {
         LOG.info("creating bulk-o-matic");
         SalFlowService flowService = rpcRegistry.getRpcService(SalFlowService.class);
         SalBulkFlowService bulkOMaticService = new SalBulkFlowServiceImpl(flowService, dataBroker);
+        bulkOMaticService.register();
         serviceRpcRegistration = rpcRegistry.addRpcImplementation(SalBulkFlowService.class, bulkOMaticService);
     }
 
