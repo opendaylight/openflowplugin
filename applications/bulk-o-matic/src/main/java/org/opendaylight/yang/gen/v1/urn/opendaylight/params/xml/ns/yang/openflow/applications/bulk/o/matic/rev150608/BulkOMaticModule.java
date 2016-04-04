@@ -20,5 +20,4 @@ public class BulkOMaticModule extends org.opendaylight.yang.gen.v1.urn.opendayli
     public java.lang.AutoCloseable createInstance() {
         return new BulkOMaticProviderImpl(getRpcRegistryDependency(), getDataBrokerDependency());
     }
-
 }
