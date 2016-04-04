@@ -47,10 +47,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
@@ -75,6 +72,8 @@ public class StatisticsManagerImplTest {
     ConnectionContext mockedPrimConnectionContext;
     @Mock
     FeaturesReply mockedFeatures;
+    @Mock
+    GetFeaturesOutput mockedFeaturesOutput;
     @Mock
     ConnectionAdapter mockedConnectionAdapter;
     @Mock
@@ -109,6 +108,8 @@ public class StatisticsManagerImplTest {
     public void initialization() {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
+        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
 
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
@@ -122,6 +123,7 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(true);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
 
         when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
 

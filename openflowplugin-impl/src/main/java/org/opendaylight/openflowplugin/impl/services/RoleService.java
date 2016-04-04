@@ -51,7 +51,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     public Future<BigInteger> getGenerationIdFromDevice(final Short version) {
-        final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
+        final NodeId nodeId = getNodeId();
         LOG.info("getGenerationIdFromDevice called for device:{}", nodeId.getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
@@ -95,7 +95,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
     public Future<SetRoleOutput> submitRoleChange(final OfpRole ofpRole, final Short version, final BigInteger generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
-                deviceContext.getPrimaryConnectionContext().getNodeId(), ofpRole);
+                getNodeId(), ofpRole);
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
         roleRequestInputBuilder.setRole(toOFJavaRole(ofpRole));
         roleRequestInputBuilder.setVersion(version);
@@ -108,7 +108,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
             @Override
             public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 LOG.info("submitRoleChange onSuccess for device:{}, role:{}",
-                        deviceContext.getPrimaryConnectionContext().getNodeId(), ofpRole);
+                        getNodeId(), ofpRole);
                 final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
                 final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
                 setRoleOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
@@ -118,7 +118,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("submitRoleChange onFailure for device:{}, role:{}",
-                        deviceContext.getPrimaryConnectionContext().getNodeId(), ofpRole, throwable);
+                        getNodeId(), ofpRole, throwable);
                 finalFuture.set(null);
             }
         });

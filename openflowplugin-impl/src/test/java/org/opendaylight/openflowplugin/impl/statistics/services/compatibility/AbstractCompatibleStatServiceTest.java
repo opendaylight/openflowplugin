@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.g
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
@@ -64,6 +65,8 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
     private DeviceState deviceState;
     @Mock
     private MessageTranslator<Object, Object> translator;
+    @Mock
+    private GetFeaturesOutput featuresOutput;
 
     private AbstractRequestContext<Object> rqContext;
 
@@ -89,10 +92,12 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
             }
         };
 
+        Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceState.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting();
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
 

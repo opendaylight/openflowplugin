@@ -42,7 +42,7 @@ public abstract class AbstractCompatibleStatService<I, O, N extends Notification
     public AbstractCompatibleStatService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext);
         this.compatibilityXidSeed = compatibilityXidSeed;
-        ofVersion = OpenflowVersion.get(getDeviceContext().getDeviceState().getVersion());
+        ofVersion = OpenflowVersion.get(getVersion());
     }
 
     public OpenflowVersion getOfVersion() {
