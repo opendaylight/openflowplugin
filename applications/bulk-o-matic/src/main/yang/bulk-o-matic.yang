@@ -4,6 +4,7 @@ module bulk-o-matic {
     prefix "bulk";
     import config {prefix config; revision-date 2013-04-05;}
     import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+    import opendaylight-entity-ownership-service { prefix entity-ownership-service; }
 
     description
         "End point application providing bulk operation via DS and via rpc";
