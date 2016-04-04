@@ -94,10 +94,11 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(deviceState.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
-        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
+        Mockito.when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
 
         setUp();

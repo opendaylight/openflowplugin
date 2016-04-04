@@ -46,8 +46,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
     private final DeviceContext deviceContext;
     private final RoleService roleService;
-    private final NodeId nodeId;
-    private final Short version;
 
     private final Semaphore currentRoleGuard = new Semaphore(1, true);
 
@@ -58,8 +56,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
         this.roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
-        nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
-        version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
     }
 
     @Override
@@ -161,15 +157,15 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
-        LOG.info("RoleChangeTask called on device:{} OFPRole:{}", nodeId.getValue(), role);
+        LOG.info("RoleChangeTask called on device:{} OFPRole:{}", getNodeId().getValue(), role);
 
-        final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(version);
+        final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
-            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", nodeId.getValue(), generationId);
+            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getNodeId().getValue(), generationId);
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
-            LOG.debug("nextGenerationId received from device:{} is {}", nodeId.getValue(), nextGenerationId);
-            final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, version, nextGenerationId);
+            LOG.debug("nextGenerationId received from device:{} is {}", getNodeId().getValue(), nextGenerationId);
+            final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, getVersion(), nextGenerationId);
             return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
         });
     }

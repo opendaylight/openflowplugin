@@ -23,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -34,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -72,6 +74,12 @@ public class SalRoleServiceImplTest {
     private RequestContext<RoleRequestOutput> mockRequestContext;
 
     @Mock
+    private DeviceState mockDeviceState;
+
+    @Mock
+    private GetFeaturesOutput mockFeaturesOutput;
+
+    @Mock
     private OutboundQueue mockOutboundQueue;
 
     private NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
@@ -85,6 +93,10 @@ public class SalRoleServiceImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(mockDeviceState.getNodeId()).thenReturn(testNodeId);
+        Mockito.when(mockDeviceState.getFeatures()).thenReturn(mockFeaturesOutput);
+        Mockito.when(mockFeaturesOutput.getVersion()).thenReturn(testVersion);
+        Mockito.when(mockDeviceContext.getDeviceState()).thenReturn(mockDeviceState);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
         Mockito.when(mockConnectionContext.getFeatures()).thenReturn(mockFeaturesReply);
         Mockito.when(mockConnectionContext.getNodeId()).thenReturn(testNodeId);
