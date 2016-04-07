@@ -101,6 +101,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         when(mockedDeviceState.isMetersAvailable()).thenReturn(true);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(true);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(true);
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         initStatisticsContext();
 
         when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))

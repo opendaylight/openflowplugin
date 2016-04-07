@@ -23,7 +23,12 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 
 public class StatisticsContextImpMockInitiation {
@@ -43,6 +48,9 @@ public class StatisticsContextImpMockInitiation {
     protected MessageSpy mockedMessageSpy;
     protected OutboundQueue mockedOutboundQueue;
 
+    protected static final KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+
     @Before
     public void initialize() {
         mockedDeviceContext = mock(DeviceContext.class);
@@ -60,11 +68,12 @@ public class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isMetersAvailable()).thenReturn(isMeter);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
-        when(mockedConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+        when(mockedConnectionContext.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
