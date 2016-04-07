@@ -17,7 +17,9 @@ import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -29,12 +31,18 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatusBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEnd;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEndBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusStartBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -101,6 +109,8 @@ import org.slf4j.LoggerFactory;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.4.2015.
  */
 public final class StatisticsGatheringUtils {
+
+    public static String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
@@ -222,7 +232,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static ListenableFuture<Boolean> processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data,
-            final DeviceContext deviceContext, final EventIdentifier eventIdentifier) {
+                                                                   final DeviceContext deviceContext, final EventIdentifier eventIdentifier) {
         final ListenableFuture<Void> deleFuture = deleteAllKnownFlows(deviceContext);
         return Futures.transform(deleFuture, new Function<Void, Boolean>() {
 
@@ -295,7 +305,7 @@ public final class StatisticsGatheringUtils {
                 public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
                     if (flowCapNodeOpt.isPresent()) {
                         for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow> emptyList()).build();
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
                             final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
                             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                         }
@@ -443,5 +453,47 @@ public final class StatisticsGatheringUtils {
 
     private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(final DeviceContext deviceContext) {
         return deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+    }
+
+    /**
+     * Writes snapshot gathering start timestamp + cleans end mark
+     *
+     * @param deviceContext txManager + node path keeper
+     */
+    public static void markDeviceStateSnapshotStart(DeviceContext deviceContext) {
+        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceState()
+                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
+        final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
+                .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
+                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                        .build())
+                .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
+                .build();
+
+        deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
+        deviceContext.submitTransaction();
+    }
+
+    /**
+     * Writes snapshot gathering end timestamp + outcome
+     *
+     * @param deviceContext txManager + node path keeper
+     * @param succeeded     outcome of currently finished gathering
+     */
+    public static void markDeviceStateSnapshotEnd(DeviceContext deviceContext, final boolean succeeded) {
+        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceState()
+                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
+                .child(SnapshotGatheringStatusEnd.class);
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
+        final SnapshotGatheringStatusEnd gatheringStatus = new SnapshotGatheringStatusEndBuilder()
+                .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
+                .setSucceeded(succeeded)
+                .build();
+
+        deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
+        deviceContext.submitTransaction();
     }
 }

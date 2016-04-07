@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -103,47 +104,63 @@ public class StatisticsContextImpl implements StatisticsContext {
         }
     }
 
-        @Override
-        public ListenableFuture<Boolean> gatherDynamicData() {
-            if (shuttingDownStatisticsPolling) {
-                LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceState().getNodeId());
-                return Futures.immediateFuture(Boolean.TRUE);
-            }
-            final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
-            if (errorResultFuture != null) {
-                return errorResultFuture;
-            }
-            synchronized (COLLECTION_STAT_TYPE_LOCK) {
-                final Iterator<MultipartType> statIterator = collectingStatType.iterator();
-                final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
-                statChainFuture(statIterator, settableStatResultFuture);
-                return settableStatResultFuture;
-            }
+    @Override
+    public ListenableFuture<Boolean> gatherDynamicData() {
+        if (shuttingDownStatisticsPolling) {
+            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceState().getNodeId());
+            return Futures.immediateFuture(Boolean.TRUE);
         }
+        final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
+        if (errorResultFuture != null) {
+            return errorResultFuture;
+        }
+        synchronized (COLLECTION_STAT_TYPE_LOCK) {
+            final Iterator<MultipartType> statIterator = collectingStatType.iterator();
+            final SettableFuture<Boolean> settableStatResultFuture = SettableFuture.create();
 
-        private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
-            switch (multipartType) {
-                case OFPMPFLOW:
-                    return collectFlowStatistics(multipartType);
-                case OFPMPTABLE:
-                    return collectTableStatistics(multipartType);
-                case OFPMPPORTSTATS:
-                    return collectPortStatistics(multipartType);
-                case OFPMPQUEUE:
-                    return collectQueueStatistics(multipartType);
-                case OFPMPGROUPDESC:
-                    return collectGroupDescStatistics(multipartType);
-                case OFPMPGROUP:
-                    return collectGroupStatistics(multipartType);
-                case OFPMPMETERCONFIG:
-                    return collectMeterConfigStatistics(multipartType);
-                case OFPMPMETER:
-                    return collectMeterStatistics(multipartType);
-                default:
-                    LOG.warn("Unsuported Statistics type {}", multipartType);
-                    return Futures.immediateCheckedFuture(Boolean.TRUE);
-            }
+            // write start timestamp to state snapshot container
+            StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceContext);
+
+            statChainFuture(statIterator, settableStatResultFuture);
+
+            // write end timestamp to state snapshot container
+            Futures.addCallback(settableStatResultFuture, new FutureCallback<Boolean>() {
+                @Override
+                public void onSuccess(@Nullable final Boolean result) {
+                    StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, true);
+                }
+                @Override
+                public void onFailure(final Throwable t) {
+                    StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
+                }
+            });
+            return settableStatResultFuture;
         }
+    }
+
+    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
+        switch (multipartType) {
+            case OFPMPFLOW:
+                return collectFlowStatistics(multipartType);
+            case OFPMPTABLE:
+                return collectTableStatistics(multipartType);
+            case OFPMPPORTSTATS:
+                return collectPortStatistics(multipartType);
+            case OFPMPQUEUE:
+                return collectQueueStatistics(multipartType);
+            case OFPMPGROUPDESC:
+                return collectGroupDescStatistics(multipartType);
+            case OFPMPGROUP:
+                return collectGroupStatistics(multipartType);
+            case OFPMPMETERCONFIG:
+                return collectMeterConfigStatistics(multipartType);
+            case OFPMPMETER:
+                return collectMeterStatistics(multipartType);
+            default:
+                LOG.warn("Unsuported Statistics type {}", multipartType);
+                return Futures.immediateCheckedFuture(Boolean.TRUE);
+        }
+    }
 
 
     @Override
