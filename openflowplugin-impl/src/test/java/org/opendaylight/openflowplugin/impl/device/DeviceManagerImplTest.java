@@ -182,7 +182,7 @@ public class DeviceManagerImplTest {
         injectMockTranslatorLibrary(deviceManager);
         final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
 
-        deviceManager.deviceConnected(mockConnectionContext);
+        Assert.assertTrue(deviceManager.deviceConnected(mockConnectionContext));
 
         final InOrder order = inOrder(mockConnectionContext);
         order.verify(mockConnectionContext).getFeatures();
@@ -191,6 +191,24 @@ public class DeviceManagerImplTest {
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
         Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+    }
+
+    @Test
+    public void deviceConnectedTwiceTest() throws Exception{
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
+        injectMockTranslatorLibrary(deviceManager);
+        final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+
+        Assert.assertTrue(deviceManager.deviceConnected(mockConnectionContext));
+        Assert.assertFalse(deviceManager.deviceConnected(mockConnectionContext));
+
+        final InOrder order = inOrder(mockConnectionContext);
+        order.verify(mockConnectionContext).getFeatures();
+        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
+        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
+                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
+        order.verify(mockConnectionContext).getNodeId();
+        Mockito.verify(deviceInitPhaseHandler, Mockito.times(1)).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
     }
 
     @Test
@@ -207,7 +225,7 @@ public class DeviceManagerImplTest {
                 .thenReturn(null);
         when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
 
-        deviceManager.deviceConnected(mockConnectionContext);
+        Assert.assertTrue(deviceManager.deviceConnected(mockConnectionContext));
 
         final InOrder order = inOrder(mockConnectionContext);
         order.verify(mockConnectionContext).getFeatures();

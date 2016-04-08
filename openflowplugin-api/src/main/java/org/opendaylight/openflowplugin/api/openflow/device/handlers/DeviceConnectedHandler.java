@@ -18,7 +18,8 @@ public interface DeviceConnectedHandler {
     /**
      * Method is used to propagate information about established connection with device.
      * It propagates connected device's connection context.
+     * @return if successfully created device context than return true
      */
-    void deviceConnected(ConnectionContext connectionContext) throws Exception;
+    boolean deviceConnected(ConnectionContext connectionContext) throws Exception;
 
 }
