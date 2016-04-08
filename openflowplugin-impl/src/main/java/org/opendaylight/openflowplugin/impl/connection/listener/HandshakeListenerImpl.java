@@ -62,7 +62,16 @@ public class HandshakeListenerImpl implements HandshakeListener {
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 LOG.debug("succeeded by getting sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
                 try {
-                    deviceConnectedHandler.deviceConnected(connectionContext);
+                    /**
+                     * We get {@link Boolean.FALSE} only in phase we are trying to create new
+                     * {@link org.opendaylight.openflowplugin.api.openflow.device.org.opendaylight.openflowplugin.api.openflow.device.DeviceContext}
+                     * and already exists one for the same {@link org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId}
+                     * In other managers (RPC, Stat, Role) we throws exception
+                     * which will result to closeConnection - with propagate {@link Boolean.TRUE}
+                     */
+                    if (!deviceConnectedHandler.deviceConnected(connectionContext)) {
+                        connectionContext.closeConnection(false);
+                    }
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {

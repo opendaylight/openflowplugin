@@ -124,12 +124,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
+    public boolean deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
-        Preconditions.checkState(!deviceContexts.containsKey(connectionContext.getNodeId()),
-                "Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
-                connectionContext.getNodeId()
-        );
+        /**
+         * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
+         * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
+         * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
+         */
+        if (deviceContexts.containsKey(connectionContext.getNodeId())) {
+            LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
+                    connectionContext.getNodeId());
+            return false;
+        }
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
 
@@ -153,7 +159,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
-        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
+        deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
@@ -168,6 +174,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceState.setValid(true);
 
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        return true;
     }
 
     private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
