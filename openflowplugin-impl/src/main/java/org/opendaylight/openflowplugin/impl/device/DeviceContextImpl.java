@@ -277,9 +277,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
-        /* Routed RPC registration */
-        MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
-        getRpcContext().registerStatCompatibilityServices();
 
         /* Prepare init info collecting */
         getDeviceState().setDeviceSynchronized(false);
@@ -315,6 +312,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     throw new IllegalStateException(errMsg);
                 }
                 LOG.debug("Get Initial Device {} information is successful", nodeId);
+
+                /* Routed RPC registration */
+                MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
+                getRpcContext().registerStatCompatibilityServices();
+
                 getDeviceState().setDeviceSynchronized(true);
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
