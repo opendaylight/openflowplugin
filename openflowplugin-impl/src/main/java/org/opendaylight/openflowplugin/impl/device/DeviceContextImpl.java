@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
@@ -40,6 +39,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -153,7 +153,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
-                      @Nonnull final MessageSpy _messageSpy,
+                      @Nonnull final LifecycleConductor conductor,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
                       @Nonnull final TranslatorLibrary translatorLibrary,
                       final boolean switchFeaturesMandatory) {
@@ -161,13 +161,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        Preconditions.checkNotNull(conductor);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState, conductor);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
-        messageSpy = _messageSpy;
+        messageSpy = conductor.getMessageIntelligenceAgency();
 
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ 1000, /*initial*/2000, messageSpy, REJECTED_DRAIN_FACTOR);
