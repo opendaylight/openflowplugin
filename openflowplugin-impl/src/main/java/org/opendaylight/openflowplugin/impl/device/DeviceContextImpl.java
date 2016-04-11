@@ -173,7 +173,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState, this);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();

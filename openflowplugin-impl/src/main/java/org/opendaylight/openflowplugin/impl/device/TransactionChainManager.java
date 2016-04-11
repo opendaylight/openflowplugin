@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -55,6 +56,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final DataBroker dataBroker;
+    private final DeviceContext deviceCtx;
 
     @GuardedBy("txLock")
     private WriteTransaction wTx;
@@ -65,6 +67,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @GuardedBy("txLock")
     private ListenableFuture<Void> lastSubmittedFuture;
 
+    private boolean initCommit;
+
     public TransactionChainManagerStatus getTransactionChainManagerStatus() {
         return transactionChainManagerStatus;
     }
@@ -72,8 +76,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
 
-    TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final DeviceState deviceState) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker,
+                            @Nonnull final DeviceState deviceState,
+                            @Nonnull final DeviceContext deviceCtx) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.deviceCtx = Preconditions.checkNotNull(deviceCtx);
         this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
         lastSubmittedFuture = Futures.immediateFuture(null);
@@ -111,6 +118,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 this.submitIsEnabled = false;
+                this.initCommit = true;
                 createTxChain();
             } else {
                 LOG.debug("Transaction is active {}", nodeId());
@@ -170,7 +178,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             Futures.addCallback(submitFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
-                    //no action required
+                    if (initCommit) {
+                        initCommit = false;
+                    }
                 }
 
                 @Override
@@ -179,6 +189,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                         LOG.error("Transaction commit failed. {}", t);
                     } else {
                         LOG.error("Exception during transaction submitting. {}", t);
+                    }
+                    if (initCommit) {
+                        LOG.error("Initial commit failed. {}", t);
+                        deviceCtx.shutdownConnection();
                     }
                 }
             });
