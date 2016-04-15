@@ -146,7 +146,7 @@ public class DeviceInitializationUtilsTest {
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
     @Test
-    public void chainTableTrunkWriteOF10Test() {
+    public void chainTableTrunkWriteOF10Test() throws Exception {
         DeviceState mockedDeviceState = mock(DeviceState.class);
 
         GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
@@ -168,7 +168,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void testTranslateAndWriteReplyTypeDesc() {
+    public void testTranslateAndWriteReplyTypeDesc() throws Exception {
         final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
         Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         DeviceState deviceState = Mockito.mock(DeviceState.class);
@@ -182,7 +182,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeTableFeatures() {
+    public void translateAndWriteReplyTypeTableFeatures() throws Exception {
         TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         tableFeature.setTableId(DUMMY_TABLE_ID);
         List<TableFeatures> tableFeatures = new ArrayList<>();
@@ -202,7 +202,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeMeterFeatures() {
+    public void translateAndWriteReplyTypeMeterFeatures() throws Exception {
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
@@ -223,7 +223,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeGroupFeatures() {
+    public void translateAndWriteReplyTypeGroupFeatures() throws Exception {
         MultipartReplyGroupFeaturesBuilder multipartReplyGroupFeaturesBuilder = new MultipartReplyGroupFeaturesBuilder();
         multipartReplyGroupFeaturesBuilder.setTypes(new GroupTypes(true, true, true, true));
         multipartReplyGroupFeaturesBuilder.setCapabilities(new GroupCapabilities(true, true, true, true));
@@ -245,7 +245,7 @@ public class DeviceInitializationUtilsTest {
 
 
     @Test
-    public void translateAndWriteReplyTypePortDesc() {
+    public void translateAndWriteReplyTypePortDesc() throws Exception {
         ConnectionContext mockedPrimaryConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedFeatures.getDatapathId()).thenReturn(new BigInteger(DUMMY_DATAPATH_ID));
@@ -278,7 +278,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void createSuccessProcessingCallbackTest() {
+    public void createSuccessProcessingCallbackTest() throws Exception {
         DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 

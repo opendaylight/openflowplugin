@@ -10,12 +10,23 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * Created by kramesha on 8/31/15.
  */
 public interface RoleManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable,
         DeviceTerminationPhaseHandler {
-    public static final String ENTITY_TYPE = "openflow";
-    public static final String TX_ENTITY_TYPE = "ofTransaction";
+    String ENTITY_TYPE = "openflow";
+    String TX_ENTITY_TYPE = "ofTransaction";
+
+    /**
+     * Adding listener to by notified for role changes
+     * API for listener {@link RoleChangeListener}
+     * @param roleChangeListener
+     */
+    void addRoleChangeListener(RoleChangeListener roleChangeListener);
+
 }
