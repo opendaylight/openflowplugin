@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -44,5 +45,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * invoked after all services injected
      */
     void initialize();
+
+    DeviceContext getDeviceContextFromNodeId(NodeId nodeId);
 }
 
