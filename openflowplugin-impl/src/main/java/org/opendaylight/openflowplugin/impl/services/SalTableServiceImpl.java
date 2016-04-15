@@ -82,7 +82,11 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
                         final UpdateTableOutputBuilder updateTableOutputBuilder = new UpdateTableOutputBuilder();
                         updateTableOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
                         finalFuture.set(RpcResultBuilder.success(updateTableOutputBuilder.build()).build());
-                        writeResponseToOperationalDatastore(multipartReplies);
+                        try {
+                            writeResponseToOperationalDatastore(multipartReplies);
+                        } catch (Exception e) {
+                            LOG.warn("Not able to write to operational datastore: {}", e.getMessage());
+                        }
                     }
                 } else {
                     LOG.debug("OnSuccess, rpc result unsuccessful, multipart response for rpc update-table was unsuccessful.");
@@ -107,7 +111,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
     /**
      * @param multipartReplies
      */
-    private void writeResponseToOperationalDatastore(final List<MultipartReply> multipartReplies) {
+    private void writeResponseToOperationalDatastore(final List<MultipartReply> multipartReplies) throws Exception {
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
 
