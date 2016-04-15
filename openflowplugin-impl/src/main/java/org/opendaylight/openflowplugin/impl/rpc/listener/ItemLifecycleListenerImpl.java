@@ -15,11 +15,15 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifiable;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * General implementation of {@link ItemLifecycleListener} - keeping of DS/operational reflection up-to-date
  */
 public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ItemLifecycleListenerImpl.class);
 
     private final DeviceContext deviceContext;
 
@@ -29,13 +33,23 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
 
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
-        deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
-        deviceContext.submitTransaction();
+        try {
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
+        } catch (Exception e) {
+            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+        } finally {
+            deviceContext.submitTransaction();
+        }
     }
 
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath) {
-        deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
-        deviceContext.submitTransaction();
+        try {
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
+        } catch (Exception e) {
+            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+        } finally {
+            deviceContext.submitTransaction();
+        }
     }
 }
