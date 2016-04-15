@@ -528,7 +528,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         try {
             hsPool.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            LOG.debug("Error while awaiting termination of pool. Will force shutdown now.");
+            LOG.debug("Error while awaiting unregisterAllCandidates of pool. Will force shutdown now.");
         } finally {
             hsPool.purge();
             if (!hsPool.isTerminated()) {

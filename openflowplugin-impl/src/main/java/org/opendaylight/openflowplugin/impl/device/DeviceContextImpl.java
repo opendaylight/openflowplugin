@@ -335,12 +335,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path, final T data) {
+                                                          final InstanceIdentifier<T> path, final T data) throws Exception {
         transactionChainManager.writeToTransaction(store, path, data);
     }
 
     @Override
-    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
+    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws Exception {
         transactionChainManager.addDeleteOperationTotTxChain(store, path);
     }
 
@@ -423,16 +423,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, this, null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
-        if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
-            // because of ADD status node connector has to be created
-            final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
-            nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-            nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
-            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-        } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
-            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        try {
+            if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
+                // because of ADD status node connector has to be created
+                final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
+                nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+                nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
+                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
+            } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+            }
+            submitTransaction();
+        } catch (Exception e) {
+            LOG.warn("Error processing port status message: {}", e.getMessage());
         }
-        submitTransaction();
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
@@ -638,7 +642,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.trace("shutdown method for node {}", deviceState.getNodeId());
         deviceState.setValid(false);
         if (DEVICE_CONTEXT_STATE.TERMINATION.equals(deviceCtxState)) {
-            LOG.debug("DeviceCtx for Node {} is in termination process.", deviceState.getNodeId());
+            LOG.debug("DeviceCtx for Node {} is in unregisterAllCandidates process.", deviceState.getNodeId());
             return;
         }
         deviceCtxState = DEVICE_CONTEXT_STATE.TERMINATION;
