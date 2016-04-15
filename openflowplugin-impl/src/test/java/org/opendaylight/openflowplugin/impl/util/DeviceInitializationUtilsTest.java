@@ -144,8 +144,8 @@ public class DeviceInitializationUtilsTest {
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
     @Test
-    public void chainTableTrunkWriteOF10Test() {
-        final DeviceState mockedDeviceState = mock(DeviceState.class);
+    public void chainTableTrunkWriteOF10Test() throws Exception {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
 
         final GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
         when(mockedFeatures.getTables()).thenReturn((short) 2);
@@ -166,7 +166,7 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void testTranslateAndWriteReplyTypeDesc() {
+    public void testTranslateAndWriteReplyTypeDesc() throws Exception {
         final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
         Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         final DeviceState deviceState = Mockito.mock(DeviceState.class);
@@ -180,8 +180,8 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeTableFeatures() {
-        final TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
+    public void translateAndWriteReplyTypeTableFeatures() throws Exception {
+        TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         tableFeature.setTableId(DUMMY_TABLE_ID);
         final List<TableFeatures> tableFeatures = new ArrayList<>();
         tableFeatures.add(tableFeature.build());
@@ -200,8 +200,8 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeMeterFeatures() {
-        final DeviceState mockedDeviceState = mock(DeviceState.class);
+    public void translateAndWriteReplyTypeMeterFeatures() throws Exception {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final MultipartReplyMeterFeaturesBuilder multipartReplyMeterFeaturesBuilder = new MultipartReplyMeterFeaturesBuilder();
@@ -221,8 +221,8 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void translateAndWriteReplyTypeGroupFeatures() {
-        final MultipartReplyGroupFeaturesBuilder multipartReplyGroupFeaturesBuilder = new MultipartReplyGroupFeaturesBuilder();
+    public void translateAndWriteReplyTypeGroupFeatures() throws Exception {
+        MultipartReplyGroupFeaturesBuilder multipartReplyGroupFeaturesBuilder = new MultipartReplyGroupFeaturesBuilder();
         multipartReplyGroupFeaturesBuilder.setTypes(new GroupTypes(true, true, true, true));
         multipartReplyGroupFeaturesBuilder.setCapabilities(new GroupCapabilities(true, true, true, true));
         final ActionType actionType = new ActionType(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
@@ -243,9 +243,9 @@ public class DeviceInitializationUtilsTest {
 
 
     @Test
-    public void translateAndWriteReplyTypePortDesc() {
-        final ConnectionContext mockedPrimaryConnectionContext = mock(ConnectionContext.class);
-        final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
+    public void translateAndWriteReplyTypePortDesc() throws Exception {
+        ConnectionContext mockedPrimaryConnectionContext = mock(ConnectionContext.class);
+        FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedFeatures.getDatapathId()).thenReturn(new BigInteger(DUMMY_DATAPATH_ID));
         when(mockedPrimaryConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnectionContext);
@@ -276,8 +276,8 @@ public class DeviceInitializationUtilsTest {
     }
 
     @Test
-    public void createSuccessProcessingCallbackTest() {
-        final DeviceState mockedDeviceState = mock(DeviceState.class);
+    public void createSuccessProcessingCallbackTest() throws Exception {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);

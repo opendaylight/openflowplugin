@@ -467,10 +467,10 @@ public class DeviceInitializationUtils {
                         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                                 .<List<MultipartReply>>failed().build();
                         requestContext.setResult(rpcResult);
-                        if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
-                            makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext()
-                                    .getFeatures().getTables());
-                        }
+//                        if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
+//                            makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext()
+//                                    .getFeatures().getTables());
+//                        }
                         requestContext.close();
                     }
                 });

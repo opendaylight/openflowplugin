@@ -42,7 +42,7 @@ public class OpenflowPortsUtil {
                 .put(OutputPortValues.ALL.toString(), Long.valueOf(PortNumberValuesV10.ALL.getIntValue())) //0xfffc
                 .put(OutputPortValues.CONTROLLER.toString(), Long.valueOf(PortNumberValuesV10.CONTROLLER.getIntValue())) //0xfffd
                 .put(OutputPortValues.LOCAL.toString(), Long.valueOf(PortNumberValuesV10.LOCAL.getIntValue())) //0xfffe
-                .put(OutputPortValues.NONE.toString(), Long.valueOf(PortNumberValuesV10.NONE.getIntValue())) //0xfffe
+                .put(OutputPortValues.NONE.toString(), Long.valueOf(PortNumberValuesV10.NONE.getIntValue())) //0xffff
                 .build();
 
         // openflow 1.3 reserved ports.
