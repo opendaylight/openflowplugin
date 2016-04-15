@@ -124,12 +124,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
+    public boolean deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
-        Preconditions.checkState(!deviceContexts.containsKey(connectionContext.getNodeId()),
-                "Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
-                connectionContext.getNodeId()
-        );
+        /**
+         * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
+         * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
+         * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
+         */
+         if (deviceContexts.containsKey(connectionContext.getNodeId())) {
+            LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
+             return false;
+         }
+
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
 
@@ -168,6 +174,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceState.setValid(true);
 
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+
+        return true;
     }
 
     private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
@@ -236,6 +244,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void initialize() {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public DeviceContext getDeviceContextFromNodeId(NodeId nodeId) {
+        return deviceContexts.get(nodeId);
     }
 
     @Override
