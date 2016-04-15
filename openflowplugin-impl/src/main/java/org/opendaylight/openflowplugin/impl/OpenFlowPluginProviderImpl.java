@@ -216,6 +216,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);
 
+        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();
 

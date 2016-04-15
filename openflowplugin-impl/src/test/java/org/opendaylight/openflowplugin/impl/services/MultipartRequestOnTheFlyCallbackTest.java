@@ -147,7 +147,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     }
 
     @Test
-    public void testOnSuccessWithNotMultiNoMultipart() throws ExecutionException, InterruptedException {
+    public void testOnSuccessWithNotMultiNoMultipart() throws Exception {
         final HelloMessage mockedHelloMessage = mock(HelloMessage.class);
         multipartRequestOnTheFlyCallback.onSuccess(mockedHelloMessage);
 
@@ -176,7 +176,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
      * @throws InterruptedException
      */
     @Test
-    public void testOnSuccessWithValidMultipart1() throws ExecutionException, InterruptedException {
+    public void testOnSuccessWithValidMultipart1() throws Exception {
         final MatchBuilder matchBuilder = new MatchBuilder()
                 .setMatchEntry(Collections.<MatchEntry>emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
@@ -234,7 +234,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
      * @throws InterruptedException
      */
     @Test
-    public void testOnSuccessWithValidMultipart2() throws ExecutionException, InterruptedException {
+    public void testOnSuccessWithValidMultipart2() throws Exception {
         final MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
                 .setType(MultipartType.OFPMPDESC)
                 .setFlags(new MultipartRequestFlags(false));

@@ -7,14 +7,21 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+
+import javax.annotation.Nonnull;
 
 /**
- * Created by kramesha on 9/12/15.
+ * Rewrote whole role context to prevent errors to change role on cluster
+ * @author Jozef Bacigal
+ * Date: 4/19/16
  */
-public interface RoleContext extends RoleChangeListener, RequestContextStack {
+public interface RoleContext extends  RequestContextStack, AutoCloseable {
 
     /**
      * Initialization method is responsible for a registration of
@@ -24,23 +31,102 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      * returns Role which has to be applied for responsible Device Context suite. Any Exception
      * state has to close Device connection channel.
      */
-    void initializationRoleContext();
+    boolean initialization();
 
     /**
-     * Termination method is responsible for an unregistrion of
+     * Termination method is responsible for an unregistration of
      * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listener
      * for notification from service
      * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService}
      * returns notification "Someone else take Leadership" or "I'm last"
      * and we need to clean Oper. DS.
      */
-    void terminationRoleContext();
+    void termination();
+
+    /**
+     * Setter for sal role service
+     * @param salRoleService
+     */
+    void setSalRoleService(@Nonnull final SalRoleService salRoleService);
+
+    /**
+     * Getter for sal role service
+     * @return
+     */
+    SalRoleService getSalRoleService();
+
+    /**
+     * Adding listener to by notified for role changes
+     * API for listener {@link RoleChangeListener}
+     * @param listener
+     */
+    void addListener(final RoleChangeListener listener);
+
+    /**
+     * Getter for main entity
+     * @return
+     */
+    Entity getEntity();
+
+    /**
+     * Getter for tx entity
+     * @return
+     */
+    Entity getTxEntity();
+
+    /**
+     * Actual nodeId
+     * @return
+     */
+    NodeId getNodeId();
+
+    /**
+     * Returns true if main entity is registered
+     * @return
+     */
+    boolean isMainCandidateRegistered();
+
+    /**
+     * Returns true if tx entity is registered
+     * @return
+     */
+    boolean isTxCandidateRegistered();
+
+    /**
+     * Register candidate depending on parameter
+     * @param entity
+     * @return true is registration was successful
+     */
+    boolean registerCandidate(final Entity entity);
+
+    /**
+     * Unregister candidate depending on parameter
+     * @param entity
+     * @return true is registration was successful
+     */
+    boolean unregisterCandidate(final Entity entity);
+
+    /**
+     * Notifies registered listener on role change. Role is the new role on device
+     * If initialization phase is true, we may skip service starting
+     * @param success
+     * @param role
+     * @param initializationPhase
+     */
+    void notifyListenersRoleChangeOnDevice(final boolean success, final OfpRole role, final boolean initializationPhase);
+
+    /**
+     * Invoked when initialization phase is done
+     * @param success
+     */
+    void notifyListenersRoleInitializationDone(final boolean success);
+
+    /**
+     * Returns true if we hold both registrations
+     * @return
+     */
+    boolean isMaster();
 
     @Override
     void close();
-
-    DeviceContext getDeviceContext();
-
-    OfpRole getClusterRole();
-
 }
