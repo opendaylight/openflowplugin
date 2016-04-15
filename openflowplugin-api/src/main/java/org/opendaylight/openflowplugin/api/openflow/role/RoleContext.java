@@ -7,14 +7,19 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by kramesha on 9/12/15.
  */
-public interface RoleContext extends RoleChangeListener, RequestContextStack {
+public interface RoleContext extends  RequestContextStack, AutoCloseable {
 
     /**
      * Initialization method is responsible for a registration of
@@ -24,7 +29,7 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      * returns Role which has to be applied for responsible Device Context suite. Any Exception
      * state has to close Device connection channel.
      */
-    void initializationRoleContext();
+    boolean initialization();
 
     /**
      * Termination method is responsible for an unregistrion of
@@ -34,13 +39,27 @@ public interface RoleContext extends RoleChangeListener, RequestContextStack {
      * returns notification "Someone else take Leadership" or "I'm last"
      * and we need to clean Oper. DS.
      */
-    void terminationRoleContext();
+    void termination();
+
+    void setSalRoleService(@Nonnull final SalRoleService salRoleService);
+
+    SalRoleService getSalRoleService();
+
+    void addListener(final RoleChangeListener listener);
+
+    Entity getEntity();
+    Entity getTxEntity();
+    NodeId getNodeId();
+
+    boolean isMainCandidateRegistered();
+    boolean isTxCandidateRegistered();
+
+    boolean registerCandidate(final Entity entity);
+    boolean unregisterCandidate(final Entity entity);
+
+    void notifyListenersRoleChangeOnDevice(final boolean success, final OfpRole role, final boolean initializationPhase);
+    void notifyListenersRoleInitializationDone(final boolean success);
 
     @Override
     void close();
-
-    DeviceContext getDeviceContext();
-
-    OfpRole getClusterRole();
-
 }
