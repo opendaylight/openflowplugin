@@ -187,22 +187,24 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                             final InstanceIdentifier<T> path) {
+                                                             final InstanceIdentifier<T> path) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             writeTx.delete(store, path);
         } else {
             LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", nodeII, path);
+            throw new Exception("Cannot write into transaction.");
         }
     }
 
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                   final InstanceIdentifier<T> path, final T data) {
+                                                   final InstanceIdentifier<T> path, final T data) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             writeTx.put(store, path, data);
         } else {
             LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeII, path);
+            throw new Exception("Cannot write into transaction.");
         }
     }
 
