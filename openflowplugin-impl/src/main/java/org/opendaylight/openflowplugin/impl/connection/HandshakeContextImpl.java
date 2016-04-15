@@ -54,7 +54,7 @@ public class HandshakeContextImpl implements HandshakeContext {
         try {
             handshakePool.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            LOG.info("Error while awaiting termination on pool. Will use shutdownNow method.");
+            LOG.info("Error while awaiting unregisterAllCandidates on pool. Will use shutdownNow method.");
         } finally {
             handshakePool.purge();
             if (! handshakePool.isTerminated()) {

@@ -203,7 +203,7 @@ public final class StatisticsGatheringUtils {
         });
     }
 
-    private static void processMeterConfigStatsUpdated(final Iterable<MeterConfigStatsUpdated> data, final DeviceContext deviceContext) {
+    private static void processMeterConfigStatsUpdated(final Iterable<MeterConfigStatsUpdated> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (final MeterConfigStatsUpdated meterConfigStatsUpdated : data) {
@@ -238,21 +238,25 @@ public final class StatisticsGatheringUtils {
 
     public static void writeFlowStatistics(final Iterable<FlowsStatisticsUpdate> data, final DeviceContext deviceContext) {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
-        for (final FlowsStatisticsUpdate flowsStatistics : data) {
-            for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
-                final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                flowBuilder.addAugmentation(FlowStatisticsData.class, refineFlowStatisticsAugmentation(flowStat).build());
+        try {
+            for (final FlowsStatisticsUpdate flowsStatistics : data) {
+                for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
+                    final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
+                    flowBuilder.addAugmentation(FlowStatisticsData.class, refineFlowStatisticsAugmentation(flowStat).build());
 
-                final short tableId = flowStat.getTableId();
-                final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
-                final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
+                    final short tableId = flowStat.getTableId();
+                    final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
+                    final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
 
-                final FlowKey flowKey = new FlowKey(flowId);
-                flowBuilder.setKey(flowKey);
-                final TableKey tableKey = new TableKey(tableId);
-                final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                    final FlowKey flowKey = new FlowKey(flowId);
+                    flowBuilder.setKey(flowKey);
+                    final TableKey tableKey = new TableKey(tableId);
+                    final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
+                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                }
             }
+        } catch (Exception e) {
+            LOG.warn("Not able to write to transaction: {}", e.getMessage());
         }
     }
 
@@ -310,7 +314,7 @@ public final class StatisticsGatheringUtils {
         return Futures.immediateFuture(null);
     }
 
-    private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) {
+    private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
         // TODO: clean all queues of all node-connectors before writing up-to-date stats
         final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
         for (final QueueStatisticsUpdate queueStatisticsUpdate : data) {
@@ -338,7 +342,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) {
+    private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
 
@@ -352,7 +356,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceContext deviceContext) {
+    private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
         for (final NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate : data) {
             for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort : nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
@@ -370,7 +374,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processMetersStatistics(final Iterable<MeterStatisticsUpdated> data,
-                                                final DeviceContext deviceContext) {
+                                                final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final MeterStatisticsUpdated meterStatisticsUpdated : data) {
             for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
@@ -386,7 +390,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static void deleteAllKnownMeters(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
+    private static void deleteAllKnownMeters(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) throws Exception {
         for (final MeterId meterId : deviceContext.getDeviceMeterRegistry().getAllMeterIds()) {
             final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
@@ -394,7 +398,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.getDeviceMeterRegistry().removeMarked();
     }
 
-    private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) {
+    private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent =
                 deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         deleteAllKnownGroups(deviceContext, fNodeIdent);
@@ -416,7 +420,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static void deleteAllKnownGroups(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
+    private static void deleteAllKnownGroups(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) throws Exception {
         for (final GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
@@ -424,7 +428,7 @@ public final class StatisticsGatheringUtils {
         deviceContext.getDeviceGroupRegistry().removeMarked();
     }
 
-    private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) {
+    private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext);
         for (final GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {

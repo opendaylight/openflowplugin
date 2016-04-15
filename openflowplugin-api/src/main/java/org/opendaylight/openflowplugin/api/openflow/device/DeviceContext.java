@@ -70,7 +70,7 @@ public interface DeviceContext extends AutoCloseable,
          */
         WORKING,
         /**
-         * termination phase of talking to switch
+         * unregisterAllCandidates phase of talking to switch
          */
         TERMINATION
     }
@@ -140,12 +140,12 @@ public interface DeviceContext extends AutoCloseable,
     /**
      * Method creates put operation using provided data in underlying transaction chain.
      */
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
+    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data) throws Exception;
 
     /**
      * Method creates delete operation for provided path in underlying transaction chain.
      */
-    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
+    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws Exception;
 
     /**
      * Method submits Transaction to DataStore.

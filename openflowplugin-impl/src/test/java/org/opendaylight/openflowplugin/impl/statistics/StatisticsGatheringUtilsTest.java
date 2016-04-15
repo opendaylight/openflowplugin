@@ -188,7 +188,7 @@ public class StatisticsGatheringUtilsTest {
     }
 
     @Test
-    public void testWriteFlowStatistics() {
+    public void testWriteFlowStatistics() throws Exception {
         final ArgumentCaptor<LogicalDatastoreType> dataStoreType = ArgumentCaptor.forClass(LogicalDatastoreType.class);
         final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);

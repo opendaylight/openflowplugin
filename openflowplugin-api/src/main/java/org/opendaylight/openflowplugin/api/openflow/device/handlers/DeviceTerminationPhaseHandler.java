@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 public interface DeviceTerminationPhaseHandler {
 
     /**
-     * Method represents a termination cycle for {@link DeviceContext}.
+     * Method represents a unregisterAllCandidates cycle for {@link DeviceContext}.
      *
      * @param deviceContext - {@link DeviceContext}
      */
