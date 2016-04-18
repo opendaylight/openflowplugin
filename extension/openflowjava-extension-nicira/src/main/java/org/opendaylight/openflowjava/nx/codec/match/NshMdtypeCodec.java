@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Intel, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -19,35 +18,35 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc4;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nshc._4.grouping.Nshc4ValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc4CaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc4CaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshMdtype;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.mdtype.grouping.NshMdtypeValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NshMdtypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NshMdtypeCaseValueBuilder;
 
-public class Nshc4Codec extends AbstractMatchCodec {
+public class NshMdtypeCodec extends AbstractMatchCodec {
 
-    private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 118;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshc4> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshc4.class);
+    private static final int VALUE_LENGTH = 1;
+    private static final int NXM_FIELD_CODE = 119;
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshMdtype> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
+            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshMdtype.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        Nshc4CaseValue csc1CaseValue = ((Nshc4CaseValue) input.getMatchEntryValue());
-        outBuffer.writeInt(csc1CaseValue.getNshc4Values().getNshc().intValue());
+        NshMdtypeCaseValue nshMdtypeCaseValue = ((NshMdtypeCaseValue) input.getMatchEntryValue());
+        outBuffer.writeByte(nshMdtypeCaseValue.getNshMdtypeValues().getValue());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        Nshc4CaseValueBuilder nsc4CaseValueBuilder = new Nshc4CaseValueBuilder();
-        nsc4CaseValueBuilder.setNshc4Values(new Nshc4ValuesBuilder().setNshc(message.readUnsignedInt()).build());
-        matchEntryBuilder.setMatchEntryValue(nsc4CaseValueBuilder.build());
-
-        return matchEntryBuilder.build();
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        NshMdtypeCaseValueBuilder nshMdtypeCaseValueBuilder = new NshMdtypeCaseValueBuilder();
+        nshMdtypeCaseValueBuilder.setNshMdtypeValues(new NshMdtypeValuesBuilder().setValue(message.readUnsignedByte()).build());
+        matchEntriesBuilder.setMatchEntryValue(nshMdtypeCaseValueBuilder.build());
+        matchEntriesBuilder.setHasMask(false);
+        return matchEntriesBuilder.build();
     }
 
     @Override
@@ -67,7 +66,7 @@ public class Nshc4Codec extends AbstractMatchCodec {
 
     @Override
     public Class<? extends MatchField> getNxmField() {
-        return NxmNxNshc4.class;
+        return NxmNxNshMdtype.class;
     }
 
     @Override

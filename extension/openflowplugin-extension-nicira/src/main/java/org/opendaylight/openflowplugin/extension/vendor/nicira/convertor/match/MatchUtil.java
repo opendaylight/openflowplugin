@@ -50,6 +50,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthTypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshMdtypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunGpeNpGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstGrouping;
@@ -101,6 +107,18 @@ public class MatchUtil {
             NxmNxNshc3Grouping.class);
     public final static GroupingResolver<NxmNxNshc4Grouping, Extension> nsc4Resolver = new GroupingResolver<>(
             NxmNxNshc4Grouping.class);
+    public final static GroupingResolver<NxmNxEncapEthTypeGrouping, Extension> encapEthTypeResolver = new GroupingResolver<>(
+            NxmNxEncapEthTypeGrouping.class);
+    public final static GroupingResolver<NxmNxEncapEthSrcGrouping, Extension> encapEthSrcResolver = new GroupingResolver<>(
+            NxmNxEncapEthSrcGrouping.class);
+    public final static GroupingResolver<NxmNxEncapEthDstGrouping, Extension> encapEthDstResolver = new GroupingResolver<>(
+            NxmNxEncapEthDstGrouping.class);
+    public final static GroupingResolver<NxmNxNshMdtypeGrouping, Extension> nshMdtypeResolver = new GroupingResolver<>(
+            NxmNxNshMdtypeGrouping.class);
+    public final static GroupingResolver<NxmNxNshNpGrouping, Extension> nshNpResolver = new GroupingResolver<>(
+            NxmNxNshNpGrouping.class);
+    public final static GroupingResolver<NxmNxTunGpeNpGrouping, Extension> tunGpeNpResolver = new GroupingResolver<>(
+            NxmNxTunGpeNpGrouping.class);
     public final static GroupingResolver<NxmOfTcpSrcGrouping, Extension> tcpSrcResolver = new GroupingResolver<>(
             NxmOfTcpSrcGrouping.class);
     public final static GroupingResolver<NxmOfTcpDstGrouping, Extension> tcpDstResolver = new GroupingResolver<>(
@@ -142,6 +160,12 @@ public class MatchUtil {
         nsc2Resolver.setAugmentations(augmentationsOfExtension);
         nsc3Resolver.setAugmentations(augmentationsOfExtension);
         nsc4Resolver.setAugmentations(augmentationsOfExtension);
+        encapEthTypeResolver.setAugmentations(augmentationsOfExtension);
+        encapEthSrcResolver.setAugmentations(augmentationsOfExtension);
+        encapEthDstResolver.setAugmentations(augmentationsOfExtension);
+        nshMdtypeResolver.setAugmentations(augmentationsOfExtension);
+        nshNpResolver.setAugmentations(augmentationsOfExtension);
+        tunGpeNpResolver.setAugmentations(augmentationsOfExtension);
         tcpSrcResolver.setAugmentations(augmentationsOfExtension);
         tcpDstResolver.setAugmentations(augmentationsOfExtension);
         udpSrcResolver.setAugmentations(augmentationsOfExtension);
