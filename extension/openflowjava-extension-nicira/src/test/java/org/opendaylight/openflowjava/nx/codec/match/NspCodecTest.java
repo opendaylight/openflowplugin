@@ -30,7 +30,7 @@ public class NspCodecTest {
     MatchEntry input;
 
     private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 37;
+    private static final int NXM_FIELD_CODE = 113;
 
     @Before
     public void setUp() {

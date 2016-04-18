@@ -30,7 +30,7 @@ public class NsiCodecTest {
     MatchEntry input;
 
     private static final int VALUE_LENGTH = 1;
-    private static final int NXM_FIELD_CODE = 38;
+    private static final int NXM_FIELD_CODE = 114;
 
     @Before
     public void setUp() {
