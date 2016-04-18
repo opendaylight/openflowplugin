@@ -65,6 +65,6 @@ final class AllQueuesOnePortService
 
     @Override
     public QueueStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return QueueStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext(), getOfVersion(), emulatedTxId);
+        return QueueStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext().getDeviceState(), getOfVersion(), emulatedTxId);
     }
 }
