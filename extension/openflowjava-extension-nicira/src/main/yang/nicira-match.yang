@@ -123,6 +123,25 @@ module nicira-match {
     identity nxm-of-icmp-type {
         base ofoxm:match-field;
     }
+    identity nxm-nx-encap-eth-type {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-encap-eth-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-encap-eth-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-nsh-mdtype {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-nsh-np {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-tun-gpe-np {
+        base ofoxm:match-field;
+    }
+
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -329,6 +348,48 @@ module nicira-match {
             }
         }
     }
+    grouping ofj-nxm-nx-match-encap-eth-type-grouping {
+        container encap-eth-type-values {
+            leaf encap-eth-type {
+                type uint16;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-encap-eth-src-grouping {
+        container encap-eth-src-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-encap-eth-dst-grouping {
+        container encap-eth-dst-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-nsh-mdtype-grouping {
+        container nsh-mdtype-values {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-nsh-np-grouping {
+        container nsh-np-values {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-tun-gpe-np-grouping {
+        container tun-gpe-np-values {
+            leaf value {
+                type uint8;
+            }
+        }
+    }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
@@ -364,6 +425,24 @@ module nicira-match {
         }
         case eth-dst-case-value {
             uses ofj-nxm-of-match-eth-dst-grouping;
+        }
+        case encap-eth-type-case-value {
+            uses ofj-nxm-nx-match-encap-eth-type-grouping;
+        }
+        case encap-eth-src-case-value {
+            uses ofj-nxm-nx-match-encap-eth-src-grouping;
+        }
+        case encap-eth-dst-case-value {
+            uses ofj-nxm-nx-match-encap-eth-dst-grouping;
+        }
+        case nsh-mdtype-case-value {
+            uses ofj-nxm-nx-match-nsh-mdtype-grouping;
+        }
+        case nsh-np-case-value {
+            uses ofj-nxm-nx-match-nsh-np-grouping;
+        }
+        case tun-gpe-np-case-value {
+            uses ofj-nxm-nx-match-tun-gpe-np-grouping;
         }
 
         case eth-type-case-value {
