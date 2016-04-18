@@ -200,8 +200,8 @@ public class DeviceContextImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
 
         Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
+        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceState.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
+        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceState.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -460,7 +460,7 @@ public class DeviceContextImplTest {
                 .setCookie(new FlowCookie(BigInteger.ONE))
                 .setMatch(new MatchBuilder().build());
 
-        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceContext.class), any(Object.class)))
+        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceState.class), any(Object.class)))
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry

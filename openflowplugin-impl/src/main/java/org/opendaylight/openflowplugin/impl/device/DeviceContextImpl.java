@@ -385,7 +385,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (itemLifecycleListener != null) {
             //1. translate to general flow (table, priority, match, cookie)
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
-                    flowRemovedTranslator.translate(flowRemoved, this, null);
+                    flowRemovedTranslator.translate(flowRemoved, this.getDeviceState(), null);
             //2. create registry key
             final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
             //3. lookup flowId
@@ -409,7 +409,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, this, null);
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, this.getDeviceState(), null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         try {
@@ -439,7 +439,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
-        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, this, null);
+        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, this.getDeviceState(), null);
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());

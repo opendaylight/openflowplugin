@@ -101,7 +101,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
 
         Mockito.when(translatorLibrary.lookupTranslator(Matchers.any(TranslatorKey.class))).thenReturn(translator);
 
-        service = new AggregateFlowsInTableService(rqContextStack, deviceContext, new AtomicLong(20L));
+        service = AggregateFlowsInTableService.createWithOook(rqContextStack, deviceContext, new AtomicLong(20L));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                 .setFlowCount(new Counter32(12L))
                 .setPacketCount(new Counter64(BigInteger.valueOf(13L)))
                 .build();
-        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceContext), Matchers.any()))
+        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceState), Matchers.any()))
                 .thenReturn(aggregatedStats);
 
 

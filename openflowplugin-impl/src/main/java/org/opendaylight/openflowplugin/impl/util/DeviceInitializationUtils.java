@@ -122,7 +122,7 @@ public class DeviceInitializationUtils {
             final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
-                final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext, null);
+                final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext.getDeviceState(), null);
 
                 final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(
                         dataPathId.toString(), port.getPortNo(), ofVersion);
@@ -318,7 +318,7 @@ public class DeviceInitializationUtils {
                             final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
                             final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = dContext.oook()
                                     .lookupTranslator(translatorKey);
-                            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext, null);
+                            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext.getDeviceState(), null);
 
                             final BigInteger dataPathId = dContext.getPrimaryConnectionContext().getFeatures()
                                     .getDatapathId();
