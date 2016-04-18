@@ -100,7 +100,7 @@ public class PacketReceivedTranslatorTest {
         final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
-        final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceContext, null);
+        final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceState, null);
 
         Assert.assertArrayEquals(packetInMessage.getData(), packetReceived.getPayload());
         Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",

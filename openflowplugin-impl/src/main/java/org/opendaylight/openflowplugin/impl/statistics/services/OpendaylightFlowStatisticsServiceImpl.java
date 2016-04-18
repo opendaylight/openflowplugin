@@ -50,7 +50,6 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                 @Override
                 public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(final RpcResult<List<MultipartReply>> input) {
                     final DeviceContext deviceContext = matchingFlowsInTable.getDeviceContext();
-                    TranslatorLibrary translatorLibrary = deviceContext.oook();
                     final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;
                     if (input.isSuccessful()) {
                         MultipartReply reply = input.getResult().get(0);
@@ -59,7 +58,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                         List<AggregatedFlowStatistics> aggregStats = new ArrayList<AggregatedFlowStatistics>();
 
                         for (MultipartReply multipartReply : input.getResult()) {
-                            aggregStats.add(messageTranslator.translate(multipartReply, deviceContext, null));
+                            aggregStats.add(messageTranslator.translate(multipartReply, deviceContext.getDeviceState(), null));
                         }
 
                         GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder getAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder =
@@ -82,10 +81,18 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     };
 
     private final MatchingFlowsInTableService matchingFlowsInTable;
+    private final TranslatorLibrary translatorLibrary;
     private OpendaylightFlowStatisticsService delegate;
 
-    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public static OpendaylightFlowStatisticsServiceImpl createWithOook(final RequestContextStack requestContextStack,
+                                                              final DeviceContext deviceContext) {
+        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack, deviceContext, deviceContext.oook());
+    }
+
+    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                                                 final TranslatorLibrary translatorLibrary) {
         matchingFlowsInTable = new MatchingFlowsInTableService(requestContextStack, deviceContext);
+        this.translatorLibrary = translatorLibrary;
     }
 
     @Override

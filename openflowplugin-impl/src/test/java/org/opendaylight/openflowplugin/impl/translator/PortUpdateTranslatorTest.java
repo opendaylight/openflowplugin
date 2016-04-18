@@ -65,7 +65,7 @@ public class PortUpdateTranslatorTest {
                         .getDefaultInstance("hundredGbFd");
 
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceContext, null);
+        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceState, null);
 
         commonCheck(nodeConnector);
 
@@ -95,7 +95,7 @@ public class PortUpdateTranslatorTest {
                         null, false, false, null, null, null, null, null
                 );
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceContext, null);
+        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceState, null);
 
         commonCheck(nodeConnector);
 
