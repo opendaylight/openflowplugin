@@ -31,7 +31,6 @@
 
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-        <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
         <openflowjava.version>0.7.3-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.2.3-SNAPSHOT</openflowplugin.version>
         <sal.api.version>0.10.3-SNAPSHOT</sal.api.version>
