@@ -51,7 +51,8 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     }
 
     void start() {
-        final NodeChangeCommiter changeCommiter = new NodeChangeCommiter(FlowCapableInventoryProvider.this);
+        final NodeChangeCommiter changeCommiter = new NodeChangeCommiter(FlowCapableInventoryProvider.this, eos);
+        changeCommiter.init();
         this.listenerRegistration = this.notificationService.registerNotificationListener(changeCommiter);
 
         final NodeTablesFeatureCommitter nodeTablesFeatureCommitter =
