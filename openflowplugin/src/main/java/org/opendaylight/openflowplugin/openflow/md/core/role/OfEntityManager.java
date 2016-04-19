@@ -11,10 +11,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.role;
 import java.math.BigInteger;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -24,9 +27,14 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipC
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.QName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
@@ -229,6 +237,10 @@ public class OfEntityManager implements TransactionChainListener{
                         sendNodeAddedNotification(entsession.get(entity));
                     }
                 }
+            } else if(!ownershipChange.hasOwner()) { //  hasOwner = false
+                LOG.info("onDeviceOwnershipChanged: controller node is probably down" +
+                "so removing the entity {}",entity);
+                sendNodeRemovedNotification(entsession.get(entity));
             }
             return;
         }
@@ -373,6 +385,34 @@ public class OfEntityManager implements TransactionChainListener{
 
         //Send multipart request to get other details of the switch.
         entityMetadata.getOfSwitch().requestSwitchDetails();
+    }
+
+    private void sendNodeRemovedNotification(MDSwitchMetaData entityMetadata){
+         //Node removed notification need to be sent
+
+        NodeId nodeId = entityMetadata.getOfSwitch().getNodeId();
+        LOG.info("sendNodeRemovedNotification: Node Removed notification is sent for {}",
+                nodeId.getValue());
+        InstanceIdentifier<Node> identifier = identifierFromNodeId(nodeId);
+        NodeRef nodeRef = new NodeRef(identifier);
+        NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
+
+        NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
+                nodeRemoved, entityMetadata.getOfSwitch().getSessionContext().getFeatures().getVersion());
+
+        entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(wrappedNotification);
+    }
+
+    private static InstanceIdentifier<Node> identifierFromNodeId(NodeId nodeId) {
+        NodeKey nodeKey = new NodeKey(nodeId);
+        InstanceIdentifier.InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey);
+        return builder.build();
+    }
+
+    private static NodeRemoved nodeRemoved(final NodeRef nodeRef) {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(nodeRef);
+        return builder.build();
     }
 
     private void setDeviceOwnershipState(Entity entity, boolean isMaster) {
