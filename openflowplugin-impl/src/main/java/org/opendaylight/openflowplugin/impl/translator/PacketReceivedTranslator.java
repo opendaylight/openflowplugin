@@ -11,15 +11,14 @@ package org.opendaylight.openflowplugin.impl.translator;
 import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
 import java.util.List;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.openflowplugin.impl.util.NodeConnectorRefToPortTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -42,30 +41,19 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
         BigInteger datapathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
 
-        // extract the port number
-        Long port = null;
-        if (input.getVersion() == OFConstants.OFP_VERSION_1_0 && input.getInPort() != null) {
-            port = input.getInPort().longValue();
-        } else if (input.getVersion() == OFConstants.OFP_VERSION_1_3) {
-            if (input.getMatch() != null && input.getMatch().getMatchEntry() != null) {
-                port = getPortNumberFromMatch(input.getMatch().getMatchEntry());
-            }
-        }
+        // TODO: connection cookie from connection distinguisher
+        // packetReceivedBuilder.setConnectionCookie(new ConnectionCookie(input.getCookie().longValue()));
 
-        //TODO connection cookie from connection distinguisher
-//        packetReceivedBuilder.setConnectionCookie(new ConnectionCookie(input.getCookie().longValue()));
         packetReceivedBuilder.setPayload(input.getData());
+
         // get the Cookie if it exists
         if (input.getCookie() != null) {
             packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
         }
-        if (port != null) {
-            NodeConnectorRef nodeConnectorRef = deviceContext.lookupNodeConnectorRef(port);
-            if (nodeConnectorRef == null) {
-                nodeConnectorRef = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(
-                        datapathId, port, OpenflowVersion.get(input.getVersion()), deviceContext.getDeviceState().getNodeInstanceIdentifier());
-                deviceContext.storeNodeConnectorRef(port, nodeConnectorRef);
-            }
+
+        NodeConnectorRef nodeConnectorRef = NodeConnectorRefToPortTranslator.toNodeConnectorRef(deviceContext.getDeviceState(), input);
+
+        if (nodeConnectorRef != null) {
             packetReceivedBuilder.setIngress(nodeConnectorRef);
         }
 
@@ -97,21 +85,5 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
             matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
         }
         return matchBuilder.build();
-    }
-
-    @VisibleForTesting
-    static Long getPortNumberFromMatch(final List<MatchEntry> entries) {
-        Long port = null;
-        for (MatchEntry entry : entries) {
-            if (InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
-                InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
-                if (inPort != null) {
-                    port = inPort.getPortNumber().getValue();
-                    break;
-                }
-            }
-        }
-        return port;
     }
 }
