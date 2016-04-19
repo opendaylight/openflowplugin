@@ -354,7 +354,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
                         nodeIdent.child(Group.class, toBeDeletedGroup.getKey());
 
-                this.provider.getGroupCommiter().add(groupIdent, toBeDeletedGroup, nodeIdent);
+                this.provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
 
                 staleGroupsToBeBulkDeleted.add(getStaleGroupInstanceIdentifier(staleGroup, nodeIdent));
             }
@@ -374,7 +374,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         nodeIdent.child(Meter.class, toBeDeletedMeter.getKey());
 
 
-                this.provider.getMeterCommiter().add(meterIdent, toBeDeletedMeter, nodeIdent);
+                this.provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
 
                 staleMetersToBeBulkDeleted.add(getStaleMeterInstanceIdentifier(staleMeter, nodeIdent));
             }
