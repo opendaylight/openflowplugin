@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_f0afdd29",
+        "filename": "features-li/src/main/features/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-04-20T22:10:23Z",
+      "side": 1,
+      "message": "we should add \"app\" here.",
+      "range": {
+        "startLine": 67,
+        "startChar": 37,
+        "endLine": 67,
+        "endChar": 38
+      },
+      "revId": "f0c99d22c45d8bc3378ceacdbbd54fd2000dabee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_10a7f150",
+        "filename": "features-li/src/main/features/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-04-20T22:10:23Z",
+      "side": 1,
+      "message": "we should add \"-app\"",
+      "range": {
+        "startLine": 103,
+        "startChar": 37,
+        "endLine": 103,
+        "endChar": 38
+      },
+      "revId": "f0c99d22c45d8bc3378ceacdbbd54fd2000dabee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_7063cd1a",
+        "filename": "features-li/src/main/features/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-04-20T22:10:23Z",
+      "side": 1,
+      "message": "we should use odl-openflowplugin-southbound-li feature here.",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 105,
+        "endChar": 87
+      },
+      "revId": "f0c99d22c45d8bc3378ceacdbbd54fd2000dabee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
