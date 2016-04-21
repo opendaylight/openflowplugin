@@ -20,8 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
@@ -206,6 +210,8 @@ public class MatchComparatorHelper {
                 }
                 verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(ipv4PrefixSource, statsIpv4Match.getIpv4Source());
             }
+        } else if (statsLayer3Match instanceof ArpMatch && storedLayer3Match instanceof ArpMatch) {
+            verdict = arpMatchEquals((ArpMatch)statsLayer3Match, (ArpMatch)storedLayer3Match);
         } else {
             final Boolean nullCheckOut = checkNullValues(storedLayer3Match, statsLayer3Match);
             if (nullCheckOut != null) {
@@ -215,6 +221,88 @@ public class MatchComparatorHelper {
             }
         }
         return verdict;
+    }
+
+    static boolean arpMatchEquals(final ArpMatch statsArpMatch, final ArpMatch storedArpMatch) {
+
+        Integer statsOp = statsArpMatch.getArpOp();
+        Integer storedOp = storedArpMatch.getArpOp();
+
+        Boolean nullCheck = checkNullValues(statsOp, storedOp);
+        if (nullCheck != null) {
+            if (nullCheck == false) {
+                return false;
+            }
+        } else if (!statsOp.equals(storedOp)) {
+            return false;
+        }
+
+        Ipv4Prefix statsIp = statsArpMatch.getArpSourceTransportAddress();
+        Ipv4Prefix storedIp = storedArpMatch.getArpSourceTransportAddress();
+        /*
+        nullCheck = checkNullValues(statsIp, storedIp);
+        if (nullCheck != null) {
+            if (nullCheck == false) {
+                return false;
+            }
+        }
+        else if (!IpAddressEquals(statsIp, storedIp)) {
+            return false;
+        }
+        */
+        if (!compareIpv4PrefixNullSafe(statsIp, storedIp)) {
+            return false;
+        }
+
+        statsIp = statsArpMatch.getArpTargetTransportAddress();
+        storedIp = storedArpMatch.getArpTargetTransportAddress();
+        /*
+        nullCheck = checkNullValues(statsIp, storedIp);
+        if (nullCheck != null) {
+            if (nullCheck == false) {
+                return false;
+            }
+        } else if (!IpAddressEquals(statsIp, storedIp)) {
+            return false;
+        }
+        */
+        if (!compareIpv4PrefixNullSafe(statsIp, storedIp)) {
+            return false;
+        }
+
+        MacAddressFilter statsMac = statsArpMatch.getArpSourceHardwareAddress();
+        MacAddressFilter storedMac = storedArpMatch.getArpSourceHardwareAddress();
+        /*
+        nullCheck = checkNullValues(statsMac, storedMac);
+        if(nullCheck != null) {
+            if (nullCheck == false) {
+                return false;
+            }
+        } else if (!macAddressEquals(statsMac.getAddress(), storedMac.getAddress())) {
+            return false;
+        }
+        */
+        if (!ethernetMatchFieldsEquals(statsMac, storedMac)) {
+            return false;
+        }
+
+        statsMac = statsArpMatch.getArpTargetHardwareAddress();
+        storedMac = storedArpMatch.getArpTargetHardwareAddress();
+        /*
+        nullCheck = checkNullValues(statsMac, storedMac);
+        if(nullCheck != null) {
+            if (nullCheck == false) {
+                return false;
+            }
+        } else if (!macAddressEquals(statsMac.getAddress(), storedMac.getAddress())) {
+            return false;
+        }
+        */
+        if (!ethernetMatchFieldsEquals(statsMac, storedMac)) {
+            return false;
+        }
+
+        return true;
     }
 
 
