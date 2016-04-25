@@ -70,6 +70,30 @@
       "revId": "1a1ed45a169604b9e9aa8c1895d311541052f35d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_92681bf7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-04-25T22:06:20Z",
+      "side": 1,
+      "message": "Oh I see, my bad. I thought you wanted LOG.error(\"{}: flow add failed with errors\u003d{}, id\u003d{}\", deviceId, errors, flowId",
+      "parentUuid": "fa57193c_52a7a34f",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 20
+      },
+      "revId": "1a1ed45a169604b9e9aa8c1895d311541052f35d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
