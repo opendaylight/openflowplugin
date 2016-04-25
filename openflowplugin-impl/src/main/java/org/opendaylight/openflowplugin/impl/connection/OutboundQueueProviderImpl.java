@@ -52,7 +52,7 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
         for (;;) {
             OutboundQueue queue = outboundQueue;
             if (queue == null) {
-                LOG.debug("No queue present, failing request");
+                LOG.error("No queue present, failing request");
                 return null;
             }
 
