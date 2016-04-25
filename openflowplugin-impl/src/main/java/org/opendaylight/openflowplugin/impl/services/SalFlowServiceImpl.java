@@ -99,7 +99,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
                 } else {
-                    LOG.debug("flow add failed with error, id={}", flowId.getValue());
+                    LOG.error("flow add failed with errors={}, id={}", errorsToString(rpcResult.getErrors()), flowId.getValue());
                 }
             }
 
@@ -133,26 +133,27 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         }
                     }
                 } else {
-                    if (LOG.isTraceEnabled()) {
-                        StringBuilder errors = new StringBuilder();
-                        Collection<RpcError> rpcErrors = result.getErrors();
-                        if (null != rpcErrors && rpcErrors.size() > 0) {
-                            for (RpcError rpcError : rpcErrors) {
-                                errors.append(rpcError.getMessage());
-                            }
-                        }
-                        LOG.trace("Flow modification failed. Errors : {}", errors.toString());
-                    }
+                    LOG.error("Flow remove failed with errors : {}", errorsToString(result.getErrors()));
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.trace("Flow modification failed..", throwable);
+                LOG.trace("Flow remove failed..", throwable);
             }
         });
 
         return future;
+    }
+
+    private final String errorsToString(final Collection<RpcError> rpcErrors) {
+        final StringBuilder errors = new StringBuilder();
+        if ((null != rpcErrors) && (rpcErrors.size() > 0)) {
+            for (final RpcError rpcError : rpcErrors) {
+                errors.append(rpcError.getMessage());
+            }
+        }
+        return errors.toString();
     }
 
     @Override
