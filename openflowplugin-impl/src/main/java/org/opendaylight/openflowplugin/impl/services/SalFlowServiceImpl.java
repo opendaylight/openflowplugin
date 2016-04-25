@@ -21,8 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
@@ -99,7 +97,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
                 } else {
-                    LOG.debug("flow add failed with error, id={}", flowId.getValue());
+                    LOG.error("flow add failed with errors={}, id={}", errorsToString(rpcResult.getErrors()), flowId.getValue());
                 }
             }
 
@@ -133,16 +131,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         }
                     }
                 } else {
-                    if (LOG.isTraceEnabled()) {
-                        StringBuilder errors = new StringBuilder();
-                        Collection<RpcError> rpcErrors = result.getErrors();
-                        if (null != rpcErrors && rpcErrors.size() > 0) {
-                            for (RpcError rpcError : rpcErrors) {
-                                errors.append(rpcError.getMessage());
-                            }
-                        }
-                        LOG.trace("Flow modification failed. Errors : {}", errors.toString());
-                    }
+                    LOG.error("Flow modification failed with errors : {}", errorsToString(result.getErrors()));
                 }
             }
 
@@ -153,6 +142,15 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         });
 
         return future;
+    }
+
+    private final String errorsToString(final Collection<RpcError> rpcErrors) {
+        final StringBuilder errors = new StringBuilder();
+        if ((null != rpcErrors) && (rpcErrors.size() > 0)) {
+            for (final RpcError rpcError : rpcErrors) {
+                errors.append(rpcError.getMessage());
+            }
+        }
     }
 
     @Override
