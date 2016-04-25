@@ -46,6 +46,30 @@
       "revId": "1a1ed45a169604b9e9aa8c1895d311541052f35d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_52a7a34f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2016-04-25T22:01:41Z",
+      "side": 1,
+      "message": "Just meant flip the order - instead of LOG.error(\"flow add failed with errors\u003d{}, id\u003d{}\", do the following \u003d\u003eLOG.error(\"flow add failed with id\u003d{}, errors\u003d{}\"",
+      "parentUuid": "fa57193c_12ad2b32",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 20
+      },
+      "revId": "1a1ed45a169604b9e9aa8c1895d311541052f35d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
