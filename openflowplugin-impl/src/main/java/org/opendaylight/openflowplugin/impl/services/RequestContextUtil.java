@@ -26,15 +26,15 @@ public final class RequestContextUtil {
     public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext, final String errorMessage) {
         RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
         requestContext.setResult(rpcResultBuilder.build());
-        closeRequstContext(requestContext);
+        closeRequestContext(requestContext);
         return requestContext.getFuture();
     }
 
-    public static void closeRequstContext(final RequestContext<?> requestContext) {
+    public static void closeRequestContext(final RequestContext<?> requestContext) {
         try {
             requestContext.close();
         } catch (Exception e) {
-            LOG.debug("Request context wasn't closed. Exception message: {}", e.getMessage());
+            LOG.error("Request context failed to close", e);
         }
     }
 }

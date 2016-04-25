@@ -77,6 +77,6 @@ abstract class AbstractRequestCallback<T> implements FutureCallback<OfHeader> {
         }
 
         context.setResult(builder.build());
-        RequestContextUtil.closeRequstContext(context);
+        RequestContextUtil.closeRequestContext(context);
     }
 }
