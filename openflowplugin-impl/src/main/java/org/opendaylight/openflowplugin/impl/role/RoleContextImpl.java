@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 class RoleContextImpl implements RoleContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
-    public static final int TIMEOUT = 12;
+    private static final int TIMEOUT = 12;
 
     private final NodeId nodeId;
     private final EntityOwnershipService entityOwnershipService;
@@ -47,7 +47,7 @@ class RoleContextImpl implements RoleContext {
 
     private final Semaphore roleChangeGuard = new Semaphore(1, true);
 
-    public RoleContextImpl(NodeId nodeId, EntityOwnershipService entityOwnershipService, Entity entity, Entity txEntity) {
+    public RoleContextImpl(final NodeId nodeId, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity) {
         this.entityOwnershipService = entityOwnershipService;
         this.entity = entity;
         this.txEntity = txEntity;
@@ -69,17 +69,17 @@ class RoleContextImpl implements RoleContext {
         if (isTxCandidateRegistered()) {
             unregisterCandidate(this.txEntity);
         }
+        LifecycleConductor.getInstance().closeConnection(nodeId);
     }
 
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(LifecycleConductor.getInstance().reserveXidForDeviceMessage(nodeId)) {
+        return new AbstractRequestContext<T>(LifecycleConductor.getInstance().reserveXidForDeviceMessage(nodeId)) {
             @Override
             public void close() {
             }
         };
-        return ret;
     }
 
     @Override
@@ -133,10 +133,10 @@ class RoleContextImpl implements RoleContext {
             } else {
                 return false;
             }
-        } catch (CandidateAlreadyRegisteredException e) {
+        } catch (final CandidateAlreadyRegisteredException e) {
             LOG.warn("Candidate for entity {} is already registered.", entity_.getType());
             return false;
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOG.warn("Cannot acquire semaphore for register entity {} candidate.", entity_.getType());
             return false;
         } finally {
@@ -169,7 +169,7 @@ class RoleContextImpl implements RoleContext {
             } else {
                 return false;
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOG.warn("Cannot acquire semaphore for unregister entity {} candidate.", entity_.getType());
             return false;
         } finally {
