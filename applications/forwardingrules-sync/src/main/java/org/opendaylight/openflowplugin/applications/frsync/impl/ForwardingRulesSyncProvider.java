@@ -9,16 +9,21 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.lang.Thread.UncaughtExceptionHandler;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
@@ -83,6 +88,21 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         broker.registerProvider(this);
     }
 
+    private final ListeningExecutorService syncThreadPool = FrmExecutors.instance()
+            // TODO improve log in ThreadPoolExecutor.afterExecute
+            // TODO max bloking queue size
+            // TODO core/min pool size
+            .newFixedThreadPool(6, new ThreadFactoryBuilder()
+                    .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                    .setDaemon(false)
+                    .setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread thread, Throwable e) {
+                            LOG.error("uncaught exception {}", thread, e);
+                        }
+                    })
+                    .build());
+
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
         final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
@@ -92,7 +112,17 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         {
             final SyncReactorImpl syncReactorImpl = new SyncReactorImpl();
-            
+            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl
+                    .setFlowForwarder(flowForwarder)
+                    .setGroupForwarder(groupForwarder)
+                    .setMeterForwarder(meterForwarder)
+                    .setTableForwarder(tableForwarder)
+                    .setTransactionService(transactionService),
+                    new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
+
+            final SyncReactor cfgReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
+            final SyncReactor operReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
+
             final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
