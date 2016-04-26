@@ -80,6 +80,10 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
+        final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
+        final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
+        final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
+        final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         LOG.info("ForwardingRulesSync has started.");
     }
