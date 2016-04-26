@@ -1,0 +1,106 @@
+package org.opendaylight.openflowplugin.applications.frsync.impl;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+
+/**
+ * Run delegate in Future
+ * 
+ * @author joslezak
+ */
+public class SyncReactorFutureDecorator implements SyncReactor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
+
+    private final SyncReactor delegate;
+    private final ListeningExecutorService executorService;
+
+    public static final String FRM_RPC_CLIENT_PREFIX = "FRM-RPC-client-";
+
+    public SyncReactorFutureDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+        this.delegate = delegate;
+        this.executorService = executorService;
+    }
+
+    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+            final FlowCapableNode configTree, final FlowCapableNode operationalTree) throws InterruptedException {
+        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
+        LOG.trace("syncup {}", nodeId.getValue());
+
+        final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                final String oldThreadName = updateThreadName(nodeId);
+
+                try {
+                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree)
+                            .get(10000, TimeUnit.MILLISECONDS);
+                    LOG.trace("ret {} {}", nodeId.getValue(), ret);
+                    return true;
+                } catch (TimeoutException e) {
+                    LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
+                    return false;
+                } finally {
+                    updateThreadName(oldThreadName);
+                }
+            }
+        });
+        
+        return syncup;
+    }
+
+    protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+            final FlowCapableNode configTree, final FlowCapableNode operationalTree)
+                    throws InterruptedException {
+        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
+        LOG.trace("doSyncupInFuture {}", nodeId.getValue());
+
+        return delegate.syncup(flowcapableNodePath, configTree, operationalTree);
+    }
+
+    static String threadName() {
+        final Thread currentThread = Thread.currentThread();
+        return currentThread.getName();
+    }
+
+    protected String updateThreadName(NodeId nodeId) {
+        final Thread currentThread = Thread.currentThread();
+        final String oldName = currentThread.getName();
+        try {
+            if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+                currentThread.setName(oldName + "@" + nodeId.getValue());
+            } else {
+                LOG.warn("try to update foreign thread name {} {}", nodeId, oldName);
+            }
+        } catch (Exception e) {
+            LOG.error("failed updating threadName {}", nodeId, e);
+        }
+        return oldName;
+    }
+
+    protected String updateThreadName(String name) {
+        final Thread currentThread = Thread.currentThread();
+        final String oldName = currentThread.getName();
+        try {
+            if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
+                currentThread.setName(name);
+            } else {
+                LOG.warn("try to update foreign thread name {} {}", oldName, name);
+            }
+        } catch (Exception e) {
+            LOG.error("failed updating threadName {}", name, e);
+        }
+        return oldName;
+    }
+}
