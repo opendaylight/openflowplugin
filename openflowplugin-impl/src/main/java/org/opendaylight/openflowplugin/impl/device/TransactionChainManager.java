@@ -201,6 +201,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                                                    final InstanceIdentifier<T> path, final T data) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
+            LOG.debug("writeToTransaction called with path {} ", path);
             writeTx.put(store, path, data);
         } else {
             LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeII, path);
