@@ -86,12 +86,12 @@ public class RpcManagerImplTest {
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
 
-        rpcManager.onDeviceContextLevelUp(deviceContext);
+        rpcManager.onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
 
         Mockito.verify(rpcProviderRegistry, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class));
         Mockito.verify(routedRpcRegistration, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).registerPath(
                 NodeContext.class, nodePath);
-        Mockito.verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceContext);
+        Mockito.verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
     }
 }
