@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,22 +35,26 @@ public class RpcContextImpl implements RpcContext {
     private final DeviceContext deviceContext;
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
+    private final NodeId nodeId;
 
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final boolean isStatisticsRpcEnabled;
     private final NotificationPublishService notificationPublishService;
 
-    public RpcContextImpl(final MessageSpy messageSpy, final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext,
-            final int maxRequests, final boolean isStatisticsRpcEnabled,
-            final NotificationPublishService notificationPublishService) {
+    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry,
+                          final DeviceContext deviceContext,
+                          final int maxRequests,
+                          final boolean isStatisticsRpcEnabled,
+                          final NotificationPublishService notificationPublishService) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
-        this.messageSpy = Preconditions.checkNotNull(messageSpy);
+        this.messageSpy = Preconditions.checkNotNull(deviceContext.getMessageSpy());
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
         this.notificationPublishService = notificationPublishService;
         tracker = new Semaphore(maxRequests, true);
         deviceContext.setRpcContext(RpcContextImpl.this);
+        this.nodeId = deviceContext.getDeviceState().getNodeId();
     }
 
     /**
@@ -104,12 +109,12 @@ public class RpcContextImpl implements RpcContext {
             LOG.trace("Device queue {} at capacity", this);
             return null;
         } else {
-            LOG.trace("Acquired semaphore for {}, available permits:{} ", deviceContext.getDeviceState().getNodeId(), tracker.availablePermits());
+            LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeId, tracker.availablePermits());
         }
 
         final Long xid = deviceContext.reservedXidForDeviceMessage();
         if (xid == null) {
-            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", deviceContext.getDeviceState().getNodeId());
+            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeId);
             tracker.release();
             return null;
         }
@@ -127,12 +132,12 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
-        LOG.trace("Try to unregister serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
+        LOG.trace("Try to unregister serviceClass {} for Node {}", serviceClass, nodeId);
         final RoutedRpcRegistration<?> rpcRegistration = rpcRegistrations.remove(serviceClass);
         if (rpcRegistration != null) {
             rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistration.close();
-            LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, deviceContext.getDeviceState().getNodeId());
+            LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, nodeId);
         }
     }
 }
