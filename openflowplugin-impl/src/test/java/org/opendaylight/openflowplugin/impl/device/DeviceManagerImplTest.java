@@ -167,7 +167,7 @@ public class DeviceManagerImplTest {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
         }
 
-        deviceManager.onDeviceContextLevelUp(mockedDeviceContext);
+        deviceManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         if (withException) {
             verify(mockedDeviceContext).close();
         } else {
@@ -190,7 +190,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
     }
 
     protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {

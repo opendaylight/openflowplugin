@@ -115,10 +115,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
+    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
         // final phase - we have to add new Device to MD-SAL DataStore
-        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceContext.getDeviceState().getNodeId());
-        Preconditions.checkNotNull(deviceContext);
+        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", nodeId);
+        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(nodeId));
         ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
     }
@@ -126,18 +126,20 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public boolean deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
+
+        NodeId nodeId = connectionContext.getNodeId();
         /**
          * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
-         if (deviceContexts.containsKey(connectionContext.getNodeId())) {
+         if (deviceContexts.containsKey(nodeId)) {
             LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
              return false;
          }
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
+                connectionContext.getConnectionAdapter().getRemoteAddress(), nodeId);
 
         // Add Disconnect handler
         connectionContext.setDeviceDisconnectedHandler(DeviceManagerImpl.this);
@@ -159,8 +161,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
                 hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
-        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
-        deviceContext.addDeviceContextClosedHandler(this);
+        Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
@@ -173,7 +174,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceState.setValid(true);
 
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
 
         return true;
     }
@@ -242,7 +243,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public DeviceContext getDeviceContextFromNodeId(NodeId nodeId) {
+    public DeviceContext getDeviceContextFromNodeId(final NodeId nodeId) {
         return deviceContexts.get(nodeId);
     }
 
@@ -269,8 +270,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceCtx = this.deviceContexts.get(nodeId);
 
         if (null == deviceCtx) {
-            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.",
-                    connectionContext.getNodeId());
+            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", nodeId);
             return;
         }
 
@@ -284,13 +284,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", deviceCtx.getDeviceState().getNodeId());
+                    LOG.debug("TxChainManager for device {} is closed successful.", nodeId);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", deviceCtx.getDeviceState().getNodeId(), t);
+                    LOG.warn("TxChainManager for device {} failed by closing.", nodeId, t);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
                 }
             });
@@ -300,8 +300,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     if (!future.isDone()) {
-                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.",
-                                deviceCtx.getDeviceState().getNodeId());
+                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", nodeId);
                         future.cancel(false);
                     }
                 }
