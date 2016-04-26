@@ -188,10 +188,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         connectionManager = new ConnectionManagerImpl(echoReplyTimeout);
 
         registerMXBean(messageIntelligenceAgency);
+        LifecycleConductor.getInstance().setMessageIntelligenceAgency(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency, globalNotificationQuota,
+        deviceManager = new DeviceManagerImpl(dataBroker, globalNotificationQuota,
                 switchFeaturesMandatory, barrierInterval, barrierCountLimit);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
+
+        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
@@ -217,8 +221,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);
-
-        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();

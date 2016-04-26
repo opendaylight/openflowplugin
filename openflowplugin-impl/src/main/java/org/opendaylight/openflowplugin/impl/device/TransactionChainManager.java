@@ -190,6 +190,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                                                              final InstanceIdentifier<T> path) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
+            LOG.trace("addDeleteOperation called with path {} ", path);
             writeTx.delete(store, path);
         } else {
             LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", nodeII, path);
@@ -201,6 +202,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                                                    final InstanceIdentifier<T> path, final T data) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
+            LOG.trace("writeToTransaction called with path {} ", path);
             writeTx.put(store, path, data);
         } else {
             LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeII, path);
