@@ -112,7 +112,7 @@ public class RoleManagerImplTest {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(featuresReply.getDatapathId()).thenReturn(new BigInteger("1"));
         Mockito.when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceContext>any());
+        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<NodeId>any());
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceContext>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
@@ -123,7 +123,7 @@ public class RoleManagerImplTest {
         LifecycleConductor.getInstance().setDeviceManager(deviceManager);
         roleManagerSpy = Mockito.spy(roleManager);
         Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
-        roleManagerSpy.onDeviceContextLevelUp(deviceContext);
+        roleManagerSpy.onDeviceContextLevelUp(nodeId);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
     }
@@ -134,8 +134,8 @@ public class RoleManagerImplTest {
 
     @Test(expected = VerifyException.class)
     public void testOnDeviceContextLevelUp() throws Exception {
-        roleManagerSpy.onDeviceContextLevelUp(deviceContext);
-        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(deviceContext);
+        roleManagerSpy.onDeviceContextLevelUp(nodeId);
+        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(nodeId);
         inOrder.verifyNoMoreInteractions();
     }
 
