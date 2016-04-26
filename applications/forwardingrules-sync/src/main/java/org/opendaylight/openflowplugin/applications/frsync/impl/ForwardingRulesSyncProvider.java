@@ -15,6 +15,10 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
+import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
@@ -85,6 +89,15 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
+        {
+            final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
+            final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
+            final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
+                    new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
+            final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
+                    new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
+        }
+        
         LOG.info("ForwardingRulesSync has started.");
     }
 
