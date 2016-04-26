@@ -10,6 +10,20 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
+import io.netty.util.concurrent.SingleThreadEventExecutor;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -17,6 +31,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -91,7 +106,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void closeConnection(boolean propagate) {
+    public void closeConnection(final boolean propagate) {
         if (null == nodeId){
             SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
         } else {
@@ -102,7 +117,23 @@ public class ConnectionContextImpl implements ConnectionContext {
                 connectionAdapter.getRemoteAddress(), datapathId);
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
-        unregisterOutboundQueue();
+        Future<Void> future = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                unregisterOutboundQueue();
+                return null;
+            }
+        });
+        try {
+            future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.warn("Unregistering outbound queue was interrupted for node {}", nodeId);
+        } catch (ExecutionException e) {
+            LOG.warn("Unregistering outbound queue throws exception for node {}", nodeId, e);
+        } catch (TimeoutException e) {
+            LOG.warn("Unregistering outbound queue took longer than 1 seconds for node {}", nodeId);
+        }
+
         closeHandshakeContext();
 
         if (getConnectionAdapter().isAlive()) {
@@ -110,11 +141,15 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         if (propagate) {
+            LOG.debug("Propagating device disconnect for node {}", nodeId);
             propagateDeviceDisconnectedEvent();
+        } else {
+            LOG.debug("Close connection without propagating for node {}", nodeId);
         }
     }
 
     private void closeHandshakeContext() {
+        LOG.debug("Trying closing handshake context for node {}", nodeId);
         if (handshakeContext != null) {
             try {
                 handshakeContext.close();
@@ -168,6 +203,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     private void unregisterOutboundQueue() {
+        LOG.debug("Trying unregister outbound queue handler registration for node {}", nodeId);
         if (outboundQueueHandlerRegistration != null) {
             outboundQueueHandlerRegistration.close();
             outboundQueueHandlerRegistration = null;
