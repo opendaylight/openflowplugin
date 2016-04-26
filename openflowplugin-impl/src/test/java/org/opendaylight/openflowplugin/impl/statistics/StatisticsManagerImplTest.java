@@ -34,6 +34,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -45,6 +46,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -101,6 +103,8 @@ public class StatisticsManagerImplTest {
     private ArgumentCaptor<ItemLifecycleListener> itemLifeCycleListenerCapt;
     @Mock
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> serviceControlRegistration;
+    @Mock
+    private DeviceManager deviceManager;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -146,34 +150,12 @@ public class StatisticsManagerImplTest {
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false);
+        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+        when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
     }
 
     @Test
     public void testOnDeviceContextLevelUp() throws Exception {
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
-                LOG.debug("committing entry: {}", ((MultipartRequestInput) invocation.getArguments()[1]).getType());
-                callback.onSuccess(null);
-                currentRequestContext.setResult(RpcResultBuilder.<List<MultipartReply>>success().build());
-                return null;
-            }
-        }).when(outboundQueue)
-                .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
-
-        statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
-
-        verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
-        verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
-        verify(mockedDeviceState).setDeviceSynchronized(true);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
-        verify(hashedWheelTimer).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
-    }
-
-    @Test
-    public void testOnDeviceContextLevelUp1() throws Exception {
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
@@ -188,12 +170,11 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
 
-        verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
         verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
     }
 
