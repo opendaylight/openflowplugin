@@ -40,9 +40,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -74,16 +76,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
+    private final DeviceContextChangeListener deviceContextChangeListener;
 
     private final ConcurrentMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
-    private final MessageIntelligenceAgency messageIntelligenceAgency;
 
     private final long barrierIntervalNanos;
     private final int barrierCountLimit;
     private ExtensionConverterProvider extensionConverterProvider;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
-                             @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
@@ -103,9 +104,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             throw new IllegalStateException(e);
         }
 
-        this.messageIntelligenceAgency = messageIntelligenceAgency;
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
+        this.deviceContextChangeListener = LifecycleConductor.getInstance();
     }
 
 
@@ -115,29 +116,33 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
+    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
         // final phase - we have to add new Device to MD-SAL DataStore
-        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceContext.getDeviceState().getNodeId());
-        Preconditions.checkNotNull(deviceContext);
+        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", nodeId);
+        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(nodeId));
         ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
+        this.deviceContextChangeListener.deviceInitializationDone(nodeId, true);
     }
 
     @Override
     public boolean deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
+
+        NodeId nodeId = connectionContext.getNodeId();
         /**
          * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
-         if (deviceContexts.containsKey(connectionContext.getNodeId())) {
+         if (deviceContexts.containsKey(nodeId)) {
             LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
+             this.deviceContextChangeListener.deviceStartInitializationDone(nodeId, false);
              return false;
          }
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
+                connectionContext.getConnectionAdapter().getRemoteAddress(), nodeId);
 
         // Add Disconnect handler
         connectionContext.setDeviceDisconnectedHandler(DeviceManagerImpl.this);
@@ -157,10 +162,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         final DeviceState deviceState = createDeviceState(connectionContext);
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
+                hashedWheelTimer, LifecycleConductor.getInstance().getMessageIntelligenceAgency(), outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
 
-        Verify.verify(deviceContexts.putIfAbsent(connectionContext.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
-        deviceContext.addDeviceContextClosedHandler(this);
+        Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationService(notificationService);
@@ -173,7 +177,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceState.setValid(true);
 
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        this.deviceContextChangeListener.deviceStartInitializationDone(nodeId, true);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
 
         return true;
     }
@@ -243,11 +248,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void initialize() {
         spyPool = new ScheduledThreadPoolExecutor(1);
-        spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
+        spyPool.scheduleAtFixedRate(LifecycleConductor.getInstance().getMessageIntelligenceAgency(), spyRate, spyRate, TimeUnit.SECONDS);
     }
 
     @Override
-    public DeviceContext getDeviceContextFromNodeId(NodeId nodeId) {
+    public DeviceContext getDeviceContextFromNodeId(final NodeId nodeId) {
         return deviceContexts.get(nodeId);
     }
 
@@ -274,8 +279,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceCtx = this.deviceContexts.get(nodeId);
 
         if (null == deviceCtx) {
-            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.",
-                    connectionContext.getNodeId());
+            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", nodeId);
             return;
         }
 
@@ -289,13 +293,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", deviceCtx.getDeviceState().getNodeId());
+                    LOG.debug("TxChainManager for device {} is closed successful.", nodeId);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", deviceCtx.getDeviceState().getNodeId(), t);
+                    LOG.warn("TxChainManager for device {} failed by closing.", nodeId, t);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
                 }
             });
@@ -305,8 +309,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     if (!future.isDone()) {
-                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.",
-                                deviceCtx.getDeviceState().getNodeId());
+                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", nodeId);
                         future.cancel(false);
                     }
                 }
