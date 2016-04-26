@@ -54,6 +54,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -148,7 +149,8 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         final MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker, mockedMessageIntelligenceAgency,
+        LifecycleConductor.getInstance().setMessageIntelligenceAgency(mockedMessageIntelligenceAgency);
+        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
@@ -162,12 +164,13 @@ public class DeviceManagerImplTest {
         final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
+        when(mockedDeviceState.getNodeId()).thenReturn(mockedNodeId);
 
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
         }
-
-        deviceManager.onDeviceContextLevelUp(mockedDeviceContext);
+        deviceManager.addDeviceContextToMap(mockedNodeId, mockedDeviceContext);
+        deviceManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         if (withException) {
             verify(mockedDeviceContext).close();
         } else {
@@ -190,7 +193,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
     }
 
     @Test
@@ -215,7 +218,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceContext>any());
+        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
     }
 
     protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {

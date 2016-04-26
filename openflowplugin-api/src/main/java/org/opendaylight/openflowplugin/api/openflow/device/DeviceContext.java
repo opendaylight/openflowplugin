@@ -231,11 +231,6 @@ public interface DeviceContext extends AutoCloseable,
 
     MessageSpy getMessageSpy();
 
-    /**
-     * Method sets reference to handler used for cleanup after device context about to be closed.
-     */
-    void addDeviceContextClosedHandler(DeviceTerminationPhaseHandler deviceContextClosedHandler);
-
     MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
 
     /**
