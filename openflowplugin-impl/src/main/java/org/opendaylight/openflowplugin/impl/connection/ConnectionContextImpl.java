@@ -91,7 +91,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void closeConnection(boolean propagate) {
+    public void closeConnection(final boolean propagate) {
         if (null == nodeId){
             SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
         } else {
@@ -110,6 +110,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         if (propagate) {
+            LOG.debug("Propagating device disconnect for node {}", nodeId);
             propagateDeviceDisconnectedEvent();
         }
     }
