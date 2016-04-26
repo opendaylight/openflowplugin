@@ -90,6 +90,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         {
+            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl();
+            
             final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
             final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
