@@ -164,12 +164,11 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
 
-        verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
         verify(mockedDeviceContext, Mockito.times(8)).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         verify(hashedWheelTimer).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
     }
 
@@ -189,12 +188,11 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
 
-        verify(mockedDeviceContext).addDeviceContextClosedHandler(statisticsManager);
         verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
     }
 
