@@ -74,13 +74,11 @@ public class MdSalRegistrationUtils {
      *
      * @param rpcContext    - registration processing is implemented in {@link RpcContext}
      * @param deviceContext - every service needs {@link DeviceContext} as input parameter
-     * @param newRole       - role validation for {@link OfpRole#BECOMEMASTER}
      */
     public static void registerMasterServices(@CheckForNull final RpcContext rpcContext,
                                               @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(deviceContext != null);
-        Preconditions.checkArgument(newRole != null);
         Verify.verify(OfpRole.BECOMEMASTER.equals(newRole), "Service call with bad Role {} we expect role BECOMEMASTER", newRole);
 
         // create service instances
