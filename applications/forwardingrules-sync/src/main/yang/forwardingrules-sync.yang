@@ -1,0 +1,57 @@
+module forwardingrules-sync {
+
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:forwardingrules-sync";
+    prefix "frsync";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+    import opendaylight-md-sal-dom {prefix dom; revision-date 2013-10-28;}
+
+    description
+        "This module contains the base YANG definitions for
+        forwardingrules-sync implementation.";
+
+    revision "2016-02-01" {
+        description
+            "Initial revision.";
+    }
+
+    identity forwardingrules-sync {
+            base config:module-type;
+            config:java-name-prefix ForwardingRulesSync;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case forwardingrules-sync {
+            when "/config:modules/config:module/config:type = 'forwardingrules-sync'";
+
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+}
