@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -48,33 +50,21 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
+    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
 
-        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
-        final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry,
-                deviceContext, maxRequestsQuota, isStatisticsRpcEnabled, notificationPublishService);
+        DeviceContext deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
+
+        final RpcContext rpcContext = new RpcContextImpl(
+                rpcProviderRegistry,
+                deviceContext,
+                maxRequestsQuota,
+                isStatisticsRpcEnabled,
+                notificationPublishService);
 
         Verify.verify(contexts.putIfAbsent(nodeId, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
-        deviceContext.addDeviceContextClosedHandler(this);
-
-        if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
-            LOG.info("Registering Openflow Master RPCs for node:{}, role:{}", nodeId, ofpRole);
-            MdSalRegistrationUtils.registerMasterServices(rpcContext, deviceContext, ofpRole);
-
-        } else if(OfpRole.BECOMESLAVE.equals(ofpRole)) {
-            // if slave, we need to de-register rpcs if any have been registered, in case of master to slave
-            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistrationUtils.registerSlaveServices(rpcContext, ofpRole);
-        } else {
-            // if we don't know role, we need to unregister rpcs if any have been registered
-            LOG.info("Unregister RPC services (if any) for slave role for node:{}", deviceContext.getDeviceState().getNodeId());
-            MdSalRegistrationUtils.unregisterServices(rpcContext);
-        }
 
         // finish device initialization cycle back to DeviceManager
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
     }
 
     @Override
