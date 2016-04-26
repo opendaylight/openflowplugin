@@ -52,7 +52,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceContext, false);
+        statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
@@ -70,7 +70,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext, false);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false);
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {
@@ -95,12 +95,12 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testGatherDynamicData_all() throws Exception {
         Mockito.reset(mockedDeviceState);
-        when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(true);
-        when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(true);
-        when(mockedDeviceState.isGroupAvailable()).thenReturn(true);
-        when(mockedDeviceState.isMetersAvailable()).thenReturn(true);
-        when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(true);
-        when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(true);
+        when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isGroupAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         initStatisticsContext();
 

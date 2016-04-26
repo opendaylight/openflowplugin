@@ -464,7 +464,7 @@ public final class StatisticsGatheringUtils {
      *
      * @param deviceContext txManager + node path keeper
      */
-    public static void markDeviceStateSnapshotStart(DeviceContext deviceContext) {
+    static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceState()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
@@ -478,7 +478,7 @@ public final class StatisticsGatheringUtils {
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
             deviceContext.submitTransaction();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Can't write to transaction: {}", e);
         }
     }
@@ -489,7 +489,7 @@ public final class StatisticsGatheringUtils {
      * @param deviceContext txManager + node path keeper
      * @param succeeded     outcome of currently finished gathering
      */
-    public static void markDeviceStateSnapshotEnd(DeviceContext deviceContext, final boolean succeeded) {
+    static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceState()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);

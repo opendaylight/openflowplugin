@@ -32,11 +32,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,12 +65,11 @@ public class StatisticsContextImpl implements StatisticsContext {
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
-    public StatisticsContextImpl(@CheckForNull final DeviceContext deviceContext,
-            final boolean shuttingDownStatisticsPolling) {
-        this.deviceContext = Preconditions.checkNotNull(deviceContext);
+    public StatisticsContextImpl(@CheckForNull final NodeId nodeId, final boolean shuttingDownStatisticsPolling) {
+        this.deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
-        emptyFuture = Futures.immediateFuture(new Boolean(false));
+        emptyFuture = Futures.immediateFuture(false);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
@@ -186,116 +187,113 @@ public class StatisticsContextImpl implements StatisticsContext {
             }
         }
 
-        @Override
-        public void setPollTimeout (Timeout pollTimeout){
-            this.pollTimeout = pollTimeout;
+    @Override
+    public void setPollTimeout(final Timeout pollTimeout) {
+        this.pollTimeout = pollTimeout;
+    }
+
+    @Override
+    public Optional<Timeout> getPollTimeout() {
+        return Optional.fromNullable(pollTimeout);
+    }
+
+    private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            final String errMsg = String.format("Device connection is closed for Node : %s.",
+                    deviceContext.getDeviceState().getNodeId());
+            LOG.debug(errMsg);
+            resultFuture.setException(new IllegalStateException(errMsg));
+            return;
+        }
+        if ( ! iterator.hasNext()) {
+            resultFuture.set(Boolean.TRUE);
+            LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceState().getNodeId());
+            return;
         }
 
-        @Override
-        public Optional<Timeout> getPollTimeout () {
-            return Optional.fromNullable(pollTimeout);
-        }
+        final MultipartType nextType = iterator.next();
+        LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceState().getNodeId(), nextType);
 
-        void statChainFuture ( final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture){
-
-            if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-                final String errMsg = String.format("Device connection is closed for Node : %s.",
-                        deviceContext.getDeviceState().getNodeId());
-                LOG.debug(errMsg);
-                resultFuture.setException(new IllegalStateException(errMsg));
-                return;
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType);
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                statChainFuture(iterator, resultFuture);
             }
-
-            if (!iterator.hasNext()) {
-                resultFuture.set(Boolean.TRUE);
-                LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceState().getNodeId());
-                return;
+            @Override
+            public void onFailure(final Throwable t) {
+                resultFuture.setException(t);
             }
+        });
+    }
 
-            final MultipartType nextType = iterator.next();
-            LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceState().getNodeId(), nextType);
-
-            final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType);
-            Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-                @Override
-                public void onSuccess(final Boolean result) {
-                    statChainFuture(iterator, resultFuture);
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    resultFuture.setException(t);
-                }
-            });
-        }
-
-        /**
-         * Method checks a device state. It returns null for be able continue. Otherwise it returns immediateFuture
-         * which has to be returned from caller too
-         *
-         * @return
-         */
-        @VisibleForTesting
-        ListenableFuture<Boolean> deviceConnectionCheck () {
-            if (!ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-                ListenableFuture<Boolean> resultingFuture = SettableFuture.create();
-                switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
-                    case RIP:
-                        final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
-                                deviceContext.getPrimaryConnectionContext().getConnectionState());
-                        resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
-                        break;
-                    default:
-                        resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
-                        break;
-                }
-                return resultingFuture;
+    /**
+     * Method checks a device state. It returns null for be able continue. Otherwise it returns immediateFuture
+     * which has to be returned from caller too
+     *
+     * @return
+     */
+    @VisibleForTesting
+    ListenableFuture<Boolean> deviceConnectionCheck() {
+        if (!ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            ListenableFuture<Boolean> resultingFuture = SettableFuture.create();
+            switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
+                case RIP:
+                    final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
+                            deviceContext.getPrimaryConnectionContext().getConnectionState());
+                    resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
+                    break;
+                default:
+                    resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
+                    break;
             }
-            return null;
+            return resultingFuture;
         }
+        return null;
+    }
 
-        private ListenableFuture<Boolean> collectFlowStatistics ( final MultipartType multipartType){
-            return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringOnTheFlyService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
+        return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringOnTheFlyService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectTableStatistics ( final MultipartType multipartType){
-            return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPTABLE*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
+        return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPTABLE*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectPortStatistics ( final MultipartType multipartType){
-            return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPPORTSTATS*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
+        return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPPORTSTATS*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectQueueStatistics ( final MultipartType multipartType){
-            return devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPQUEUE*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
+        return devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPQUEUE*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectGroupDescStatistics ( final MultipartType multipartType){
-            return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUPDESC*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
+        return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUPDESC*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectGroupStatistics ( final MultipartType multipartType){
-            return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUP*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
+        return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUP*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectMeterConfigStatistics ( final MultipartType multipartType){
-            return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETERCONFIG*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
+        return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETERCONFIG*/ multipartType) : emptyFuture;
+    }
 
-        private ListenableFuture<Boolean> collectMeterStatistics ( final MultipartType multipartType){
-            return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                    statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
-        }
+    private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
+        return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
+    }
 
     @VisibleForTesting
-    protected void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
+    void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
         this.statisticsGatheringService = statisticsGatheringService;
     }
 
