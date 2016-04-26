@@ -90,6 +90,18 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
+                <artifactId>forwardingrules-sync</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>forwardingrules-sync</artifactId>
+                <version>${project.version}</version>
+                <classifier>config</classifier>
+                <type>xml</type>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>inventory-manager</artifactId>
                 <version>${project.version}</version>
             </dependency>
