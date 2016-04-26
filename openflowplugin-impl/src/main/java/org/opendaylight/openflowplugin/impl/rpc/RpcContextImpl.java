@@ -40,11 +40,13 @@ public class RpcContextImpl implements RpcContext {
     private final boolean isStatisticsRpcEnabled;
     private final NotificationPublishService notificationPublishService;
 
-    public RpcContextImpl(final MessageSpy messageSpy, final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext,
-            final int maxRequests, final boolean isStatisticsRpcEnabled,
-            final NotificationPublishService notificationPublishService) {
+    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry,
+                          final DeviceContext deviceContext,
+                          final int maxRequests,
+                          final boolean isStatisticsRpcEnabled,
+                          final NotificationPublishService notificationPublishService) {
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
-        this.messageSpy = Preconditions.checkNotNull(messageSpy);
+        this.messageSpy = Preconditions.checkNotNull(deviceContext.getMessageSpy());
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
         this.notificationPublishService = notificationPublishService;

@@ -395,7 +395,6 @@ public class DeviceContextImplTest {
         final ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
         deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
         final DeviceTerminationPhaseHandler mockedDeviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
-        deviceContext.addDeviceContextClosedHandler(mockedDeviceContextClosedHandler);
         when(deviceState.isValid()).thenReturn(true);
         deviceContext.shutdownConnection();
         verify(connectionContext).closeConnection(true);
@@ -497,7 +496,6 @@ public class DeviceContextImplTest {
     @Test
     public void testOnDeviceDisconnected() throws Exception {
         final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
-        deviceContext.addDeviceContextClosedHandler(deviceContextClosedHandler);
 
 //        Mockito.verify(deviceState).setValid(false);
 //        Mockito.verify(deviceContextClosedHandler).onDeviceContextClosed(deviceContext);

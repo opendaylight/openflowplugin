@@ -64,7 +64,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext,
+        try (final RpcContext rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext,
                 100, false, notificationPublishService)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
@@ -73,7 +73,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 0,
+        try (final RpcContext rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext, 0,
                 false, notificationPublishService)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);

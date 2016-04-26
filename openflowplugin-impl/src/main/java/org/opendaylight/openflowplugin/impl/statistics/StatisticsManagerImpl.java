@@ -16,7 +16,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Iterator;
@@ -34,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
@@ -58,8 +58,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
-
-    private HashedWheelTimer hashedWheelTimer;
 
     private final ConcurrentMap<NodeId, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
@@ -86,67 +84,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceContext deviceContext) throws Exception {
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
-        final OfpRole ofpRole = deviceContext.getDeviceState().getRole();
-        LOG.debug("Node:{}, deviceContext.getDeviceState().getRole():{}", nodeId, ofpRole);
+    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
 
-        if (null == hashedWheelTimer) {
-            LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
-            hashedWheelTimer = deviceContext.getTimer();
-        }
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, shuttingDownStatisticsPolling);
+        final DeviceContext deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
 
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(nodeId, shuttingDownStatisticsPolling);
         Verify.verify(contexts.putIfAbsent(nodeId, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", nodeId);
-        deviceContext.addDeviceContextClosedHandler(this);
 
         if (shuttingDownStatisticsPolling) {
-            LOG.info("Statistics is shutdown for node:{}", deviceContext.getDeviceState().getNodeId());
+            LOG.info("Statistics is shutdown for node:{}", nodeId);
         } else {
-            LOG.info("Schedule Statistics poll for node:{}", deviceContext.getDeviceState().getNodeId());
-            if (OfpRole.BECOMEMASTER.equals(ofpRole)) {
-                initialStatPollForMaster(statisticsContext, deviceContext);
-                /* we want to wait for initial statCollecting response */
-                return;
-            }
+            LOG.info("Schedule Statistics poll for node:{}", nodeId);
             scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
         }
+
         deviceContext.getDeviceState().setDeviceSynchronized(true);
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-    }
-
-    private void initialStatPollForMaster(final StatisticsContext statisticsContext, final DeviceContext deviceContext) {
-        final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
-        Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(final Boolean statisticsGathered) {
-                if (statisticsGathered) {
-                    //there are some statistics on device worth gathering
-                    final TimeCounter timeCounter = new TimeCounter();
-                    deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
-                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
-                    LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
-                    try {
-                        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-                    } catch (final Exception e) {
-                        LOG.info("failed to complete levelUp on next handler for device {}", deviceContext.getDeviceState().getNodeId());
-                        deviceContext.shutdownConnection();
-                        return;
-                    }
-                    deviceContext.getDeviceState().setDeviceSynchronized(true);
-                } else {
-                    final String deviceAddress = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress().toString();
-                    LOG.info("Statistics for device {} could not be gathered. Closing its device context.", deviceAddress);
-                    deviceContext.shutdownConnection();
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
-                deviceContext.shutdownConnection();
-            }
-        });
+        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
     }
 
     private void pollStatistics(final DeviceContext deviceContext,
@@ -208,24 +161,20 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void scheduleNextPolling(final DeviceContext deviceContext,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
-        if (null != hashedWheelTimer) {
-            LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
-            if (!shuttingDownStatisticsPolling) {
-                final Timeout pollTimeout = hashedWheelTimer.newTimeout(new TimerTask() {
-                    @Override
-                    public void run(final Timeout timeout) throws Exception {
-                        pollStatistics(deviceContext, statisticsContext, timeCounter);
-                    }
-                }, currentTimerDelay, TimeUnit.MILLISECONDS);
-                statisticsContext.setPollTimeout(pollTimeout);
-            }
-        } else {
-            LOG.debug("#!NOT SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        if (!shuttingDownStatisticsPolling) {
+            final Timeout pollTimeout = LifecycleConductor.getInstance().getTimer().newTimeout(new TimerTask() {
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    pollStatistics(deviceContext, statisticsContext, timeCounter);
+                }
+            }, currentTimerDelay, TimeUnit.MILLISECONDS);
+            statisticsContext.setPollTimeout(pollTimeout);
         }
     }
 
     @VisibleForTesting
-    protected void calculateTimerDelay(final TimeCounter timeCounter) {
+    void calculateTimerDelay(final TimeCounter timeCounter) {
         final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
         if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;
@@ -242,7 +191,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @VisibleForTesting
-    protected static long getCurrentTimerDelay() {
+    static long getCurrentTimerDelay() {
         return currentTimerDelay;
     }
 
