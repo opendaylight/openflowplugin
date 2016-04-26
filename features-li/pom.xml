@@ -155,6 +155,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>forwardingrules-sync</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
         </dependency>
         <dependency>
