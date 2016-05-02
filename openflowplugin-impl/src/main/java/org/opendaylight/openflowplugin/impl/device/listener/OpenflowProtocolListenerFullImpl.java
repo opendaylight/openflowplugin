@@ -43,7 +43,9 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     @Override
     public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
-        LOG.debug("echo request received: {}", echoRequestMessage.getXid());
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("echo request received: {}", echoRequestMessage.getXid());
+        }
         final EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
         builder.setVersion(echoRequestMessage.getVersion());
         builder.setXid(echoRequestMessage.getXid());
@@ -76,7 +78,9 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
-        LOG.trace("Multipart Reply with XID: {}", notification.getXid());
+        if(LOG.isTraceEnabled()) {
+            LOG.trace("Multipart Reply with XID: {}", notification.getXid());
+        }
 //        multiMsgCollector.addMultipartMsg(notification);
     }
 

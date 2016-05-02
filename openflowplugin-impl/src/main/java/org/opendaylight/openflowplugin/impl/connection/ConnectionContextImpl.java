@@ -119,7 +119,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             try {
                 handshakeContext.close();
             } catch (Exception e) {
-                LOG.info("handshake context closing failed: ", e);
+                LOG.error("handshake context closing failed:{} ", e);
             } finally {
                 handshakeContext = null;
             }

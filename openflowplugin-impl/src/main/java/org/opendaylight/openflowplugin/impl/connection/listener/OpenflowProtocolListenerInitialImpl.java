@@ -46,7 +46,9 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
-        LOG.debug("echo request received: {}", echoRequestMessage.getXid());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("echo request received: {}", echoRequestMessage.getXid());
+        }
         EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
         builder.setVersion(echoRequestMessage.getVersion());
         builder.setXid(echoRequestMessage.getXid());
@@ -57,22 +59,23 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onErrorMessage(final ErrorMessage notification) {
-        LOG.warn("NOOP: Error message received during handshake phase: {}", notification);
+        LOG.debug("NOOP: Error message received during handshake phase: {}", notification);
     }
 
     @Override
     public void onExperimenterMessage(final ExperimenterMessage notification) {
-        LOG.info("NOOP: Experimenter message during handshake phase not supported: {}", notification);
+        LOG.debug("NOOP: Experimenter message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
-        LOG.info("NOOP: Flow-removed message during handshake phase not supported: {}", notification);
+        LOG.debug("NOOP: Flow-removed message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onHelloMessage(final HelloMessage hello) {
-        LOG.debug("processing HELLO.xid: {} from device {}", hello.getXid(), connectionContext.getConnectionAdapter().getRemoteAddress());
+        LOG.debug("processing HELLO.xid: {} from device {}", hello.getXid(),
+                connectionContext.getConnectionAdapter().getRemoteAddress());
         final ConnectionContext.CONNECTION_STATE connectionState = connectionContext.getConnectionState();
         if (connectionState == null
                 || ConnectionContext.CONNECTION_STATE.HANDSHAKING.equals(connectionState)) {
@@ -88,29 +91,31 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
                     // use up netty thread
                     handshakeStepWrapper.run();
                 } else {
-                    LOG.debug("already out of handshake phase but still received hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+                    LOG.debug("already out of handshake phase but still received hello message from device {}",
+                            connectionContext.getConnectionAdapter().getRemoteAddress());
                 }
             }
         } else {
             //TODO: consider disconnecting of bad behaving device
-            LOG.warn("Hello message received outside handshake phase: ", hello);
-            LOG.debug("already touched by onConnectionReady event from device {} (or finished handshake)", connectionContext.getConnectionAdapter().getRemoteAddress());
+            LOG.warn("Hello message received outside handshake phase:{} ", hello);
+            LOG.debug("already touched by onConnectionReady event from device {} (or finished handshake)",
+                    connectionContext.getConnectionAdapter().getRemoteAddress());
         }
     }
 
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
-        LOG.info("NOOP: Multipart-reply message during handshake phase not supported: {}", notification);
+        LOG.debug("NOOP: Multipart-reply message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onPacketInMessage(final PacketInMessage notification) {
-        LOG.info("NOOP: Packet-in message during handshake phase not supported: {}", notification);
+        LOG.debug("NOOP: Packet-in message during handshake phase not supported: {}", notification);
     }
 
     @Override
     public void onPortStatusMessage(final PortStatusMessage notification) {
-        LOG.info("NOOP: Port-status message during handshake phase not supported: {}", notification);
+        LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", notification);
     }
 
     /**
