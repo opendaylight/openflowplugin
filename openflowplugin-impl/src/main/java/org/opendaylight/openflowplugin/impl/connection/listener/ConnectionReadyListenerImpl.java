@@ -37,8 +37,10 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
 
     @Override
     public void onConnectionReady() {
-        LOG.debug("device is connected and ready-to-use (pipeline prepared): {}",
-                connectionContext.getConnectionAdapter().getRemoteAddress());
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("device is connected and ready-to-use (pipeline prepared): {}",
+                    connectionContext.getConnectionAdapter().getRemoteAddress());
+        }
 
         if (connectionContext.getConnectionState() == null) {
             synchronized (connectionContext) {
@@ -52,25 +54,27 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
                         // as we run not in netty thread, need to remain in sync lock until initial handshake step processed
                         handshakeResult.get();
                     } catch (Exception e) {
-                        LOG.warn("failed to process onConnectionReady event on device {}",
+                        LOG.error("failed to process onConnectionReady event on device {}, reason {}",
                                 connectionContext.getConnectionAdapter().getRemoteAddress(),
                                 e);
                         connectionContext.closeConnection(false);
                         try {
                             handshakeContext.close();
                         } catch (Exception e1) {
-                            LOG.info("failed to close handshake context for device {}",
+                            LOG.error("failed to close handshake context for device {}, reason {}",
                                     connectionContext.getConnectionAdapter().getRemoteAddress(),
                                     e1
                             );
                         }
                     }
                 } else {
-                    LOG.debug("already touched by hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+                    LOG.debug("already touched by hello message from device {} after second check",
+                            connectionContext.getConnectionAdapter().getRemoteAddress());
                 }
             }
         } else {
-            LOG.debug("already touched by hello message from device {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+            LOG.debug("already touched by hello message from device {} after first check",
+                    connectionContext.getConnectionAdapter().getRemoteAddress());
         }
     }
 

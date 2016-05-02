@@ -91,7 +91,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.debug("Failure multipart response for table features request. Exception: {}", t);
+                LOG.error("Failure multipart response for table features request. Exception: {}", t);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                         .withError(ErrorType.RPC, "Future error", t).build());
             }
