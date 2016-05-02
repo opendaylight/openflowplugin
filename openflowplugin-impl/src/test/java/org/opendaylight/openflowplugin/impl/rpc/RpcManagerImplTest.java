@@ -28,7 +28,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.LifecycleConductor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -90,16 +89,8 @@ public class RpcManagerImplTest {
     @Test
     public void testOnDeviceContextLevelUp() throws Exception {
 
-        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
-                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
-                .thenReturn(routedRpcRegistration);
-
         rpcManager.onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
 
-//        Mockito.verify(rpcProviderRegistry, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
-//                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class));
-//        Mockito.verify(routedRpcRegistration, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).registerPath(
-//                NodeContext.class, nodePath);
         Mockito.verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
     }
 }
