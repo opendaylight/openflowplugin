@@ -128,7 +128,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         final ListenableFuture<Void> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                LOG.debug("Submitting all transactions if we were in status WORKING for Node", nodeId());
+                LOG.debug("Submitting all transactions if we were in status WORKING for Node {}", nodeId());
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
                 Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
@@ -212,7 +212,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         if (transactionChainManagerStatus.equals(TransactionChainManagerStatus.WORKING)) {
-            LOG.warn("txChain failed -> recreating", cause);
+            LOG.warn("txChain failed -> recreating due to {}", cause);
             recreateTxChain();
         }
     }
@@ -281,7 +281,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @Override
     public void close() {
-        LOG.debug("Setting transactionChainManagerStatus to SHUTTING_DOWN, will wait for ownershipservice to notify", nodeII);
+        LOG.debug("Setting transactionChainManagerStatus to SHUTTING_DOWN for {}, will wait for ownershipservice to notify"
+                , nodeII);
         Preconditions.checkState(TransactionChainManagerStatus.SHUTTING_DOWN.equals(transactionChainManagerStatus));
         Preconditions.checkState(wTx == null);
         synchronized (txLock) {

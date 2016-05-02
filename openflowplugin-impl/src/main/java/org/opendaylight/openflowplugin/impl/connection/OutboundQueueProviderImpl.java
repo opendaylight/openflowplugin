@@ -68,7 +68,7 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
                     try {
                         wait();
                     } catch (InterruptedException e) {
-                        LOG.info("Interrupted while waiting for entry", e);
+                        LOG.error("Interrupted while waiting for entry", e);
                         return null;
                     }
                 }

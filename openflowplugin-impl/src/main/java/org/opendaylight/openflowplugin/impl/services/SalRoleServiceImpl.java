@@ -72,9 +72,9 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         LOG.info("SetRole called with input:{}", input);
         try {
             currentRoleGuard.acquire();
-            LOG.trace("currentRole lock queue: " + currentRoleGuard.getQueueLength());
+            LOG.trace("currentRole lock queue length: {} " + currentRoleGuard.getQueueLength());
         } catch (final InterruptedException e) {
-            LOG.warn("Unexpected exception for acquire semaphor for input {}", input);
+            LOG.error("Unexpected exception {} for acquire semaphor for input {}", e, input);
             return RpcResultBuilder.<SetRoleOutput> failed().buildFuture();
         }
         // compare with last known role and set if different. If they are same, then return.
@@ -99,7 +99,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.warn("SetRoleService set Role {} for Node: {} fail.", input.getControllerRole(),
+                LOG.error("SetRoleService set Role {} for Node: {} fail . Reason {}", input.getControllerRole(),
                         input.getNode().getValue(), t);
                 currentRoleGuard.release();
             }
@@ -129,6 +129,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             return;
         case WORKING:
             // We can proceed
+            LOG.trace("Device {} has been working", input.getNode());
             break;
         default:
             LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
@@ -147,14 +148,14 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
                     currentRole = input.getControllerRole();
                     future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result.getResult()).build());
                 } else {
-                    LOG.info("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
+                    LOG.error("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
                     repeaterForChangeRole(future, input, (retryCounter + 1));
                 }
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.info("Exception in setRole(), will retry: {} times.", MAX_RETRIES - retryCounter, t);
+                LOG.error("Exception in setRole(), will retry: {} times.", t, MAX_RETRIES - retryCounter);
                 repeaterForChangeRole(future, input, (retryCounter + 1));
             }
         });
