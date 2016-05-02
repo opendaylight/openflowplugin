@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.util.Collection;
 import java.util.concurrent.Future;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -38,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,14 +74,18 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("group add finished without error, id={}", input.getGroupId().getValue());
+                    LOG.debug("group add with id={} finished without error", input.getGroupId().getValue());
                     addIfNecessaryToDS(input.getGroupId(), input);
-                }
+                } else {
+                LOG.error("group add with id={} failed, errors={}", input.getGroupId().getValue(),
+                        errorsToString(result.getErrors()));
+                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("group add failed for id={}. Exception: {}", input.getGroupId().getValue(), t);
+                LOG.error("Service call for group add failed for id={}. Exception: {}",
+                        input.getGroupId().getValue(), t);
             }
         });
 
@@ -94,15 +100,19 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<UpdateGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Group update succeded");
+                    LOG.debug("Group update for original id {} succeded",input.getOriginalGroup().getGroupId().getValue());
                     removeIfNecessaryFromDS(input.getOriginalGroup().getGroupId());
                     addIfNecessaryToDS(input.getUpdatedGroup().getGroupId(), input.getUpdatedGroup());
+                }else{
+                    LOG.error("group update failed with id={}, errors={}", input.getOriginalGroup().getGroupId(),
+                            errorsToString(result.getErrors()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.debug("Group update failed for id={}. Exception: {}", input.getOriginalGroup().getGroupId(), t);
+                LOG.error("Service call for group  update failed for id={}. Exception: {}",
+                        input.getOriginalGroup().getGroupId(), t);
             }
         });
         return resultFuture;
@@ -116,14 +126,18 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    LOG.debug("Group remove succeded");
+                    LOG.debug("Group remove for id {} succeded",input.getGroupId().getValue());
                     removeIfNecessaryFromDS(input.getGroupId());
+                }else{
+                    LOG.error("group remove failed with id={}, errors={}", input.getGroupId().getValue(),
+                            errorsToString(result.getErrors()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("Group remove failed for id={}. Exception: {}", input.getGroupId(), t);
+                LOG.error("Service call for group remove failed for id={}. Exception: {}",
+                        input.getGroupId().getValue(), t);
             }
         });
         return resultFuture;
@@ -147,7 +161,19 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         }
     }
 
-    static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> createGroupPath(final GroupId groupId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return nodePath.augmentation(FlowCapableNode.class).child(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group.class, new GroupKey(groupId));
+    static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey>
+    createGroupPath(final GroupId groupId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+        return nodePath.augmentation(FlowCapableNode.class).
+                child(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group.class, new GroupKey(groupId));
+    }
+
+    private final String errorsToString(final Collection<RpcError> rpcErrors) {
+        final StringBuilder errors = new StringBuilder();
+        if ((null != rpcErrors) && (rpcErrors.size() > 0)) {
+            for (final RpcError rpcError : rpcErrors) {
+                errors.append(rpcError.getMessage());
+            }
+        }
+        return errors.toString();
     }
 }
