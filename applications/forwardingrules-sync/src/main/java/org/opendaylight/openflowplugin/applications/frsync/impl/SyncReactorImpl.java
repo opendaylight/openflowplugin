@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
@@ -86,6 +87,7 @@ public class SyncReactorImpl implements SyncReactor {
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
                 flowsToRemove, metersToRemove, groupsToRemove);
 
+        counters.setStartNano(System.nanoTime());
         final ListenableFuture<RpcResult<Void>> bootstrapResultFuture = RpcResultBuilder.<Void>success().buildFuture();
         final ListenableFuture<RpcResult<Void>> resultVehicle = syncPlanPushStrategy.executeSyncStrategy(
                 bootstrapResultFuture, input, counters);
@@ -104,7 +106,7 @@ public class SyncReactorImpl implements SyncReactor {
                     final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("sync-outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}",
+                    LOG.debug("sync-outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}, took={} ms",
                             nodeId.getValue(),
                             flowCrudCounts.getAdded(),
                             flowCrudCounts.getUpdated(),
@@ -114,7 +116,8 @@ public class SyncReactorImpl implements SyncReactor {
                             meterCrudCounts.getRemoved(),
                             groupCrudCounts.getAdded(),
                             groupCrudCounts.getUpdated(),
-                            groupCrudCounts.getRemoved()
+                            groupCrudCounts.getRemoved(),
+                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano())
                     );
                 }
 
