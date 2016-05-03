@@ -312,7 +312,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * covers {@link ReconcileUtil#countTotalUpdated(List)} too
+     * covers {@link ReconcileUtil#countTotalUpdated(Iterable)} too
      *
      * @throws Exception
      */
@@ -322,7 +322,7 @@ public class ReconcileUtilTest {
         ItemSyncBox<String> syncBox1 = createSyncBox("a,b", "x,y,z");
         syncPlan.add(syncBox1);
         syncPlan.add(syncBox1);
-        Assert.assertEquals(4, ReconcileUtil.countTotalAdds(syncPlan));
+        Assert.assertEquals(4, ReconcileUtil.countTotalPushed(syncPlan));
         Assert.assertEquals(6, ReconcileUtil.countTotalUpdated(syncPlan));
     }
 
