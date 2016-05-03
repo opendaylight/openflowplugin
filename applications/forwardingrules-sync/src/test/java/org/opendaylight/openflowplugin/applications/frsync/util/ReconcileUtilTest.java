@@ -8,15 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,9 +45,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Test for {@link ReconcileUtil}.
@@ -100,7 +99,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups1() throws Exception {
+    public void testResolveAndDivideGroupDiffs1() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -111,13 +110,13 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroup(3L));
         pendingGroups.add(createGroup(4L));
 
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
 
         Assert.assertEquals(1, plan.size());
 
-        Assert.assertEquals(1, plan.get(0).getItemsToAdd().size());
-        Assert.assertEquals(4L, plan.get(0).getItemsToAdd().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
+        Assert.assertEquals(4L, plan.get(0).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
     }
 
@@ -127,7 +126,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups2() throws Exception {
+    public void testResolveAndDivideGroupDiffs2() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
 
@@ -136,21 +135,21 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(3L, 2L, 4L));
         pendingGroups.add(createGroupWithPreconditions(4L, 2L));
 
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
 
         Assert.assertEquals(3, plan.size());
 
-        Assert.assertEquals(1, plan.get(0).getItemsToAdd().size());
-        Assert.assertEquals(2L, plan.get(0).getItemsToAdd().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
+        Assert.assertEquals(2L, plan.get(0).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
 
-        Assert.assertEquals(1, plan.get(1).getItemsToAdd().size());
-        Assert.assertEquals(4L, plan.get(1).getItemsToAdd().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(1, plan.get(1).getItemsToPush().size());
+        Assert.assertEquals(4L, plan.get(1).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(1).getItemsToUpdate().size());
 
-        Assert.assertEquals(1, plan.get(2).getItemsToAdd().size());
-        Assert.assertEquals(3L, plan.get(2).getItemsToAdd().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(1, plan.get(2).getItemsToPush().size());
+        Assert.assertEquals(3L, plan.get(2).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(2).getItemsToUpdate().size());
     }
 
@@ -160,7 +159,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups3() throws Exception {
+    public void testResolveAndDivideGroupDiffs3() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroupWithPreconditions(2L, 1L));
@@ -169,7 +168,7 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroup(1L));
         pendingGroups.add(createGroupWithPreconditions(2L, 1L));
 
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
 
         Assert.assertEquals(0, plan.size());
@@ -181,7 +180,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups4() throws Exception {
+    public void testResolveAndDivideGroupDiffs4() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -190,11 +189,11 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(1L, 2L));
         pendingGroups.add(createGroup(2L));
 
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
 
         Assert.assertEquals(1, plan.size());
-        Assert.assertEquals(0, plan.get(0).getItemsToAdd().size());
+        Assert.assertEquals(0, plan.get(0).getItemsToPush().size());
         Assert.assertEquals(1, plan.get(0).getItemsToUpdate().size());
         final ItemSyncBox.ItemUpdateTuple<Group> firstItemUpdateTuple = plan.get(0).getItemsToUpdate().iterator().next();
         Assert.assertEquals(1L, firstItemUpdateTuple.getOriginal().getGroupId().getValue().longValue());
@@ -207,7 +206,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups5() throws Exception {
+    public void testResolveAndDivideGroupDiffs5() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -216,7 +215,7 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(1L, 2L));
         pendingGroups.add(createGroup(2L));
 
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups, false);
 
         Assert.assertEquals(0, plan.size());
@@ -228,7 +227,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups_negative1() throws Exception {
+    public void testResolveAndDivideGroupDiffs_negative1() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -237,7 +236,7 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(3L, 4L));
 
         thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
     }
 
@@ -247,7 +246,7 @@ public class ReconcileUtilTest {
      * @throws Exception
      */
     @Test
-    public void testResolveAndDivideGroups_negative2() throws Exception {
+    public void testResolveAndDivideGroupDiffs_negative2() throws Exception {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -256,7 +255,7 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(1L, 3L));
 
         thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroups(
+        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
                 NODE_ID, installedGroups, pendingGroups);
     }
 
@@ -310,5 +309,44 @@ public class ReconcileUtilTest {
                 .setGroupId(new GroupId(groupIdValue))
                 .setBuckets(buckets)
                 .build();
+    }
+
+    /**
+     * covers {@link ReconcileUtil#countTotalUpdated(List)} too
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCountTotalAdds() throws Exception {
+        List<ItemSyncBox<String>> syncPlan = new ArrayList<>();
+        ItemSyncBox<String> syncBox1 = createSyncBox("a,b", "x,y,z");
+        syncPlan.add(syncBox1);
+        syncPlan.add(syncBox1);
+        Assert.assertEquals(4, ReconcileUtil.countTotalAdds(syncPlan));
+        Assert.assertEquals(6, ReconcileUtil.countTotalUpdated(syncPlan));
+    }
+
+    private ItemSyncBox<String> createSyncBox(final String pushes, final String updates) {
+        ItemSyncBox<String> syncBox1 = new ItemSyncBox<>();
+        syncBox1.getItemsToPush().addAll(Arrays.asList(pushes.split(",")));
+        for (String orig : updates.split(",")) {
+            syncBox1.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(orig, orig + "_updated"));
+        }
+        return syncBox1;
+    }
+
+    @Test
+    public void testResolveMeterDiffs() throws Exception {
+
+    }
+
+    @Test
+    public void testResolveFlowDiffsInTable() throws Exception {
+
+    }
+
+    @Test
+    public void testResolveFlowDiffsInAllTables() throws Exception {
+
     }
 }
