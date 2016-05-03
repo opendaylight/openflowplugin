@@ -8,18 +8,23 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Collections;
+import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
@@ -28,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -35,11 +41,15 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * utility methods for group reconcil task (future chaining, transforms)
@@ -101,16 +111,29 @@ public class ReconcileUtil {
         };
     }
 
-    public static List<ItemSyncBox<Group>> resolveAndDivideGroups(final NodeId nodeId,
-                                                                  final Map<Long, Group> installedGroupsArg,
-                                                                  final Collection<Group> pendingGroups) {
-        return resolveAndDivideGroups(nodeId, installedGroupsArg, pendingGroups, true);
+    /**
+     * @param nodeId             target node
+     * @param installedGroupsArg groups resent on device
+     * @param pendingGroups      groups configured for device
+     * @return list of safe synchronization steps with updates
+     */
+    public static List<ItemSyncBox<Group>> resolveAndDivideGroupDiffs(final NodeId nodeId,
+                                                                      final Map<Long, Group> installedGroupsArg,
+                                                                      final Collection<Group> pendingGroups) {
+        return resolveAndDivideGroupDiffs(nodeId, installedGroupsArg, pendingGroups, true);
     }
 
-    public static List<ItemSyncBox<Group>> resolveAndDivideGroups(final NodeId nodeId,
-                                                                  final Map<Long, Group> installedGroupsArg,
-                                                                  final Collection<Group> pendingGroups,
-                                                                  final boolean gatherUpdates) {
+    /**
+     * @param nodeId             target node
+     * @param installedGroupsArg groups resent on device
+     * @param pendingGroups      groups configured for device
+     * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
+     * @return list of safe synchronization steps
+     */
+    public static List<ItemSyncBox<Group>> resolveAndDivideGroupDiffs(final NodeId nodeId,
+                                                                      final Map<Long, Group> installedGroupsArg,
+                                                                      final Collection<Group> pendingGroups,
+                                                                      final boolean gatherUpdates) {
 
         final Map<Long, Group> installedGroups = new HashMap<>(installedGroupsArg);
         final List<ItemSyncBox<Group>> plan = new ArrayList<>();
@@ -142,7 +165,7 @@ public class ReconcileUtil {
                 } else if (checkGroupPrecondition(installedGroups.keySet(), group)) {
                     iterator.remove();
                     installIncrement.put(group.getGroupId().getValue(), group);
-                    stepPlan.getItemsToAdd().add(group);
+                    stepPlan.getItemsToPush().add(group);
                 }
             }
 
@@ -186,7 +209,7 @@ public class ReconcileUtil {
     public static <E> int countTotalAdds(final List<ItemSyncBox<E>> groupsAddPlan) {
         int count = 0;
         for (ItemSyncBox<E> groupItemSyncBox : groupsAddPlan) {
-            count += groupItemSyncBox.getItemsToAdd().size();
+            count += groupItemSyncBox.getItemsToPush().size();
         }
         return count;
     }
@@ -197,5 +220,120 @@ public class ReconcileUtil {
             count += groupItemSyncBox.getItemsToUpdate().size();
         }
         return count;
+    }
+
+    /**
+     * @param nodeId              target node
+     * @param meterOperationalMap meters present on device
+     * @param metersConfigured    meters configured for device
+     * @param gatherUpdates       check content of pending item if present on device (and create update task eventually)
+     * @return synchronization box
+     */
+    public static ItemSyncBox<Meter> resolveMeterDiffs(final NodeId nodeId,
+                                                       final Map<MeterId, Meter> meterOperationalMap,
+                                                       final List<Meter> metersConfigured,
+                                                       final boolean gatherUpdates) {
+        LOG.trace("resolving meters for {}", nodeId);
+        final ItemSyncBox<Meter> syncBox = new ItemSyncBox<>();
+        for (Meter meter : metersConfigured) {
+            final Meter existingMeter = meterOperationalMap.get(meter.getMeterId());
+            if (existingMeter == null) {
+                syncBox.getItemsToPush().add(meter);
+            } else {
+                // compare content and eventually update
+                if (gatherUpdates && !meter.equals(existingMeter)) {
+                    syncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingMeter, meter));
+                }
+            }
+        }
+        return syncBox;
+    }
+
+    /**
+     * @param flowsConfigured    flows resent on device
+     * @param flowOperationalMap flows configured for device
+     * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
+     * @return list of safe synchronization steps
+     */
+    @VisibleForTesting
+    static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
+                                                     final Map<SwitchFlowId, Flow> flowOperationalMap,
+                                                     final boolean gatherUpdates) {
+        final ItemSyncBox<Flow> flowsSyncBox = new ItemSyncBox<>();
+        // loop configured flows and check if already present on device
+        for (final Flow flow : flowsConfigured) {
+            final Flow existingFlow = FlowCapableNodeLookups.flowMapLookupExisting(flow, flowOperationalMap);
+
+            if (existingFlow == null) {
+                flowsSyncBox.getItemsToPush().add(flow);
+            } else {
+                // check instructions and eventually update
+                if (gatherUpdates && !Objects.equals(flow.getInstructions(), existingFlow.getInstructions())) {
+                    flowsSyncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingFlow, flow));
+                }
+            }
+        }
+        return flowsSyncBox;
+    }
+
+    /**
+     * @param nodeId              target node
+     * @param tableOperationalMap flow-tables resent on device
+     * @param tablesConfigured    flow-tables configured for device
+     * @param gatherUpdates       check content of pending item if present on device (and create update task eventually)
+     * @return map : key={@link TableKey}, value={@link ItemSyncBox} of safe synchronization steps
+     */
+    public static Map<TableKey, ItemSyncBox<Flow>> resolveFlowDiffsInAllTables(final NodeId nodeId,
+                                                                               final Map<Short, Table> tableOperationalMap,
+                                                                               final List<Table> tablesConfigured,
+                                                                               final boolean gatherUpdates) {
+        LOG.trace("resolving flows in tables for {}", nodeId);
+        final Map<TableKey, ItemSyncBox<Flow>> tableFlowSyncBoxes = new HashMap<>();
+        for (final Table tableConfigured : tablesConfigured) {
+            final List<Flow> flowsConfigured = tableConfigured.getFlow();
+            if (flowsConfigured == null || flowsConfigured.isEmpty()) {
+                continue;
+            }
+
+            // lookup table (on device)
+            final Table tableOperational = tableOperationalMap.get(tableConfigured.getId());
+            // wrap existing (on device) flows in current table into map
+            final Map<SwitchFlowId, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
+                    tableOperational != null
+                            ? tableOperational.getFlow()
+                            : null);
+
+
+            final ItemSyncBox<Flow> flowsSyncBox = resolveFlowDiffsInTable(
+                    flowsConfigured, flowOperationalMap, gatherUpdates);
+            if (!flowsSyncBox.isEmpty()) {
+                tableFlowSyncBoxes.put(tableConfigured.getKey(), flowsSyncBox);
+            }
+        }
+        return tableFlowSyncBoxes;
+    }
+
+    public static List<Group> safeGroups(FlowCapableNode node) {
+        if (node == null) {
+            return Collections.emptyList();
+        }
+
+        return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.<Group>of());
+    }
+
+    public static List<Table> safeTables(FlowCapableNode node) {
+        if (node == null) {
+            return Collections.emptyList();
+        }
+
+        return MoreObjects.firstNonNull(node.getTable(), ImmutableList.<Table>of());
+    }
+
+    public static List<Meter> safeMeters(FlowCapableNode node) {
+        if (node == null) {
+            return Collections.emptyList();
+        }
+
+        return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.<Meter>of());
     }
 }
