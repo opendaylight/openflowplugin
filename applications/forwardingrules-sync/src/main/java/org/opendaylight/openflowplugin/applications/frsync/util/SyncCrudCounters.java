@@ -43,4 +43,18 @@ public class SyncCrudCounters {
     public void setStartNano(final long startNano) {
         this.startNano = startNano;
     }
+
+    public void resetAll() {
+        getGroupCrudCounts().setUpdated(0);
+        getGroupCrudCounts().setAdded(0);
+        getGroupCrudCounts().setRemoved(0);
+
+        getFlowCrudCounts().setUpdated(0);
+        getFlowCrudCounts().setAdded(0);
+        getFlowCrudCounts().setRemoved(0);
+
+        getMeterCrudCounts().setUpdated(0);
+        getMeterCrudCounts().setAdded(0);
+        getMeterCrudCounts().setRemoved(0);
+    }
 }

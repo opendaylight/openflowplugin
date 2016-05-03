@@ -34,7 +34,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Listens to operational new nodes and delegates add/remove/update/barrier to {@link SyncReactor}
- * 
+ *
  * @author joslezak
  */
 @SuppressWarnings("deprecation")
@@ -67,7 +67,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * <li>Node is deleted from operational cache is removed.</li>
      * <li>Skip this event otherwise.</li>
      * </ul>
-     * 
+     *
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
@@ -77,13 +77,14 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         if (isAdd(modification) || isAddLogical(modification)) {
             return reconciliation(modification);
         }
+        // TODO: else = explicit reconciliation required
 
         return skipModification(modification);
     }
 
     /**
      * Remove if delete. Update only if FlowCapableNode Augmentation modified.
-     * 
+     *
      * @param modification
      */
     protected void updateCache(DataTreeModification<Node> modification) {
@@ -93,7 +94,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                 operationalSnaphot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
                 return;
             }
-            
+
             operationalSnaphot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
         } catch(Exception e) {
             LOG.error("update cache failed {}", nodeId(modification), e);
