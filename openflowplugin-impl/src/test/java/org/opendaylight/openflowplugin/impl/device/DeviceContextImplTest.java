@@ -256,7 +256,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testGetReservedXid() {
-        deviceContext.reservedXidForDeviceMessage();
+        deviceContext.reserveXidForDeviceMessage();
         verify(outboundQueueProvider).reserveEntry();
     }
 

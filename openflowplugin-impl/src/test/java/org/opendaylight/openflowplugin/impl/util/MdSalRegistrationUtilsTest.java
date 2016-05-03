@@ -48,7 +48,7 @@ public class MdSalRegistrationUtilsTest {
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        MdSalRegistrationUtils.registerMasterServices(mockedRpcContext,mockedDeviceContext, OfpRole.BECOMEMASTER);
+        MdSalRegistrationUtils.registerServices(mockedRpcContext,mockedDeviceContext);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(RpcService.class.getClass()), any(RpcService.class));
     }

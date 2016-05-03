@@ -168,7 +168,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
 
         updatePacketInRateLimiters();

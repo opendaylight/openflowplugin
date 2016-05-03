@@ -28,7 +28,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -132,12 +131,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private final Collection<DeviceTerminationPhaseHandler> closeHandlers = new HashSet<>();
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private NotificationPublishService notificationPublishService;
-    private NotificationService notificationService;
     private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
@@ -210,7 +207,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public Long reservedXidForDeviceMessage() {
+    public Long reserveXidForDeviceMessage() {
         return outboundQueueProvider.reserveEntry();
     }
 
@@ -227,11 +224,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        if (null != connectionDistinguisher) {
-            LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                    .getRemoteAddress(), nodeId);
-            auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
+        LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
+                .getRemoteAddress(), nodeId);
+        auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
@@ -269,7 +264,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public ListenableFuture<Void> onDeviceLostClusterLeadership() {
         LOG.trace("onDeviceLostClusterLeadership for node: {}", nodeId);
         if (null != rpcContext) {
-            MdSalRegistrationUtils.registerSlaveServices(rpcContext, OfpRole.BECOMESLAVE);
+            MdSalRegistrationUtils.unregisterServices(rpcContext);
         }
         return transactionChainManager.deactivateTransactionManager();
     }
@@ -289,7 +284,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
         /* Routed RPC registration */
-        MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
+        MdSalRegistrationUtils.registerServices(getRpcContext(), DeviceContextImpl.this);
         getRpcContext().registerStatCompatibilityServices();
 
         /* Prepare init info collecting */
@@ -319,7 +314,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.warn(errMsg);
                     throw new IllegalStateException(errMsg);
                 }
-                if (!input.booleanValue()) {
+                if (!input) {
                     final String errMsg = String.format("Get Initial Device %s information fails",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
@@ -552,11 +547,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    @Override
     public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
         this.notificationPublishService = notificationPublishService;
     }
@@ -587,7 +577,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void storeNodeConnectorRef(final Long portNumber, final NodeConnectorRef nodeConnectorRef) {
+    public void storeNodeConnectorRef(@Nonnull final Long portNumber, @Nonnull final NodeConnectorRef nodeConnectorRef) {
         nodeConnectorCache.put(
                 Preconditions.checkNotNull(portNumber),
                 Preconditions.checkNotNull(nodeConnectorRef));

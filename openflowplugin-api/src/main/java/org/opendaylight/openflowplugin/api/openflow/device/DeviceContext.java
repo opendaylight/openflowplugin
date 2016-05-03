@@ -220,13 +220,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     Timeout getBarrierTaskTimeout();
 
-    /**
-     * Sets notification service
-     *
-     * @param notificationService
-     */
-    void setNotificationService(NotificationService notificationService);
-
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     MessageSpy getMessageSpy();
@@ -238,7 +231,7 @@ public interface DeviceContext extends AutoCloseable,
      * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
      * @return Reserved XID
      */
-    Long reservedXidForDeviceMessage();
+    Long reserveXidForDeviceMessage();
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)

@@ -173,7 +173,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
 
-        verify(mockedDeviceContext, Mockito.never()).reservedXidForDeviceMessage();
+        verify(mockedDeviceContext, Mockito.never()).reserveXidForDeviceMessage();
         verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
         verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());

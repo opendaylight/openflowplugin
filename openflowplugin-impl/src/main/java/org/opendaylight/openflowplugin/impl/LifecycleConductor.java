@@ -187,7 +187,7 @@ public final class LifecycleConductor implements RoleChangeListener, DeviceConte
     }
 
     public Long reserveXidForDeviceMessage(NodeId nodeId){
-        return null != getDeviceContext(nodeId) ? getDeviceContext(nodeId).reservedXidForDeviceMessage() : null;
+        return null != getDeviceContext(nodeId) ? getDeviceContext(nodeId).reserveXidForDeviceMessage() : null;
     }
 
     @Override
