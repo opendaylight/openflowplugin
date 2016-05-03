@@ -661,4 +661,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceState.setValid(false);
         return transactionChainManager.shuttingDown();
     }
+
+    @VisibleForTesting
+    TransactionChainManager getTransactionChainManager() {
+        return this.transactionChainManager;
+    }
 }

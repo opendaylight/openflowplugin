@@ -275,8 +275,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         });
     }
 
-
-    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole, final RoleContext roleContext) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole, final RoleContext roleContext) {
         LOG.debug("Sending new role {} to device {}", newRole, roleContext.getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
         final Short version = conductor.gainVersionSafely(roleContext.getNodeId());
@@ -354,6 +354,16 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     @VisibleForTesting
     RoleContext getRoleContext(final NodeId nodeId){
         return contexts.get(nodeId);
+    }
+
+    /**
+     * This method is only for testing
+     */
+    @VisibleForTesting
+    void setRoleContext(NodeId nodeId, RoleContext roleContext){
+        if(!contexts.containsKey(nodeId)) {
+            contexts.put(nodeId, roleContext);
+        }
     }
 
     @Override

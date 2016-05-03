@@ -1,20 +1,29 @@
+/**
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,9 +55,13 @@ import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegist
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -58,6 +71,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -116,8 +131,13 @@ public class StatisticsManagerImplTest {
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
 
+
     @Before
     public void initialization() {
+        final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier
+                .create(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("openflow:10")));
+
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
         when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
@@ -136,6 +156,7 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.getFeatures()).thenReturn(featuresOutput);
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
         when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
 
@@ -165,10 +186,9 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelUp() throws Exception {
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, true, conductor);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(final InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) throws Throwable {
                 final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
                 LOG.debug("committing entry: {}", ((MultipartRequestInput) invocation.getArguments()[1]).getType());
                 callback.onSuccess(null);
@@ -180,11 +200,7 @@ public class StatisticsManagerImplTest {
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
         statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
-
-        verify(mockedDeviceContext, Mockito.never()).reserveXidForDeviceMessage();
-        verify(mockedDeviceState).setDeviceSynchronized(true);
         verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
-        verify(hashedWheelTimer, Mockito.never()).newTimeout(Matchers.<TimerTask>any(), Matchers.anyLong(), Matchers.<TimeUnit>any());
     }
 
     @Test
@@ -348,5 +364,34 @@ public class StatisticsManagerImplTest {
         Assert.assertEquals(3000L, StatisticsManagerImpl.getCurrentTimerDelay());
         statisticsManager.calculateTimerDelay(timeCounter);
         Assert.assertEquals(6000L, StatisticsManagerImpl.getCurrentTimerDelay());
+    }
+
+    @Test
+    public void testPollStatistics() {
+        StatisticsManager statisticsManagerSpy = Mockito.spy(statisticsManager);
+
+        final StatisticsContext statisticsContext = Mockito.mock(StatisticsContext.class);
+        final TimeCounter mockTimerCounter = Mockito.mock(TimeCounter.class);
+
+        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        verify(mockedDeviceContext, times(2)).getDeviceState();
+
+        when(mockedDeviceContext.getDeviceState().isValid()).thenReturn(true);
+        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        // TODO Make scheduleNextPolling visible for tests?
+
+        when(mockedDeviceContext.getDeviceState().isStatisticsPollingEnabled()).thenReturn(true);
+        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        // TODO Make scheduleNextPolling visible for tests?
+
+        when(mockedDeviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
+        when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
+        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        Mockito.verify(mockTimerCounter).markStart();
+        Mockito.verify(mockTimerCounter).addTimeMark();
+
+        when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
+        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        Mockito.verify(mockTimerCounter,times(2)).addTimeMark();
     }
 }
