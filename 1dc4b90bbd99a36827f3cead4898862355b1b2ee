@@ -1,0 +1,613 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_b1d8ab54",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceManager.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add comment, pls",
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f1e22302",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/handlers/DeviceConnectedHandler.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add comment - new return value",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 11
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_11b517ee",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/RoleChangeListener.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "remove pls - this is available in git",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 17,
+        "endChar": 26
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d1ba7fe0",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/RoleChangeListener.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add comments, pls",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 30
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f1b983ea",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ServiceChangeListener.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 16,
+        "startChar": 10,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_51ce6f84",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ServiceChangeListener.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add comment, pls",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 27
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_11acf79f",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/role/RoleContext.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "remove, pls",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 22,
+        "endChar": 16
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f1b063f6",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/role/RoleContext.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add comment - new return value",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 11
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_919f675f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add meaningful comment, pls",
+      "range": {
+        "startLine": 40,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_115b5788",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "reconsider not using forced singleton in favor of one shot injecting into consuments during init in provider class",
+      "range": {
+        "startLine": 47,
+        "startChar": 37,
+        "endLine": 47,
+        "endChar": 74
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_31793b30",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "pull up into constant",
+      "range": {
+        "startLine": 55,
+        "startChar": 86,
+        "endLine": 55,
+        "endChar": 89
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_9176473d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "remove, please - this is already covered",
+      "range": {
+        "startLine": 59,
+        "startChar": 7,
+        "endLine": 61,
+        "endChar": 9
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b1942b38",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "rename to add/register *",
+      "range": {
+        "startLine": 65,
+        "startChar": 16,
+        "endLine": 65,
+        "endChar": 21
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b1bb8bc3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "use get(), pls",
+      "range": {
+        "startLine": 74,
+        "startChar": 8,
+        "endLine": 80,
+        "endChar": 9
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d1dd5f16",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "change to info, pls",
+      "range": {
+        "startLine": 116,
+        "startChar": 15,
+        "endLine": 116,
+        "endChar": 20
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b109cb97",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "replace with Preconditions or abandon",
+      "range": {
+        "startLine": 146,
+        "startChar": 8,
+        "endLine": 146,
+        "endChar": 36
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_513f8f25",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "abandon null checks - rather initialize in ctor",
+      "range": {
+        "startLine": 153,
+        "startChar": 16,
+        "endLine": 153,
+        "endChar": 39
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1184f7d2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "avoid standard getter name if there is more code behind\n.. digOutVersionSafely\n.. gainVersionSafely",
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d1eeff8a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "add meaningful comment, pls",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 36,
+        "endChar": 16
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_91fc8740",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "inappropriate name - should be verb",
+      "range": {
+        "startLine": 69,
+        "startChar": 16,
+        "endLine": 69,
+        "endChar": 27
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_9193e7f9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "move to ctor, please",
+      "range": {
+        "startLine": 91,
+        "startChar": 16,
+        "endLine": 91,
+        "endChar": 33
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_7155731c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "probably plain put will be more appropriate here",
+      "range": {
+        "startLine": 105,
+        "startChar": 25,
+        "endLine": 105,
+        "endChar": 37
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_31093b32",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "already covered by consuming iterator",
+      "range": {
+        "startLine": 119,
+        "startChar": 12,
+        "endLine": 119,
+        "endChar": 53
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4c6894ba",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "redundant",
+      "range": {
+        "startLine": 318,
+        "startChar": 20,
+        "endLine": 319,
+        "endChar": 35
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4caff4e3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "move inside of try block, pls",
+      "range": {
+        "startLine": 41,
+        "startChar": 13,
+        "endLine": 42,
+        "endChar": 9
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ec81a84b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "detto",
+      "range": {
+        "startLine": 52,
+        "startChar": 12,
+        "endLine": 52,
+        "endChar": 41
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_acee9020",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T15:33:02Z",
+      "side": 1,
+      "message": "workaround for ovs.version \u003c\u003d 2.3 (no support for table features)",
+      "range": {
+        "startLine": 474,
+        "startChar": 4,
+        "endLine": 477,
+        "endChar": 15
+      },
+      "revId": "1dc4b90bbd99a36827f3cead4898862355b1b2ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
