@@ -16,7 +16,16 @@ import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -40,16 +49,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * utility methods for group reconcil task (future chaining, transforms)
@@ -84,6 +83,36 @@ public class ReconcileUtil {
                 } else {
                     resultSink = RpcResultBuilder.<Void>failed()
                             .withError(RpcError.ErrorType.APPLICATION, "previous " + previousItemAction + " failed");
+
+                }
+
+                return resultSink.build();
+            }
+        };
+    }
+
+    /**
+     * @param actionDescription description for case when the triggering future contains failure
+     * @param <D>               type of rpc output (gathered in list)
+     * @return single rpc result of type Void honoring all partial rpc results
+     */
+    public static <D> Function<RpcResult<D>, RpcResult<Void>> createRpcResultToVoidFunction(final String actionDescription) {
+        return new Function<RpcResult<D>, RpcResult<Void>>() {
+            @Nullable
+            @Override
+            public RpcResult<Void> apply(@Nullable final RpcResult<D> input) {
+                final RpcResultBuilder<Void> resultSink;
+                if (input != null) {
+                    List<RpcError> errors = new ArrayList<>();
+                    if (!input.isSuccessful()) {
+                        errors.addAll(input.getErrors());
+                        resultSink = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
+                    } else {
+                        resultSink = RpcResultBuilder.success();
+                    }
+                } else {
+                    resultSink = RpcResultBuilder.<Void>failed()
+                            .withError(RpcError.ErrorType.APPLICATION, "action of " + actionDescription + " failed");
 
                 }
 
