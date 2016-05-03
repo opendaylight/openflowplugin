@@ -18,11 +18,13 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
+import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyIncrementalImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -122,13 +124,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         {
-            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl();
-            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl
+            //TODO: make is switchable
+            final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyIncrementalImpl()
                     .setFlowForwarder(flowForwarder)
                     .setGroupForwarder(groupForwarder)
                     .setMeterForwarder(meterForwarder)
-                    .setTableForwarder(tableForwarder)
-                    .setTransactionService(transactionService),
+		    .setTableForwarder(tableForwarder)
+                    .setTransactionService(transactionService);
+
+            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
+            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl,
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
 
             final SyncReactor cfgReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);

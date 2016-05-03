@@ -48,6 +48,7 @@ import com.google.common.util.concurrent.Futures;
 @RunWith(MockitoJUnitRunner.class)
 public class SimplifiedOperationalListenerTest {
 
+    public static final NodeId NODE_ID = new NodeId("testNode");
     @Mock
     private SyncReactor reactor;
     @Mock
@@ -59,7 +60,6 @@ public class SimplifiedOperationalListenerTest {
     @Mock
     private DataObjectModification<Node> operationalModification;
 
-    private NodeId nodeId;
     private InstanceIdentifier<Node> nodePath;
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
     private SimplifiedOperationalListener nodeListenerOperational;
@@ -72,10 +72,10 @@ public class SimplifiedOperationalListenerTest {
         final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnaphot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.CONFIGURATION));
 
-        nodeId = new NodeId("testNode");
+
         nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
         nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId));
+                .child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
     }
 
@@ -91,8 +91,8 @@ public class SimplifiedOperationalListenerTest {
         final FlowCapableNode mockOperationalFlowCapableNode = Mockito.mock(FlowCapableNode.class);
         Mockito.when(mockOperationalNode.getAugmentation(FlowCapableNode.class))
             .thenReturn(mockOperationalFlowCapableNode);
-        Mockito.when(mockOperationalNode.getId()).thenReturn(nodeId);
-        
+        Mockito.when(mockOperationalNode.getId()).thenReturn(NODE_ID);
+
         final DataTreeIdentifier<Node> dataTreeIdentifier =
                 new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, nodePath);
 
