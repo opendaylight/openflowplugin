@@ -10,10 +10,7 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -44,11 +41,9 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.device.*;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -145,6 +140,32 @@ public class DeviceInitializationUtilsTest {
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
+
+    @Test
+    public void initializeNodeInformationTest() throws Exception {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        MultiMsgCollector msgCollector = mock(MultiMsgCollector.class);
+        TranslatorLibrary tLibrary = mock(TranslatorLibrary.class);
+
+        GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
+        when(mockedFeatures.getTables()).thenReturn((short) 2);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
+        when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getMultiMsgCollector(Mockito.any(RequestContext.class))).thenReturn(msgCollector);
+        when(mockedDeviceContext.oook()).thenReturn(tLibrary);
+
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
+        Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+
+        DeviceInitializationUtils.initializeNodeInformation(mockedDeviceContext, true);
+
+        verify(mockFeatures, atLeastOnce()).getPhyPort();
+        verify(tLibrary, atLeastOnce()).lookupTranslator(any(TranslatorKey.class));
+    }
+
     @Test
     public void chainTableTrunkWriteOF10Test() throws Exception {
         DeviceState mockedDeviceState = mock(DeviceState.class);
