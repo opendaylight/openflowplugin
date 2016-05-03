@@ -15,6 +15,7 @@ public class SyncCrudCounters {
     private final CrudCounts flowCrudCounts;
     private final CrudCounts groupCrudCounts;
     private final CrudCounts meterCrudCounts;
+    private long startNano;
 
     public SyncCrudCounters() {
         flowCrudCounts = new CrudCounts();
@@ -34,4 +35,12 @@ public class SyncCrudCounters {
         return meterCrudCounts;
     }
 
+
+    public long getStartNano() {
+        return startNano;
+    }
+
+    public void setStartNano(final long startNano) {
+        this.startNano = startNano;
+    }
 }
