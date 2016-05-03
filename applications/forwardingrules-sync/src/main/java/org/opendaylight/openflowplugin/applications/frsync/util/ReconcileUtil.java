@@ -235,7 +235,7 @@ public class ReconcileUtil {
         return okToInstall;
     }
 
-    public static <E> int countTotalAdds(final List<ItemSyncBox<E>> groupsAddPlan) {
+    public static <E> int countTotalPushed(final Iterable<ItemSyncBox<E>> groupsAddPlan) {
         int count = 0;
         for (ItemSyncBox<E> groupItemSyncBox : groupsAddPlan) {
             count += groupItemSyncBox.getItemsToPush().size();
@@ -243,7 +243,7 @@ public class ReconcileUtil {
         return count;
     }
 
-    public static <E> int countTotalUpdated(final List<ItemSyncBox<E>> groupsAddPlan) {
+    public static <E> int countTotalUpdated(final Iterable<ItemSyncBox<E>> groupsAddPlan) {
         int count = 0;
         for (ItemSyncBox<E> groupItemSyncBox : groupsAddPlan) {
             count += groupItemSyncBox.getItemsToUpdate().size();

@@ -120,7 +120,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 LOG.trace("Index of last batch step: {}", batchOrder);
 
                 final ProcessFlatBatchInput flatBatchInput = new ProcessFlatBatchInputBuilder()
-                        .setNode(new NodeRef(diffInput.getNodeIdent()))
+                        .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
                         .setExitOnFirstError(false) // TODO: propagate from input
                         .setBatch(batchBag)
                         .build();
@@ -128,11 +128,11 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = flatBatchService.processFlatBatch(flatBatchInput);
 
                 return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
-                        ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-bulk"));
+                        ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-batch"));
             }
         });
 
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "flat-batch"));
         return resultVehicle;
     }
 
@@ -148,8 +148,11 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     final List<FlatBatchRemoveFlow> flatBatchRemoveFlowBag =
                             new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
-                    for (Flow Flow : flowItemSyncBox.getItemsToPush()) {
-                        flatBatchRemoveFlowBag.add(new FlatBatchRemoveFlowBuilder(Flow).setBatchOrder(itemOrder++).build());
+                    for (Flow flow : flowItemSyncBox.getItemsToPush()) {
+                        flatBatchRemoveFlowBag.add(new FlatBatchRemoveFlowBuilder(flow)
+                                .setBatchOrder(itemOrder++)
+                                .setFlowId(flow.getId())
+                                .build());
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchRemoveFlowCaseBuilder()
@@ -332,8 +335,11 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     final List<FlatBatchAddFlow> flatBatchAddFlowBag =
                             new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
-                    for (Flow Flow : flowItemSyncBox.getItemsToPush()) {
-                        flatBatchAddFlowBag.add(new FlatBatchAddFlowBuilder(Flow).setBatchOrder(itemOrder++).build());
+                    for (Flow flow : flowItemSyncBox.getItemsToPush()) {
+                        flatBatchAddFlowBag.add(new FlatBatchAddFlowBuilder(flow)
+                                .setBatchOrder(itemOrder++)
+                                .setFlowId(flow.getId())
+                                .build());
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
@@ -348,11 +354,12 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     final List<FlatBatchUpdateFlow> flatBatchUpdateFlowBag =
                             new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
-                    for (ItemSyncBox.ItemUpdateTuple<Flow> FlowUpdate : flowItemSyncBox.getItemsToUpdate()) {
+                    for (ItemSyncBox.ItemUpdateTuple<Flow> flowUpdate : flowItemSyncBox.getItemsToUpdate()) {
                         flatBatchUpdateFlowBag.add(new FlatBatchUpdateFlowBuilder()
                                 .setBatchOrder(itemOrder++)
-                                .setOriginalBatchedFlow(new OriginalBatchedFlowBuilder(FlowUpdate.getOriginal()).build())
-                                .setUpdatedBatchedFlow(new UpdatedBatchedFlowBuilder(FlowUpdate.getUpdated()).build())
+                                .setFlowId(flowUpdate.getUpdated().getId())
+                                .setOriginalBatchedFlow(new OriginalBatchedFlowBuilder(flowUpdate.getOriginal()).build())
+                                .setUpdatedBatchedFlow(new UpdatedBatchedFlowBuilder(flowUpdate.getUpdated()).build())
                                 .build());
                     }
                     final Batch batch = new BatchBuilder()
@@ -368,11 +375,13 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         return batchOrder;
     }
 
-    public void setFlatBatchService(final SalFlatBatchService flatBatchService) {
+    public SyncPlanPushStrategyFlatBatchImpl setFlatBatchService(final SalFlatBatchService flatBatchService) {
         this.flatBatchService = flatBatchService;
+        return this;
     }
 
-    public void setTableForwarder(final TableForwarder tableForwarder) {
+    public SyncPlanPushStrategyFlatBatchImpl setTableForwarder(final TableForwarder tableForwarder) {
         this.tableForwarder = tableForwarder;
+        return this;
     }
 }
