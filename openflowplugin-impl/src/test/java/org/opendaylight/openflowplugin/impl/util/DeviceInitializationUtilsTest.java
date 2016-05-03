@@ -10,21 +10,24 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +48,10 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -100,10 +105,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceInitializationUtilsTest {
 
-    private static final boolean TEST_VALUE_SWITCH_FEATURE_MANDATORY = true;
-    private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
+    public static final String DUMMY_NODE_ID = "dummyNodeId";
     private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+            .child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
     private static final Short DUMMY_TABLE_ID = 1;
     private static final Long DUMMY_MAX_METER = 544L;
     private static final String DUMMY_DATAPATH_ID = "44";
@@ -132,17 +136,43 @@ public class DeviceInitializationUtilsTest {
     public void setUp() throws Exception {
         OpenflowPortsUtil.init();
 
-        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId(DUMMY_NODE_ID));
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
 
-        final Capabilities capabilitiesV13 = Mockito.mock(Capabilities.class);
-        final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
+        final Capabilities capabilitiesV13 = mock(Capabilities.class);
+        final CapabilitiesV10 capabilitiesV10 = mock(CapabilitiesV10.class);
         when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
     }
+
+    @Test
+    public void initializeNodeInformationTest() throws Exception {
+        DeviceState mockedDeviceState = mock(DeviceState.class);
+        MultiMsgCollector msgCollector = mock(MultiMsgCollector.class);
+        TranslatorLibrary tLibrary = mock(TranslatorLibrary.class);
+
+        GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
+        when(mockedFeatures.getTables()).thenReturn((short) 2);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
+        when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+
+        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getMultiMsgCollector(Mockito.any(RequestContext.class))).thenReturn(msgCollector);
+        when(mockedDeviceContext.oook()).thenReturn(tLibrary);
+
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+
+        DeviceInitializationUtils.initializeNodeInformation(mockedDeviceContext, true);
+
+        verify(mockFeatures, atLeastOnce()).getPhyPort();
+        verify(tLibrary, atLeastOnce()).lookupTranslator(any(TranslatorKey.class));
+    }
+
     @Test
     public void chainTableTrunkWriteOF10Test() throws Exception {
         DeviceState mockedDeviceState = mock(DeviceState.class);
@@ -168,9 +198,9 @@ public class DeviceInitializationUtilsTest {
     @Test
     public void testTranslateAndWriteReplyTypeDesc() throws Exception {
         final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
-        final DeviceState deviceState = Mockito.mock(DeviceState.class);
-        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(deviceState);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        final DeviceState deviceState = mock(DeviceState.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(deviceState);
 
         final Collection<MultipartReply> multipartReplyMessages = prepareDataforTypeDesc(mockedDeviceContext);
 
@@ -333,7 +363,4 @@ public class DeviceInitializationUtilsTest {
         when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         return mockConnectionContext;
     }
-
-
-
 }

@@ -115,7 +115,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
     }
 
-    private void pollStatistics(final DeviceContext deviceContext,
+    @VisibleForTesting
+    void pollStatistics(final DeviceContext deviceContext,
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
         

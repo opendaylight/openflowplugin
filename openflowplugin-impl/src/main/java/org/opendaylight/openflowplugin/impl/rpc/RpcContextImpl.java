@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import java.util.Iterator;
@@ -72,7 +73,8 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
-        final RpcService rpcService = rpcRegistrations.get(serviceClass).getInstance();
+        RoutedRpcRegistration<?> registration = rpcRegistrations.get(serviceClass);
+        final RpcService rpcService = registration.getInstance();
         return (S) rpcService;
     }
 
@@ -130,4 +132,11 @@ public class RpcContextImpl implements RpcContext {
             LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, nodeInstanceIdentifier.getKey().getId());
         }
     }
+
+    @VisibleForTesting
+    public boolean isEmptyRpcRegistrations() {
+        return this.rpcRegistrations.isEmpty();
+    }
+
+
 }

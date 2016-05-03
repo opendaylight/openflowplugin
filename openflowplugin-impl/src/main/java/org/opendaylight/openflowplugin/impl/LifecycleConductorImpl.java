@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -64,7 +65,8 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
         serviceChangeListeners.put(nodeId, manager);
     }
 
-    private void notifyServiceChangeListeners(final NodeId nodeId, final boolean success){
+    @VisibleForTesting
+    void notifyServiceChangeListeners(final NodeId nodeId, final boolean success){
         if (serviceChangeListeners.size() == 0) {
             return;
         }
@@ -186,4 +188,10 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
             LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", nodeId);
         }
     }
+
+    @VisibleForTesting
+    public boolean isServiceChangeListenersEmpty() {
+        return this.serviceChangeListeners.isEmpty();
+    }
+
 }

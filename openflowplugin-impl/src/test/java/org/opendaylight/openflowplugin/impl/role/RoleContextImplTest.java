@@ -28,11 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Jozef Bacigal
- * Date: 4/19/16
- * Time: 12:56
- */
 @RunWith(MockitoJUnitRunner.class)
 public class RoleContextImplTest {
 
@@ -59,8 +54,8 @@ public class RoleContextImplTest {
         Mockito.when(entityOwnershipService.registerCandidate(txEntity)).thenReturn(entityOwnershipCandidateRegistration);
     }
 
-//  @Test
-//  Run this test only if demanded because it takes 15s to run
+    //@Test
+    //Run this test only if demanded because it takes 15s to run
     public void testInitializationThreads() throws Exception {
 
         /*Setting answer which will hold the answer for 5s*/
@@ -112,7 +107,8 @@ public class RoleContextImplTest {
 
     @Test
     public void testCreateRequestContext() throws Exception {
-
+        roleContext.createRequestContext();
+        Mockito.verify(conductor).reserveXidForDeviceMessage(nodeId);
     }
 
     @Test(expected = NullPointerException.class)
