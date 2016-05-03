@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,9 +26,10 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
-import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyIncrementalImpl;
+import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
@@ -39,10 +42,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * top provider of forwarding rules synchronization functionality
@@ -60,6 +59,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
     private final FlowCapableTransactionService transactionService;
+    private final SalFlatBatchService flatBatchService;
 
     /** wildcard path to flow-capable-node augmentation of inventory node */
     private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
@@ -94,6 +94,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         this.transactionService =
                 Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
                         "RPC SalTableService not found.");
+        this.flatBatchService =
+                Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
+                        "RPC SalFlatBatchService not found.");
 
         nodeConfigDataTreePath =
                 new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
@@ -116,6 +119,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                         }
                     })
                     .build());
+
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
         final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
@@ -125,12 +129,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         {
             //TODO: make is switchable
-            final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyIncrementalImpl()
-                    .setFlowForwarder(flowForwarder)
-                    .setGroupForwarder(groupForwarder)
-                    .setMeterForwarder(meterForwarder)
-		    .setTableForwarder(tableForwarder)
-                    .setTransactionService(transactionService);
+//            final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyIncrementalImpl()
+//                    .setFlowForwarder(flowForwarder)
+//                    .setGroupForwarder(groupForwarder)
+//                    .setMeterForwarder(meterForwarder)
+//                    .setTableForwarder(tableForwarder)
+//                    .setTransactionService(transactionService);
+
+            final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl()
+                    .setFlatBatchService(flatBatchService)
+                    .setTableForwarder(tableForwarder);
 
             final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
             final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl,
