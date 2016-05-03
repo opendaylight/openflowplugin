@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_cc3784af",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/DeviceContextChangeListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T16:40:00Z",
+      "side": 1,
+      "message": "add comments, pls",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 23,
+        "endChar": 20
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ec46c822",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductor.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T16:40:00Z",
+      "side": 1,
+      "message": "not used",
+      "range": {
+        "startLine": 214,
+        "startChar": 2,
+        "endLine": 221,
+        "endChar": 5
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_2c6f2094",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T16:40:00Z",
+      "side": 1,
+      "message": "consider pulling this pool up (+share) to connection manager and attach it to manager\u0027s lifecycle",
+      "range": {
+        "startLine": 120,
+        "startChar": 29,
+        "endLine": 120,
+        "endChar": 66
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ac6330b0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T16:40:00Z",
+      "side": 1,
+      "message": "add logging after successful .get()",
+      "range": {
+        "startLine": 128,
+        "startChar": 12,
+        "endLine": 128,
+        "endChar": 44
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_cca144ab",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-03T16:40:00Z",
+      "side": 1,
+      "message": "use CancellationException in order to decide failure reason",
+      "range": {
+        "startLine": 142,
+        "startChar": 16,
+        "endLine": 145,
+        "endChar": 24
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
