@@ -50,4 +50,16 @@ public class CrudCounts {
     public void incRemoved() {
         removed++;
     }
+
+    public void decAdded() {
+        added--;
+    }
+
+    public void decUpdated() {
+        updated--;
+    }
+
+    public void decRemoved() {
+        removed--;
+    }
 }
