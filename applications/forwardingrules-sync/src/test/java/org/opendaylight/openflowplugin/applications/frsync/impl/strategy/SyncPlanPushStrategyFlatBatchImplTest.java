@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,36 +19,50 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.applications.frsync.impl.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.Batch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.BatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddFlowCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveFlowCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchRemoveMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateFlowCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Test for {@link SyncPlanPushStrategyFlatBatchImpl}.
@@ -61,7 +77,9 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     @Mock
     private SalFlatBatchService flatBatchService;
     @Mock
-    private SalFlatBatchService tableUpdateService;
+    private TableForwarder tableForwarder;
+    @Captor
+    private ArgumentCaptor<ProcessFlatBatchInput> processFlatBatchInputCpt;
 
     private List<ItemSyncBox<Group>> groupsToAddOrUpdate;
     private List<ItemSyncBox<Group>> groupsToRemove;
@@ -74,90 +92,20 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     private SyncPlanPushStrategyFlatBatchImpl syncPlanPushStrategy;
 
     public SyncPlanPushStrategyFlatBatchImplTest() {
-        groupsToAddOrUpdate = Lists.newArrayList(createGroupSyncBox(1, 2, 3), createGroupSyncBoxWithUpdates(4, 5, 6));
-        groupsToRemove = Lists.newArrayList(createGroupSyncBox(1, 2, 3), createGroupSyncBox(4, 5, 6));
+        groupsToAddOrUpdate = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
+                DiffInputFactory.createGroupSyncBoxWithUpdates(4, 5, 6));
+        groupsToRemove = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
+                DiffInputFactory.createGroupSyncBox(4, 5, 6));
 
-        metersToAddOrUpdate = createMeterSyncBoxWithUpdates(1, 2, 3);
-        metersToRemove = createMeterSyncBox(1, 2, 3);
+        metersToAddOrUpdate = DiffInputFactory.createMeterSyncBoxWithUpdates(1, 2, 3);
+        metersToRemove = DiffInputFactory.createMeterSyncBox(1, 2, 3);
 
         flowsToAddOrUpdate = new HashMap<>();
-        flowsToAddOrUpdate.put(new TableKey((short) 0), createFlowSyncBox("1", "2", "3"));
-        flowsToAddOrUpdate.put(new TableKey((short) 1), createFlowSyncBoxWithUpdates("4", "5", "6"));
+        flowsToAddOrUpdate.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToAddOrUpdate.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBoxWithUpdates("4", "5", "6"));
         flowsToRemove = new HashMap<>();
-        flowsToRemove.put(new TableKey((short) 0), createFlowSyncBox("1", "2", "3"));
-        flowsToRemove.put(new TableKey((short) 1), createFlowSyncBox("4", "5", "6"));
-    }
-
-    private ItemSyncBox<Group> createGroupSyncBox(final long... groupIDs) {
-        final ItemSyncBox<Group> groupBox = new ItemSyncBox<>();
-
-        for (long gid : groupIDs) {
-            groupBox.getItemsToPush().add(createPlainGroup(gid));
-        }
-        return groupBox;
-    }
-
-    private ItemSyncBox<Group> createGroupSyncBoxWithUpdates(final long... groupIDs) {
-        final ItemSyncBox<Group> groupBox = new ItemSyncBox<>();
-
-        for (long gid : groupIDs) {
-            groupBox.getItemsToPush().add(createPlainGroup(gid));
-            groupBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(createPlainGroup(gid),
-                    createPlainGroup(gid + 100)));
-        }
-        return groupBox;
-    }
-
-    private Group createPlainGroup(final long gid) {
-        return new GroupBuilder().setGroupId(new GroupId(gid)).build();
-    }
-
-    private ItemSyncBox<Meter> createMeterSyncBox(final long... meterIDs) {
-        final ItemSyncBox<Meter> groupBox = new ItemSyncBox<>();
-
-        for (long gid : meterIDs) {
-            groupBox.getItemsToPush().add(createPlainMeter(gid));
-        }
-        return groupBox;
-    }
-
-    private ItemSyncBox<Meter> createMeterSyncBoxWithUpdates(final long... meterIDs) {
-        final ItemSyncBox<Meter> groupBox = new ItemSyncBox<>();
-
-        for (long mid : meterIDs) {
-            groupBox.getItemsToPush().add(createPlainMeter(mid));
-            groupBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(createPlainMeter(mid),
-                    createPlainMeter(mid + 100)));
-        }
-        return groupBox;
-    }
-
-    private Meter createPlainMeter(final long mid) {
-        return new MeterBuilder().setMeterId(new MeterId(mid)).build();
-    }
-
-    private ItemSyncBox<Flow> createFlowSyncBox(final String... flowIDs) {
-        final ItemSyncBox<Flow> flowBox = new ItemSyncBox<>();
-
-        for (String fid : flowIDs) {
-            flowBox.getItemsToPush().add(createPlainFlow(fid));
-        }
-        return flowBox;
-    }
-
-    private ItemSyncBox<Flow> createFlowSyncBoxWithUpdates(final String... flowIDs) {
-        final ItemSyncBox<Flow> groupBox = new ItemSyncBox<>();
-
-        for (String fid : flowIDs) {
-            groupBox.getItemsToPush().add(createPlainFlow(fid));
-            groupBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(createPlainFlow(fid),
-                    createPlainFlow(fid + "upd")));
-        }
-        return groupBox;
-    }
-
-    private Flow createPlainFlow(final String fid) {
-        return new FlowBuilder().setId(new FlowId(fid)).build();
+        flowsToRemove.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToRemove.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBox("4", "5", "6"));
     }
 
 
@@ -165,7 +113,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void setUp() throws Exception {
         syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl();
         syncPlanPushStrategy.setFlatBatchService(flatBatchService);
-        syncPlanPushStrategy.setFlatBatchService(tableUpdateService);
+        syncPlanPushStrategy.setTableForwarder(tableForwarder);
 
         batchBag = new ArrayList<>();
     }
@@ -173,14 +121,42 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     @Test
     public void testExecuteSyncStrategy() throws Exception {
         final SynchronizationDiffInput diffInput = new SynchronizationDiffInput(NODE_IDENT,
-                groupsToAddOrUpdate, null, null, null, null, null);
+                groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate, flowsToRemove, metersToRemove, groupsToRemove);
+
+        Mockito.when(flatBatchService.processFlatBatch(Matchers.<ProcessFlatBatchInput>any()))
+                .thenReturn(RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture());
+
+        final SyncCrudCounters counters = new SyncCrudCounters();
+        final ListenableFuture<RpcResult<Void>> rpcResult = syncPlanPushStrategy.executeSyncStrategy(
+                RpcResultBuilder.<Void>success().buildFuture(), diffInput, counters);
+
+        Mockito.verify(flatBatchService).processFlatBatch(processFlatBatchInputCpt.capture());
+
+        final ProcessFlatBatchInput processFlatBatchInput = processFlatBatchInputCpt.getValue();
+        Assert.assertFalse(processFlatBatchInput.isExitOnFirstError());
+        Assert.assertEquals(13, processFlatBatchInput.getBatch().size());
+
+        Assert.assertTrue(rpcResult.isDone());
+        Assert.assertTrue(rpcResult.get().isSuccessful());
+
+        Assert.assertEquals(6, counters.getFlowCrudCounts().getAdded());
+        Assert.assertEquals(3, counters.getFlowCrudCounts().getUpdated());
+        Assert.assertEquals(6, counters.getFlowCrudCounts().getRemoved());
+
+        Assert.assertEquals(6, counters.getGroupCrudCounts().getAdded());
+        Assert.assertEquals(3, counters.getGroupCrudCounts().getUpdated());
+        Assert.assertEquals(6, counters.getGroupCrudCounts().getRemoved());
+
+        Assert.assertEquals(3, counters.getMeterCrudCounts().getAdded());
+        Assert.assertEquals(3, counters.getMeterCrudCounts().getUpdated());
+        Assert.assertEquals(3, counters.getMeterCrudCounts().getRemoved());
     }
 
     @Test
     public void testAssembleRemoveFlows() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveFlows(batchBag, 0, flowsToRemove);
 
-        Assert.assertEquals(2, lastOrder);
+        Assert.assertEquals(6, lastOrder);
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveFlowCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveFlowCase) batchBag.get(0).getBatchChoice())
@@ -194,7 +170,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void testAssembleAddOrUpdateGroups() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateGroups(batchBag, 0, groupsToAddOrUpdate);
 
-        Assert.assertEquals(3, lastOrder);
+        Assert.assertEquals(9, lastOrder);
         Assert.assertEquals(3, batchBag.size());
         Assert.assertEquals(FlatBatchAddGroupCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddGroupCase) batchBag.get(0).getBatchChoice())
@@ -211,7 +187,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void testAssembleRemoveGroups() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveGroups(batchBag, 0, groupsToRemove);
 
-        Assert.assertEquals(2, lastOrder);
+        Assert.assertEquals(6, lastOrder);
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveGroupCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveGroupCase) batchBag.get(0).getBatchChoice())
@@ -225,7 +201,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void testAssembleAddOrUpdateMeters() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateMeters(batchBag, 0, metersToAddOrUpdate);
 
-        Assert.assertEquals(2, lastOrder);
+        Assert.assertEquals(6, lastOrder);
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchAddMeterCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddMeterCase) batchBag.get(0).getBatchChoice())
@@ -239,7 +215,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void testAssembleRemoveMeters() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveMeters(batchBag, 0, metersToRemove);
 
-        Assert.assertEquals(1, lastOrder);
+        Assert.assertEquals(3, lastOrder);
         Assert.assertEquals(1, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveMeterCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveMeterCase) batchBag.get(0).getBatchChoice())
@@ -250,7 +226,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     public void testAssembleAddOrUpdateFlows() throws Exception {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateFlows(batchBag, 0, flowsToAddOrUpdate);
 
-        Assert.assertEquals(3, lastOrder);
+        Assert.assertEquals(9, lastOrder);
         Assert.assertEquals(3, batchBag.size());
         Assert.assertEquals(FlatBatchAddFlowCase.class, batchBag.get(0).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddFlowCase) batchBag.get(0).getBatchChoice())
@@ -261,5 +237,67 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(FlatBatchAddFlowCase.class, batchBag.get(2).getBatchChoice().getImplementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddFlowCase) batchBag.get(2).getBatchChoice())
                 .getFlatBatchAddFlow().size());
+    }
+
+    @Test
+    public void testDecrementCounters() throws Exception {
+        final SyncCrudCounters counters = new SyncCrudCounters();
+        counters.getFlowCrudCounts().setAdded(100);
+        counters.getFlowCrudCounts().setUpdated(100);
+        counters.getFlowCrudCounts().setRemoved(100);
+
+        counters.getGroupCrudCounts().setAdded(100);
+        counters.getGroupCrudCounts().setUpdated(100);
+        counters.getGroupCrudCounts().setRemoved(100);
+
+        counters.getMeterCrudCounts().setAdded(100);
+        counters.getMeterCrudCounts().setUpdated(100);
+        counters.getMeterCrudCounts().setRemoved(100);
+
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchAddFlowCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchUpdateFlowCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchRemoveFlowCaseBuilder().build(), counters);
+
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchAddGroupCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchUpdateGroupCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchRemoveGroupCaseBuilder().build(), counters);
+
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchAddMeterCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchUpdateMeterCaseBuilder().build(), counters);
+        SyncPlanPushStrategyFlatBatchImpl.decrementCounters(new FlatBatchRemoveMeterCaseBuilder().build(), counters);
+
+        Assert.assertEquals(99, counters.getFlowCrudCounts().getAdded());
+        Assert.assertEquals(99, counters.getFlowCrudCounts().getUpdated());
+        Assert.assertEquals(99, counters.getFlowCrudCounts().getRemoved());
+
+        Assert.assertEquals(99, counters.getGroupCrudCounts().getAdded());
+        Assert.assertEquals(99, counters.getGroupCrudCounts().getUpdated());
+        Assert.assertEquals(99, counters.getGroupCrudCounts().getRemoved());
+
+        Assert.assertEquals(99, counters.getMeterCrudCounts().getAdded());
+        Assert.assertEquals(99, counters.getMeterCrudCounts().getUpdated());
+        Assert.assertEquals(99, counters.getMeterCrudCounts().getRemoved());
+    }
+
+    @Test
+    public void testMapBachesToRanges() throws Exception {
+        final List<Batch> inputBatchBag = Lists.newArrayList(
+                new BatchBuilder().setBatchOrder(0).build(),
+                new BatchBuilder().setBatchOrder(5).build(),
+                new BatchBuilder().setBatchOrder(9).build(),
+                new BatchBuilder().setBatchOrder(15).build()
+        );
+        final Map<Range<Integer>, Batch> rangeBatchMap = SyncPlanPushStrategyFlatBatchImpl.mapBachesToRanges(inputBatchBag, 42);
+
+        Assert.assertEquals(4, rangeBatchMap.size());
+        int idx = 0;
+        final int[] lower = new int[]{0, 5, 9, 15};
+        final int[] upper = new int[]{4, 8, 14, 41};
+        for (Map.Entry<Range<Integer>, Batch> rangeBatchEntry : rangeBatchMap.entrySet()) {
+            Assert.assertEquals(lower[idx], rangeBatchEntry.getKey().lowerEndpoint().intValue());
+            Assert.assertEquals(upper[idx], rangeBatchEntry.getKey().upperEndpoint().intValue());
+            Assert.assertSame(inputBatchBag.get(idx), rangeBatchEntry.getValue());
+            idx++;
+        }
     }
 }
