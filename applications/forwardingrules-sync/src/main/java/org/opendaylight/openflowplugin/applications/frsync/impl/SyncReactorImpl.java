@@ -88,14 +88,21 @@ public class SyncReactorImpl implements SyncReactor {
         LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
         /**
+         * instructions:
+         *  - extract diff changes and preapare change steps in safe order
+         *    - optimization: decide if updates needed
+         *  - execute chosen implementation (e.g. conventional API, bulk API, flat bulk API)
+         *  -
          * reconciliation strategy - phase 1: - add/update missing objects in following order -
          * table features - groups (reordered) - meters - flows
          **/
-        ListenableFuture<RpcResult<Void>> resultVehicle = null;
+        ListenableFuture<RpcResult<Void>> resultVehicle = RpcResultBuilder.<Void>success().buildFuture();
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
 
         /* Tables - have to be pushed before groups */
-        resultVehicle = updateTableFeatures(nodeIdent, configTree);
+        // TODO enable table-update when ready
+        //resultVehicle = updateTableFeatures(nodeIdent, configTree);
+
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
