@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
@@ -108,22 +110,34 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
+     * test of {@link TransactionChainManager#submitWriteTransaction()}
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testSubmitTransaction() throws Exception {
         final Node data = new NodeBuilder().setId(nodeId).build();
-        txChainManager.enableSubmit();
-        txChainManager.activateTransactionManager();
+        txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-        txChainManager.activateTransactionManager();
         txChainManager.submitWriteTransaction();
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).submit();
+    }
+
+    /**
+     * test of {@link TransactionChainManager#submitWriteTransaction()}: no submit, never enabled
+     * @throws Exception
+     */
+    @Test
+    public void testSubmitTransaction1() throws Exception {
+        final Node data = new NodeBuilder().setId(nodeId).build();
+        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
+        txChainManager.submitWriteTransaction();
+
+        Mockito.verify(txChain).newWriteOnlyTransaction();
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
+        Mockito.verify(writeTx, Mockito.never()).submit();
     }
 
     /**
@@ -166,5 +180,13 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
+    }
+
+    @Test
+    public void testDeactivateTransactionChainManager() throws Exception {
+        txChainManager.deactivateTransactionManager();
+
+        assertEquals(txChainManager.getTransactionChainManagerStatus(), TransactionChainManager.TransactionChainManagerStatus.SLEEPING);
+        Mockito.verify(txChain).close();
     }
 }
