@@ -59,7 +59,7 @@ public class RoleContextImplTest {
         Mockito.when(entityOwnershipService.registerCandidate(txEntity)).thenReturn(entityOwnershipCandidateRegistration);
     }
 
-//  @Test
+    //  @Test
 //  Run this test only if demanded because it takes 15s to run
     public void testInitializationThreads() throws Exception {
 
@@ -112,7 +112,8 @@ public class RoleContextImplTest {
 
     @Test
     public void testCreateRequestContext() throws Exception {
-
+        roleContext.createRequestContext();
+        Mockito.verify(conductor).reserveXidForDeviceMessage(nodeId);
     }
 
     @Test(expected = NullPointerException.class)

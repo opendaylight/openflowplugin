@@ -17,12 +17,17 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.Futures;
+import io.netty.util.TimerTask;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,12 +60,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.openflowplugin.impl.LifecycleConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -68,20 +69,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
 
-    private static final boolean TEST_VALUE_SWITCH_FEATURE_MANDATORY = true;
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
-    private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
-    private static final Short DUMMY_TABLE_ID = 1;
-    private static final Long DUMMY_MAX_METER = 544L;
-    private static final String DUMMY_DATAPATH_ID = "44";
-    private static final Long DUMMY_PORT_NUMBER = 21L;
     private static final int barrierCountLimit = 25600;
     private static final int barrierIntervalNanos = 500;
 
@@ -105,6 +97,10 @@ public class DeviceManagerImplTest {
     private DeviceContextImpl mockedDeviceContext;
     @Mock
     private NodeId mockedNodeId;
+    @Mock
+    private LifecycleConductor lifecycleConductor;
+    @Mock
+    private MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Before
     public void setUp() throws Exception {
@@ -115,11 +111,13 @@ public class DeviceManagerImplTest {
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
 
-        final Capabilities capabilitiesV13 = Mockito.mock(Capabilities.class);
-        final CapabilitiesV10 capabilitiesV10 = Mockito.mock(CapabilitiesV10.class);
+        final Capabilities capabilitiesV13 = mock(Capabilities.class);
+        final CapabilitiesV10 capabilitiesV10 = mock(CapabilitiesV10.class);
         when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
+
+        when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -149,8 +147,6 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        final MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
-        final LifecycleConductor lifecycleConductor = new LifecycleConductorImpl(mockedMessageIntelligenceAgency);
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor);
 
@@ -194,7 +190,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
     }
 
     @Test
@@ -206,7 +202,7 @@ public class DeviceManagerImplTest {
         final PhyPortBuilder phyPort = new PhyPortBuilder()
                 .setPortNo(41L);
         when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
-        final MessageTranslator<Object, Object> mockedTranslator = Mockito.mock(MessageTranslator.class);
+        final MessageTranslator<Object, Object> mockedTranslator = mock(MessageTranslator.class);
         when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceContext>any(), Matchers.any()))
                 .thenReturn(null);
         when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
@@ -219,7 +215,30 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        Mockito.verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
+    }
+
+    @Test
+    public void deviceDisconnectedTest() throws Exception {
+        final DeviceState deviceState = mock(DeviceState.class);
+
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
+        injectMockTranslatorLibrary(deviceManager);
+
+        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
+        when(connectionContext.getNodeId()).thenReturn(mockedNodeId);
+
+        final DeviceContext deviceContext = mock(DeviceContext.class);
+        when(deviceContext.shuttingDownDataStoreTransactions()).thenReturn(Futures.immediateCheckedFuture(null));
+        when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        when(deviceContext.getDeviceState()).thenReturn(deviceState);
+
+        final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.put(mockedNodeId, deviceContext);
+
+        deviceManager.onDeviceDisconnected(connectionContext);
+
+        verify(lifecycleConductor).newTimeout(Mockito.<TimerTask>any(), Mockito.anyLong(), Mockito.<TimeUnit>any());
     }
 
     protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {
@@ -256,7 +275,7 @@ public class DeviceManagerImplTest {
 
     @Test
     public void testClose() throws Exception {
-        final DeviceContext deviceContext = Mockito.mock(DeviceContext.class);
+        final DeviceContext deviceContext = mock(DeviceContext.class);
         final DeviceManagerImpl deviceManager = prepareDeviceManager();
         final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
         deviceContexts.put(mockedNodeId, deviceContext);
@@ -264,8 +283,8 @@ public class DeviceManagerImplTest {
 
         deviceManager.close();
 
-        Mockito.verify(deviceContext).shutdownConnection();
-        Mockito.verify(deviceContext, Mockito.never()).close();
+        verify(deviceContext).shutdownConnection();
+        verify(deviceContext, Mockito.never()).close();
     }
 
     private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {

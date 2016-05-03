@@ -45,11 +45,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
-/**
- * Created by Jozef Bacigal
- * Date: 19.4.2016.
- * Time: 13:08
- */
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 @RunWith(MockitoJUnitRunner.class)
 public class RoleManagerImplTest {
 
@@ -101,6 +101,7 @@ public class RoleManagerImplTest {
     private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), false, true, true);
     private final EntityOwnershipChange slaveEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true);
     private final EntityOwnershipChange slaveTxEntityLast = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), true, false, false);
+    private final EntityOwnershipChange masterEntityNotOwner = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true);
 
     private InOrder inOrder;
 
@@ -125,7 +126,6 @@ public class RoleManagerImplTest {
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
-        Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
         roleManagerSpy.onDeviceContextLevelUp(nodeId);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
@@ -177,6 +177,7 @@ public class RoleManagerImplTest {
 
     @Test
     public void testOwnershipChanged2() throws Exception {
+        Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
         roleManagerSpy.ownershipChanged(masterEntity);
         roleManagerSpy.ownershipChanged(masterTxEntity);
         inOrder.verify(roleManagerSpy, Mockito.calls(1)).changeOwnershipForTxEntity(Mockito.<EntityOwnershipChange>any(),Mockito.<RoleContext>any());
@@ -219,6 +220,23 @@ public class RoleManagerImplTest {
     }
 
     @Test
+    public void testChangeOwnershipForTxEntity3() throws Exception {
+        Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(false);
+        roleManagerSpy.changeOwnershipForTxEntity(slaveTxEntityLast, roleContextSpy);
+        verify(roleContextSpy).close();
+        verify(roleContextSpy).getNodeId();
+        verify(conductor).closeConnection(nodeId);
+    }
+
+    @Test
+    public void testChangeOwnershipForTxEntity4() throws Exception {
+        Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(true);
+        roleManagerSpy.changeOwnershipForTxEntity(masterEntityNotOwner, roleContextSpy);
+        verify(roleContextSpy).close();
+        verify(conductor).closeConnection(nodeId);
+    }
+
+    @Test
     public void testAddListener() throws Exception {
         roleManager.addRoleChangeListener((new RoleChangeListener() {
             @Override
@@ -239,5 +257,25 @@ public class RoleManagerImplTest {
         roleManager.notifyListenersRoleChangeOnDevice(nodeId, true, OfpRole.BECOMEMASTER, false);
     }
 
+    @Test
+    public void testMakeDeviceRoleChange() throws Exception{
+        roleManagerSpy.makeDeviceRoleChange(OfpRole.BECOMEMASTER, roleContextSpy, true);
+        verify(roleManagerSpy, atLeastOnce()).sendRoleChangeToDevice(Mockito.<OfpRole>any(), Mockito.<RoleContext>any());
+        verify(roleManagerSpy, atLeastOnce()).notifyListenersRoleChangeOnDevice(Mockito.<NodeId>any(), eq(true), Mockito.<OfpRole>any(), eq(true));
+    }
 
+    @Test
+    public void testServicesChangeDone() throws Exception {
+        roleManagerSpy.setRoleContext(nodeId, roleContextSpy);
+        roleManagerSpy.servicesChangeDone(nodeId, true);
+        verify(roleContextSpy).unregisterCandidate(Mockito.<Entity>any());
+    }
+
+    @Test
+    public void testServicesChangeDoneContextIsNull() throws Exception {
+        final NodeId nodeId2 = NodeId.getDefaultInstance("openflow:2");
+        roleManagerSpy.setRoleContext(nodeId, roleContextSpy);
+        roleManagerSpy.servicesChangeDone(nodeId2, true);
+        verify(roleContextSpy, never()).unregisterCandidate(Mockito.<Entity>any());
+    }
 }

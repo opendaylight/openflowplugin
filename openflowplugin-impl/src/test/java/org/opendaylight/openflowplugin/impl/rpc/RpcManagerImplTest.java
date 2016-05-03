@@ -22,15 +22,14 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.LifecycleConductorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -38,6 +37,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+
+import java.util.concurrent.ConcurrentMap;
+
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class RpcManagerImplTest {
@@ -52,11 +59,25 @@ public class RpcManagerImplTest {
     @Mock
     private DeviceInitializationPhaseHandler deviceINitializationPhaseHandler;
     @Mock
+    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
+    @Mock
+    private ConnectionContext connectionContext;
+    @Mock
+    private BindingAwareBroker.RoutedRpcRegistration<RpcService> routedRpcRegistration;
+    @Mock
     private DeviceState deviceState;
     @Mock
     private MessageSpy mockMsgSpy;
     @Mock
     private LifecycleConductor conductor;
+    @Mock
+    private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Mock
+    private MessageSpy messageSpy;
+    @Mock
+    private RpcContext removedContexts;
+    @Mock
+    private ConcurrentMap<NodeId, RpcContext> contexts;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -70,16 +91,28 @@ public class RpcManagerImplTest {
         final NodeKey nodeKey = new NodeKey(nodeId);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
+        rpcManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
+        FeaturesReply features = new GetFeaturesOutputBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3)
+                .build();
+        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
+        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getMessageSpy()).thenReturn(mockMsgSpy);
+        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
+        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
+        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
+                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
+                .thenReturn(routedRpcRegistration);
         Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(contexts.remove(nodeId)).thenReturn(removedContexts);
     }
 
     @Test
     public void onDeviceContextLevelUp() throws Exception {
         rpcManager.onDeviceContextLevelUp(nodeId);
-        Mockito.verify(conductor).getDeviceContext(Mockito.<NodeId>any());
+        verify(conductor).getDeviceContext(Mockito.<NodeId>any());
     }
 
     @Test
@@ -87,5 +120,63 @@ public class RpcManagerImplTest {
         rpcManager.onDeviceContextLevelUp(nodeId);
         expectedException.expect(VerifyException.class);
         rpcManager.onDeviceContextLevelUp(nodeId);
+    }
+
+    @Test
+    public void testOnDeviceContextLevelUpMaster() throws Exception {
+        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
+        rpcManager.onDeviceContextLevelUp(nodeId);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+    }
+
+    @Test
+    public void testOnDeviceContextLevelUpSlave() throws Exception {
+        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.BECOMESLAVE);
+        rpcManager.onDeviceContextLevelUp(nodeId);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+    }
+
+    @Test
+    public void testOnDeviceContextLevelUpOther() throws Exception {
+        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.NOCHANGE);
+        rpcManager.onDeviceContextLevelUp(nodeId);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+    }
+
+    @Test
+    public void testOnDeviceContextLevelDown() throws Exception {
+        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.NOCHANGE);
+        rpcManager.onDeviceContextLevelDown(deviceContext);
+        verify(deviceTerminationPhaseHandler).onDeviceContextLevelDown(deviceContext);
+    }
+
+    /**
+     * On non null context close and onDeviceContextLevelDown should be called
+     */
+    @Test
+    public void onDeviceContextLevelDown1() {
+        rpcManager.addRecordToContexts(nodeId,removedContexts);
+        rpcManager.onDeviceContextLevelDown(deviceContext);
+        verify(removedContexts,times(1)).close();
+        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceContext);
+    }
+
+
+    /**
+     * On null context only onDeviceContextLevelDown should be called
+     */
+    @Test
+    public void onDeviceContextLevelDown2() {
+        rpcManager.onDeviceContextLevelDown(deviceContext);
+        verify(removedContexts,never()).close();
+        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceContext);
+
+    }
+
+    @Test
+    public void close() {
+        rpcManager.addRecordToContexts(nodeId,removedContexts);
+        rpcManager.close();
+        verify(removedContexts,atLeastOnce()).close();
     }
 }

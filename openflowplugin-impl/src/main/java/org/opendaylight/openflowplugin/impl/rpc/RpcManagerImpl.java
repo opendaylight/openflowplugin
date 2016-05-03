@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
@@ -90,5 +91,10 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
         this.deviceTerminPhaseHandler = handler;
+    }
+
+    @VisibleForTesting
+    void addRecordToContexts(NodeId nodeId, RpcContext rpcContexts) {
+        this.contexts.put(nodeId,rpcContexts);
     }
 }

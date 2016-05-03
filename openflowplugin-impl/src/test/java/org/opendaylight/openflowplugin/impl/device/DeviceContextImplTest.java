@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -28,7 +30,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -46,6 +47,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
@@ -64,13 +66,18 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -86,19 +93,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -164,6 +165,8 @@ public class DeviceContextImplTest {
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
+    private DeviceContext deviceContextSpy;
+
     @Before
     public void setUp() {
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
@@ -198,6 +201,9 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
+        final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
+        when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
+        when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));
 
         Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceContext.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
@@ -209,6 +215,8 @@ public class DeviceContextImplTest {
                 .thenReturn(messageTranslatorFlowRemoved);
 
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false);
+
+        deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
@@ -233,25 +241,28 @@ public class DeviceContextImplTest {
     public void testGetDeviceState() {
         final DeviceState deviceSt = deviceContext.getDeviceState();
         assertNotNull(deviceSt);
-        Assert.assertEquals(deviceState, deviceSt);
+        assertEquals(deviceState, deviceSt);
     }
 
     @Test
     public void testGetReadTransaction() {
         final ReadTransaction readTx = deviceContext.getReadTransaction();
         assertNotNull(readTx);
-        Assert.assertEquals(rTx, readTx);
+        assertEquals(rTx, readTx);
     }
 
     /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testInitialSubmitTransaction() throws Exception {
+        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        deviceContext.getTransactionChainManager().activateTransactionManager() ;
+        deviceContext.getTransactionChainManager().enableSubmit();
+        deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
-        verify(txChainManager).initialSubmitWriteTransaction();
+        verify(wTx).submit();
     }
 
     @Test
@@ -265,6 +276,17 @@ public class DeviceContextImplTest {
         final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
         final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
         assertEquals(mockedConnectionContext, pickedConnectiobContexts);
+    }
+    @Test
+    public void testRemoveAuxiliaryConnectionContext() {
+        final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
+
+        final ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
+        when(mockedConnectionContext.getConnectionAdapter()).thenReturn(mockedAuxConnectionAdapter);
+
+        assertNotNull(deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE));
+        deviceContext.removeAuxiliaryConnectionContext(mockedConnectionContext);
+        assertNull(deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE));
     }
 
     private ConnectionContext addDummyAuxiliaryConnectionContext() {
@@ -282,26 +304,25 @@ public class DeviceContextImplTest {
     }
 
     /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testAddDeleteToTxChain() throws Exception{
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        deviceContext.getTransactionChainManager().activateTransactionManager() ;
+        deviceContext.getTransactionChainManager().enableSubmit();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
-        verify(txChainManager).addDeleteOperationTotTxChain(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
+        verify(wTx).delete(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
     }
 
     /**
-     * FIXME: Need to change the test on behalf the clustering transaction chain manager changes
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testSubmitTransaction() throws Exception {
-        deviceContext.submitTransaction();
-        verify(txChainManager).submitWriteTransaction();
+        deviceContext.getTransactionChainManager().activateTransactionManager() ;
+        deviceContext.getTransactionChainManager().enableSubmit();
+        assertTrue(deviceContext.submitTransaction());
     }
 
     @Test
@@ -326,6 +347,13 @@ public class DeviceContextImplTest {
     public void testGetDeviceMeterRegistry() {
         final DeviceMeterRegistry deviceMeterRegistry = deviceContext.getDeviceMeterRegistry();
         assertNotNull(deviceMeterRegistry);
+    }
+
+    @Test
+    public void testGetRpcContext() {
+        final RpcContext rpcContext = mock(RpcContext.class);
+        deviceContext.setRpcContext(rpcContext);
+        assertNotNull(deviceContext.getRpcContext());
     }
 
     @Test
@@ -488,15 +516,55 @@ public class DeviceContextImplTest {
     }
 
     @Test
+    public void testProcessExperimenterMessage() {
+        final ConvertorMessageFromOFJava mockedMessageConverter = mock(ConvertorMessageFromOFJava.class);
+        final ExtensionConverterProvider mockedExtensionConverterProvider = mock(ExtensionConverterProvider.class);
+        when(mockedExtensionConverterProvider.getMessageConverter(any(MessageTypeKey.class))).thenReturn(mockedMessageConverter);
+
+        final ExperimenterDataOfChoice mockedExperimenterDataOfChoice = mock(ExperimenterDataOfChoice.class);
+        final ExperimenterMessage experimenterMessage = new ExperimenterMessageBuilder()
+                .setExperimenterDataOfChoice(mockedExperimenterDataOfChoice).build();
+
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
+        deviceContext.setExtensionConverterProvider(mockedExtensionConverterProvider);
+        deviceContext.processExperimenterMessage(experimenterMessage);
+
+        verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
+    }
+
+    @Test
     public void testOnDeviceDisconnected() throws Exception {
         final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
 
-//        Mockito.verify(deviceState).setValid(false);
-//        Mockito.verify(deviceContextClosedHandler).onDeviceContextClosed(deviceContext);
-        Assert.assertEquals(0, deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().size());
-        Assert.assertEquals(0, deviceContext.getDeviceGroupRegistry().getAllGroupIds().size());
-        Assert.assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
+        assertEquals(0, deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().size());
+        assertEquals(0, deviceContext.getDeviceGroupRegistry().getAllGroupIds().size());
+        assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
     }
 
+    @Test
+    public void testOnClusterRoleChange() throws Exception {
+        // test role.equals(oldRole)
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER).get());
+
+        // test call transactionChainManager.deactivateTransactionManager()
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+
+        // test call MdSalRegistrationUtils.unregisterServices(rpcContext)
+        final RpcContext rpcContext = mock(RpcContext.class);
+        deviceContextSpy.setRpcContext(rpcContext);
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+
+        final StatisticsContext statisticsContext = mock(StatisticsContext.class);
+        deviceContextSpy.setStatisticsContext(statisticsContext);
+
+        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMEMASTER);
+        verify(deviceContextSpy).onDeviceTakeClusterLeadership();
+
+        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMESLAVE);
+        verify(deviceContextSpy).onDeviceLostClusterLeadership();
+    }
 }
