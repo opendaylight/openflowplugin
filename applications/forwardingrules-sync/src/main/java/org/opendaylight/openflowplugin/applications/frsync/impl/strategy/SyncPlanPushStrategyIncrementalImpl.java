@@ -294,7 +294,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         ListenableFuture<RpcResult<Void>> chainedResult = RpcResultBuilder.<Void>success().buildFuture();
         try {
-            groupCrudCounts.setRemoved(ReconcileUtil.countTotalAdds(groupsRemovalPlan));
+            groupCrudCounts.setRemoved(ReconcileUtil.countTotalPushed(groupsRemovalPlan));
             if (LOG.isDebugEnabled()) {
                 LOG.debug("removing groups: planSteps={}, toRemoveTotal={}",
                         groupsRemovalPlan.size(), groupCrudCounts.getRemoved());
@@ -476,7 +476,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         try {
             if (!groupsAddPlan.isEmpty()) {
                 final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                groupCrudCounts.setAdded(ReconcileUtil.countTotalAdds(groupsAddPlan));
+                groupCrudCounts.setAdded(ReconcileUtil.countTotalPushed(groupsAddPlan));
                 groupCrudCounts.setUpdated(ReconcileUtil.countTotalUpdated(groupsAddPlan));
 
                 if (LOG.isDebugEnabled()) {
