@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -16,11 +16,11 @@ import java.util.Set;
  */
 public class ItemSyncBox<I> {
 
-    private Set<I> itemsToAdd = new HashSet<>();
-    private Set<ItemUpdateTuple<I>> itemsToUpdate = new HashSet<>();
+    private Set<I> itemsToPush = new LinkedHashSet<>();
+    private Set<ItemUpdateTuple<I>> itemsToUpdate = new LinkedHashSet<>();
 
-    public Set<I> getItemsToAdd() {
-        return itemsToAdd;
+    public Set<I> getItemsToPush() {
+        return itemsToPush;
     }
 
     public Set<ItemUpdateTuple<I>> getItemsToUpdate() {
@@ -28,7 +28,7 @@ public class ItemSyncBox<I> {
     }
 
     public boolean isEmpty() {
-        return itemsToAdd.isEmpty() && itemsToUpdate.isEmpty();
+        return itemsToPush.isEmpty() && itemsToUpdate.isEmpty();
     }
 
     /**

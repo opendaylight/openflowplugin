@@ -8,11 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Nonnull;
-
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -23,12 +23,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * Abstract Listener for node changes
- * 
+ *
  * @author joslezak
  */
 public abstract class AbstractFrmSyncListener<T extends DataObject> implements NodeListener<T> {
@@ -58,7 +55,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
             DataTreeModification<T> modification) throws ReadFailedException, InterruptedException;
 
     public abstract LogicalDatastoreType dsType();
-    
+
     static String threadName() {
         final Thread currentThread = Thread.currentThread();
         return currentThread.getName();
