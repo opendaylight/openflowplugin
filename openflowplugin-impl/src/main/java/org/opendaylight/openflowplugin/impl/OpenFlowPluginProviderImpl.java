@@ -17,6 +17,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -32,6 +33,8 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -53,9 +56,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
- */
 public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
@@ -84,10 +84,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
 
+    private final LifecycleConductor conductor;
+
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
         this.rpcRequestsQuota = (int) rpcRequestsQuota;
         this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
+        conductor = new LifecycleConductorImpl(messageIntelligenceAgency);
     }
 
     @Override
@@ -117,7 +120,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@Nonnull final Throwable t) {
                 LOG.warn("Some switchConnectionProviders failed to start.", t);
             }
         });
@@ -188,19 +191,23 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         connectionManager = new ConnectionManagerImpl(echoReplyTimeout);
 
         registerMXBean(messageIntelligenceAgency);
-        LifecycleConductor.getInstance().setMessageIntelligenceAgency(messageIntelligenceAgency);
 
-        deviceManager = new DeviceManagerImpl(dataBroker, globalNotificationQuota,
-                switchFeaturesMandatory, barrierInterval, barrierCountLimit);
+        deviceManager = new DeviceManagerImpl(dataBroker,
+                globalNotificationQuota,
+                switchFeaturesMandatory,
+                barrierInterval,
+                barrierCountLimit,
+                conductor);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
-        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+        conductor.setSafelyDeviceManager(deviceManager);
 
-        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
+        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
 
-        roleManager.addRoleChangeListener(LifecycleConductor.getInstance());
+        roleManager.addRoleChangeListener((RoleChangeListener) conductor);
+
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
@@ -219,7 +226,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
         rpcManager.setNotificationPublishService(notificationPublishService);
 
-        deviceManager.setNotificationService(this.notificationProviderService);
         deviceManager.setNotificationPublishService(this.notificationPublishService);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);

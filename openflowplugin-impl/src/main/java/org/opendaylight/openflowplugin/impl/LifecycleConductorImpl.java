@@ -13,11 +13,14 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -26,37 +29,37 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This class/singleton is a binder between all managers
  */
-public final class LifecycleConductor implements RoleChangeListener, DeviceContextChangeListener {
+public final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LifecycleConductor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LifecycleConductorImpl.class);
     private static final int TICKS_PER_WHEEL = 500;
     private static final long TICK_DURATION = 10; // 0.5 sec.
 
-    private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(10, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
-    private DeviceManager deviceManager = null;
-    private MessageIntelligenceAgency messageIntelligenceAgency = null;
+    private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
+    private DeviceManager deviceManager;
+    private final MessageIntelligenceAgency messageIntelligenceAgency;
     private ConcurrentHashMap<NodeId, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
-    private ArrayList<NodeId> idArrayList = new ArrayList<>();
 
-    private static final LifecycleConductor INSTANCE = new LifecycleConductor();
-
-    private LifecycleConductor() {
+    public LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
+        Preconditions.checkNotNull(messageIntelligenceAgency);
+        this.messageIntelligenceAgency = messageIntelligenceAgency;
     }
 
-    public static LifecycleConductor getInstance() {
-        return INSTANCE;
+    public void setSafelyDeviceManager(final DeviceManager deviceManager) {
+        if (this.deviceManager == null) {
+            this.deviceManager = deviceManager;
+        }
     }
 
-    public void addOneTimeListenerWhenServicesChangesDone(ServiceChangeListener manager, NodeId nodeId){
+    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId){
         LOG.debug("Listener {} for service change for node {} registered.", manager, nodeId);
         serviceChangeListeners.put(nodeId, manager);
     }
@@ -125,13 +128,13 @@ public final class LifecycleConductor implements RoleChangeListener, DeviceConte
             final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(null, newRole);
             Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
                 @Override
-                public void onSuccess(@Nullable Void aVoid) {
+                public void onSuccess(@Nullable final Void aVoid) {
                     LOG.info("Starting/Stopping services for node {} was successful", nodeId);
                     if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(nodeId, true);
                 }
 
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     LOG.warn("Starting/Stopping services for node {} was NOT successful, closing connection", nodeId);
                     closeConnection(nodeId);
                 }
@@ -139,40 +142,29 @@ public final class LifecycleConductor implements RoleChangeListener, DeviceConte
         }
     }
 
-    public void setDeviceManager(final DeviceManager deviceManager){
-        LOG.info("Device manager was set.");
-        this.deviceManager = deviceManager;
-    }
-
-    public void setMessageIntelligenceAgency(final MessageIntelligenceAgency messageIntelligenceAgency){
-        Preconditions.checkNotNull(messageIntelligenceAgency);
-        LOG.info("MessageIntelligenceAgency was set.");
-        this.messageIntelligenceAgency = messageIntelligenceAgency;
-    }
-
     public MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return messageIntelligenceAgency;
     }
 
-    @Deprecated
+    @Override
     public DeviceContext getDeviceContext(final NodeId nodeId){
-         return (null != deviceManager) ? deviceManager.getDeviceContextFromNodeId(nodeId) : null;
+         return deviceManager.getDeviceContextFromNodeId(nodeId);
     }
 
-    public Short gainVersionSafely(NodeId nodeId) {
+    public Short gainVersionSafely(final NodeId nodeId) {
         return (null != getDeviceContext(nodeId)) ? getDeviceContext(nodeId).getPrimaryConnectionContext().getFeatures().getVersion() : null;
     }
 
-    public HashedWheelTimer getTimer() {
-        return hashedWheelTimer;
+    public Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit) {
+        return hashedWheelTimer.newTimeout(task, delay, unit);
     }
 
-    public ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(NodeId nodeId){
+    public ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(final NodeId nodeId){
         return (null != getDeviceContext(nodeId)) ? getDeviceContext(nodeId).getPrimaryConnectionContext().getConnectionState() : null;
     }
 
-    public Long reserveXidForDeviceMessage(NodeId nodeId){
-        return null != getDeviceContext(nodeId) ? getDeviceContext(nodeId).reservedXidForDeviceMessage() : null;
+    public Long reserveXidForDeviceMessage(final NodeId nodeId){
+        return null != getDeviceContext(nodeId) ? getDeviceContext(nodeId).reserveXidForDeviceMessage() : null;
     }
 
     @Override
@@ -192,7 +184,6 @@ public final class LifecycleConductor implements RoleChangeListener, DeviceConte
             closeConnection(nodeId);
         } else {
             LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", nodeId);
-            idArrayList.add(nodeId);
         }
     }
 }
