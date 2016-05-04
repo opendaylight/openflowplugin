@@ -43,11 +43,11 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Gets invoked from RpcManagerInitial, registers a candidate with EntityOwnershipService.
- * On receipt of the ownership notification, makes an rpc call to SalRoleSevice.
+ * On receipt of the ownership notification, makes an rpc call to SalRoleService.
  *
  * Hands over to StatisticsManager at the end.
  */
@@ -79,11 +79,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
     private List<RoleChangeListener> listeners = new ArrayList<>();
 
-    public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker) {
+    private final LifecycleConductor conductor;
+
+    public RoleManagerImpl(final EntityOwnershipService entityOwnershipService, final DataBroker dataBroker, final LifecycleConductor lifecycleConductor) {
         this.entityOwnershipService = Preconditions.checkNotNull(entityOwnershipService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.entityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(RoleManager.ENTITY_TYPE, this));
         this.txEntityOwnershipListenerRegistration = Preconditions.checkNotNull(entityOwnershipService.registerListener(TX_ENTITY_TYPE, this));
+        this.conductor = lifecycleConductor;
         LOG.debug("Register OpenflowOwnershipListener to all entity ownership changes");
     }
 
@@ -94,8 +97,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final NodeId nodeId) throws Exception {
-        DeviceContext deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
-        final RoleContext roleContext = new RoleContextImpl(nodeId, entityOwnershipService, makeEntity(nodeId), makeTxEntity(nodeId));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
+        final RoleContext roleContext = new RoleContextImpl(nodeId, entityOwnershipService, makeEntity(nodeId), makeTxEntity(nodeId), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(nodeId, roleContext) == null, "Role context for master Node %s is still not closed.", nodeId);
         makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, true);
@@ -118,8 +121,9 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             if (roleContext.isTxCandidateRegistered()) {
                 LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
                 removeDeviceFromOperationalDS(roleContext.getNodeId());
+            } else {
+                roleContext.close();
             }
-            roleContext.close();
         }
     }
 
@@ -167,7 +171,6 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             } else {
                 changeOwnershipForTxEntity(ownershipChange, roleContext);
             }
-            return;
         } else {
             LOG.debug("OwnershipChange {}", ownershipChange);
         }
@@ -190,7 +193,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
                 // MASTER -> SLAVE
                 LOG.debug("MASTER to SLAVE for node {}", roleContext.getNodeId());
-                LifecycleConductor.getInstance().addOneTimeListenerWhenServicesChangesDone(this, roleContext.getNodeId());
+                conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getNodeId());
                 makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, false);
             }
         } else {
@@ -205,8 +208,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                     removeDeviceFromOperationalDS(roleContext.getNodeId());
                 }
             } else {
-                contexts.remove(roleContext.getNodeId(), roleContext);
+                final NodeId nodeId = roleContext.getNodeId();
+                contexts.remove(nodeId, roleContext);
                 roleContext.close();
+                conductor.closeConnection(nodeId);
             }
         }
     }
@@ -236,15 +241,19 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
                     removeDeviceFromOperationalDS(roleContext.getNodeId());
                 } else {
-                    contexts.remove(roleContext.getNodeId(), roleContext);
+                    final NodeId nodeId = roleContext.getNodeId();
+                    contexts.remove(nodeId, roleContext);
                     roleContext.close();
+                    conductor.closeConnection(nodeId);
                 }
             }
         } else {
             LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity().getType());
             watchingEntities.remove(roleContext.getTxEntity(), roleContext);
-            contexts.remove(roleContext.getNodeId(), roleContext);
+            final NodeId nodeId = roleContext.getNodeId();
+            contexts.remove(nodeId, roleContext);
             roleContext.close();
+            conductor.closeConnection(nodeId);
         }
     }
 
@@ -259,7 +268,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             }
 
             @Override
-            public void onFailure(final Throwable throwable) {
+            public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Unable to set role {} on device {}", role, roleContext.getNodeId());
                 notifyListenersRoleChangeOnDevice(roleContext.getNodeId(), false, role, init);
             }
@@ -270,7 +279,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole, final RoleContext roleContext) {
         LOG.debug("Sending new role {} to device {}", newRole, roleContext.getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-        final Short version = LifecycleConductor.getInstance().gainVersionSafely(roleContext.getNodeId());
+        final Short version = conductor.gainVersionSafely(roleContext.getNodeId());
         if (null == version) {
             LOG.debug("Device version is null");
             return Futures.immediateFuture(null);
@@ -292,7 +301,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                     }
                 }
             };
-            LifecycleConductor.getInstance().getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
+            conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
         return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
@@ -315,7 +324,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@Nonnull final Throwable t) {
                 LOG.warn("Delete Node {} failed. {}", nodeId, t);
                 contexts.remove(nodeId);
                 final RoleContext roleContext = contexts.remove(nodeId);
@@ -354,8 +363,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
     /**
      * Invoked when initialization phase is done
-     * @param nodeId
-     * @param success
+     * @param nodeId node identification
+     * @param success true if initialization done ok, false otherwise
      */
     @VisibleForTesting
     void notifyListenersRoleInitializationDone(final NodeId nodeId, final boolean success){
@@ -368,9 +377,9 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     /**
      * Notifies registered listener on role change. Role is the new role on device
      * If initialization phase is true, we may skip service starting
-     * @param success
-     * @param role
-     * @param initializationPhase
+     * @param success true if role change on device done ok, false otherwise
+     * @param role new role meant to be set on device
+     * @param initializationPhase if true, then skipp services start
      */
     @VisibleForTesting
     void notifyListenersRoleChangeOnDevice(final NodeId nodeId, final boolean success, final OfpRole role, final boolean initializationPhase){

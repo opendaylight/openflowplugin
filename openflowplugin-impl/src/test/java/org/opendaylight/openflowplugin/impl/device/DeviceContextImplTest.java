@@ -25,9 +25,6 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,6 +56,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -159,6 +157,8 @@ public class DeviceContextImplTest {
     MessageTranslator messageTranslatorFlowCapableNodeConnector;
     @Mock
     private MessageTranslator<Object, Object> messageTranslatorFlowRemoved;
+    @Mock
+    private LifecycleConductor lifecycleConductor;
 
     private InOrder inOrderDevState;
 
@@ -208,7 +208,7 @@ public class DeviceContextImplTest {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved.class.getName()))))
                 .thenReturn(messageTranslatorFlowRemoved);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
@@ -216,17 +216,17 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, messageIntelligenceAgency, outboundQueueProvider, translatorLibrary, false).close();
     }
 
     @Test
@@ -256,7 +256,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testGetReservedXid() {
-        deviceContext.reservedXidForDeviceMessage();
+        deviceContext.reserveXidForDeviceMessage();
         verify(outboundQueueProvider).reserveEntry();
     }
 
@@ -374,12 +374,6 @@ public class DeviceContextImplTest {
     public void testTranslatorLibrary() {
         final TranslatorLibrary pickedTranslatorLibrary = deviceContext.oook();
         assertEquals(translatorLibrary, pickedTranslatorLibrary);
-    }
-
-    @Test
-    public void testGetTimer() {
-        final HashedWheelTimer pickedTimer = deviceContext.getTimer();
-        assertEquals(timer, pickedTimer);
     }
 
     @Test
