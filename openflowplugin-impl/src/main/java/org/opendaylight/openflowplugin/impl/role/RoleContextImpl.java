@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
@@ -18,8 +19,9 @@ import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
+import org.opendaylight.openflowplugin.impl.LifecycleConductorImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
@@ -47,11 +49,14 @@ class RoleContextImpl implements RoleContext {
 
     private final Semaphore roleChangeGuard = new Semaphore(1, true);
 
-    public RoleContextImpl(final NodeId nodeId, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity) {
+    private final LifecycleConductor conductor;
+
+    public RoleContextImpl(final NodeId nodeId, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity, final LifecycleConductor lifecycleConductor) {
         this.entityOwnershipService = entityOwnershipService;
         this.entity = entity;
         this.txEntity = txEntity;
         this.nodeId = nodeId;
+        this.conductor = lifecycleConductor;
     }
 
     @Override
@@ -69,13 +74,12 @@ class RoleContextImpl implements RoleContext {
         if (isTxCandidateRegistered()) {
             unregisterCandidate(this.txEntity);
         }
-        LifecycleConductor.getInstance().closeConnection(nodeId);
     }
 
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(LifecycleConductor.getInstance().reserveXidForDeviceMessage(nodeId)) {
+        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(nodeId)) {
             @Override
             public void close() {
             }
@@ -83,7 +87,7 @@ class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void setSalRoleService(final SalRoleService salRoleService) {
+    public void setSalRoleService(@Nonnull final SalRoleService salRoleService) {
         Preconditions.checkNotNull(salRoleService);
         this.salRoleService = salRoleService;
     }

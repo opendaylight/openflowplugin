@@ -21,12 +21,11 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
 
@@ -47,6 +46,7 @@ public class StatisticsContextImpMockInitiation {
     protected MessageSpy mockedMessageSpy;
     protected OutboundQueue mockedOutboundQueue;
     protected DeviceManager mockedDeviceManager;
+    protected LifecycleConductor mockConductor;
 
     @Before
     public void initialize() {
@@ -59,6 +59,7 @@ public class StatisticsContextImpMockInitiation {
         mockedMessageSpy = mock(MessageSpy.class);
         mockedOutboundQueue = mock(OutboundQueue.class);
         mockedDeviceManager = mock(DeviceManager.class);
+        mockConductor = mock(LifecycleConductor.class);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
@@ -76,7 +77,8 @@ public class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
         when(mockedDeviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
-        LifecycleConductor.getInstance().setDeviceManager(mockedDeviceManager);
+        mockConductor.setSafelyDeviceManager(mockedDeviceManager);
+        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
 
     }
 }
