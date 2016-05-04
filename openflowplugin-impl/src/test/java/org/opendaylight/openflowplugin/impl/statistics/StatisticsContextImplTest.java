@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -47,12 +48,13 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     @Before
     public void setUp() throws Exception {
-        when(mockedDeviceContext.reservedXidForDeviceMessage()).thenReturn(TEST_XID);
+        when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
+        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false);
+        statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false, mockConductor);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
@@ -70,7 +72,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceContext.getDeviceState().getNodeId(), false, mockConductor);
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {
