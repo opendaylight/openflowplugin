@@ -26,15 +26,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
@@ -48,9 +50,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
- */
 public class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
@@ -71,25 +70,29 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private boolean shuttingDownStatisticsPolling;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
+    private final LifecycleConductor conductor;
+
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
         deviceInitPhaseHandler = handler;
     }
 
     public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry,
-                                               final boolean shuttingDownStatisticsPolling) {
+                                 final boolean shuttingDownStatisticsPolling,
+                                 final LifecycleConductor lifecycleConductor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry.addRpcImplementation(
                 StatisticsManagerControlService.class, this));
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        this.conductor = lifecycleConductor;
     }
 
     @Override
     public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(nodeId, shuttingDownStatisticsPolling);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(nodeId, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(nodeId, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", nodeId);
 
         if (shuttingDownStatisticsPolling) {
@@ -134,14 +137,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             }
 
             @Override
-            public void onFailure(final Throwable throwable) {
+            public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
                 LOG.warn("Statistics gathering for single node was not successful: {}", throwable.getMessage());
                 LOG.trace("Statistics gathering for single node was not successful.. ", throwable);
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /** This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
-                    LifecycleConductor.getInstance().closeConnection(deviceContext.getDeviceState().getNodeId());
+                    conductor.closeConnection(deviceContext.getDeviceState().getNodeId());
                 } else {
                     scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
                 }
@@ -161,7 +164,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 }
             }
         };
-        LifecycleConductor.getInstance().getTimer().newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
+        conductor.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void scheduleNextPolling(final DeviceContext deviceContext,
@@ -169,7 +172,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                      final TimeCounter timeCounter) {
         LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
         if (!shuttingDownStatisticsPolling) {
-            final Timeout pollTimeout = LifecycleConductor.getInstance().getTimer().newTimeout(new TimerTask() {
+            final Timeout pollTimeout = conductor.newTimeout(new TimerTask() {
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     pollStatistics(deviceContext, statisticsContext, timeCounter);

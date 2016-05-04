@@ -15,12 +15,9 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +25,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -42,7 +38,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -62,7 +57,6 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderK
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
@@ -126,18 +120,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
-    private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager transactionChainManager;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
-    private final Collection<DeviceTerminationPhaseHandler> closeHandlers = new HashSet<>();
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private NotificationPublishService notificationPublishService;
-    private NotificationService notificationService;
     private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
@@ -161,7 +152,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
-                      @Nonnull final HashedWheelTimer hashedWheelTimer,
                       @Nonnull final MessageSpy _messageSpy,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
                       @Nonnull final TranslatorLibrary translatorLibrary,
@@ -170,7 +160,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
         this.transactionChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
@@ -210,7 +199,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public Long reservedXidForDeviceMessage() {
+    public Long reserveXidForDeviceMessage() {
         return outboundQueueProvider.reserveEntry();
     }
 
@@ -227,11 +216,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        if (null != connectionDistinguisher) {
-            LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                    .getRemoteAddress(), nodeId);
-            auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
+        LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
+                .getRemoteAddress(), nodeId);
+        auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
@@ -303,7 +290,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 new AsyncFunction<Void, Boolean>() {
 
                     @Override
-                    public ListenableFuture<Boolean> apply(final Void input) throws Exception {
+                    public ListenableFuture<Boolean> apply(@Nonnull final Void input) throws Exception {
                         getStatisticsContext().statListForCollectingInitialization();
                         return getStatisticsContext().gatherDynamicData();
                     }
@@ -319,7 +306,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.warn(errMsg);
                     throw new IllegalStateException(errMsg);
                 }
-                if (!input.booleanValue()) {
+                if (!input) {
                     final String errMsg = String.format("Get Initial Device %s information fails",
                             getDeviceState().getNodeId());
                     LOG.warn(errMsg);
@@ -435,7 +422,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
             }
             submitTransaction();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Error processing port status message: {}", e.getMessage());
         }
     }
@@ -528,11 +515,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public HashedWheelTimer getTimer() {
-        return hashedWheelTimer;
-    }
-
-    @Override
     public synchronized void close() {
         LOG.debug("closing deviceContext: {}, nodeId:{}",
                 getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
@@ -549,11 +531,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public Timeout getBarrierTaskTimeout() {
         return barrierTaskTimeout;
-    }
-
-    @Override
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
     }
 
     @Override
@@ -587,7 +564,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void storeNodeConnectorRef(final Long portNumber, final NodeConnectorRef nodeConnectorRef) {
+    public void storeNodeConnectorRef(@Nonnull final Long portNumber, @Nonnull final NodeConnectorRef nodeConnectorRef) {
         nodeConnectorCache.put(
                 Preconditions.checkNotNull(portNumber),
                 Preconditions.checkNotNull(nodeConnectorRef));
