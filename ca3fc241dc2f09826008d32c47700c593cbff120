@@ -71,6 +71,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_272299b9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-04T09:21:31Z",
+      "side": 1,
+      "message": "following patches",
+      "parentUuid": "fa57193c_2c6f2094",
+      "range": {
+        "startLine": 120,
+        "startChar": 29,
+        "endLine": 120,
+        "endChar": 66
+      },
+      "revId": "ca3fc241dc2f09826008d32c47700c593cbff120",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_ac6330b0",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
         "patchSetId": 12
