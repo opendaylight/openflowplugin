@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import com.google.common.base.VerifyException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +23,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
+import org.opendaylight.openflowplugin.impl.LifecycleConductorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -57,14 +59,18 @@ public class RpcManagerImplTest {
     private MessageSpy mockMsgSpy;
     @Mock
     private DeviceManager deviceManager;
+    @Mock
+    private LifecycleConductor conductor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
+    private NodeId nodeId = new NodeId("openflow-junit:1");
+
     @Before
     public void setUp() {
-        final NodeKey nodeKey = new NodeKey(new NodeId("openflow-junit:1"));
+        final NodeKey nodeKey = new NodeKey(nodeId);
         nodePath = KeyedInstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, 5, conductor);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
         FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
@@ -77,18 +83,20 @@ public class RpcManagerImplTest {
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(mockMsgSpy);
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
-        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+        conductor.setSafelyDeviceManager(deviceManager);
         Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
     }
 
     @Test
-    public void testOnDeviceContextLevelUp() throws Exception {
+    public void onDeviceContextLevelUp() throws Exception {
+        rpcManager.onDeviceContextLevelUp(nodeId);
+        Mockito.verify(conductor).getDeviceContext(Mockito.<NodeId>any());
+    }
 
-        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
-                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
-                .thenReturn(routedRpcRegistration);
-
-        rpcManager.onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
-        Mockito.verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceContext.getDeviceState().getNodeId());
+    @Test(expected = VerifyException.class)
+    public void onDeviceContextLevelUpTwice() throws Exception {
+        rpcManager.onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(nodeId);
     }
 }
