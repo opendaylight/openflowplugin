@@ -21,8 +21,8 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -47,9 +47,12 @@ class StatisticsContextImpMockInitiation {
     StatisticsGatheringOnTheFlyService mockedStatisticsOnFlyGatheringService;
     ConnectionContext mockedConnectionContext;
     protected DeviceState mockedDeviceState;
-
     static final KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+    protected MessageSpy mockedMessageSpy;
+    protected OutboundQueue mockedOutboundQueue;
+    protected DeviceManager mockedDeviceManager;
+    LifecycleConductor mockConductor;
 
     @Before
     public void initialize() {
@@ -62,6 +65,7 @@ class StatisticsContextImpMockInitiation {
         final MessageSpy mockedMessageSpy = mock(MessageSpy.class);
         final OutboundQueue mockedOutboundQueue = mock(OutboundQueue.class);
         final DeviceManager mockedDeviceManager = mock(DeviceManager.class);
+        mockConductor = mock(LifecycleConductor.class);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
@@ -79,8 +83,9 @@ class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceManager.getDeviceContextFromNodeId(Mockito.any())).thenReturn(mockedDeviceContext);
-        LifecycleConductor.getInstance().setDeviceManager(mockedDeviceManager);
+        when(mockedDeviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        mockConductor.setSafelyDeviceManager(mockedDeviceManager);
+        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
 
     }
 }
