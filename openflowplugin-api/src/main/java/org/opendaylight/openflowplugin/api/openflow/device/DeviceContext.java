@@ -21,7 +21,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -53,7 +52,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceContext extends AutoCloseable,
-        OpenFlowPluginTimer,
         DeviceReplyProcessor,
         PortNumberCache {
 
@@ -220,13 +218,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     Timeout getBarrierTaskTimeout();
 
-    /**
-     * Sets notification service
-     *
-     * @param notificationService
-     */
-    void setNotificationService(NotificationService notificationService);
-
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     MessageSpy getMessageSpy();
@@ -238,7 +229,7 @@ public interface DeviceContext extends AutoCloseable,
      * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
      * @return Reserved XID
      */
-    Long reservedXidForDeviceMessage();
+    Long reserveXidForDeviceMessage();
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)
