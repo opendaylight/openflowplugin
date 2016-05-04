@@ -21,6 +21,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlready
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -43,6 +44,9 @@ public class RoleContextImplTest {
     @Mock
     private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
 
+    @Mock
+    private LifecycleConductor conductor;
+
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private final Entity entity = new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
     private final Entity txEntity = new Entity(RoleManager.TX_ENTITY_TYPE, nodeId.getValue());
@@ -50,7 +54,7 @@ public class RoleContextImplTest {
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(nodeId, entityOwnershipService, entity, txEntity);
+        roleContext = new RoleContextImpl(nodeId, entityOwnershipService, entity, txEntity, conductor);
         Mockito.when(entityOwnershipService.registerCandidate(entity)).thenReturn(entityOwnershipCandidateRegistration);
         Mockito.when(entityOwnershipService.registerCandidate(txEntity)).thenReturn(entityOwnershipCandidateRegistration);
     }

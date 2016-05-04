@@ -92,7 +92,6 @@ public abstract class ServiceMocking {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceContext.getTimer()).thenReturn(mock(HashedWheelTimer.class));
         when(mockedDeviceContext.getMultiMsgCollector(Matchers.<RequestContext<List<MultipartReply>>>any())).thenReturn(multiMessageCollector);
 
         setup();

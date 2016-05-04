@@ -477,10 +477,11 @@ public final class StatisticsGatheringUtils {
                 .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
-            deviceContext.submitTransaction();
         } catch (final Exception e) {
             LOG.warn("Can't write to transaction: {}", e);
         }
+
+        deviceContext.submitTransaction();
     }
 
     /**
@@ -501,9 +502,10 @@ public final class StatisticsGatheringUtils {
                 .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
-            deviceContext.submitTransaction();
         } catch (Exception e) {
             LOG.warn("Can't write to transaction: {}", e);
         }
+
+        deviceContext.submitTransaction();
     }
 }

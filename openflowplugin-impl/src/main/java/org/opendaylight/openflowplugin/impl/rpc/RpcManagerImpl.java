@@ -18,12 +18,10 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
-import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +36,14 @@ public class RpcManagerImpl implements RpcManager {
     private boolean isStatisticsRpcEnabled;
     private NotificationPublishService notificationPublishService;
 
+    private final LifecycleConductor conductor;
+
     public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
-                          final int quotaValue) {
+                          final int quotaValue,
+                          final LifecycleConductor lifecycleConductor) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
+        this.conductor = lifecycleConductor;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
 
-        DeviceContext deviceContext = Preconditions.checkNotNull(LifecycleConductor.getInstance().getDeviceContext(nodeId));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
 
         final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,

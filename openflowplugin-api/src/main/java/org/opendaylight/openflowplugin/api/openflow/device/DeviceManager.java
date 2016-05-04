@@ -28,13 +28,6 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
         DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler, TranslatorLibrarian, AutoCloseable {
 
     /**
-     * Sets notification receiving service
-     *
-     * @param notificationService
-     */
-    void setNotificationService(NotificationService notificationService);
-
-    /**
      * Sets notification publish service
      *
      * @param notificationPublishService
