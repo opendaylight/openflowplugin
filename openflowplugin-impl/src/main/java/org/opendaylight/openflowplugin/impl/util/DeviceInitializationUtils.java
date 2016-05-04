@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -435,7 +434,7 @@ public class DeviceInitializationUtils {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
-        final Long reserved = deviceContext.reservedXidForDeviceMessage();
+        final Long reserved = deviceContext.reserveXidForDeviceMessage();
         final RequestContext<List<MultipartReply>> requestContext = new AbstractRequestContext<List<MultipartReply>>(
                 reserved) {
             @Override

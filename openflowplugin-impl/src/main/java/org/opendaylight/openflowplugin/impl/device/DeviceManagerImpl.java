@@ -14,7 +14,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collections;
@@ -41,11 +40,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -63,21 +60,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private static final long TICK_DURATION = 10; // 0.5 sec.
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
 
-    private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
     private final DataBroker dataBroker;
-    private final HashedWheelTimer hashedWheelTimer;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
-    private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
-    private final DeviceContextChangeListener deviceContextChangeListener;
 
     private final ConcurrentMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
 
@@ -85,13 +77,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final int barrierCountLimit;
     private ExtensionConverterProvider extensionConverterProvider;
 
+    private final LifecycleConductor conductor;
+
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
-                             final long barrierInterval, final int barrierCountLimit) {
+                             final long barrierInterval, final int barrierCountLimit,
+                             final LifecycleConductor lifecycleConductor) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
 
@@ -107,7 +101,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
-        this.deviceContextChangeListener = LifecycleConductor.getInstance();
+
+        this.conductor = lifecycleConductor;
     }
 
 
@@ -123,7 +118,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(nodeId));
         ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
-        this.deviceContextChangeListener.deviceInitializationDone(nodeId, true);
     }
 
     @Override
@@ -138,7 +132,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          */
          if (deviceContexts.containsKey(nodeId)) {
             LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
-             this.deviceContextChangeListener.deviceStartInitializationDone(nodeId, false);
              return false;
          }
 
@@ -162,13 +155,17 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final DeviceState deviceState = createDeviceState(connectionContext);
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker,
-                hashedWheelTimer, LifecycleConductor.getInstance().getMessageIntelligenceAgency(), outboundQueueProvider, translatorLibrary, switchFeaturesMandatory);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext,
+                deviceState,
+                dataBroker,
+                conductor.getMessageIntelligenceAgency(),
+                outboundQueueProvider,
+                translatorLibrary,
+                switchFeaturesMandatory);
 
         Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
 
         updatePacketInRateLimiters();
@@ -178,7 +175,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceState.setValid(true);
 
-        this.deviceContextChangeListener.deviceStartInitializationDone(nodeId, true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
 
         return true;
@@ -215,11 +211,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setNotificationService(final NotificationService notificationServiceParam) {
-        notificationService = notificationServiceParam;
-    }
-
-    @Override
     public void setNotificationPublishService(final NotificationPublishService notificationService) {
         notificationPublishService = notificationService;
     }
@@ -243,8 +234,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void initialize() {
-        spyPool = new ScheduledThreadPoolExecutor(1);
-        spyPool.scheduleAtFixedRate(LifecycleConductor.getInstance().getMessageIntelligenceAgency(), spyRate, spyRate, TimeUnit.SECONDS);
+        final ScheduledThreadPoolExecutor spyPool = new ScheduledThreadPoolExecutor(1);
+        spyPool.scheduleAtFixedRate(conductor.getMessageIntelligenceAgency(), spyRate, spyRate, TimeUnit.SECONDS);
     }
 
     @Override
@@ -270,7 +261,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
-        Preconditions.checkArgument(connectionContext != null);
         final NodeId nodeId = connectionContext.getNodeId();
         final DeviceContext deviceCtx = this.deviceContexts.get(nodeId);
 
@@ -310,12 +300,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     }
                 }
             };
-            deviceCtx.getTimer().newTimeout(timerTask, 10, TimeUnit.SECONDS);
+            conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
     }
 
     @VisibleForTesting
-    void addDeviceContextToMap(NodeId nodeId, DeviceContext deviceContext){
+    void addDeviceContextToMap(final NodeId nodeId, final DeviceContext deviceContext){
         deviceContexts.put(nodeId, deviceContext);
     }
 }
