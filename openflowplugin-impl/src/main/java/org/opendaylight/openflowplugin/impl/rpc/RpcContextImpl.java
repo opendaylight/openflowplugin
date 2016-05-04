@@ -113,7 +113,7 @@ public class RpcContextImpl implements RpcContext {
             LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeId, tracker.availablePermits());
         }
 
-        final Long xid = deviceContext.reservedXidForDeviceMessage();
+        final Long xid = deviceContext.reserveXidForDeviceMessage();
         if (xid == null) {
             LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeId);
             tracker.release();

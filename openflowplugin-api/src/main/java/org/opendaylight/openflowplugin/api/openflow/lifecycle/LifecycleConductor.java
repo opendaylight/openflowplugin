@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.openflowplugin.api.openflow.lifecycle;
+
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+
+import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * This class is a binder between all managers
+ * Should be defined in OpenFlowPluginProviderImpl
+ */
+public interface LifecycleConductor {
+
+    /**
+     * Returns device context from device manager device contexts maps
+     * @param nodeId node identification
+     * @return null if context doesn't exists
+     */
+    DeviceContext getDeviceContext(final NodeId nodeId);
+
+    /**
+     * Registers ont time listener for notify when services rpc, statistics are done stop or start
+     * @param manager service change listener
+     * @param nodeId node identification
+     */
+    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId);
+
+    /**
+     * Returns device of version
+     * @param nodeId node identification
+     * @return null if device context doesn't exists
+     */
+    Short gainVersionSafely(final NodeId nodeId);
+
+    /**
+     * Set new timeout for {@link io.netty.util.HashedWheelTimer}
+     * @param task timer task
+     * @param delay delay
+     * @param unit time unit
+     * @return new timeout
+     */
+    Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit);
+
+    /**
+     * Returns message intelligence agency
+     * @return MessageIntelligenceAgency set by constructor
+     */
+    MessageIntelligenceAgency getMessageIntelligenceAgency();
+
+    /**
+     * Interrupt connection for the node
+     * @param nodeId node identification
+     */
+    void closeConnection(final NodeId nodeId);
+
+    /**
+     * Setter for device manager once set it cant be unset or overwritten
+     * @param deviceManager should be set in OpenFlowPluginProviderImpl
+     */
+    void setSafelyDeviceManager(final DeviceManager deviceManager);
+
+    /**
+     * Xid from outboundqueue
+     * @param nodeId
+     * @return
+     */
+    Long reserveXidForDeviceMessage(final NodeId nodeId);
+}

@@ -38,9 +38,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
-import org.opendaylight.openflowplugin.impl.LifecycleConductor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -89,15 +89,18 @@ public class RoleManagerImplTest {
     @Mock
     WriteTransaction writeTransaction;
 
+    @Mock
+    LifecycleConductor conductor;
+
     private RoleManagerImpl roleManager;
     private RoleManagerImpl roleManagerSpy;
     private RoleContext roleContextSpy;
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
 
-    private final EntityOwnershipChange masterEntity = new EntityOwnershipChange(roleManager.makeEntity(nodeId), false, true, true);
-    private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(roleManager.makeTxEntity(nodeId), false, true, true);
-    private final EntityOwnershipChange slaveEntity = new EntityOwnershipChange(roleManager.makeEntity(nodeId), true, false, true);
-    private final EntityOwnershipChange slaveTxEntityLast = new EntityOwnershipChange(roleManager.makeTxEntity(nodeId), true, false, false);
+    private final EntityOwnershipChange masterEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), false, true, true);
+    private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), false, true, true);
+    private final EntityOwnershipChange slaveEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true);
+    private final EntityOwnershipChange slaveTxEntityLast = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), true, false, false);
 
     private InOrder inOrder;
 
@@ -117,10 +120,10 @@ public class RoleManagerImplTest {
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
         Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
-        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker);
+        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         roleManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
-        LifecycleConductor.getInstance().setDeviceManager(deviceManager);
+        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
         Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
         roleManagerSpy.onDeviceContextLevelUp(nodeId);
@@ -225,8 +228,8 @@ public class RoleManagerImplTest {
             }
 
             @Override
-            public void roleChangeOnDevice(final NodeId nodeId, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
-                Assert.assertTrue(nodeId.equals(nodeId));
+            public void roleChangeOnDevice(final NodeId nodeId_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+                Assert.assertTrue(nodeId.equals(nodeId_));
                 Assert.assertTrue(success);
                 Assert.assertFalse(initializationPhase);
                 Assert.assertTrue(newRole.equals(OfpRole.BECOMEMASTER));
