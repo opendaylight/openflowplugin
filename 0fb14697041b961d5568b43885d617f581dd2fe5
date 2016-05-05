@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_87ad6234",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2016-05-05T06:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_1dad3032",
+      "range": {
+        "startLine": 240,
+        "startChar": 8,
+        "endLine": 250,
+        "endChar": 9
+      },
+      "revId": "0fb14697041b961d5568b43885d617f581dd2fe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_7daa6c1a",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-05-02T19:50:19Z",
       "side": 1,
       "message": "can you re-use compareIpv4PrefixNullSafe method for this logic?",
+      "range": {
+        "startLine": 252,
+        "startChar": 8,
+        "endLine": 261,
+        "endChar": 9
+      },
+      "revId": "0fb14697041b961d5568b43885d617f581dd2fe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e7aa5e18",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2016-05-05T06:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_7daa6c1a",
       "range": {
         "startLine": 252,
         "startChar": 8,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_c7a75a4e",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2016-05-05T06:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_fd6ddc05",
+      "range": {
+        "startLine": 263,
+        "startChar": 8,
+        "endLine": 272,
+        "endChar": 9
+      },
+      "revId": "0fb14697041b961d5568b43885d617f581dd2fe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_dd7298e4",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2016-05-02T19:50:19Z",
       "side": 1,
       "message": "can you re-use ethernetMatchFieldsEquals method for this logic?",
+      "range": {
+        "startLine": 274,
+        "startChar": 8,
+        "endLine": 283,
+        "endChar": 9
+      },
+      "revId": "0fb14697041b961d5568b43885d617f581dd2fe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_27645621",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2016-05-05T06:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_dd7298e4",
       "range": {
         "startLine": 274,
         "startChar": 8,
