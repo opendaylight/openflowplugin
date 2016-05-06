@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Submitted-by: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-at: Fri, 06 May 2016 13:45:39 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/38111
+Project: openflowplugin
+Branch: refs/heads/stable/beryllium
