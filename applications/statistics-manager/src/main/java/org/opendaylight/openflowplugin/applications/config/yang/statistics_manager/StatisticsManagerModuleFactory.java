@@ -16,6 +16,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.openflowplugin.applications.config.yang.statistics_manager;
-public class StatisticsManagerModuleFactory extends org.opendaylight.openflowplugin.applications.config.yang.statistics_manager.AbstractStatisticsManagerModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class StatisticsManagerModuleFactory extends AbstractStatisticsManagerModuleFactory {
 
 }

@@ -1,0 +1,25 @@
+module statistics-manager-app-config {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:statistics-manager:config";
+    prefix "statistics-manager-app-config";
+
+    description
+        "Configuration for Statistics Manager application.";
+
+    revision "2016-05-09" {
+        description
+            "Initial revision";
+    }
+
+    container statistics-manager-app-config {
+        leaf min-request-net-monitor-interval {
+            type int32;
+            default 3000;
+        }
+
+        leaf max-nodes-for-collector {
+            type int32;
+            default 16;
+        }
+    }
+}

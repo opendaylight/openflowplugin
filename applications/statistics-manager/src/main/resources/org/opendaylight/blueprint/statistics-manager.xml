@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <bean id="statsManagerFactory" class="org.opendaylight.openflowplugin.applications.statistics.manager.impl.StatisticsManagerFactoryImpl"/>
+
+  <service ref="statsManagerFactory" interface="org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManagerFactory"
+          odl:type="default"/>
+</blueprint>
