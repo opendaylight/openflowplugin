@@ -20,6 +20,7 @@ module statistics-manager {
     identity statistics-manager {
             base config:module-type;
             config:java-name-prefix StatisticsManager;
+            status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {
