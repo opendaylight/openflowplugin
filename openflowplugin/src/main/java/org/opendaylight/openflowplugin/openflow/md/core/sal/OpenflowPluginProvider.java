@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -20,13 +21,12 @@ import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegi
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
+
+    private static final boolean SKIP_TABLE_FEATURES = false;
 
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
@@ -48,6 +50,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
     private ExtensionConverterManager extensionConverterManager;
 
     private OfpRole role;
+    private Boolean skipTableFeatures;
 
     private OFRoleManager roleManager;
     private OfEntityManager entManager;
@@ -58,6 +61,8 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
 
     private OpenflowPluginConfig openflowPluginConfig;
 
+
+
     /**
      * Initialization of services and msgSpy counter
      */
@@ -65,6 +70,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
+        openflowPluginConfig = readConfig(skipTableFeatures);
         entManager = new OfEntityManager(entityOwnershipService,getOpenflowPluginConfig());
         entManager.setDataBroker(dataBroker);
         entManager.init();
@@ -95,10 +101,16 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
     @Override
     public void close() {
         LOG.debug("close");
-        mdController.stop();
-        mdController = null;
-        registrationManager.close();
-        registrationManager = null;
+
+        if(mdController != null) {
+            mdController.stop();
+            mdController = null;
+        }
+
+        if(registrationManager != null) {
+            registrationManager.close();
+            registrationManager = null;
+        }
     }
 
     public MessageCountDumper getMessageCountDumper() {
@@ -147,6 +159,20 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         }
     }
 
+    private OpenflowPluginConfig readConfig(Boolean skipTableFeatures){
+
+        final OpenflowPluginConfig.OpenflowPluginConfigBuilder openflowCfgBuilder = OpenflowPluginConfig.builder();
+
+        if(skipTableFeatures !=null){
+            openflowCfgBuilder.setSkipTableFeatures(skipTableFeatures.booleanValue());
+        } else{
+            LOG.warn("Could not load XML configuration file via ConfigSubsystem! Fallback to default config value(s)");
+            openflowCfgBuilder.setSkipTableFeatures(SKIP_TABLE_FEATURES);
+        }
+
+        return openflowCfgBuilder.build();
+    }
+
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
@@ -163,8 +189,8 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         this.entityOwnershipService = entityOwnershipService;
     }
 
-    public void setOpenflowPluginConfig(OpenflowPluginConfig openflowPluginConfig) {
-        this.openflowPluginConfig = openflowPluginConfig;
+    public void setSkipTableFeatures(Boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
     }
 
     @VisibleForTesting

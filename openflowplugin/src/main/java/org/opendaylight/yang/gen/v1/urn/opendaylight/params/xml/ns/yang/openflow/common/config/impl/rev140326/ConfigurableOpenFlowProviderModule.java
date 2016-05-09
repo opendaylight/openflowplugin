@@ -9,24 +9,30 @@
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326;
 
-import com.google.common.base.MoreObjects;
-import javax.management.ObjectName;
-
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginConfig;
+import java.util.Collection;
+import org.opendaylight.controller.config.api.osgi.WaitingServiceTracker;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
+import org.osgi.framework.BundleContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-*
-*/
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
 public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.AbstractConfigurableOpenFlowProviderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurableOpenFlowProviderModule.class);
 
-    private OpenflowPluginProvider pluginProvider;
-
-    private static final boolean SKIP_TABLE_FEATURES = false;
+    private BundleContext bundleContext;
 
     /**
      * @param identifier module identifier
@@ -54,58 +60,84 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
     }
 
     @Override
-    public java.lang.AutoCloseable createInstance() {
-        pluginProvider =  new OpenflowPluginProvider();
-        pluginProvider.setDataBroker(getDataBrokerDependency());
-        pluginProvider.setNotificationService(getNotificationServiceDependency());
-        pluginProvider.setRpcRegistry(getRpcRegistryDependency());
-        pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
-        pluginProvider.setEntityOwnershipService(getOwnershipServiceDependency());
-        pluginProvider.setRole(getRole());
-        pluginProvider.setOpenflowPluginConfig(readConfig());
-        pluginProvider.initialization();
-        return pluginProvider;
+    public AutoCloseable createInstance() {
+        // The service is provided via blueprint so wait for and return it here for backwards compatibility.
+        String typeFilter = String.format("(type=%s)", getIdentifier().getInstanceName());
+        final WaitingServiceTracker<OpenflowPluginProvider> tracker = WaitingServiceTracker.create(
+                OpenflowPluginProvider.class, bundleContext, typeFilter);
+        final OpenflowPluginProvider actualService = tracker.waitForService(WaitingServiceTracker.FIVE_MINUTES);
+
+        return new OpenflowPluginProvider() {
+            @Override
+            public void close() {
+                // Don't close the actual service as its life cycle is controlled by blueprint.
+                tracker.close();
+            }
+
+            @Override
+            public void initialization() {
+                actualService.initialization();
+            }
+
+            @Override
+            public void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProvider) {
+                actualService.setSwitchConnectionProviders(switchConnectionProvider);
+            }
+
+            @Override
+            public MessageCountDumper getMessageCountDumper() {
+                return actualService.getMessageCountDumper();
+            }
+
+            @Override
+            public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
+                return actualService.getExtensionConverterRegistrator();
+            }
+
+            @Override
+            public void setRole(OfpRole role) {
+                actualService.setRole(role);
+            }
+
+            @Override
+            public void setSkipTableFeatures(Boolean skipTableFeatures) {
+                actualService.setSkipTableFeatures(skipTableFeatures);
+            }
+
+            @Override
+            public void fireRoleChange(OfpRole newRole) {
+                actualService.fireRoleChange(newRole);
+            }
+
+            @Override
+            public void setDataBroker(DataBroker dataBroker) {
+                actualService.setDataBroker(dataBroker);
+            }
+
+            @Override
+            public void setNotificationService(NotificationProviderService notificationService) {
+                actualService.setNotificationService(notificationService);
+            }
+
+            @Override
+            public void setRpcRegistry(RpcProviderRegistry rpcRegistry) {
+                actualService.setRpcRegistry(rpcRegistry);
+            }
+
+            @Override
+            public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
+                actualService.setEntityOwnershipService(entityOwnershipService);
+            }
+        };
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     @Override
-    public boolean canReuseInstance(
-            AbstractConfigurableOpenFlowProviderModule oldModule) {
-        // we can reuse if only the role field changed
-        boolean noChangeExceptRole = true;
-        noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                getDataBroker(), dataBrokerJmxAttribute);
-        noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                getNotificationService(), notificationServiceJmxAttribute);
-        noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                getRpcRegistry(), rpcRegistryJmxAttribute);
-
-        for (ObjectName ofSwitchProvider : getOpenflowSwitchConnectionProvider()) {
-            noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                    ofSwitchProvider, openflowSwitchConnectionProviderJmxAttribute);
-        }
-        return noChangeExceptRole;
+    public boolean canReuseInstance(AbstractConfigurableOpenFlowProviderModule oldModule) {
+        return true;
     }
 
-    @Override
-    public AutoCloseable reuseInstance(AutoCloseable oldInstance) {
-        OpenflowPluginProvider recycled = (OpenflowPluginProvider) super.reuseInstance(oldInstance);
-        // change role if different
-        recycled.fireRoleChange(MoreObjects.firstNonNull(getRole(), getRole()));
-
-        return recycled;
-    }
-
-    private OpenflowPluginConfig readConfig(){
-
-        final OpenflowPluginConfig.OpenflowPluginConfigBuilder openflowCfgBuilder = OpenflowPluginConfig.builder();
-
-        if(getSkipTableFeatures()!=null){
-            openflowCfgBuilder.setSkipTableFeatures(getSkipTableFeatures().booleanValue());
-        } else{
-            LOG.warn("Could not load XML configuration file via ConfigSubsystem! Fallback to default config value(s)");
-            openflowCfgBuilder.setSkipTableFeatures(SKIP_TABLE_FEATURES);
-        }
-
-        return openflowCfgBuilder.build();
-    }
 }
