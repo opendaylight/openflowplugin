@@ -206,6 +206,11 @@
             <artifactId>openflowplugin-impl</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config-he</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>table-miss-enforcer</artifactId>
         </dependency>
