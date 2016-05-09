@@ -1,8 +1,12 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530;
 
-import org.opendaylight.openflowplugin.applications.inventory.manager.InventoryActivator;
+import org.opendaylight.controller.sal.common.util.NoopAutoCloseable;
 
-public class InventoryManagerImplModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530.AbstractInventoryManagerImplModule {
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class InventoryManagerImplModule extends AbstractInventoryManagerImplModule {
     public InventoryManagerImplModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
@@ -12,15 +16,8 @@ public class InventoryManagerImplModule extends org.opendaylight.yang.gen.v1.urn
     }
 
     @Override
-    public void customValidation() {
-        // add custom validation form module attributes here.
+    public AutoCloseable createInstance() {
+        // InventoryActivator instance is created via blueprint so this in a no-op.
+        return NoopAutoCloseable.INSTANCE;
     }
-
-    @Override
-    public java.lang.AutoCloseable createInstance() {
-        InventoryActivator provider = new InventoryActivator(getEntityOwnershipServiceDependency());
-        getBrokerDependency().registerProvider(provider);
-        return provider;
-    }
-
 }

@@ -18,6 +18,7 @@ module inventory-manager-impl {
     identity inventory-manager-impl {
         base config:module-type;
         config:java-name-prefix InventoryManagerImpl;
+        status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {

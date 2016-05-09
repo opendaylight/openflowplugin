@@ -8,6 +8,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530;
-public class InventoryManagerImplModuleFactory extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.inventory.manager.impl.rev150530.AbstractInventoryManagerImplModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class InventoryManagerImplModuleFactory extends AbstractInventoryManagerImplModuleFactory {
 
 }
