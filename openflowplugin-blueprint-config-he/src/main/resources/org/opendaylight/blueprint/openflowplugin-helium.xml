@@ -23,6 +23,14 @@
     <argument ref="entityOwnershipService"/>
   </bean>
 
+  <!-- Create the Inventory manager/provider -->
+  <bean id="inventoryManager" class="org.opendaylight.openflowplugin.applications.inventory.manager.InventoryActivator"
+          init-method="start" destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="notificationService"/>
+    <argument ref="entityOwnershipService"/>
+  </bean>
+
   <reference id="switchConnProviderFactory"
           interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
 
@@ -69,7 +77,7 @@
   <!-- Create OpenflowPluginProvider instance -->
 
   <bean id="openflowPluginProvider" class="org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider"
-          init-method="initialization" destroy-method="close" depends-on="statsManager">
+          init-method="initialization" destroy-method="close" depends-on="statsManager inventoryManager">
     <property name="dataBroker" ref="dataBroker"/>
     <property name="rpcRegistry" ref="rpcRegistry"/>
     <property name="notificationService" ref="notificationService"/>

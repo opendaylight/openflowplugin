@@ -9,41 +9,30 @@ package org.opendaylight.openflowplugin.applications.inventory.manager;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InventoryActivator implements BindingAwareProvider, AutoCloseable {
+public class InventoryActivator implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(InventoryActivator.class);
-    private FlowCapableInventoryProvider provider;
-    final private EntityOwnershipService eos;
 
-    public InventoryActivator(EntityOwnershipService eos) {
-        this.eos = eos;
+    private final FlowCapableInventoryProvider provider;
+
+    public InventoryActivator(DataBroker dataBroker, NotificationProviderService notificationService,
+            EntityOwnershipService eos) {
+        provider = new FlowCapableInventoryProvider(dataBroker, notificationService, eos);
     }
 
-
-    @Override
-    public void onSessionInitiated(final ProviderContext session) {
-        DataBroker dataBroker = session.getSALService(DataBroker.class);
-        NotificationProviderService salNotifiService =
-                session.getSALService(NotificationProviderService.class);
-
-        provider = new FlowCapableInventoryProvider(dataBroker, salNotifiService, eos);
+    public void start() {
         provider.start();
     }
 
     @Override
-    public void close() throws Exception {
-        if (provider != null) {
-            try {
-                provider.close();
-            } catch (InterruptedException e) {
-                LOG.warn("Interrupted while waiting for shutdown", e);
-            }
-            provider = null;
+    public void close() {
+        try {
+            provider.close();
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while waiting for shutdown", e);
         }
     }
 }
