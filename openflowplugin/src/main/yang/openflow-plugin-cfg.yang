@@ -16,5 +16,6 @@ module openflow-provider {
     identity openflow-provider{
         base config:service-type;
         config:java-class "org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider";
+        config:disable-osgi-service-registration;
     }
 }
