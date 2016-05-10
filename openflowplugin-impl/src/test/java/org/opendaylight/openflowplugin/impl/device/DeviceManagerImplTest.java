@@ -160,7 +160,6 @@ public class DeviceManagerImplTest {
         final DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
         final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
         when(mockedDeviceState.getNodeId()).thenReturn(mockedNodeId);
 
         if (withException) {

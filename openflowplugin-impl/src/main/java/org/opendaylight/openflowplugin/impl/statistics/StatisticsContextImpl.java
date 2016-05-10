@@ -64,6 +64,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     private Timeout pollTimeout;
 
     private final LifecycleConductor conductor;
+    private boolean schedulingEnabled;
 
     public StatisticsContextImpl(@CheckForNull final NodeId nodeId, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
         this.conductor = lifecycleConductor;
@@ -179,14 +180,25 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() {
+        schedulingEnabled = false;
         for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
                 iterator.hasNext();) {
             RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
         }
         if (null != pollTimeout && !pollTimeout.isExpired()) {
             pollTimeout.cancel();
-            }
         }
+    }
+
+    @Override
+    public void setSchedulingEnabled(boolean schedulingEnabled) {
+        this.schedulingEnabled = schedulingEnabled;
+    }
+
+    @Override
+    public boolean isSchedulingEnabled() {
+        return schedulingEnabled;
+    }
 
     @Override
     public void setPollTimeout(final Timeout pollTimeout) {
