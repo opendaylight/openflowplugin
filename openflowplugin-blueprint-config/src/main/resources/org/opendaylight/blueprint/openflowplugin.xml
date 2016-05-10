@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+        odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+  <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+  <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
+  <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
+  <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
+
+  <reference id="switchConnProviderFactory"
+          interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
+
+  <!-- Create OF switch connection provider on port 6633 -->
+  <odl:clustered-app-config id="defaultSwitchConnConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
+      list-key-value="openflow-switch-connection-provider-default-impl">
+    <odl:default-config><![CDATA[
+      <switch-connection-config xmlns="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:config">
+        <instance-name>openflow-switch-connection-provider-default-impl</instance-name>
+        <port>6633</port>
+        <transport-protocol>TCP</transport-protocol>
+      </switch-connection-config>
+    ]]></odl:default-config>
+  </odl:clustered-app-config>
+
+  <bean id="defaultSwitchConnProvider" factory-ref="switchConnProviderFactory" factory-method="newInstance">
+    <argument ref="defaultSwitchConnConfig"/>
+  </bean>
+
+  <service ref="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+          odl:type="openflow-switch-connection-provider-default-impl"/>
+
+  <!-- Create OF switch connection provider on port 6653 -->
+  <odl:clustered-app-config id="legacySwitchConnConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
+      list-key-value="openflow-switch-connection-provider-legacy-impl">
+    <odl:default-config><![CDATA[
+      <switch-connection-config xmlns="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:config">
+        <instance-name>openflow-switch-connection-provider-legacy-impl</instance-name>
+        <port>6653</port>
+        <transport-protocol>TCP</transport-protocol>
+      </switch-connection-config>
+    ]]></odl:default-config>
+  </odl:clustered-app-config>
+
+  <bean id="legacySwitchConnProvider" factory-ref="switchConnProviderFactory" factory-method="newInstance">
+    <argument ref="legacySwitchConnConfig"/>
+  </bean>
+
+  <service ref="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+          odl:type="openflow-switch-connection-provider-legacy-impl"/>
+
+  <!-- Create OpenflowPluginProvider instance -->
+
+  <odl:clustered-app-config id="openflowProviderConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+
+  <reference id="openflowPluginProviderFactory"
+          interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
+
+  <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
+    <argument ref="openflowProviderConfig"/>
+    <argument ref="dataBroker"/>
+    <argument ref="rpcRegistry"/>
+    <argument ref="notificationService"/>
+    <argument ref="notificationPublishService"/>
+    <argument ref="entityOwnershipService"/>
+    <argument>
+      <list>
+        <ref component-id="defaultSwitchConnProvider"/>
+        <ref component-id="legacySwitchConnProvider"/>
+      </list>
+    </argument>
+  </bean>
+
+  <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
+    <interfaces>
+      <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
+      <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
+    </interfaces>
+  </service>
+
+</blueprint>
