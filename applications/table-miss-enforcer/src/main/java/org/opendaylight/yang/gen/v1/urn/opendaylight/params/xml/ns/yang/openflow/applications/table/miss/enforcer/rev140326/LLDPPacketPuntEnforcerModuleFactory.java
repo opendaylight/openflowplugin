@@ -8,6 +8,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.table.miss.enforcer.rev140326;
-public class LLDPPacketPuntEnforcerModuleFactory extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.table.miss.enforcer.rev140326.AbstractLLDPPacketPuntEnforcerModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class LLDPPacketPuntEnforcerModuleFactory extends AbstractLLDPPacketPuntEnforcerModuleFactory {
 
 }

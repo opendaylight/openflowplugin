@@ -34,7 +34,7 @@ public class LLDPDataChangeListenerTest {
      */
     @Test
     public void testCreateFlow() {
-        LLDPPacketPuntEnforcer lldpDataChangeListener = new LLDPPacketPuntEnforcer(flowService);
+        LLDPPacketPuntEnforcer lldpDataChangeListener = new LLDPPacketPuntEnforcer(flowService, null);
         evaluateFlow(lldpDataChangeListener.createFlow());
     }
 
