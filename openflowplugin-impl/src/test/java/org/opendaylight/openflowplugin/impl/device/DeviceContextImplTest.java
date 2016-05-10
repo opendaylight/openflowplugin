@@ -466,6 +466,7 @@ public class DeviceContextImplTest {
                 .setPriority(42)
                 .setCookie(new FlowCookie(BigInteger.ONE))
                 .setMatch(new MatchBuilder().build());
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
         Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceContext.class), any(Object.class)))
                 .thenReturn(flowRemovedMdsalBld.build());
@@ -490,6 +491,7 @@ public class DeviceContextImplTest {
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
 
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
         Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
     }
