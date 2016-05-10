@@ -16,6 +16,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_manager;
-public class ForwardingRulesManagerModuleFactory extends org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_manager.AbstractForwardingRulesManagerModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class ForwardingRulesManagerModuleFactory extends AbstractForwardingRulesManagerModuleFactory {
 
 }
