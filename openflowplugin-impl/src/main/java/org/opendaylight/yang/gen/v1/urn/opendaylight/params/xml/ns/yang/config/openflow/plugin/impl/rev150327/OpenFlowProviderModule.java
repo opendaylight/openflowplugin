@@ -1,14 +1,20 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327;
 
+import com.google.common.reflect.AbstractInvocationHandler;
+import com.google.common.reflect.Reflection;
+import java.lang.reflect.Method;
+import org.opendaylight.controller.config.api.osgi.WaitingServiceTracker;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
-import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
+import org.osgi.framework.BundleContext;
 
-public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327.AbstractOpenFlowProviderModule {
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class OpenFlowProviderModule extends AbstractOpenFlowProviderModule {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenFlowProviderModule.class);
+    private BundleContext bundleContext;
 
     public OpenFlowProviderModule(final org.opendaylight.controller.config.api.ModuleIdentifier identifier, final org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
@@ -19,37 +25,38 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
     }
 
     @Override
-    public void customValidation() {
-        // add custom validation form module attributes here.
+    public AutoCloseable createInstance() {
+        // The service is provided via blueprint so wait for and return it here for backwards compatibility.
+        String typeFilter = String.format("(type=%s)", getIdentifier().getInstanceName());
+        final WaitingServiceTracker<OpenFlowPluginProvider> tracker = WaitingServiceTracker.create(
+                OpenFlowPluginProvider.class, bundleContext, typeFilter);
+        final OpenFlowPluginProvider openflowPluginProvider = tracker.waitForService(WaitingServiceTracker.FIVE_MINUTES);
+
+        // We don't want to call close on the actual service as its life cycle is controlled by blueprint but
+        // we do want to close the tracker so create a proxy to override close appropriately.
+        return Reflection.newProxy(OpenFlowPluginProviderProxyInterface.class, new AbstractInvocationHandler() {
+            @Override
+            protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
+                if (method.getName().equals("close")) {
+                    tracker.close();
+                    return null;
+                } else {
+                    return method.invoke(openflowPluginProvider, args);
+                }
+            }
+        });
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     @Override
-    public java.lang.AutoCloseable createInstance() {
-        LOG.info("Initializing new OFP southbound.");
-        OpenflowPortsUtil.init();
-        final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(getRpcRequestsQuota(), getGlobalNotificationQuota());
-
-        openflowPluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
-        openflowPluginProvider.setDataBroker(getDataBrokerDependency());
-        openflowPluginProvider.setRpcProviderRegistry(getRpcRegistryDependency());
-        openflowPluginProvider.setNotificationProviderService(getNotificationAdapterDependency());
-        openflowPluginProvider.setNotificationPublishService(getNotificationPublishAdapterDependency());
-        openflowPluginProvider.setSwitchFeaturesMandatory(getSwitchFeaturesMandatory());
-        openflowPluginProvider.setIsStatisticsPollingOff(getIsStatisticsPollingOff());
-        openflowPluginProvider.setEntityOwnershipService(getEntityOwnershipServiceDependency());
-        openflowPluginProvider.setIsStatisticsRpcEnabled(getIsStatisticsRpcEnabled());
-        openflowPluginProvider.setBarrierCountLimit(getBarrierCountLimit().getValue());
-        openflowPluginProvider.setBarrierInterval(getBarrierIntervalTimeoutLimit().getValue());
-        openflowPluginProvider.setEchoReplyTimeout(getEchoReplyTimeout().getValue());
-
-        openflowPluginProvider.initialize();
-
-        LOG.info("Configured values, StatisticsPollingOff:{}, SwitchFeaturesMandatory:{}, BarrierCountLimit:{}, BarrierTimeoutLimit:{}, EchoReplyTimeout:{}",
-                getIsStatisticsPollingOff(), getSwitchFeaturesMandatory(), getBarrierCountLimit().getValue(),
-                getBarrierIntervalTimeoutLimit().getValue(), getEchoReplyTimeout().getValue());
-
-
-        return openflowPluginProvider;
+    public boolean canReuseInstance(AbstractOpenFlowProviderModule oldModule) {
+        return true;
     }
 
+    private static interface OpenFlowPluginProviderProxyInterface extends OpenFlowPluginProvider,
+            OpenFlowPluginExtensionRegistratorProvider {
+    }
 }
