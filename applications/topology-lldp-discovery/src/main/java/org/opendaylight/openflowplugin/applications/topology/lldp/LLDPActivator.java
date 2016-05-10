@@ -7,39 +7,34 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LLDPActivator implements BindingAwareProvider, AutoCloseable {
+public class LLDPActivator implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPActivator.class);
-    private static LLDPDiscoveryProvider provider = new LLDPDiscoveryProvider();
+
     private static String lldpSecureKey;
 
-    public LLDPActivator(String secureKey) {
+    private final NotificationProviderService notificationService;
+    private LLDPDiscoveryProvider provider;
+
+    public LLDPActivator(NotificationProviderService notificationService, String secureKey) {
+        this.notificationService = notificationService;
         lldpSecureKey = secureKey;
     }
 
-    public void onSessionInitiated(final ProviderContext session) {
-        DataProviderService dataService = session.<DataProviderService>getSALService(DataProviderService.class);
-        provider.setDataService(dataService);
-        NotificationProviderService notificationService = session.<NotificationProviderService>getSALService(NotificationProviderService.class);
+    public void start() {
+        LOG.info("Starting LLDPActivator with lldpSecureKey: {}", lldpSecureKey);
+
+        provider = new LLDPDiscoveryProvider();
         provider.setNotificationService(notificationService);
         provider.start();
     }
 
     @Override
-    public void close() throws Exception {
-        if(provider != null) {
-            try {
-                provider.close();
-            } catch (Exception e) {
-                LOG.warn("Exception when closing down topology-lldp-discovery",e);
-            }
-        }
+    public void close() {
+        provider.close();
     }
 
     public static String getLldpSecureKey() {

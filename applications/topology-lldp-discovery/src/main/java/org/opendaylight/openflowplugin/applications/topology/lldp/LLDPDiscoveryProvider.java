@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
@@ -17,23 +16,10 @@ import org.slf4j.LoggerFactory;
 
 public class LLDPDiscoveryProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryProvider.class);
-    private DataProviderService dataService;
     private NotificationProviderService notificationService;
 
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private LLDPLinkAger lldpLinkAger;
-
-    public DataProviderService getDataService() {
-        return this.dataService;
-    }
-
-    public void setDataService(final DataProviderService dataService) {
-        this.dataService = dataService;
-    }
-
-    public NotificationProviderService getNotificationService() {
-        return this.notificationService;
-    }
 
     public void setNotificationService(final NotificationProviderService notificationService) {
         this.notificationService = notificationService;
@@ -52,6 +38,7 @@ public class LLDPDiscoveryProvider implements AutoCloseable {
         LOG.info("LLDPDiscoveryListener Started.");
     }
 
+    @Override
     public void close() {
         try {
             LOG.info("LLDPDiscoveryListener stopped.");

@@ -1,8 +1,12 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.impl.rev150530;
 
-import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
+import org.opendaylight.controller.sal.common.util.NoopAutoCloseable;
 
-public class TopologyLldpDiscoveryImplModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.impl.rev150530.AbstractTopologyLldpDiscoveryImplModule {
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class TopologyLldpDiscoveryImplModule extends AbstractTopologyLldpDiscoveryImplModule {
     public TopologyLldpDiscoveryImplModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
@@ -12,15 +16,8 @@ public class TopologyLldpDiscoveryImplModule extends org.opendaylight.yang.gen.v
     }
 
     @Override
-    public void customValidation() {
-        // add custom validation form module attributes here.
+    public AutoCloseable createInstance() {
+        // LLDPActivator instance is created via blueprint so this in a no-op.
+        return NoopAutoCloseable.INSTANCE;
     }
-
-    @Override
-    public java.lang.AutoCloseable createInstance() {
-        LLDPActivator provider = new LLDPActivator(getLldpSecureKey());
-        getBrokerDependency().registerProvider(provider);
-        return provider;
-    }
-
 }
