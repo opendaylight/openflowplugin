@@ -8,6 +8,29 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327;
-public class OpenFlowProviderModuleFactory extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327.AbstractOpenFlowProviderModuleFactory {
 
+import org.opendaylight.controller.config.api.DependencyResolver;
+import org.osgi.framework.BundleContext;
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class OpenFlowProviderModuleFactory extends AbstractOpenFlowProviderModuleFactory {
+    @Override
+    public OpenFlowProviderModule instantiateModule(String instanceName, DependencyResolver dependencyResolver,
+            OpenFlowProviderModule oldModule, AutoCloseable oldInstance, BundleContext bundleContext) {
+        OpenFlowProviderModule module = super.instantiateModule(instanceName, dependencyResolver, oldModule,
+                oldInstance, bundleContext);
+        module.setBundleContext(bundleContext);
+        return module;
+    }
+
+    @Override
+    public OpenFlowProviderModule instantiateModule(String instanceName, DependencyResolver dependencyResolver,
+            BundleContext bundleContext) {
+        OpenFlowProviderModule module = super.instantiateModule(instanceName, dependencyResolver, bundleContext);
+        module.setBundleContext(bundleContext);
+        return module;
+    }
 }
