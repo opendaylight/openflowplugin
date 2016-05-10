@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -26,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -63,6 +65,8 @@ public class LifecycleConductorImplTest {
     private HashedWheelTimer hashedWheelTimer;
     @Mock
     private ListenableFuture<Void> listenableFuture;
+    @Mock
+    private StatisticsManager statisticsManager;
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
     private OfpRole ofpRole = OfpRole.NOCHANGE;
@@ -75,6 +79,7 @@ public class LifecycleConductorImplTest {
 
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
         lifecycleConductor.setSafelyDeviceManager(deviceManager);
+        lifecycleConductor.setSafelyStatisticsManager(statisticsManager);
 
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
     }
@@ -172,8 +177,7 @@ public class LifecycleConductorImplTest {
         when(deviceManager.getDeviceContextFromNodeId(nodeId)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(nodeId,true,OfpRole.BECOMEMASTER,false);
-        verify(deviceState,times(1)).setRole(OfpRole.BECOMEMASTER);
-        verify(deviceState,times(0)).setRole(OfpRole.BECOMESLAVE);
+        verify(statisticsManager).startScheduling(nodeId);
     }
 
     /**
@@ -185,8 +189,7 @@ public class LifecycleConductorImplTest {
         when(deviceManager.getDeviceContextFromNodeId(nodeId)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(nodeId,true,OfpRole.BECOMESLAVE,false);
-        verify(deviceState,times(1)).setRole(OfpRole.BECOMESLAVE);
-        verify(deviceState,times(0)).setRole(OfpRole.BECOMEMASTER);
+        verify(statisticsManager).stopScheduling(nodeId);
     }
 
     /**
