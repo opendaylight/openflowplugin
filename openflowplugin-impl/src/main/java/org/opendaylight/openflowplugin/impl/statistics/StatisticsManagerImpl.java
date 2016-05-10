@@ -72,7 +72,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
-    private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
+    private static final long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
@@ -104,13 +104,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext = new StatisticsContextImpl(nodeId, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(nodeId, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", nodeId);
 
-        if (shuttingDownStatisticsPolling) {
-            LOG.info("Statistics is shutdown for node:{}", nodeId);
-        } else {
-            LOG.info("Schedule Statistics poll for node:{}", nodeId);
-            scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
-        }
-
         deviceContext.getDeviceState().setDeviceSynchronized(true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
     }
@@ -118,23 +111,26 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void pollStatistics(final DeviceContext deviceContext,
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
-        
-        if (!deviceContext.getDeviceState().isValid()) {
-            LOG.debug("Session for device {} is not valid.", deviceContext.getDeviceState().getNodeId().getValue());
+
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+
+        if (!statisticsContext.isSchedulingEnabled()) {
+            LOG.debug("Disabling statistics scheduling for device: {}", nodeId);
             return;
         }
+        
+        if (!deviceContext.getDeviceState().isValid()) {
+            LOG.debug("Session is not valid for device: {}", nodeId);
+            return;
+        }
+
         if (!deviceContext.getDeviceState().isStatisticsPollingEnabled()) {
-            LOG.debug("StatisticsPolling is disabled for device: {} , try later", deviceContext.getDeviceState().getNodeId());
+            LOG.debug("Statistics polling is currently disabled for device: {}", nodeId);
             scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
             return;
         }
 
-        if (!OfpRole.BECOMEMASTER.equals(deviceContext.getDeviceState().getRole())) {
-            LOG.debug("Role is not Master so we don't want to poll any stat for device: {}", deviceContext.getDeviceState().getNodeId());
-            scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
-            return;
-        }
-        LOG.debug("POLLING ALL STATS for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        LOG.debug("POLLING ALL STATISTICS for device: {}", nodeId);
         timeCounter.markStart();
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -167,19 +163,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void run(final Timeout timeout) throws Exception {
                 if (!deviceStatisticsCollectionFuture.isDone()) {
-                    LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceContext
-                            .getDeviceState().getNodeId(), STATS_TIMEOUT_SEC);
+                    LOG.info("Statistics collection for node {} still in progress even after {} secs", nodeId, STATS_TIMEOUT_SEC);
                     deviceStatisticsCollectionFuture.cancel(true);
                 }
             }
         };
+
         conductor.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void scheduleNextPolling(final DeviceContext deviceContext,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
-        LOG.debug("SCHEDULING NEXT STATS POLLING for device: {}", deviceContext.getDeviceState().getNodeId().getValue());
+        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceContext.getDeviceState().getNodeId());
         if (!shuttingDownStatisticsPolling) {
             final Timeout pollTimeout = conductor.newTimeout(new TimerTask() {
                 @Override
@@ -217,7 +213,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
         final StatisticsContext statisticsContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
         if (null != statisticsContext) {
-            LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
+            LOG.trace("Removing device context from stack. No more statistics gathering for device: {}", deviceContext.getDeviceState().getNodeId());
             statisticsContext.close();
         }
         deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceContext);
@@ -258,7 +254,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             }
                             break;
                         default:
-                            LOG.warn("statistics work mode not supported: {}", targetWorkMode);
+                            LOG.warn("Statistics work mode not supported: {}", targetWorkMode);
                     }
                 }
                 workMode = targetWorkMode;
@@ -271,6 +267,33 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     .buildFuture();
         }
         return result;
+    }
+
+    @Override
+    public void startScheduling(NodeId nodeId) {
+        if (shuttingDownStatisticsPolling) {
+            LOG.info("Statistics are shut down for device: {}", nodeId);
+            return;
+        }
+
+        final StatisticsContext statisticsContext = Preconditions.checkNotNull(contexts.get(nodeId));
+
+        if (statisticsContext.isSchedulingEnabled()) {
+            LOG.debug("Statistics scheduling is already enabled for device: {}", nodeId);
+            return;
+        }
+
+        LOG.info("Scheduling statistics poll for device: {}", nodeId);
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
+        statisticsContext.setSchedulingEnabled(true);
+        scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+    }
+
+    @Override
+    public void stopScheduling(NodeId nodeId) {
+        LOG.debug("Stopping statistics scheduling for device: {}", nodeId);
+        final StatisticsContext statisticsContext = Preconditions.checkNotNull(contexts.get(nodeId));
+        statisticsContext.setSchedulingEnabled(false);
     }
 
     @Override

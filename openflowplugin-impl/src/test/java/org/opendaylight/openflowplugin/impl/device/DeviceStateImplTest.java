@@ -111,12 +111,6 @@ public class DeviceStateImplTest {
     }
 
     @Test
-    public void testRole_initialValue(){
-        Assert.assertFalse(deviceState.getRole().equals(OfpRole.BECOMEMASTER));
-        Assert.assertFalse(deviceState.getRole().equals(OfpRole.NOCHANGE));
-    }
-
-    @Test
     public void testStatistics_initialValue(){
         Assert.assertFalse(deviceState.isFlowStatisticsAvailable());
         Assert.assertFalse(deviceState.isPortStatisticsAvailable());

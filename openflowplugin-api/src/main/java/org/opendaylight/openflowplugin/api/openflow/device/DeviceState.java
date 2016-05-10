@@ -123,10 +123,6 @@ public interface DeviceState {
 
     void setDeviceSynchronized(boolean deviceSynchronized);
 
-    void setRole(OfpRole ofpRole);
-
-    OfpRole getRole();
-
     boolean isStatisticsPollingEnabled();
 
     void setStatisticsPollingEnabledProp(boolean statPollEnabled);

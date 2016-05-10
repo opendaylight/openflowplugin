@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChang
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -47,6 +48,7 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     private DeviceManager deviceManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
     private ConcurrentHashMap<NodeId, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
+    private StatisticsManager statisticsManager;
 
     public LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
         Preconditions.checkNotNull(messageIntelligenceAgency);
@@ -56,6 +58,12 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     public void setSafelyDeviceManager(final DeviceManager deviceManager) {
         if (this.deviceManager == null) {
             this.deviceManager = deviceManager;
+        }
+    }
+
+    public void setSafelyStatisticsManager(final StatisticsManager statisticsManager) {
+        if (this.statisticsManager == null) {
+            this.statisticsManager = statisticsManager;
         }
     }
 
@@ -113,16 +121,13 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
                 LOG.debug("Initialization phase skipping starting services.");
                 return;
             }
-            LOG.info("Role change to {} in role context for node {} was successful, staring/stopping services.", newRole, nodeId);
 
-            //TODO: This is old way to check if statistics is running, remove after statistics changes implemented
-            final DeviceState deviceState = deviceContext.getDeviceState();
-            if (null != deviceState) {
-                if (OfpRole.BECOMEMASTER.equals(newRole) && (getDeviceContext(nodeId) != null)) {
-                    deviceState.setRole(OfpRole.BECOMEMASTER);
-                } else {
-                    deviceState.setRole(OfpRole.BECOMESLAVE);
-                }
+            LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, nodeId);
+
+            if (OfpRole.BECOMEMASTER.equals(newRole)) {
+                statisticsManager.startScheduling(nodeId);
+            } else {
+                statisticsManager.stopScheduling(nodeId);
             }
 
             final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(null, newRole);

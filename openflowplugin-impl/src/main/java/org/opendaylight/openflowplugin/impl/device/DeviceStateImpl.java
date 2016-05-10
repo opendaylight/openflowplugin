@@ -48,7 +48,6 @@ class DeviceStateImpl implements DeviceState {
     private boolean portStatisticsAvailable;
     private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
-    private volatile OfpRole role;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -58,7 +57,6 @@ class DeviceStateImpl implements DeviceState {
         version = featuresReply.getVersion();
         statPollEnabled = false;
         deviceSynchronized = false;
-        role = OfpRole.BECOMESLAVE;
     }
 
     @Override
@@ -160,16 +158,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setDeviceSynchronized(final boolean _deviceSynchronized) {
         deviceSynchronized = _deviceSynchronized;
-    }
-
-    @Override
-    public OfpRole getRole() {
-        return role;
-    }
-
-    @Override
-    public void setRole(OfpRole role) {
-        this.role = role;
     }
 
     @Override
