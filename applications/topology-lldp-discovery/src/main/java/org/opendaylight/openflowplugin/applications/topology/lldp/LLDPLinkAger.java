@@ -20,15 +20,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev
 
 public class LLDPLinkAger implements AutoCloseable {
     private final long linkExpirationTime;
-    private Map<LinkDiscovered, Date> linkToDate;
-    private Timer timer;
-    private NotificationProviderService notificationService;
+    private final Map<LinkDiscovered, Date> linkToDate;
+    private final Timer timer;
+    private final NotificationProviderService notificationService;
 
     /**
      * default ctor - start timer
      */
-    public LLDPLinkAger(final long lldpInterval, final long linkExpirationTime) {
+    public LLDPLinkAger(final long lldpInterval, final long linkExpirationTime,
+            final NotificationProviderService notificationService) {
         this.linkExpirationTime = linkExpirationTime;
+        this.notificationService = notificationService;
         linkToDate = new ConcurrentHashMap<>();
         timer = new Timer();
         timer.schedule(new LLDPAgingTask(), 0, lldpInterval);
@@ -44,10 +46,6 @@ public class LLDPLinkAger implements AutoCloseable {
     public void close() {
         timer.cancel();
         linkToDate.clear();
-    }
-
-    public void setNotificationService(NotificationProviderService notificationService) {
-        this.notificationService = notificationService;
     }
 
     private class LLDPAgingTask extends TimerTask {

@@ -7,43 +7,37 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp.utils;
 
-import org.apache.commons.lang3.ArrayUtils;
-import java.nio.charset.Charset;
 import com.google.common.hash.HashCode;
-import org.opendaylight.controller.liblldp.Ethernet;
-import org.opendaylight.controller.liblldp.LLDP;
-import org.opendaylight.controller.liblldp.BitBufferHelper;
-import org.opendaylight.controller.liblldp.LLDPTLV;
-import org.opendaylight.controller.liblldp.NetUtils;
+import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
-import com.google.common.hash.HashFunction;
+import java.lang.management.ManagementFactory;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import org.apache.commons.lang3.ArrayUtils;
+import org.opendaylight.controller.liblldp.BitBufferHelper;
+import org.opendaylight.controller.liblldp.CustomTLVKey;
+import org.opendaylight.controller.liblldp.Ethernet;
+import org.opendaylight.controller.liblldp.LLDP;
+import org.opendaylight.controller.liblldp.LLDPTLV;
+import org.opendaylight.controller.liblldp.NetUtils;
 import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import java.util.Arrays;
-import java.security.NoSuchAlgorithmException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import java.lang.management.ManagementFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.controller.liblldp.CustomTLVKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class LLDPDiscoveryUtils {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtils.class);
-
-    // Send LLDP every five seconds
-    public static final Long LLDP_INTERVAL = (long) (1000*5);
-
-    // Let up to three intervals pass before we decide we are expired.
-    public static final Long LLDP_EXPIRATION_TIME = LLDP_INTERVAL*3;
 
     public static String macToString(byte[] mac) {
         StringBuilder b = new StringBuilder();
