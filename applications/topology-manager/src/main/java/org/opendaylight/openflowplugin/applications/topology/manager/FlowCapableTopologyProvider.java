@@ -7,16 +7,13 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.concurrent.ExecutionException;
-
 import com.google.common.base.Optional;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -29,24 +26,26 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCloseable {
+public class FlowCapableTopologyProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
+    static final String TOPOLOGY_ID = "flow:1";
+
+    private final DataBroker dataBroker;
+    private final NotificationProviderService notificationService;
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private Thread thread;
     private TerminationPointChangeListenerImpl terminationPointChangeListener;
     private NodeChangeListenerImpl nodeChangeListener;
-    static final String TOPOLOGY_ID = "flow:1";
+
+    public FlowCapableTopologyProvider(DataBroker dataBroker, NotificationProviderService notificationService) {
+        this.dataBroker = dataBroker;
+        this.notificationService = notificationService;
+    }
 
     /**
      * Gets called on start of a bundle.
-     *
-     * @param session
      */
-    @Override
-    public synchronized void onSessionInitiated(final ProviderContext session) {
-        final DataBroker dataBroker = session.getSALService(DataBroker.class);
-        final NotificationProviderService notificationService = session.getSALService(NotificationProviderService.class);
-
+    public void start() {
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
         final InstanceIdentifier<Topology> path = InstanceIdentifier
                 .create(NetworkTopology.class)
@@ -72,10 +71,12 @@ public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCl
         thread.setDaemon(true);
         thread.setName("FlowCapableTopologyExporter-" + TOPOLOGY_ID);
         thread.start();
+
+        LOG.info("FlowCapableTopologyProvider started");
     }
 
     @Override
-    public synchronized void close() throws InterruptedException {
+    public void close() {
         LOG.info("FlowCapableTopologyProvider stopped.");
         if (this.listenerRegistration != null) {
             try {
@@ -90,7 +91,12 @@ public class FlowCapableTopologyProvider implements BindingAwareProvider, AutoCl
         unregisterListener(nodeChangeListener);
         if (thread != null) {
             thread.interrupt();
-            thread.join();
+            try {
+                thread.join();
+            } catch(InterruptedException e) {
+                LOG.debug("Thread {} was interrupted", thread.getName(), e);
+            }
+
             thread = null;
         }
     }
