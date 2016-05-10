@@ -8,6 +8,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.manager.impl.rev150530;
-public class TopologyLldpDiscoveryImplModuleFactory extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.manager.impl.rev150530.AbstractTopologyLldpDiscoveryImplModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class TopologyLldpDiscoveryImplModuleFactory extends AbstractTopologyLldpDiscoveryImplModuleFactory {
 
 }
