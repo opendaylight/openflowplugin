@@ -16,6 +16,7 @@ module table-miss-enforcer {
     identity table-miss-enforcer {
         base "config:module-type";
         config:java-name-prefix LLDPPacketPuntEnforcer;
+        status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {
