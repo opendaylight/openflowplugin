@@ -20,6 +20,7 @@ module forwardingrules-manager {
     identity forwardingrules-manager {
             base config:module-type;
             config:java-name-prefix ForwardingRulesManager;
+            status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {
