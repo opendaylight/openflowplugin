@@ -16,6 +16,7 @@ module of-switch-config-pusher {
     identity of-switch-config-pusher {
         base "config:module-type";
         config:java-name-prefix DefaultConfigPusher;
+        status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {
