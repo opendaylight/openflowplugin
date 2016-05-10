@@ -127,6 +127,8 @@ public class StatisticsManagerImplTest {
     private LifecycleConductor conductor;
     @Mock
     private GetFeaturesOutput featuresOutput;
+    @Mock
+    private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -180,6 +182,7 @@ public class StatisticsManagerImplTest {
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor);
+        statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
         when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
     }
@@ -367,14 +370,12 @@ public class StatisticsManagerImplTest {
     }
 
     @Test
-    public void testPollStatistics() {
-        StatisticsManager statisticsManagerSpy = Mockito.spy(statisticsManager);
-
+    public void testPollStatistics() throws Exception {
         final StatisticsContext statisticsContext = Mockito.mock(StatisticsContext.class);
         final TimeCounter mockTimerCounter = Mockito.mock(TimeCounter.class);
 
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
-        verify(mockedDeviceContext, times(2)).getDeviceState();
+        verify(mockedDeviceContext).getDeviceState();
 
         when(mockedDeviceContext.getDeviceState().isValid()).thenReturn(true);
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
@@ -384,8 +385,8 @@ public class StatisticsManagerImplTest {
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
         // TODO Make scheduleNextPolling visible for tests?
 
-        when(mockedDeviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
+        when(statisticsContext.isSchedulingEnabled()).thenReturn(Boolean.TRUE);
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
         Mockito.verify(mockTimerCounter).markStart();
         Mockito.verify(mockTimerCounter).addTimeMark();

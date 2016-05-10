@@ -12,6 +12,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
@@ -71,6 +72,12 @@ public interface LifecycleConductor {
      * @param deviceManager should be set in OpenFlowPluginProviderImpl
      */
     void setSafelyDeviceManager(final DeviceManager deviceManager);
+
+    /**
+     * Setter for statistics manager once set it cant be unset or overwritten
+     * @param statisticsManager should be set in OpenFlowPluginProviderImpl
+     */
+    void setSafelyStatisticsManager(final StatisticsManager statisticsManager);
 
     /**
      * Xid from outboundqueue

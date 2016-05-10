@@ -102,7 +102,6 @@ public class RpcManagerImplTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
@@ -136,28 +135,24 @@ public class RpcManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelUpMaster() throws Exception {
-        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.BECOMEMASTER);
         rpcManager.onDeviceContextLevelUp(nodeId);
         verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
     }
 
     @Test
     public void testOnDeviceContextLevelUpSlave() throws Exception {
-        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.BECOMESLAVE);
         rpcManager.onDeviceContextLevelUp(nodeId);
         verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
     }
 
     @Test
     public void testOnDeviceContextLevelUpOther() throws Exception {
-        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.NOCHANGE);
         rpcManager.onDeviceContextLevelUp(nodeId);
         verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
     }
 
     @Test
     public void testOnDeviceContextLevelDown() throws Exception {
-        Mockito.when(deviceState.getRole()).thenReturn(OfpRole.NOCHANGE);
         rpcManager.onDeviceContextLevelDown(deviceContext);
         verify(deviceTerminationPhaseHandler).onDeviceContextLevelDown(deviceContext);
     }
