@@ -51,9 +51,11 @@ public class SyncReactorImpl implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorImpl.class);
     private final SyncPlanPushStrategy syncPlanPushStrategy;
+    private final boolean strictConfigEnforcement;
 
-    public SyncReactorImpl(SyncPlanPushStrategy syncPlanPushStrategy) {
+    public SyncReactorImpl(SyncPlanPushStrategy syncPlanPushStrategy, boolean strictConfigEnforcement) {
         this.syncPlanPushStrategy = Preconditions.checkNotNull(syncPlanPushStrategy, "execution strategy is mandatory");
+        this.strictConfigEnforcement = strictConfigEnforcement;
     }
 
     @Override
@@ -81,9 +83,20 @@ public class SyncReactorImpl implements SyncReactor {
         final ItemSyncBox<Meter> metersToAddOrUpdate = extractMetersToAddOrUpdate(nodeId, configTree, operationalTree);
         final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate = extractFlowsToAddOrUpdate(nodeId, configTree, operationalTree);
 
-        final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove = extractFlowsToRemove(nodeId, configTree, operationalTree);
-        final ItemSyncBox<Meter> metersToRemove = extractMetersToRemove(nodeId, configTree, operationalTree);
-        final List<ItemSyncBox<Group>> groupsToRemove = extractGroupsToRemove(nodeId, configTree, operationalTree);
+        final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
+        final ItemSyncBox<Meter> metersToRemove;
+        final List<ItemSyncBox<Group>> groupsToRemove;
+
+        if (strictConfigEnforcement) {
+            flowsToRemove = extractFlowsToRemove(nodeId, configTree, operationalTree);
+            metersToRemove = extractMetersToRemove(nodeId, configTree, operationalTree);
+            groupsToRemove = extractGroupsToRemove(nodeId, configTree, operationalTree);
+        }
+        else {
+            flowsToRemove = Collections.emptyMap();
+            metersToRemove = new ItemSyncBox();
+            groupsToRemove = Collections.emptyList();
+        }
 
         final SynchronizationDiffInput input = new SynchronizationDiffInput(nodeIdent,
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
@@ -207,5 +220,4 @@ public class SyncReactorImpl implements SyncReactor {
 
         return ReconcileUtil.resolveAndDivideGroupDiffs(nodeId, groupConfiguredMap, pendingGroups, false);
     }
-
 }

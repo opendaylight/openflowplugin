@@ -75,12 +75,14 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private ListenerRegistration<NodeListener> dataTreeConfigChangeListener;
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
 
+    private boolean strictConfigEnforcement;
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry) {
+                                       final RpcConsumerRegistry rpcRegistry,
+                                       final boolean strictConfigEnforcement) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-
+        this.strictConfigEnforcement = strictConfigEnforcement;
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
         this.salFlowService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlowService.class),
@@ -97,7 +99,6 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         this.flatBatchService =
                 Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                         "RPC SalFlatBatchService not found.");
-
         nodeConfigDataTreePath =
                 new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
@@ -140,7 +141,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     .setFlatBatchService(flatBatchService)
                     .setTableForwarder(tableForwarder);
 
-            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
+            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy, strictConfigEnforcement);
             final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl,
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
 
@@ -155,9 +156,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
             final NodeListener<FlowCapableNode> nodeListenerConfig =
-                    new SimplifiedConfigListener(
-                            cfgReactor,
-                            configSnapshot, operationalDao);
+                    new SimplifiedConfigListener(cfgReactor, configSnapshot, operationalDao);
             final NodeListener<Node> nodeListenerOperational =
                     new SimplifiedOperationalListener(operReactor, operationalSnapshot, configDao);
 

@@ -55,8 +55,8 @@ public class ForwardingRulesSyncProviderTest {
                         return Mockito.mock(serviceType);
                     }
                 });
-
-        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry);
+        // currently testing only strict config enforcing (true)
+        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry, true);
 
         Mockito.verify(rpcRegistry).getRpcService(SalFlowService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalGroupService.class);
