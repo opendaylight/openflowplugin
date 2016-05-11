@@ -138,6 +138,7 @@ public interface DeviceContext extends AutoCloseable,
      * @return sync. future for Slave and MD-SAL completition for Master
      */
     ListenableFuture<Void> shuttingDownDataStoreTransactions();
+
     /**
      * Method provides current devices connection context.
      *

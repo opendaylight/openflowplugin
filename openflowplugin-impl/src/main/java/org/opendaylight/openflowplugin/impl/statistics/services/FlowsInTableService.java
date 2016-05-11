@@ -40,7 +40,12 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
     protected OfHeader buildRequest(final Xid xid, final GetFlowStatisticsFromFlowTableInput input) {
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(input.getTableId());
+
+        if (input.getTableId() != null) {
+            mprFlowRequestBuilder.setTableId(input.getTableId());
+        } else {
+            mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
+        }
 
         if (input.getOutPort() != null) {
             mprFlowRequestBuilder.setOutPort(input.getOutPort().longValue());
