@@ -333,7 +333,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path, final T data) throws Exception {
-        transactionChainManager.writeToTransaction(store, path, data);
+        transactionChainManager.writeToTransaction(store, path, data, false);
+    }
+
+    @Override
+    public <T extends DataObject> void writeToTransactionWithParentsSlow(LogicalDatastoreType store, InstanceIdentifier<T> path, T data) throws Exception {
+        transactionChainManager.writeToTransaction(store, path, data, true);
     }
 
     @Override
