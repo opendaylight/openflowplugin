@@ -141,6 +141,12 @@ public interface DeviceContext extends AutoCloseable,
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data) throws Exception;
 
     /**
+     * Method creates put operation using provided data in underlying transaction chain and flag to create missing parents
+     * WARNING: This method is slow because of additional reading cost. Use it only if you really need to create parents.
+     */
+    <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data) throws Exception;
+
+    /**
      * Method creates delete operation for provided path in underlying transaction chain.
      */
     <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws Exception;
