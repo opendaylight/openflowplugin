@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+        odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+
+  <odl:clustered-app-config id="lldpSpeakerConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfig">
+    <odl:default-config><![CDATA[
+      <lldp-speaker-config xmlns="urn:opendaylight:params:xml:ns:yang:openflow:applications:lldp-speaker:config">
+        <address-destination>01:23:00:00:00:01</address-destination>
+      </lldp-speaker-config>
+    ]]></odl:default-config>
+  </odl:clustered-app-config>
+
+  <odl:rpc-service id="packetProcessingService"
+      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+
+  <bean id="lldpSpeaker" class="org.opendaylight.openflowplugin.applications.lldpspeaker.LLDPSpeaker"
+          destroy-method="close">
+    <argument ref="packetProcessingService"/>
+    <argument>
+      <bean factory-ref="lldpSpeakerConfig" factory-method="getAddressDestination"/>
+    </argument>
+  </bean>
+
+  <bean id="nodeConnectorEventTranslator" class="org.opendaylight.openflowplugin.applications.lldpspeaker.NodeConnectorInventoryEventTranslator"
+          destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument>
+      <array>
+        <ref component-id="lldpSpeaker"/>
+      </array>
+    </argument>
+  </bean>
+
+  <bean id="operationalStatusChangeService" class="org.opendaylight.openflowplugin.applications.lldpspeaker.OperationalStatusChangeService">
+    <argument ref="lldpSpeaker"/>
+  </bean>
+
+  <odl:rpc-implementation ref="operationalStatusChangeService"/>
+</blueprint>
