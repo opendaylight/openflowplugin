@@ -8,6 +8,11 @@
 * Do not modify this file unless it is present under src/main directory
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023;
-public class LLDPSpeakerModuleFactory extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.AbstractLLDPSpeakerModuleFactory {
+
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class LLDPSpeakerModuleFactory extends AbstractLLDPSpeakerModuleFactory {
 
 }
