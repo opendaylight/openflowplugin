@@ -89,7 +89,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                     <rpc-requests-quota>20000</rpc-requests-quota>
                     <switch-features-mandatory>false</switch-features-mandatory>
                     <global-notification-quota>64000</global-notification-quota>
-                    <is-statistics-polling-off>false</is-statistics-polling-off>
+                    <is-statistics-polling-off>true</is-statistics-polling-off>
                     <barrier-interval-timeout-limit>500</barrier-interval-timeout-limit>
                     <barrier-count-limit>25600</barrier-count-limit>
                     <echo-reply-timeout>2000</echo-reply-timeout>
