@@ -16,6 +16,7 @@ module bulk-o-matic {
     identity bulk-o-matic {
         base "config:module-type";
         config:java-name-prefix BulkOMatic;
+        status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {
