@@ -46,7 +46,7 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<>();
     private final ScheduledFuture<?> scheduledSpeakerTask;
     private final MacAddress addressDestionation;
-    private OperStatus operationalStatus = OperStatus.RUN;
+    private volatile OperStatus operationalStatus = OperStatus.RUN;
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService,
             final MacAddress addressDestionation) {
