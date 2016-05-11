@@ -87,7 +87,6 @@ public class RpcManagerImplTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
