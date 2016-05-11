@@ -215,11 +215,11 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                   final InstanceIdentifier<T> path, final T data) throws Exception {
+                                                   final InstanceIdentifier<T> path, final T data, boolean createParents) throws Exception {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             LOG.trace("writeToTransaction called with path {} ", path);
-            writeTx.put(store, path, data);
+            writeTx.put(store, path, data, createParents);
         } else {
             LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeII, path);
             throw new Exception("Cannot write into transaction.");
