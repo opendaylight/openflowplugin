@@ -37,6 +37,8 @@ import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMete
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightPortStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueueStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.OpendaylightFlowStatisticsServiceDelegateImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
@@ -101,6 +103,10 @@ public class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, new OpendaylightFlowStatisticsServiceImpl(rpcContext, deviceContext));
+
+        // User driven statistics gathering
+        rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class, new OpendaylightDirectStatisticsServiceImpl(rpcContext, deviceContext));
+
 
         final SalFlatBatchServiceImpl salFlatBatchService = new SalFlatBatchServiceImpl(
                 new SalFlowsBatchServiceImpl(salFlowService, flowCapableTransactionService),
