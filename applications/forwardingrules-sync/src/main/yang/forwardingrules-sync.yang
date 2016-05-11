@@ -52,6 +52,13 @@ module forwardingrules-sync {
                     }
                 }
             }
+
+            leaf strict-config-enforcement {
+                description "Flag for strict configuration enforcing - from config DS.";
+                type boolean;
+                default false;
+            }
+
         }
     }
 }

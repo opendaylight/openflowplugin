@@ -81,7 +81,8 @@ public class SyncReactorImplTest {
 
     @Before
     public void setUp() throws Exception {
-        reactor = new SyncReactorImpl(syncPlanPushStrategy);
+        // currently testing only strict config enforcing (true)
+        reactor = new SyncReactorImpl(syncPlanPushStrategy, true);
     }
 
     @Test

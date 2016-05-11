@@ -34,7 +34,8 @@ public class ForwardingRulesSyncModule extends org.opendaylight.openflowplugin.a
         LOG.info("FRSync module initialization.");
 
         final ForwardingRulesSyncProvider forwardingRulesSyncProvider =
-                new ForwardingRulesSyncProvider(getBrokerDependency(), getDataBrokerDependency(), getRpcRegistryDependency());
+                new ForwardingRulesSyncProvider(getBrokerDependency(), getDataBrokerDependency(), getRpcRegistryDependency(),
+                        getStrictConfigEnforcement());
 
         return forwardingRulesSyncProvider;
     }
