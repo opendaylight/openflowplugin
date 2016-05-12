@@ -4,21 +4,21 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.6.2-Beryllium-SR2</version>
+    <version>1.6.3-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
   <groupId>org.opendaylight.openflowplugin</groupId>
-  <version>0.2.2-Beryllium-SR2</version>
+  <version>0.2.3-SNAPSHOT</version>
   <artifactId>features-flow</artifactId>
   <packaging>jar</packaging>
 
   <properties>
-    <yangtools.version>0.8.2-Beryllium-SR2</yangtools.version>
-    <config.version>0.4.2-Beryllium-SR2</config.version>
-    <mdsal.version>1.3.2-Beryllium-SR2</mdsal.version>
-    <openflowjava.version>0.7.2-Beryllium-SR2</openflowjava.version>
-    <lldp.version>0.10.2-Beryllium-SR2</lldp.version>
+    <yangtools.version>0.8.3-SNAPSHOT</yangtools.version>
+    <config.version>0.4.3-SNAPSHOT</config.version>
+    <mdsal.version>1.3.3-SNAPSHOT</mdsal.version>
+    <openflowjava.version>0.7.3-SNAPSHOT</openflowjava.version>
+    <lldp.version>0.10.3-SNAPSHOT</lldp.version>
 
     <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
     <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
