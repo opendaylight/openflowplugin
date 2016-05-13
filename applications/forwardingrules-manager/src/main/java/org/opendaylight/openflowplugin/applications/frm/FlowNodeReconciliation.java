@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -35,7 +36,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * Created: Aug 26, 2014
  */
-public interface FlowNodeReconciliation extends ClusteredDataChangeListener, AutoCloseable {
+public interface FlowNodeReconciliation extends ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
 
     /**
      * Method contains Node registration to {@link ForwardingRulesManager} functionality
