@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -338,85 +339,135 @@ public abstract class OFRpcTaskFactory {
                 this.rwTx = rwTx;
             }
 
-            @Override
-            public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
-                ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
-
-                UpdateFlowInput in = getInput();
-                UpdatedFlow updated = in.getUpdatedFlow();
-                OriginalFlow original = in.getOriginalFlow();
-                Short version = getVersion();
-
-                List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
-                List<FlowModInputBuilder> ofFlowModInputs;
-
-                if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
-                    // We would need to remove original and add updated.
-
-                    //remove flow
-                    RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
-                    List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                            version, getSession().getFeatures().getDatapathId());
-                    // remove flow should be the first
-                    allFlowMods.addAll(ofFlowRemoveInput);
-                    AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
-                    ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
-                            version, getSession().getFeatures().getDatapathId());
-                } else {
-                    ofFlowModInputs = FlowConvertor.toFlowModInputs(updated,
-                            version, getSession().getFeatures().getDatapathId());
-                }
-
-                //deleting flow hash value from operational DS
-                if (flowId != null) {
-                    CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> hashDeletionFuture
-                        = readFlowHashIdMappingFromOperationalDS(rwTx);
-                    Futures.addCallback(hashDeletionFuture, new FutureCallback<Optional<FlowHashIdMapping>>() {
-                        @Override
-                        public void onSuccess(Optional<FlowHashIdMapping> optFlowHashIdMapping) {
-                          FlowHashIdMapKey flowHashIdMapKeyToDelete = null;
-                          if (optFlowHashIdMapping.isPresent()) {
-                              FlowHashIdMapping flowHashIdMapping = optFlowHashIdMapping.get();
-                              for (FlowHashIdMap flowHashId : flowHashIdMapping.getFlowHashIdMap()) {
-                                  if (flowHashId.getFlowId().getValue().equals(flowId)) {
-                                      flowHashIdMapKeyToDelete = flowHashId.getKey();
-                                      break;
-                                  }
-                              }
-                          }
-                          if (flowHashIdMapKeyToDelete != null) {
-                              final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
-                                    .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
-                              rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
-                              rwTx.submit();
-                          }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            LOG.debug("Reading flow-hash-id map from operational DS wasn't successful");
-                        }
-                    });
-
-                }
-
-                allFlowMods.addAll(ofFlowModInputs);
-                LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
-                result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
-
-                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                OFRpcTaskUtil.hookFutureNotification(this, result,
-                        getRpcNotificationProviderService(),
-                        createFlowUpdatedNotification(in));
-
-                return result;
+            private OFRpcTask getThis() {
+                return this;
             }
 
+            @Override
+            public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
+                ListenableFuture<Boolean> flowExistsInOperationalDSFuture = flowExistsInOperationalDS(flowId, rwTx);
 
-            CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> readFlowHashIdMappingFromOperationalDS(final ReadWriteTransaction rwTx) {
+                AsyncFunction<Boolean, RpcResult<UpdateFlowOutput>> createAndSendFlowUpdateFuture = new AsyncFunction<Boolean, RpcResult<UpdateFlowOutput>>() {
+                    public ListenableFuture<RpcResult<UpdateFlowOutput>> apply(Boolean flowExistsInOpDS)
+                            throws Exception {
+                        ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
+
+                        UpdateFlowInput in = getInput();
+                        UpdatedFlow updated = in.getUpdatedFlow();
+                        OriginalFlow original = in.getOriginalFlow();
+                        Short version = getVersion();
+
+                        List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
+                        List<FlowModInputBuilder> ofFlowModInputs;
+
+                        if (!flowExistsInOpDS) {
+                            // the flow is not in the Operational DS, in which
+                            // case, we would need to add the flow,
+                            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
+                            ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), version,
+                                    getSession().getFeatures().getDatapathId());
+                        } else if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
+                            // the flow exists in the Operational DS but we
+                            // cannot modify the flow
+                            // and thus would need to remove original and add
+                            // updated.
+
+                            // remove flow
+                            RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
+                            List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(
+                                    removeflow.build(), version, getSession().getFeatures().getDatapathId());
+                            // remove flow should be the first
+                            allFlowMods.addAll(ofFlowRemoveInput);
+                            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
+                            ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), version,
+                                    getSession().getFeatures().getDatapathId());
+                        } else {
+                            // flow exists in Operational DS and can be modified
+                            ofFlowModInputs = FlowConvertor.toFlowModInputs(updated, version,
+                                    getSession().getFeatures().getDatapathId());
+                        }
+
+                        // deleting flow hash value from operational DS
+                        if (flowId != null) {
+                            CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> hashDeletionFuture =
+                                    readFlowHashIdMappingFromOperationalDS(rwTx);
+                            Futures.addCallback(hashDeletionFuture, new FutureCallback<Optional<FlowHashIdMapping>>() {
+                                @Override
+                                public void onSuccess(Optional<FlowHashIdMapping> optFlowHashIdMapping) {
+                                    FlowHashIdMapKey flowHashIdMapKeyToDelete = getFlowHashIdMapKey(
+                                            optFlowHashIdMapping);
+                                    if (flowHashIdMapKeyToDelete != null) {
+                                        final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
+                                                .augmentation(FlowHashIdMapping.class)
+                                                .child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
+                                        rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
+                                        rwTx.submit();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    LOG.error("Reading flow-hash-id map from operational DS wasn't successful");
+                                }
+                            });
+                        }
+
+                        allFlowMods.addAll(ofFlowModInputs);
+                        LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
+                        result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
+
+                        result = OFRpcTaskUtil.chainFutureBarrier(getThis(), result);
+                        OFRpcTaskUtil.hookFutureNotification(getThis(), result, getRpcNotificationProviderService(),
+                                createFlowUpdatedNotification(in));
+
+                        return result;
+                    }
+                };
+
+                return Futures.transform(flowExistsInOperationalDSFuture, createAndSendFlowUpdateFuture);
+            }
+
+            CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> readFlowHashIdMappingFromOperationalDS(
+                    final ReadWriteTransaction rwTx) {
                 InstanceIdentifier<FlowHashIdMapping> iiToFlowHashIdMapping = iiToTable
                         .augmentation(FlowHashIdMapping.class);
-                    return rwTx.read(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdMapping);
+                return rwTx.read(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdMapping);
+            }
+
+            ListenableFuture<Boolean> flowExistsInOperationalDS(final String flowId, final ReadWriteTransaction rwTx) {
+                if (flowId == null) {
+                    return Futures.immediateFuture(new Boolean(false));
+                }
+
+                CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> hashReadFuture =
+                        readFlowHashIdMappingFromOperationalDS(rwTx);
+
+                Function<Optional<FlowHashIdMapping>, Boolean> readOpDSFuture = new Function<Optional<FlowHashIdMapping>, Boolean>() {
+                    public Boolean apply(Optional<FlowHashIdMapping> optFlowHashIdMapping) throws NullPointerException {
+                        if (getFlowHashIdMapKey(optFlowHashIdMapping) != null) {
+                            // Flow was found in the Operational DS
+                            return new Boolean(true);
+                        } else {
+                            // Flow does not exist in the Operational DS
+                            return new Boolean(false);
+                        }
+                    }
+                };
+
+                return Futures.transform(hashReadFuture, readOpDSFuture);
+            }
+
+            FlowHashIdMapKey getFlowHashIdMapKey(Optional<FlowHashIdMapping> optFlowHashIdMapping) {
+                if (optFlowHashIdMapping.isPresent()) {
+                    FlowHashIdMapping flowHashIdMapping = optFlowHashIdMapping.get();
+                    for (FlowHashIdMap flowHashId : flowHashIdMapping.getFlowHashIdMap()) {
+                        if (flowHashId.getFlowId().getValue().equals(flowId)) {
+                            return flowHashId.getKey();
+                        }
+                    }
+                }
+                LOG.info("No mapping present, or flow with flowId " + flowId + " not found");
+                return null;
             }
 
             @Override

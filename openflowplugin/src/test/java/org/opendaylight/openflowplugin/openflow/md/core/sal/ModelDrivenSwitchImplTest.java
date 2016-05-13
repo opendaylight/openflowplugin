@@ -40,7 +40,11 @@ import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMappingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -199,12 +203,6 @@ public class ModelDrivenSwitchImplTest {
         OFSessionUtil.getSessionManager().setMessageSpy(messageSpy);
         OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
 
-        CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> dummyReadFuture
-            = Futures.<Optional<FlowHashIdMapping>,ReadFailedException>immediateCheckedFuture(Optional.<FlowHashIdMapping>absent());
-        Mockito.when(rwTx.read(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<FlowHashIdMapping>>any())).thenReturn(dummyReadFuture);
-        Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(rwTx);
-
-
         OpenflowPortsUtil.init();
 
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
@@ -272,17 +270,59 @@ public class ModelDrivenSwitchImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#updateFlow(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput)}
      * .
+     * 
      * @throws ExecutionException
      * @throws InterruptedException
      */
     @Test
-    public void testUpdateFlow() throws InterruptedException, ExecutionException {
+    public void testUpdateFlowExistingInOperationalDS() throws InterruptedException, ExecutionException {
+        FlowHashIdMappingBuilder flowHashIdMapping = new FlowHashIdMappingBuilder();
+        FlowHashIdMapBuilder flowHashIdMap = new FlowHashIdMapBuilder();
+
+        List<FlowHashIdMap> flowHashIdMapList = new ArrayList<FlowHashIdMap>();
+        flowHashIdMapList
+                .add(new FlowHashIdMapBuilder()
+                        .setFlowId(
+                                new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId("1"))
+                        .setHash("TestFlow").setKey(new FlowHashIdMapKey("FM1")).build());
+        flowHashIdMapping.setFlowHashIdMap(flowHashIdMapList);
+
+        testUpdateFlow(flowHashIdMapping, 2);
+    }
+
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#updateFlow(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput)}
+     * .
+     * 
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testUpdateFlowNotExistingInOperationalDS() throws InterruptedException, ExecutionException {
+        FlowHashIdMappingBuilder flowHashIdMapping = new FlowHashIdMappingBuilder();
+        FlowHashIdMapBuilder flowHashIdMap = new FlowHashIdMapBuilder();
+
+        List<FlowHashIdMap> flowHashIdMapList = new ArrayList<FlowHashIdMap>();
+        flowHashIdMapping.setFlowHashIdMap(flowHashIdMapList);
+
+        testUpdateFlow(flowHashIdMapping, 2);
+    }
+
+    private void testUpdateFlow(FlowHashIdMappingBuilder flowHashIdMapping, int numTimesFlowModCalled)
+            throws InterruptedException, ExecutionException {
+        CheckedFuture<Optional<FlowHashIdMapping>, ReadFailedException> dummyReadFuture =
+                Futures.<Optional<FlowHashIdMapping>, ReadFailedException> immediateCheckedFuture(
+                        Optional.of(flowHashIdMapping.build()));
+        Mockito.when(rwTx.read(Matchers.<LogicalDatastoreType> any(),
+                Matchers.<InstanceIdentifier<FlowHashIdMapping>> any())).thenReturn(dummyReadFuture);
+        Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(rwTx);
+
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
         updateFlowOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
         RpcResult<UpdateFlowOutput> result = RpcResultBuilder.success(updateFlowOutput.build()).build();
-        Mockito.when(
-                messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
-                        Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
+        Mockito.when(messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
+                Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
         UpdateFlowInputBuilder input = new UpdateFlowInputBuilder();
         UpdatedFlowBuilder updatedFlow = new UpdatedFlowBuilder();
@@ -297,21 +337,18 @@ public class ModelDrivenSwitchImplTest {
         originalFlowBuilder.setFlags(new FlowModFlags(true, false, true, false, true));
         input.setOriginalFlow(originalFlowBuilder.build());
         KeyedInstanceIdentifier<Flow, FlowKey> dummyIdentifier = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("openflow:1")))
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, new TableKey((short)0))
-            .child(Flow.class, new FlowKey(new FlowId("1")));
+                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey((short) 0)).child(Flow.class, new FlowKey(new FlowId("1")));
         input.setFlowRef(new FlowRef(dummyIdentifier));
 
-        Mockito.when(features.getVersion()).thenReturn((short)1);
+        Mockito.when(features.getVersion()).thenReturn((short) 1);
         mdSwitchOF10.updateFlow(input.build()).get();
-        Mockito.when(features.getVersion()).thenReturn((short)4);
+        Mockito.when(features.getVersion()).thenReturn((short) 4);
         mdSwitchOF13.updateFlow(input.build()).get();
-        Mockito.verify(messageDispatchService, Mockito.times(2)).flowMod(
-                Matchers.any(FlowModInput.class),
-                Matchers.any(SwitchConnectionDistinguisher.class));
+        Mockito.verify(messageDispatchService, Mockito.times(numTimesFlowModCalled))
+                .flowMod(Matchers.any(FlowModInput.class), Matchers.any(SwitchConnectionDistinguisher.class));
     }
-
+    
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
@@ -439,7 +476,7 @@ public class ModelDrivenSwitchImplTest {
      * @throws InterruptedException
      */
     @Test
-    public void testUpdtateMeter() throws InterruptedException, ExecutionException {
+    public void testUpdateMeter() throws InterruptedException, ExecutionException {
         UpdateMeterOutputBuilder updateMeterOutput = new UpdateMeterOutputBuilder();
         updateMeterOutput.setTransactionId(new TransactionId(BigInteger.valueOf(42)));
         RpcResult<UpdateMeterOutput> result = RpcResultBuilder.success(updateMeterOutput.build()).build();
