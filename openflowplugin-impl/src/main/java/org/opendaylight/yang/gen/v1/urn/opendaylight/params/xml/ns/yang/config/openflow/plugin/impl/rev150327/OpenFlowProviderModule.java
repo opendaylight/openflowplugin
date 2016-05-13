@@ -41,6 +41,7 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
         openflowPluginProvider.setBarrierCountLimit(getBarrierCountLimit().getValue());
         openflowPluginProvider.setBarrierInterval(getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(getEchoReplyTimeout().getValue());
+        openflowPluginProvider.setSkipTableFeatures(getSkipTableFeatures());
 
         openflowPluginProvider.initialize();
 

@@ -125,6 +125,12 @@ module openflow-plugin-provider-impl {
                 type non-zero-uint32-type;
                 default 2000;
             }
+            leaf skip-table-features {
+                description "Ability to skip pulling and storing of large table features. These features are still
+                available via rpc but if set to true then maintenance in DS will be omited";
+                type boolean;
+                default "true";
+            }
         }
 
     }

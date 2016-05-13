@@ -152,7 +152,7 @@ public class DeviceManagerImplTest {
         final MessageIntelligenceAgency mockedMessageIntelligenceAgency = mock(MessageIntelligenceAgency.class);
         final LifecycleConductor lifecycleConductor = new LifecycleConductorImpl(mockedMessageIntelligenceAgency);
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, false);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

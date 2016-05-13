@@ -61,6 +61,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
     private final long globalNotificationQuota;
+    private final boolean skipTableFeatures;
     private final boolean switchFeaturesMandatory;
 
     private final int spyRate = 10;
@@ -82,9 +83,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor) {
+                             final LifecycleConductor lifecycleConductor,
+                             final boolean skipTableFeatures) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
+        this.skipTableFeatures = skipTableFeatures;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -180,8 +183,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return true;
     }
 
-    private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
-        return new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+    private DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
+        final DeviceStateImpl deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+        deviceState.setSkipTableFeatures(skipTableFeatures);
+        return deviceState;
     }
 
     private void updatePacketInRateLimiters() {
