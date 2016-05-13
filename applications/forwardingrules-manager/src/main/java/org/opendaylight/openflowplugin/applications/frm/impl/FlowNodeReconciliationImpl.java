@@ -8,25 +8,20 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+
 import java.util.concurrent.Callable;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+
+import org.opendaylight.controller.md.sal.binding.api.*;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -38,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -59,6 +55,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -70,6 +68,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
 
 
 /**
@@ -92,7 +92,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private final ForwardingRulesManager provider;
     public static final String SEPARATOR = ":";
 
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+
+    private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE
+            = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .build();
 
     public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
@@ -101,14 +107,17 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class).augmentation(FlowCapableNode.class);
 
+        final DataTreeIdentifier<FlowCapableNode> treeId =
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, flowNodeWildCardIdentifier);
+
+        try {
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                 ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-        try {
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataChangeListener>>() {
+
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
-                public ListenerRegistration<DataChangeListener> call() throws Exception {
-                    return db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                            flowNodeWildCardIdentifier, FlowNodeReconciliationImpl.this, DataChangeScope.BASE);
+                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                    return dataBroker.registerDataTreeChangeListener(treeId, FlowNodeReconciliationImpl.this);
                 }
             });
         } catch (Exception e) {
@@ -132,46 +141,70 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
-        Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
-        /* All DataObjects for create */
-        final Set<InstanceIdentifier<?>>  createdData = changeEvent.getCreatedData() != null
-                ? changeEvent.getCreatedData().keySet() : Collections.<InstanceIdentifier<?>> emptySet();
-        /* All DataObjects for remove */
-        final Set<InstanceIdentifier<?>> removeData = changeEvent.getRemovedPaths() != null
-                ? changeEvent.getRemovedPaths() : Collections.<InstanceIdentifier<?>> emptySet();
-        /* All updated DataObjects */
-        final Map<InstanceIdentifier<?>, DataObject> updateData = changeEvent.getUpdatedData() != null
-                ? changeEvent.getUpdatedData() : Collections.<InstanceIdentifier<?>, DataObject>emptyMap();
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> changes) {
+        Preconditions.checkNotNull(changes, "Changes may not be null!");
 
-        for (InstanceIdentifier<?> entryKey : removeData) {
-            final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
-                    .firstIdentifierOf(FlowCapableNode.class);
+        for (DataTreeModification<FlowCapableNode> change : changes) {
+            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
+            final DataObjectModification<FlowCapableNode> mod = change.getRootNode();
+            final InstanceIdentifier<FlowCapableNode> nodeIdent =
+                    key.firstIdentifierOf(FlowCapableNode.class);
+
+            switch (mod.getModificationType()) {
+                case DELETE:
+                    remove(key, mod.getDataBefore(), nodeIdent);
+                    break;
+                case SUBTREE_MODIFIED:
+                    update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    break;
+                case WRITE:
+                    if (mod.getDataBefore() == null) {
+                        add(key, mod.getDataAfter(), nodeIdent);
+                    } else {
+                        update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+            }
+        }
+    }
+
+
+
+    public void remove(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode del,
+                       InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
+            LOG.warn("Node removed: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+
             if ( ! nodeIdent.isWildcarded()) {
                 flowNodeDisconnected(nodeIdent);
             }
+
         }
-        for (InstanceIdentifier<?> entryKey : createdData) {
-            final InstanceIdentifier<FlowCapableNode> nodeIdent = entryKey
-                    .firstIdentifierOf(FlowCapableNode.class);
-            if ( ! nodeIdent.isWildcarded()) {
-                flowNodeConnected(nodeIdent);
+    }
+
+
+    public void update(InstanceIdentifier<FlowCapableNode> identifier,
+                       FlowCapableNode original, FlowCapableNode update, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
+            LOG.warn("Node updated: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            //donot need to do anything as we are not considering updates here
+            if (!nodeIdent.isWildcarded()) {
+                // then force registration to local node cache and reconcile
+                flowNodeConnected(nodeIdent, true);
             }
         }
+    }
 
-        // FIXME: just a hack to cover DS/operational dirty start
-        // if all conventional ways failed and there is update
-        if (removeData.isEmpty() && createdData.isEmpty() && updateData.size() == 1) {
-            for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : updateData.entrySet()) {
-                // and only if this update covers top element (flow-capable-node)
-                if (FlowCapableNode.class.equals(entry.getKey().getTargetType())) {
-                    final InstanceIdentifier<FlowCapableNode> nodeIdent = entry.getKey()
-                            .firstIdentifierOf(FlowCapableNode.class);
-                    if (!nodeIdent.isWildcarded()) {
-                        // then force registration to local node cache and reconcile
-                        flowNodeConnected(nodeIdent, true);
-                    }
-                }
+
+    public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
+                    InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
+            LOG.warn("Node added: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+
+            if ( ! nodeIdent.isWildcarded()) {
+                flowNodeConnected(nodeIdent);
             }
         }
     }
@@ -534,8 +567,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
 
-
-
-
+    private boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
+                                                  InstanceIdentifier<?> identifier2) {
+        return Iterables.getLast(identifier1.getPathArguments()).equals(Iterables.getLast(identifier2.getPathArguments()));
+    }
 }
 
