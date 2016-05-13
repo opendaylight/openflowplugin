@@ -92,7 +92,6 @@
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/test-common/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/drop-test-karaf/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/69-drop-test.xml">mvn:org.opendaylight.openflowplugin/drop-test-karaf/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <!-- APPLICATIONS -->
