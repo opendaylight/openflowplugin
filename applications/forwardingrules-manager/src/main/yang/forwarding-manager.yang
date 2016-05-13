@@ -48,6 +48,9 @@ module forwardingrules-manager {
                 leaf stale-marking-enabled {
                     type boolean;
                 }
+		leaf reconciliation-retry-count {
+	             type uint16;
+	        }
 
             }
 
