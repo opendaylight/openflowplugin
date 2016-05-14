@@ -82,16 +82,19 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         } else {
             flowId = FlowUtil.createAlienFlowId(input.getTableId());
         }
-
+        LOG.trace("Calling add flow for flow with ID ={}.", flowId);
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
         deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
-        final ListenableFuture<RpcResult<AddFlowOutput>> future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
+        final ListenableFuture<RpcResult<AddFlowOutput>> future =
+                flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 if (rpcResult.isSuccessful()) {
-                    LOG.debug("flow add finished without error, id={}", flowId.getValue());
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("flow add with id={},finished without error,", flowId.getValue());
+                    }
                     if (itemLifecycleListener != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                 deviceContext.getDeviceState().getNodeInstanceIdentifier());
@@ -99,14 +102,14 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
                 } else {
-                    LOG.error("flow add failed with id={}, errors={}", flowId.getValue(), errorsToString(rpcResult.getErrors()));
-                }
+                LOG.error("flow add failed for id={}, errors={}", flowId.getValue(), errorsToString(rpcResult.getErrors()));
+            }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
-                LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
+                LOG.error("Service call for adding flow with  id={} failed, reason {} .", flowId.getValue(), throwable);
             }
         });
 
@@ -117,15 +120,20 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
 
-        final ListenableFuture<RpcResult<RemoveFlowOutput>> future = flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
+        final ListenableFuture<RpcResult<RemoveFlowOutput>> future =
+                flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<RemoveFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<RemoveFlowOutput> result) {
                 if (result.isSuccessful()) {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("flow removed finished without error,");
+                    }
                     FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
                     deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
                     if (itemLifecycleListener != null) {
-                        final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
+                        final FlowDescriptor flowDescriptor =
+                                deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
                         if (flowDescriptor != null) {
                             KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                     deviceContext.getDeviceState().getNodeInstanceIdentifier());
@@ -133,13 +141,13 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         }
                     }
                 } else {
-                    LOG.error("Flow remove failed with errors : {}", errorsToString(result.getErrors()));
+                    LOG.error("Flow remove failed with errors : {}",errorsToString(result.getErrors()));
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.trace("Flow remove failed..", throwable);
+                LOG.error("Service call for removing flow with id {} failed ,reason {}",input.getFlowRef().getValue(), throwable);
             }
         });
 
@@ -216,7 +224,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.debug("Flow update failed", throwable);
+                LOG.error("Service call for updating flow failed, reason{}", throwable);
             }
         });
         return future;
