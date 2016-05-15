@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -149,8 +150,9 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
         try {
             builder2.setIpAddress(getIpAddressOf(sw));
+            builder2.setPortNumber(getPortNumberOf(sw));
         } catch (Exception e) {
-            LOG.warn("IP address of the node {} cannot be obtained.", sw.getNodeId(), e);
+            LOG.warn("IP address/Port Number of the node {} cannot be obtained.", sw.getNodeId(), e);
         }
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
@@ -182,6 +184,27 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
             return new IpAddress(new Ipv6Address(hostAddress));
         }
         throw new IllegalArgumentException("Unsupported IP address type!");
+    }
+
+    private static PortNumber getPortNumberOf(ModelDrivenSwitch sw) {
+        SessionContext sessionContext = sw.getSessionContext();
+
+        Preconditions.checkNotNull(sessionContext.getPrimaryConductor(),
+                "primary conductor must not be NULL -> " + sw.getNodeId());
+        Preconditions.checkNotNull(sessionContext.getPrimaryConductor().getConnectionAdapter(),
+                "connection adapter of primary conductor must not be NULL -> " + sw.getNodeId());
+        InetSocketAddress remoteAddress = sessionContext.getPrimaryConductor().getConnectionAdapter()
+                .getRemoteAddress();
+        if (remoteAddress == null) {
+            LOG.warn("Port Number of the node {} cannot be obtained. No connection with switch.", sw.getNodeId());
+            return null;
+        }
+        return resolvePortNumber(remoteAddress.getPort());
+    }
+
+    private static PortNumber resolvePortNumber(int port) {
+        PortNumber portNo = new PortNumber(port);
+        return portNo;
     }
 
     private static NodeRemoved nodeRemoved(final NodeRef nodeRef) {
