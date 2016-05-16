@@ -97,7 +97,6 @@
     <feature name='odl-openflowplugin-app-config-pusher' description="OpenDaylight :: Openflow Plugin :: app - default config-pusher" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/70-of-switch-config-pusher.xml">mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-app-lldp-speaker' description="OpenDaylight :: Openflow Plugin :: app lldp-speaker" version='${project.version}'>
