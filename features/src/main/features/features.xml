@@ -57,7 +57,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/73-topology-manager.xml">mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-nsf-model' version='${project.version}'
@@ -94,7 +93,6 @@
     <feature name='odl-openflowplugin-app-table-miss-enforcer' description="OpenDaylight :: Openflow Plugin :: Application - table-miss-enforcer" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/69-table-miss-enforcer.xml">mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/{{VERSION}}/xml/config</configfile>
     </feature>
     <feature name='odl-openflowplugin-app-config-pusher' description="OpenDaylight :: Openflow Plugin :: app - default config-pusher" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
