@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -365,6 +366,8 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply() {
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
         verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
@@ -375,6 +378,8 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply2() {
+        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
+        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
         final Xid dummyXid = new Xid(DUMMY_XID);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
@@ -540,7 +545,7 @@ public class DeviceContextImplTest {
         deviceContext.setExtensionConverterProvider(mockedExtensionConverterProvider);
         deviceContext.processExperimenterMessage(experimenterMessage);
 
-        verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
+        verify(mockedNotificationPublishService, VerificationModeFactory.times(2)).offerNotification(any(ExperimenterMessageFromDev.class));
     }
 
     @Test

@@ -169,6 +169,14 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
+        </dependency>
     </dependencies>
 </project>
 

@@ -66,6 +66,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.translator.OfMessageReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -139,6 +140,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
+    private final OfMessageReceivedTranslator ofMessageReceivedTranslator;
     private RpcContext rpcContext;
     private ExtensionConverterProvider extensionConverterProvider;
 
@@ -171,7 +173,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = conductor.getMessageIntelligenceAgency();
-
+        
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ 1000, /*initial*/2000, messageSpy, REJECTED_DRAIN_FACTOR);
 
@@ -183,7 +185,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceState.getVersion(), FlowRemoved.class.getName()));
 
-
+        ofMessageReceivedTranslator = new OfMessageReceivedTranslator();
         nodeConnectorCache = new ConcurrentHashMap<>();
 
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
@@ -382,12 +384,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         } else {
             messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         }
+        offerOfMessageReceivedNotification(ofHeader);
     }
 
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
         for (final MultipartReply multipartReply : ofHeaderList) {
             messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            offerOfMessageReceivedNotification(multipartReply);
         }
     }
 
@@ -413,6 +417,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 itemLifecycleListener.onRemoved(flowPath);
                 // c) trigger off a notification
                 notificationPublishService.offerNotification(flowRemovedNotification);
+                offerOfMessageReceivedNotification(flowRemoved);
             } else {
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
                         getDeviceState().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
@@ -437,6 +442,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
             }
             submitTransaction();
+            offerOfMessageReceivedNotification(portStatus);
         } catch (final Exception e) {
             LOG.warn("Error processing port status message: {}", e.getMessage());
         }
@@ -471,6 +477,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        offerOfMessageReceivedNotification(packetInMessage);
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
             messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
@@ -519,6 +526,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
+            offerOfMessageReceivedNotification(notification);
         } catch (final ConversionException e) {
             LOG.error("Conversion of experimenter notification failed", e);
         }
@@ -671,5 +679,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @VisibleForTesting
     TransactionChainManager getTransactionChainManager() {
         return this.transactionChainManager;
+    }
+    
+    private void offerOfMessageReceivedNotification(OfHeader input){
+        notificationPublishService.offerNotification(ofMessageReceivedTranslator.translate(input, this.getDeviceState(), null));
     }
 }
