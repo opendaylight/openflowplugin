@@ -149,12 +149,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>forwardingrules-manager-config</artifactId>
-            <classifier>config</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
         </dependency>
         <dependency>
