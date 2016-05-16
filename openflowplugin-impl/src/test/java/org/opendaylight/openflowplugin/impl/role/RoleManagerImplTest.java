@@ -36,6 +36,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -43,6 +44,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
@@ -92,6 +94,12 @@ public class RoleManagerImplTest {
     @Mock
     LifecycleConductor conductor;
 
+    @Mock
+    DeviceState deviceState;
+
+    @Mock
+    GetFeaturesOutput featuresOutput;
+
     private RoleManagerImpl roleManager;
     private RoleManagerImpl roleManagerSpy;
     private RoleContext roleContextSpy;
@@ -107,9 +115,11 @@ public class RoleManagerImplTest {
     @Before
     public void setUp() throws Exception {
         CheckedFuture<Void, TransactionCommitFailedException> future = Futures.immediateCheckedFuture(null);
+        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
         Mockito.when(entityOwnershipService.registerListener(Mockito.anyString(), Mockito.any(EntityOwnershipListener.class))).thenReturn(entityOwnershipListenerRegistration);
         Mockito.when(entityOwnershipService.registerCandidate(Mockito.any(Entity.class))).thenReturn(entityOwnershipCandidateRegistration);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);

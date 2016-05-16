@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -43,15 +44,15 @@ class StatisticsContextImpMockInitiation {
     Boolean isQueue = false;
 
     protected DeviceContext mockedDeviceContext;
+    protected DeviceState mockedDeviceState;
+
     StatisticsGatheringService mockedStatisticsGatheringService;
     StatisticsGatheringOnTheFlyService mockedStatisticsOnFlyGatheringService;
     ConnectionContext mockedConnectionContext;
-    protected DeviceState mockedDeviceState;
+
     static final KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
-    protected MessageSpy mockedMessageSpy;
-    protected OutboundQueue mockedOutboundQueue;
-    protected DeviceManager mockedDeviceManager;
+
     LifecycleConductor mockConductor;
 
     @Before
@@ -60,16 +61,16 @@ class StatisticsContextImpMockInitiation {
         mockedStatisticsGatheringService = mock(StatisticsGatheringService.class);
         mockedStatisticsOnFlyGatheringService = mock(StatisticsGatheringOnTheFlyService.class);
         mockedConnectionContext = mock(ConnectionContext.class);
-        final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         mockedDeviceState = mock(DeviceState.class);
+
+        final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         final MessageSpy mockedMessageSpy = mock(MessageSpy.class);
         final OutboundQueue mockedOutboundQueue = mock(OutboundQueue.class);
         final DeviceManager mockedDeviceManager = mock(DeviceManager.class);
+        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
+
         mockConductor = mock(LifecycleConductor.class);
 
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(isTable);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(isFlow);
         when(mockedDeviceState.isGroupAvailable()).thenReturn(isGroup);
@@ -77,6 +78,11 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
+        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
         when(mockedConnectionContext.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);

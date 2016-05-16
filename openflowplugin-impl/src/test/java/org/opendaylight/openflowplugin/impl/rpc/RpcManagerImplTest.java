@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -57,6 +58,12 @@ public class RpcManagerImplTest {
     private MessageSpy mockMsgSpy;
     @Mock
     private LifecycleConductor conductor;
+    @Mock
+    private ConnectionContext connectionContext;
+    @Mock
+    private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Mock
+    private MessageSpy messageSpy;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -70,8 +77,21 @@ public class RpcManagerImplTest {
         final NodeKey nodeKey = new NodeKey(nodeId);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
+
+        GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3)
+                .build();
+
+        FeaturesReply features = featuresOutput;
+
+        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
+        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getMessageSpy()).thenReturn(mockMsgSpy);
+        Mockito.when(deviceContext.getDeviceState().getRole()).thenReturn(OfpRole.BECOMEMASTER);
+        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
+        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
     }
