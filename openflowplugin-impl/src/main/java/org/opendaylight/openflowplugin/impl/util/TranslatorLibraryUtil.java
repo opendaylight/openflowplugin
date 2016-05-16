@@ -18,10 +18,20 @@ import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorLibraryBuilder;
+import org.opendaylight.openflowplugin.impl.translator.OfMessageReceivedTranslator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
@@ -47,6 +57,27 @@ public final class TranslatorLibraryUtil {
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedV10Translator()).
+
+                // Register OfMessageTranslator for all the OF messages coming from the switches.
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(ErrorMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(ErrorMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(GetFeaturesOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(GetFeaturesOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(GetConfigOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(GetConfigOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortStatusMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortStatusMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(MultipartReplyMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyMessage.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(BarrierReply.class), new OfMessageReceivedTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(GetQueueConfigOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(GetQueueConfigOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(SetRoleOutput.class), new OfMessageReceivedTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(GetAsyncOutput.class), new OfMessageReceivedTranslator()).
 
                 build();
     }
