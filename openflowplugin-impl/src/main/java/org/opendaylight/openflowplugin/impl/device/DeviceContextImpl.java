@@ -512,7 +512,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
         } catch (final ConversionException e) {
-            LOG.warn("Conversion of experimenter notification failed", e);
+            LOG.error("Conversion of experimenter notification failed", e);
         }
     }
 

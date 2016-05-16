@@ -68,7 +68,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {
-                    LOG.info("ConnectionContext initial processing failed: {}", e.getMessage());
+                    LOG.error("ConnectionContext initial processing failed: {}", e.getMessage());
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
                     connectionContext.closeConnection(true);
@@ -77,7 +77,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.info("failed to get sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
+                LOG.error("failed to get sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
                 connectionContext.closeConnection(false);
             }
         });
@@ -103,8 +103,8 @@ public class HandshakeListenerImpl implements HandshakeListener {
         try {
             handshakeContext.close();
         } catch (final Exception e) {
-            LOG.warn("Closing handshake context failed: {}", e.getMessage());
-            LOG.debug("Detail in handshake context close:", e);
+            LOG.error("Closing handshake context failed: {}", e.getMessage());
+            LOG.debug("Detail in handshake context close: {}", e);
         }
     }
 
