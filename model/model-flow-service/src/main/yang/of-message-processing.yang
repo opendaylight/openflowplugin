@@ -1,0 +1,68 @@
+module of-message-processing {
+    namespace "urn:opendaylight:of:message:service";
+    prefix flow;
+
+    import yang-ext { prefix ext; revision-date "2013-07-09"; }
+    import opendaylight-inventory { prefix inv; revision-date "2013-08-19"; }
+    import ietf-yang-types { prefix yang; revision-date "2010-09-24"; }
+
+    description "OpenFlow message processing - sending and receiving.";
+
+    revision 2016-05-11 {
+        description "Initial revision";
+    }
+
+    typedef connection-cookie {
+        description "Openflow connection identifier. Outgoing packets should use the
+                same connection they came in.";
+        type uint32;
+    }
+
+    grouping raw-of-message {
+        description "Basic packet structure.";
+        leaf ingress {
+            type inv:node-ref;
+        }
+
+        leaf message {
+            type binary;
+        }
+    }
+
+    notification of-message-received {
+        description "Delivery of openflow messages.";
+
+        uses raw-of-message;
+    }
+
+    rpc transmit-of-message {
+        description "Sending openflow message to openflow device.";
+        input {
+            uses inv:node-context-ref;
+
+            leaf connection-cookie {
+                type connection-cookie;
+            }
+
+            leaf egress {
+                type inv:node-connector-ref;
+            }
+
+            uses raw-of-message;
+        }
+    }
+
+    rpc get-of-version {
+        description "Get OF version of an openflow device.";
+        input {
+            uses inv:node-context-ref;
+        }
+
+        output {
+            uses inv:node-context-ref;
+            leaf ofVersion {
+                type uint8;
+            }
+        }
+    }
+}
