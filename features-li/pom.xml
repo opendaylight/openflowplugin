@@ -220,13 +220,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>lldp-speaker</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>drop-test-karaf</artifactId>
         </dependency>
