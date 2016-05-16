@@ -56,8 +56,7 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
-	<bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/30-forwardingrules-manager.xml">mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager-config/{{VERSION}}/xml/config</configfile>
+        <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/72-topology-lldp-discovery.xml">mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/karaf/73-topology-manager.xml">mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}/xml/config</configfile>
     </feature>

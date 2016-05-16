@@ -94,7 +94,6 @@
         <module>statistics-manager</module>
         <module>topology-manager</module>
         <module>forwardingrules-manager</module>
-        <module>forwardingrules-manager-config</module>
         <module>forwardingrules-sync</module>
         <module>topology-lldp-discovery</module>
         <!--<module>features</module>-->
