@@ -214,12 +214,6 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-lldp-discovery</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>topology-lldp-discovery</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
 
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
