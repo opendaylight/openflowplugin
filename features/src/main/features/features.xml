@@ -57,7 +57,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/72-topology-lldp-discovery.xml">mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/karaf/73-topology-manager.xml">mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}/xml/config</configfile>
     </feature>
 
@@ -108,7 +107,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/{{VERSION}}/xml/config</configfile>
-        <configfile finalname="etc/opendaylight/karaf/72-topology-lldp-discovery.xml">mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-app-bulk-o-matic' description="OpenDaylight :: Openflow Plugin :: app bulk flow operations support" version='${project.version}'>
