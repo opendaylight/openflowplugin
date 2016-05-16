@@ -51,6 +51,8 @@ import static org.mockito.Mockito.verify;
 public class RpcManagerImplTest {
 
     private static final int QUOTA_VALUE = 5;
+    private static final int AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC = 14;
+
     private RpcManagerImpl rpcManager;
 
     @Mock

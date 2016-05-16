@@ -48,6 +48,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartRepl
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTableFeaturesToTableUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.NotificationPlainTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.OfMessagerReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInV10Translator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
@@ -82,6 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev14041
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.SwitchConfigErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.TableFeaturesErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.TableModErrorNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.of.message.service.rev160511.OfMessageReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
@@ -156,7 +158,25 @@ public class MDController implements IMDController, AutoCloseable {
         addMessageTranslator(GetFeaturesOutput.class,OF10, new FeaturesV10ToNodeConnectorUpdatedTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF10, new NotificationPlainTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF13, new NotificationPlainTranslator());
-
+        
+        addMessageTranslator(ErrorMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(ErrorMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(PacketInMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(PacketInMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(PortStatusMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(PortStatusMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(ExperimenterMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF13, new OfMessagerReceivedTranslator());
+        addMessageTranslator(GetFeaturesOutput.class, OF10, new OfMessagerReceivedTranslator());
+        addMessageTranslator(GetFeaturesOutput.class, OF13, new OfMessagerReceivedTranslator());
+        
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
         notificationPopListener.setNotificationProviderService(
                 OFSessionUtil.getSessionManager().getNotificationProviderService());
@@ -211,6 +231,9 @@ public class MDController implements IMDController, AutoCloseable {
 
         //Notification registration for queue-statistics
         addMessagePopListener(QueueStatisticsUpdate.class, notificationPopListener);
+        
+        //Notification registration for of-packet-received
+        addMessagePopListener(OfMessageReceived.class, notificationPopListener);
 
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
