@@ -18,6 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OfMessageProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OfVersionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalExperimenterMessageServiceImpl;
@@ -57,6 +59,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.of.message.service.rev160511.OfMessageProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.of.version.rev160511.OfVersionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
@@ -128,6 +132,12 @@ public class MdSalRegistrationUtils {
 
         // TODO: experimenter symmetric and multipart message services
         rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
+
+        // Register of message processing service
+        rpcContext.registerRpcServiceImplementation(OfMessageProcessingService.class, new OfMessageProcessingServiceImpl(rpcContext, deviceContext));
+
+        // Register get of version service
+        rpcContext.registerRpcServiceImplementation(OfVersionService.class, new OfVersionServiceImpl(rpcContext, deviceContext));
     }
 
     /**
@@ -170,6 +180,8 @@ public class MdSalRegistrationUtils {
         // TODO: experimenter symmetric and multipart message services
         rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
         rpcContext.unregisterRpcServiceImplementation(OpendaylightDirectStatisticsService.class);
+        rpcContext.unregisterRpcServiceImplementation(OfMessageProcessingService.class);
+        rpcContext.unregisterRpcServiceImplementation(OfVersionService.class);
     }
 
     /**

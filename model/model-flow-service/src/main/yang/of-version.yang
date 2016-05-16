@@ -1,0 +1,28 @@
+// Contents of "of-version"
+module of-version {
+    namespace "urn:opendaylight:of-version";
+    prefix "of-version";
+	
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    
+    description "Openflow version - getting openflow device agreed version.";
+    
+    revision 2016-05-11 {
+        description "Initial revision";
+    }
+    
+    rpc get-of-version {
+        description "Sending openflowMessage through openflow device.";
+        input {
+            uses inv:node-context-ref;
+        }
+        
+        output {
+            uses inv:node-context-ref;
+            leaf ofVersion {
+                type uint8;
+            }
+        }
+    }
+
+}

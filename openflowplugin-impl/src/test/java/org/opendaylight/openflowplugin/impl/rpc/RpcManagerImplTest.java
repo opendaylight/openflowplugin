@@ -51,6 +51,7 @@ import static org.mockito.Mockito.verify;
 public class RpcManagerImplTest {
 
     private static final int QUOTA_VALUE = 5;
+
     private RpcManagerImpl rpcManager;
 
     @Mock

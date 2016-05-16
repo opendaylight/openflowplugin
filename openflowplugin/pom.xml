@@ -157,7 +157,14 @@
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflowjava-util</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
+        </dependency>
     </dependencies>
 </project>
 
