@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import java.net.InetAddress;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
@@ -92,7 +92,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
             final String connectionIdentifier, final int handshakeThreadLimit) {
         return new ThreadPoolLoggingExecutor(handshakeThreadLimit,
                 handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(HELLO_LIMIT), "OFHandshake-" + connectionIdentifier);
+                new LinkedBlockingQueue<>(HELLO_LIMIT), "OFHandshake-" + connectionIdentifier);
     }
 
     /**
