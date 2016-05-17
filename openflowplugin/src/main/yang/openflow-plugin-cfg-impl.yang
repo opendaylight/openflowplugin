@@ -107,6 +107,13 @@ module openflow-provider-impl {
                 type ofp-role;
                 default "NOCHANGE";
             }
+
+            leaf skip-table-features {
+                description "Ability to skip pulling and storing of large table features. These features are still
+                    available via rpc, so if use set it to true, it won't store table feature data in DataStore.";
+                type boolean;
+                default "false";
+            }
         }
 
         case msg-spy-service-impl {
