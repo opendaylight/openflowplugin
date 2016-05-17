@@ -107,6 +107,12 @@ module openflow-provider-impl {
                 type ofp-role;
                 default "NOCHANGE";
             }
+
+            container table-features-settings{
+                leaf table-features-enable{
+                     type boolean;
+                }
+            }
         }
 
         case msg-spy-service-impl {
