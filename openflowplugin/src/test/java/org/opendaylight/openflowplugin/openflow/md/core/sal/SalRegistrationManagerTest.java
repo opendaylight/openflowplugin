@@ -90,7 +90,6 @@ public class SalRegistrationManagerTest {
 
     private ModelDrivenSwitch mdSwitchOF13;
 
-
     CompositeObjectRegistration<ModelDrivenSwitch> registration;
 
 
@@ -106,7 +105,7 @@ public class SalRegistrationManagerTest {
         context.setFeatures(features);
         context.setNotificationEnqueuer(notificationEnqueuer);
 
-	OfEntityManager entManager = new OfEntityManager(entityOwnershipService);
+	OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
         registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.<Registration>emptyList());
         context.setProviderRegistration(registration);
@@ -192,6 +191,14 @@ public class SalRegistrationManagerTest {
     public void testOnAdded() {
         SwitchSessionKeyOF switchSessionKeyOF = new SwitchSessionKeyOF();
         salRegistrationManager.onSessionAdded(switchSessionKeyOF, context);
+    }
+
+    public OpenflowPluginConfig getConfig(){
+        OpenflowPluginConfig.OpenflowPluginConfigBuilder cfgBuilder =
+                new OpenflowPluginConfig.OpenflowPluginConfigBuilder();
+        cfgBuilder.setTableFeatures(true);
+        return cfgBuilder.build();
+
     }
 }
 
