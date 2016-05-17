@@ -38,8 +38,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public final class AggregateFlowsInTableService extends AbstractCompatibleStatService<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput,
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, AggregateFlowStatisticsUpdate> {
 
-    public AggregateFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    final TranslatorLibrary translatorLibrary;
+
+    public static AggregateFlowsInTableService createWithOook(final RequestContextStack requestContextStack,
+                                                                                  final DeviceContext deviceContext,
+                                                                                  AtomicLong compatibilityXidSeed) {
+        return new AggregateFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, deviceContext.oook());
+    }
+
+    public AggregateFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                                        AtomicLong compatibilityXidSeed, TranslatorLibrary translatorLibrary) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+
+        this.translatorLibrary = translatorLibrary;
     }
 
     @Override
@@ -76,12 +87,11 @@ public final class AggregateFlowsInTableService extends AbstractCompatibleStatSe
         final int mpSize = result.size();
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
-        TranslatorLibrary translatorLibrary = getDeviceContext().oook();
         MultipartReply mpReply = result.get(0);
         final TranslatorKey translatorKey = new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
         final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
 
-        final AggregatedFlowStatistics flowStatistics = messageTranslator.translate(mpReply, getDeviceContext(), null);
+        final AggregatedFlowStatistics flowStatistics = messageTranslator.translate(mpReply, getDeviceContext().getDeviceState(), null);
         final AggregateFlowStatisticsUpdateBuilder notification = new AggregateFlowStatisticsUpdateBuilder(flowStatistics)
                 .setId(getDeviceContext().getDeviceState().getNodeId())
                 .setMoreReplies(Boolean.FALSE)

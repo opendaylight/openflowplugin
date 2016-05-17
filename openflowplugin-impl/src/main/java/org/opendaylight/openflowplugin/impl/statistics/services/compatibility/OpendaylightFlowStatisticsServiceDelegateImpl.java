@@ -49,7 +49,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
                                                          final NotificationPublishService notificationService,
                                                          final AtomicLong compatibilityXidSeed) {
         this.notificationService = notificationService;
-        aggregateFlowsInTable = new AggregateFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed);
+        aggregateFlowsInTable = AggregateFlowsInTableService.createWithOook(requestContextStack, deviceContext, compatibilityXidSeed);
         allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed);
         allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed);
         flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed);

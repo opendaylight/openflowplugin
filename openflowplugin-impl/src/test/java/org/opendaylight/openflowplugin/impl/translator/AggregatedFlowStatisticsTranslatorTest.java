@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCaseBuilder;
@@ -29,7 +30,7 @@ public class AggregatedFlowStatisticsTranslatorTest {
 
     private AggregatedFlowStatisticsTranslator translator;
     @Mock
-    private DeviceContext deviceContext;
+    private DeviceState deviceState;
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +48,7 @@ public class AggregatedFlowStatisticsTranslatorTest {
         MultipartReplyMessageBuilder mpInputBld = new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(inputBld.build());
 
-        final AggregatedFlowStatistics statistics = translator.translate(mpInputBld.build(), deviceContext, null);
+        final AggregatedFlowStatistics statistics = translator.translate(mpInputBld.build(), deviceState, null);
 
         Assert.assertEquals(aggregateStatsValueBld.getByteCount(), statistics.getByteCount().getValue());
         Assert.assertEquals(aggregateStatsValueBld.getFlowCount(), statistics.getFlowCount().getValue());

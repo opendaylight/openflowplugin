@@ -53,7 +53,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
 
     public void setUp() {
-        flowStatisticsService = new OpendaylightFlowStatisticsServiceImpl(rqContextStack, deviceContext);
+        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext);
 
         rqContextMp = new AbstractRequestContext<List<MultipartReply>>(42L) {
             @Override
@@ -82,7 +82,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                          }
         ).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
         Mockito.when(translator.translate(
-                        Matchers.any(MultipartReply.class), Matchers.same(deviceContext), Matchers.isNull())
+                        Matchers.any(MultipartReply.class), Matchers.same(deviceState), Matchers.isNull())
         ).thenReturn(new AggregatedFlowStatisticsBuilder().build());
 
 
