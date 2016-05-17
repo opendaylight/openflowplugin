@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
 import java.math.BigInteger;
@@ -134,6 +135,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Sctp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
@@ -211,6 +214,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCase;
@@ -255,6 +260,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tun.dst._case.TunDstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tun.src._case.TunSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tunnel.id._case.TunnelIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
@@ -501,46 +508,46 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     Ipv4Prefix ipv4Prefix = tunnelIpv4Src.getTunnelIpv4Source();
                     MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
                     matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+                    matchEntryBuilder.setOxmMatchField(TunSrc.class);
 
-                    Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
-                    Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
+                    TunSrcCaseBuilder tunSrcCaseBuilder = new TunSrcCaseBuilder();
+                    TunSrcBuilder tunSrcBuilder = new TunSrcBuilder();
 
                     Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
-                    ipv4SrcBuilder.setIpv4Address(ipv4Address);
+                    tunSrcBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
                     byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
-                        ipv4SrcBuilder.setMask(mask);
+                        tunSrcBuilder.setMask(mask);
                         hasMask = true;
                     }
                     matchEntryBuilder.setHasMask(hasMask);
-                    ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
+                    tunSrcCaseBuilder.setTunSrc(tunSrcBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(tunSrcCaseBuilder.build());
                     matchEntryList.add(matchEntryBuilder.build());
                 }
                 if (tunnelIpv4Src.getTunnelIpv4Destination() != null) {
                     Ipv4Prefix ipv4Prefix = tunnelIpv4Src.getTunnelIpv4Destination();
                     MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
                     matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
+                    matchEntryBuilder.setOxmMatchField(TunDst.class);
 
-                    Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
-                    Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
+                    TunDstCaseBuilder tunDstCaseBuilder = new TunDstCaseBuilder();
+                    TunDstBuilder tunDstBuilder = new TunDstBuilder();
 
                     Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
                     Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
-                    ipv4DstBuilder.setIpv4Address(ipv4Address);
+                    tunDstBuilder.setIpv4Address(ipv4Address);
                     boolean hasMask = false;
                     byte[] mask = extractIpv4Mask(addressParts);
                     if (null != mask) {
-                        ipv4DstBuilder.setMask(mask);
+                        tunDstBuilder.setMask(mask);
                         hasMask = true;
                     }
                     matchEntryBuilder.setHasMask(hasMask);
-                    ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
-                    matchEntryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
+                    tunDstCaseBuilder.setTunDst(tunDstBuilder.build());
+                    matchEntryBuilder.setMatchEntryValue(tunDstCaseBuilder.build());
                     matchEntryList.add(matchEntryBuilder.build());
                 }
             } else if (layer3Match instanceof ArpMatch) {
