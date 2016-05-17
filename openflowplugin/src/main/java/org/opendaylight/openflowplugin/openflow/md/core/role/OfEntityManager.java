@@ -24,6 +24,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipC
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginConfig;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -40,7 +41,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.FutureCallback;
-import java.util.concurrent.ArrayBlockingQueue;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.CheckedFuture;
 import org.slf4j.Logger;
@@ -63,8 +63,11 @@ public class OfEntityManager implements TransactionChainListener{
 
     private final ListeningExecutorService pool;
 
-    public OfEntityManager( EntityOwnershipService entityOwnershipService ) {
+    private final OpenflowPluginConfig openflowPluginConfig;
+
+    public OfEntityManager(EntityOwnershipService entityOwnershipService, OpenflowPluginConfig ofPluginConfig) {
         this.entityOwnershipService = entityOwnershipService;
+        openflowPluginConfig = ofPluginConfig;
         ownershipListener = new OpenflowOwnershipListener(this);
         entsession = new ConcurrentHashMap<>();
         entRegistrationMap = new ConcurrentHashMap<>();
@@ -243,6 +246,7 @@ public class OfEntityManager implements TransactionChainListener{
             final String targetSwitchDPId = sessionContext.getFeatures().getDatapathId().toString();
             RolePushTask task = new RolePushTask(newRole, sessionContext);
             ListenableFuture<Boolean> rolePushResult = pool.submit(task);
+
             final CheckedFuture<Boolean, RolePushException> rolePushResultChecked =
                 RoleUtil.makeCheckedRuleRequestFxResult(rolePushResult);
             Futures.addCallback(rolePushResult, new FutureCallback<Boolean>(){
@@ -250,7 +254,12 @@ public class OfEntityManager implements TransactionChainListener{
                 public void onSuccess(Boolean result){
                     LOG.info("onDeviceOwnershipChanged: Controller is successfully set as a " +
                             "MASTER controller for {}", targetSwitchDPId);
-                    entsession.get(entity).getOfSwitch().sendEmptyTableFeatureRequest();
+                    if(!openflowPluginConfig.skipTableFeatures()) {
+                        if(LOG.isDebugEnabled()){
+                            LOG.debug("Send table feature request for entity {}",entity.getId());
+                        }
+                        entsession.get(entity).getOfSwitch().sendEmptyTableFeatureRequest();
+                    }
                     sendNodeAddedNotification(entsession.get(entity));
 
                 }
