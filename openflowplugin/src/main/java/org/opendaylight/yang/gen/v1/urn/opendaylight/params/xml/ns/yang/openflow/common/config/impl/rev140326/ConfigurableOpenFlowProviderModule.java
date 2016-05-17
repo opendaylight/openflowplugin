@@ -11,14 +11,24 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflo
 
 import com.google.common.base.MoreObjects;
 import javax.management.ObjectName;
+
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginConfig;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 *
 */
 public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.AbstractConfigurableOpenFlowProviderModule {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurableOpenFlowProviderModule.class);
+
     private OpenflowPluginProvider pluginProvider;
+
+    private final OpenflowPluginConfig config = readConfig();
+
+    private static final boolean ENABLE_TABLE_FEATURES = true;
 
     /**
      * @param identifier module identifier
@@ -54,6 +64,7 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         pluginProvider.setEntityOwnershipService(getOwnershipServiceDependency());
         pluginProvider.setRole(getRole());
+        pluginProvider.setOpenflowPluginConfig(config);
         pluginProvider.initialization();
         return pluginProvider;
     }
@@ -84,5 +95,19 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         recycled.fireRoleChange(MoreObjects.firstNonNull(getRole(), getRole()));
 
         return recycled;
+    }
+
+    private OpenflowPluginConfig readConfig(){
+
+        final OpenflowPluginConfig.OpenflowPluginConfigBuilder openflowCfgBuilder = OpenflowPluginConfig.builder();
+
+        if(getOfpluginConfigSettings()!=null && getOfpluginConfigSettings().getSkipTableFeatures()!=null){
+            openflowCfgBuilder.setTableFeatures(getOfpluginConfigSettings().getSkipTableFeatures());
+        } else{
+            LOG.warn("Could not load XML configuration file via ConfigSubsystem! Fallback to default config value(s)");
+            openflowCfgBuilder.setTableFeatures(ENABLE_TABLE_FEATURES);
+        }
+
+        return openflowCfgBuilder.build();
     }
 }
