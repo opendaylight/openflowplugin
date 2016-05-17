@@ -56,6 +56,8 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
     private RpcProviderRegistry rpcRegistry;
     private EntityOwnershipService entityOwnershipService;
 
+    private OpenflowPluginConfig openflowPluginConfig;
+
     /**
      * Initialization of services and msgSpy counter
      */
@@ -63,7 +65,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
-        entManager = new OfEntityManager(entityOwnershipService);
+        entManager = new OfEntityManager(entityOwnershipService,getOpenflowPluginConfig());
         entManager.setDataBroker(dataBroker);
 
         LOG.debug("dependencies gathered..");
@@ -158,6 +160,15 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
 
     public void setEntityOwnershipService(EntityOwnershipService entityOwnershipService) {
         this.entityOwnershipService = entityOwnershipService;
+    }
+
+    public void setOpenflowPluginConfig(OpenflowPluginConfig openflowPluginConfig) {
+        this.openflowPluginConfig = openflowPluginConfig;
+    }
+
+    @VisibleForTesting
+    public OpenflowPluginConfig getOpenflowPluginConfig() {
+        return openflowPluginConfig;
     }
 
     @VisibleForTesting
