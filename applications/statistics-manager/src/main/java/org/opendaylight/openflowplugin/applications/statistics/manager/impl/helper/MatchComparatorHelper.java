@@ -13,16 +13,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import com.google.common.base.Splitter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
@@ -59,6 +58,8 @@ public class MatchComparatorHelper {
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int BYTE_SIZE = 8;
 
+    private static final Splitter SLASH_SPLITTER = Splitter.on('/');
+    private static final Splitter DOT_SPLITTER = Splitter.on('.');
     /*
      * Custom EthernetMatch is required because mac address string provided by user in EthernetMatch can be in any case
      * (upper or lower or mix). Ethernet Match which controller receives from switch is always an upper case string.
@@ -296,19 +297,19 @@ public class MatchComparatorHelper {
         return (statsIpAddressInt.getIp() == storedIpAddressInt.getIp());
     }
 
-
     private static boolean IpAddressEquals(Ipv6Prefix statsIpv6, Ipv6Prefix storedIpv6) {
-        final String[] statsIpMask = statsIpv6.getValue().split("/");
-        final String[] storedIpMask = storedIpv6.getValue().split("/");
-        if (! (statsIpMask.length > 1 && storedIpMask.length > 1 &&  statsIpMask[1].equals(storedIpMask[1]))){
+        final List<String> statsIpMask = SLASH_SPLITTER.splitToList(statsIpv6.getValue());
+        final List<String> storedIpMask = SLASH_SPLITTER.splitToList(storedIpv6.getValue());
+        if (!(statsIpMask.size() > 1 && storedIpMask.size() > 1 && statsIpMask.get(1)
+            .equals(storedIpMask.get(1)))) {
             return false;
         }
 
-        final int prefix = Integer.parseInt(statsIpMask[1]);
+        final int prefix = Integer.parseInt(statsIpMask.get(1));
         final int byteIndex = prefix/BYTE_SIZE;
         final int lastByteBits = BYTE_SIZE - (prefix % BYTE_SIZE);
-        final InetAddress statsIp = InetAddresses.forString(statsIpMask[0]);
-        final InetAddress storedIp = InetAddresses.forString(storedIpMask[0]);
+        final InetAddress statsIp = InetAddresses.forString(statsIpMask.get(0));
+        final InetAddress storedIp = InetAddresses.forString(storedIpMask.get(0));
         byte[] statsIpArr = Arrays.copyOfRange(statsIp.getAddress(),0,byteIndex+1);
         byte[] storedIpArr = Arrays.copyOfRange(storedIp.getAddress(),0,byteIndex+1);
         statsIpArr[byteIndex] = (byte) (statsIpArr[byteIndex] & (0XFF << lastByteBits));
@@ -368,15 +369,14 @@ public class MatchComparatorHelper {
      * Method return integer version of ip address. Converted int will be mask if mask specified
      */
     static IntegerIpAddress strIpToIntIp(final String ipAddresss) {
-
-        final String[] parts = ipAddresss.split("/");
-        final String ip = parts[0];
+        final List<String> parts = SLASH_SPLITTER.splitToList(ipAddresss);
+        final String ip = parts.get(0);
         int prefix;
 
-        if (parts.length < 2) {
+        if (parts.size() < 2) {
             prefix = DEFAULT_SUBNET;
         } else {
-            prefix = Integer.parseInt(parts[1]);
+            prefix = Integer.parseInt(parts.get(1));
             if (prefix < 0 || prefix > IPV4_MASK_LENGTH) {
                 final StringBuilder stringBuilder = new StringBuilder(
                         "Valid values for mask are from range 0 - 32. Value ");
@@ -450,19 +450,18 @@ public class MatchComparatorHelper {
         return bytes;
     }
 
-
     static String normalizeIpv4Address(Ipv4Address ipAddress, DottedQuad netMask) {
-        String actualIpAddress="";
-        String[] netMaskParts = netMask.getValue().split("\\.");
-        String[] ipAddressParts = ipAddress.getValue().split("\\.");
+        String actualIpAddress = "";
+        final List<String> netMaskParts = DOT_SPLITTER.splitToList(netMask.getValue());
+        final List<String> ipAddressParts = DOT_SPLITTER.splitToList(ipAddress.getValue());
 
-        for (int i=0; i<ipAddressParts.length;i++) {
-            int integerFormatIpAddress=Integer.parseInt(ipAddressParts[i]);
-            int integerFormatNetMask=Integer.parseInt(netMaskParts[i]);
-            int ipAddressPart=(integerFormatIpAddress) & (integerFormatNetMask);
+        for (int i = 0; i < ipAddressParts.size(); i++) {
+            int integerFormatIpAddress = Integer.parseInt(ipAddressParts.get(i));
+            int integerFormatNetMask = Integer.parseInt(netMaskParts.get(i));
+            int ipAddressPart = (integerFormatIpAddress) & (integerFormatNetMask);
             actualIpAddress += ipAddressPart;
-            if (i != ipAddressParts.length -1 ) {
-                actualIpAddress = actualIpAddress+".";
+            if (i != ipAddressParts.size() - 1) {
+                actualIpAddress = actualIpAddress + ".";
             }
         }
         return actualIpAddress;
