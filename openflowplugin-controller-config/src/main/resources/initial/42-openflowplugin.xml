@@ -117,6 +117,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                 <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-notification-service</type>
                 <name>binding-notification-broker</name>
             </notification-service>
+            <table-features-settings>
+                 <table-features-enable>false</table-features-enable>
+            </table-features-settings>
 	    <ownership-service>
 		<type xmlns:entity-ownership="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:entity-ownership-service">entity-ownership:entity-ownership-service</type>
 	    	<name>entity-ownership-service</name>
