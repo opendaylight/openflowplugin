@@ -22,3 +22,8 @@ yang-gen-config
 maven-eclipse.xml
 .metadata/
 .checkstyle
+maven-metadata-local.xml
+*.pyc
+/.pydevproject
+*.log
+.tox/
