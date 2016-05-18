@@ -34,8 +34,8 @@
         <openflowjava.version>0.8.0-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.3.0-SNAPSHOT</openflowplugin.version>
         <sal.api.version>0.11.0-SNAPSHOT</sal.api.version>
-        <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
-        <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
+        <jmxGeneratorPath>target/generated-sources/config</jmxGeneratorPath>
+        <salGeneratorPath>target/generated-sources/sal</salGeneratorPath>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
         <controller.distribution.version>0.4.0-SNAPSHOT</controller.distribution.version>
 
