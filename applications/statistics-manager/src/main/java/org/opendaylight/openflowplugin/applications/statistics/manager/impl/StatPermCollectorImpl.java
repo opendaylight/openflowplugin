@@ -365,7 +365,10 @@ public class StatPermCollectorImpl implements StatPermCollector {
     }
 
     private boolean isThisInstanceNodeOwner(NodeId nodeId) {
-        return manager.getNodeRegistrator().isFlowCapableNodeOwner(nodeId);
+        if(manager.getNodeRegistrator()!= null){
+            return manager.getNodeRegistrator().isFlowCapableNodeOwner(nodeId);
+        }else
+            return false;
     }
 
     private class StatNodeInfoHolder {
