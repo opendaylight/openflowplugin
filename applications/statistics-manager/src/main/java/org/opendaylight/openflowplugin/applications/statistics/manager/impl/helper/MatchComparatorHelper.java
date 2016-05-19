@@ -57,6 +57,7 @@ public class MatchComparatorHelper {
     private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
     private static final String PREFIX_SEPARATOR = "/";
     private static final int IPV4_ADDRESS_LENGTH = 32;
+    private static final int BYTE_SIZE = 8;
 
     /*
      * Custom EthernetMatch is required because mac address string provided by user in EthernetMatch can be in any case
@@ -302,12 +303,21 @@ public class MatchComparatorHelper {
         if (! (statsIpMask.length > 1 && storedIpMask.length > 1 &&  statsIpMask[1].equals(storedIpMask[1]))){
             return false;
         }
-        if (InetAddresses.forString(statsIpMask[0]).equals(InetAddresses.forString(storedIpMask[0]))){
+
+        final int prefix = Integer.parseInt(statsIpMask[1]);
+        final int byteIndex = prefix/BYTE_SIZE;
+        final int lastByteBits = BYTE_SIZE - (prefix % BYTE_SIZE);
+        final InetAddress statsIp = InetAddresses.forString(statsIpMask[0]);
+        final InetAddress storedIp = InetAddresses.forString(storedIpMask[0]);
+        byte[] statsIpArr = Arrays.copyOfRange(statsIp.getAddress(),0,byteIndex+1);
+        byte[] storedIpArr = Arrays.copyOfRange(storedIp.getAddress(),0,byteIndex+1);
+        statsIpArr[byteIndex] = (byte) (statsIpArr[byteIndex] & (0XFF << lastByteBits));
+        storedIpArr[byteIndex] = (byte) (storedIpArr[byteIndex] & (0XFF << lastByteBits));
+        if(Arrays.equals(statsIpArr,storedIpArr)) {
             return true;
         }
         return false;
     }
-
 
     static Boolean checkNullValues(final Object v1, final Object v2) {
         Boolean verdict = null;
