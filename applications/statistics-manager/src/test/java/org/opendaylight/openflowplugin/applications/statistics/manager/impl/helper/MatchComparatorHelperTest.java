@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 
@@ -18,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 
 /**
  * @author sai.marapareddy@gmail.com (arbitrary masks)
@@ -207,6 +209,33 @@ public class MatchComparatorHelperTest {
         assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
         assertEquals(true,
                 MatchComparatorHelper.layer3MatchEquals(new ArpMatchBuilder().build(), new ArpMatchBuilder().build()));
+    }
+
+    @Test
+    public void layer3MatchEqualsIpv6Test() {
+        final Ipv6MatchBuilder statsBuilder = new Ipv6MatchBuilder();
+        final Ipv6MatchBuilder storedBuilder = new Ipv6MatchBuilder();
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:5D99/64"));
+        storedBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:4D99/64"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("aabb:1234:2acf:000d:0000:0000:0000:5d99/64"));
+        storedBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:4D99/64"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000C:0000:0000:0000:5D99/64"));
+        storedBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:4D99/64"));
+        assertEquals(false, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000C:0000:0000:0000:5D99/63"));
+        storedBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:4D99/63"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000D:0000:0000:0000:5D99/63"));
+        storedBuilder.setIpv6Destination(new Ipv6Prefix("AABB:1234:2ACF:000E:0000:0000:0000:4D99/63"));
+        assertEquals(false, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
     }
 
     @Test
