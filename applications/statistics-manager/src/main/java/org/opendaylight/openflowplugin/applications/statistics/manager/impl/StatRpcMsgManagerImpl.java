@@ -188,6 +188,10 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
                     String[] multipartRequestName = result.getResult().getClass().getSimpleName().split("(?=\\p{Upper})");
                     LOG.warn("Node [{}] does not support statistics request type : {}",
                             nodeKey.getId(),Joiner.on(" ").join(Arrays.copyOfRange(multipartRequestName, 2, multipartRequestName.length-2)));
+                    if (resultTransId != null) {
+                        resultTransId.setException(
+                            new UnsupportedOperationException());
+                    }
                 } else {
                     if (resultTransId != null) {
                         resultTransId.set(id);
@@ -202,8 +206,10 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
             @Override
             public void onFailure(final Throwable t) {
                 LOG.warn("Response Registration for Statistics RPC call fail!", t);
+                if (resultTransId != null) {
+                    resultTransId.setException(t);
+                }
             }
-
         }
 
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(future),new FutureCallbackImpl());
