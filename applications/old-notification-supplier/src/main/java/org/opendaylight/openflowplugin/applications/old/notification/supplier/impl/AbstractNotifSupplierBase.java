@@ -26,20 +26,21 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * Public abstract basic Supplier implementation contains code for a make Supplier instance,
- * registration Supplier like {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener} and close
- * method. In additional case, it contains help methods for all Supplier implementations.
- * 
+ * registration Supplier like {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}
+ * and close method. In additional case, it contains help methods for all Supplier implementations.
+ *
  * @param <O> - data tree item Object extends {@link DataObject}
  */
-public abstract class AbstractNotifSupplierBase<O extends DataObject> implements OldNotifSupplierDefinition<O> {
+public abstract class AbstractNotifSupplierBase<O extends DataObject> implements
+        OldNotifSupplierDefinition<O> {
 
     protected final Class<O> clazz;
     private ListenerRegistration<DataChangeListener> listenerRegistration;
 
     /**
      * Default constructor for all Notification Supplier implementation
-     * 
-     * @param db - {@link DataBroker}
+     *
+     * @param db    - {@link DataBroker}
      * @param clazz - API contract class extended {@link DataObject}
      */
     public AbstractNotifSupplierBase(final DataBroker db, final Class<O> clazz) {
@@ -60,7 +61,7 @@ public abstract class AbstractNotifSupplierBase<O extends DataObject> implements
     /**
      * Method returns a wildCard {@link InstanceIdentifier} for {@link Node} from inventory
      * because this path is a base for every OF paths.
-     * 
+     *
      * @return WildCarded InstanceIdentifier for Node
      */
     protected static InstanceIdentifier<Node> getNodeWildII() {
@@ -70,7 +71,7 @@ public abstract class AbstractNotifSupplierBase<O extends DataObject> implements
     /**
      * Method returns a keyed {@link InstanceIdentifier} for {@link Node} from inventory
      * because this path is a base for every OF paths.
-     * 
+     *
      * @param ii - key for keyed {@link Node} {@link InstanceIdentifier}
      * @return Keyed InstanceIdentifier for Node
      */
@@ -84,7 +85,7 @@ public abstract class AbstractNotifSupplierBase<O extends DataObject> implements
      * @param path pointer to element
      * @return extracted {@link NodeKey} and wrapped in {@link NodeRef}
      */
-    public static NodeRef createNodeRef(final InstanceIdentifier<?> path) {
+    public static NodeRef createNodeRef(InstanceIdentifier<?> path) {
         final InstanceIdentifier<Node> nodePath = Preconditions.checkNotNull(path.firstIdentifierOf(Node.class));
         return new NodeRef(nodePath);
     }
@@ -93,7 +94,7 @@ public abstract class AbstractNotifSupplierBase<O extends DataObject> implements
      * @param path pointer to element
      * @return extracted {@link NodeId}
      */
-    public static NodeId getNodeId(final InstanceIdentifier<?> path) {
+    public static NodeId getNodeId(InstanceIdentifier<?> path) {
         final NodeKey nodeKey = Preconditions.checkNotNull(path.firstKeyOf(Node.class, NodeKey.class));
         return nodeKey.getId();
     }
