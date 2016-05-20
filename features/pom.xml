@@ -242,12 +242,6 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>bulk-o-matic</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>bulk-o-matic</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
     </dependencies>
 
     <scm>

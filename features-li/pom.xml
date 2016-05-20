@@ -248,12 +248,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>bulk-o-matic</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>notification-supplier</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
