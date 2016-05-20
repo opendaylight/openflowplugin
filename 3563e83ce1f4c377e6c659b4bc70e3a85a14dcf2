@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_d3e1aa9b",
+        "filename": "applications/lldp-speaker/src/main/resources/org/opendaylight/blueprint/lldp-speaker.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:46:31Z",
+      "side": 1,
+      "message": "whitespace",
+      "range": {
+        "startLine": 17,
+        "startChar": 47,
+        "endLine": 17,
+        "endChar": 48
+      },
+      "revId": "3563e83ce1f4c377e6c659b4bc70e3a85a14dcf2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
