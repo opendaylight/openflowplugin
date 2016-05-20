@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_b3551652",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/FlowCapableTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:43:03Z",
+      "side": 1,
+      "message": "I think most of this could be done and injected using blueprint",
+      "revId": "411ddb62e095cfabc7db97f31658b89a7ba361f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
