@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_05011505",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T05:52:22Z",
+      "side": 1,
+      "message": "yup - wanted to do that but notice the static lldpSecureKey and getter :) Similar to the annoying statics you\u0027ve been running into....",
+      "parentUuid": "fa57193c_d3736a13",
+      "revId": "6b47950b2ed72e0327131ad7ccae8895f89a1309",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_1365e244",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryProvider.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2016-05-20T02:41:54Z",
       "side": 1,
       "message": "same here, this could be done using blueprint and we could get rid of this class",
+      "revId": "6b47950b2ed72e0327131ad7ccae8895f89a1309",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_85140545",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T05:52:22Z",
+      "side": 1,
+      "message": "Yeah except I still need to call registerNotificationListener in Java code - I can\u0027t use the blueprint extender to do this b/c I wrote that using the new NotificationService interface but this code uses the deprecated NotificationProviderService. I didn\u0027t want to write an extender for deprecated code.\n\nThat said, what I\u0027ll do is move this code into LLDPActivator so I can at least get rid of this class.",
+      "parentUuid": "fa57193c_1365e244",
       "revId": "6b47950b2ed72e0327131ad7ccae8895f89a1309",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
