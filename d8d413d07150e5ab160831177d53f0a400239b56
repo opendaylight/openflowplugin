@@ -16,6 +16,24 @@
       "revId": "d8d413d07150e5ab160831177d53f0a400239b56",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_3362a63e",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatisticsManagerFactoryImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T02:47:57Z",
+      "side": 1,
+      "message": "Yeah I could\u0027ve done more of this in blueprint and I remember I tried to but I think changing the StatisticsManager looked too invasive so I left it alone and went the easier route. I think the StatisticsManager is part of the He plugin which is going away anyway so I made minimal changes here.",
+      "parentUuid": "fa57193c_b34076a6",
+      "revId": "d8d413d07150e5ab160831177d53f0a400239b56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
