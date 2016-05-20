@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_9369f227",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:39:49Z",
+      "side": 1,
+      "message": "wondering if this couldn\u0027t be done by blueprint.",
+      "revId": "c9ae8d26f6439896d4829fd3346ee8f5cb6a5c3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
