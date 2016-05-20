@@ -16,6 +16,24 @@
       "revId": "411ddb62e095cfabc7db97f31658b89a7ba361f3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_25cff9b1",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/FlowCapableTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T06:34:00Z",
+      "side": 1,
+      "message": "I can\u0027t create the FlowCapableTopologyExporter in blueprint b/c creating an InstanceIdentifier via blueprint is problematic. All the objects need the OperationProcessor but it\u0027s package scoped so I was reluctant to make it public. But looking at the other classes in this package, most are public so I guess it doesn\u0027t matter if OperationProcessor is as well.",
+      "parentUuid": "fa57193c_b3551652",
+      "revId": "411ddb62e095cfabc7db97f31658b89a7ba361f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
