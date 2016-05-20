@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_5e859eab",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T15:19:09Z",
+      "side": 1,
+      "message": "These can all be obtained via blueprint. Passing them all in will increase the constructor footprint but, as you start creating the sub-component classes, you\u0027ll probably find you can instantiate and wire them via blueprint instead of here in Java code, in which case you can get rid of this class.",
+      "revId": "5ea8f854263f12829cc9169ae5cf716fa89d3f22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1ea4c655",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T15:19:09Z",
+      "side": 1,
+      "message": "You don\u0027t need this",
+      "revId": "5ea8f854263f12829cc9169ae5cf716fa89d3f22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_fe9632ef",
+        "filename": "applications/forwardingrules-sync/src/main/resources/org/opendaylight/blueprint/forwardingrules-sync.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T15:19:09Z",
+      "side": 1,
+      "message": "This isn\u0027t actually advertised via blueprint although it is still advertised via the CSS for compatibility. You don\u0027t actually need it anymore and will likely go away when/if CSS is deprecated at some point in the future.",
+      "revId": "5ea8f854263f12829cc9169ae5cf716fa89d3f22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
