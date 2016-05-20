@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_7337fe4e",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:32:00Z",
+      "side": 1,
+      "message": "I think all this could be done via blueprint",
+      "revId": "a35c5ed1c6ec1c20cfa527ca80270be22ab88b10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
