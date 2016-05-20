@@ -16,6 +16,24 @@
       "revId": "a35c5ed1c6ec1c20cfa527ca80270be22ab88b10",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_73853ecf",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T02:38:24Z",
+      "side": 1,
+      "message": "yeah I think so. I have a lot of patches behind this one so I can tackle that in a follow-up.",
+      "parentUuid": "fa57193c_7337fe4e",
+      "revId": "a35c5ed1c6ec1c20cfa527ca80270be22ab88b10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
