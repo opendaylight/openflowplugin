@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyList
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
@@ -37,6 +36,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
+import java.math.BigInteger;
+import java.net.InetSocketAddress;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
+
 /**
  * test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD)
  */
@@ -46,6 +50,7 @@ public class ConnectionManagerImplTest {
     /** timeout of final step [ms] */
     private static final int FINAL_STEP_TIMEOUT = 500;
     private ConnectionManagerImpl connectionManagerImpl;
+
     @Mock
     private ConnectionAdapter connection;
     @Mock
@@ -62,7 +67,11 @@ public class ConnectionManagerImplTest {
      */
     @Before
     public void setUp() {
-        connectionManagerImpl = new ConnectionManagerImpl(ECHO_REPLY_TIMEOUT);
+        final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<>(), "opfpool");
+
+        connectionManagerImpl = new ConnectionManagerImpl(ECHO_REPLY_TIMEOUT, threadPool);
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
