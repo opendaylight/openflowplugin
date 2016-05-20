@@ -16,6 +16,24 @@
       "revId": "c9ae8d26f6439896d4829fd3346ee8f5cb6a5c3a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b326b6cc",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T03:46:53Z",
+      "side": 1,
+      "message": "I wanted to do that but all the objects above are returned from getters defined in the ForwardingRulesManager interface. So they\u0027d all still need to be injected into this class but they all take this class instance in the constructor so I couldn\u0027t create them blueprint :(",
+      "parentUuid": "fa57193c_9369f227",
+      "revId": "c9ae8d26f6439896d4829fd3346ee8f5cb6a5c3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
