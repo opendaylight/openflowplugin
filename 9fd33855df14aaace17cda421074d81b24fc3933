@@ -16,6 +16,24 @@
       "revId": "9fd33855df14aaace17cda421074d81b24fc3933",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b37876c5",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/InventoryActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-05-20T03:35:14Z",
+      "side": 1,
+      "message": "The reason I kept this is that FlowCapableInventoryProvider is package scoped and I preferred not to make it public and violate the author\u0027s intent. Plus I think this code is going away anyway (it\u0027s part of the He plugin).",
+      "parentUuid": "fa57193c_b327d611",
+      "revId": "9fd33855df14aaace17cda421074d81b24fc3933",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
