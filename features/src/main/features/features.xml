@@ -108,7 +108,6 @@
     <feature name='odl-openflowplugin-app-bulk-o-matic' description="OpenDaylight :: Openflow Plugin :: app bulk flow operations support" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/bulk-o-matic/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/71-bulk-o-matic.xml">mvn:org.opendaylight.openflowplugin.applications/bulk-o-matic/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>
