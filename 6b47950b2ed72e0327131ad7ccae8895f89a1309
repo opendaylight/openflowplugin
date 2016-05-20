@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_d3736a13",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:41:54Z",
+      "side": 1,
+      "message": "this could be configured and injected using blueprint. We could get rid of this class",
+      "revId": "6b47950b2ed72e0327131ad7ccae8895f89a1309",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1365e244",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-05-20T02:41:54Z",
+      "side": 1,
+      "message": "same here, this could be done using blueprint and we could get rid of this class",
+      "revId": "6b47950b2ed72e0327131ad7ccae8895f89a1309",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
