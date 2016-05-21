@@ -36,7 +36,7 @@ public interface OldNotifSupplierForItem<O extends DataObject,
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-    C createNotification(O o, InstanceIdentifier<O> path);
+     C createNotification(O o, InstanceIdentifier<O> path);
 
     /**
      * Method produces relevant updateItem kind of {@link Notification} from

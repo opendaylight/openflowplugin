@@ -32,6 +32,17 @@ public class OldNotifProviderImplTest {
 
     @Test
     public void testCreateAllSuppliers() {
+        final OldNotifProviderConfig config = createAllConfigSupplier();
+        final OldNotifProviderImpl provider = new OldNotifProviderImpl(config, notificationProviderService, dataBroker);
+        provider.start();
+        final List<OldNotifSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
+        int nrOfSuppliers = 0;
+        for (final OldNotifSupplierDefinition<?> supplier : listSuppliers) {
+            if (supplier != null) {
+                nrOfSuppliers++;
+            }
+        }
+        assertEquals(11, nrOfSuppliers);
     }
 
     @Test
