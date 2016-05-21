@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.applications.old.notification.supplier.im
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.FlowNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.GroupNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.MeterNotificationSupplierImpl;
+import org.opendaylight.openflowplugin.applications.old.notification.supplier.impl.item.stat.FlowStatNotifSupplierImpl;
 import org.opendaylight.openflowplugin.applications.old.notification.supplier.tools.OldNotifProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -28,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdated;
@@ -56,6 +59,7 @@ public class OldNotifProviderImpl implements OldNotifProvider {
     private OldNotifSupplierForItem<Flow, FlowAdded, FlowUpdated, FlowRemoved> flowSupp;
     private OldNotifSupplierForItem<Meter, MeterAdded, MeterUpdated, MeterRemoved> meterSupp;
     private OldNotifSupplierForItem<Group, GroupAdded, GroupUpdated, GroupRemoved> groupSupp;
+    private OldNotifSupplierForItemStat<FlowStatistics, FlowsStatisticsUpdate> flowStatSupp;
 
     /**
      * Provider constructor set all needed final parameters
@@ -78,8 +82,10 @@ public class OldNotifProviderImpl implements OldNotifProvider {
         flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
         meterSupp = config.isMeterSupport() ? new MeterNotificationSupplierImpl(nps, db) : null;
         groupSupp = config.isGroupSupport() ? new GroupNotificationSupplierImpl(nps, db) : null;
+        flowStatSupp = config.isFlowStatSupport() ? new FlowStatNotifSupplierImpl(nps, db) : null;
 
-        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp));
+        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp,
+                flowStatSupp));
     }
 
     @Override

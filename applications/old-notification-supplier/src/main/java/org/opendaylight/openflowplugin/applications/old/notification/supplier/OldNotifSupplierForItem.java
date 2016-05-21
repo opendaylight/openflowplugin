@@ -22,13 +22,16 @@ import org.opendaylight.yangtools.yang.binding.Notification;
  * @param <U> - Update notification
  * @param <D> - Delete notification
  */
-public interface OldNotifSupplierForItem<O extends DataObject, C extends Notification, U extends Notification, D extends Notification>
+public interface OldNotifSupplierForItem<O extends DataObject,
+                                         C extends Notification,
+                                         U extends Notification,
+                                         D extends Notification>
         extends OldNotifSupplierDefinition<O> {
 
     /**
      * Method produces relevant addItem kind of {@link Notification} from
      * data tree item identified by {@link InstanceIdentifier} path.
-     *
+     * 
      * @param o - Data Tree Item object
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
@@ -38,7 +41,7 @@ public interface OldNotifSupplierForItem<O extends DataObject, C extends Notific
     /**
      * Method produces relevant updateItem kind of {@link Notification} from
      * data tree item identified by {@link InstanceIdentifier} path.
-     *
+     * 
      * @param o - Data Tree Item object
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
@@ -48,10 +51,10 @@ public interface OldNotifSupplierForItem<O extends DataObject, C extends Notific
     /**
      * Method produces relevant deleteItem kind of {@link Notification} from
      * path {@link InstanceIdentifier} to deleted item.
-     *
+     * 
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-    D deleteNotification(InstanceIdentifier<O> path);
+     D deleteNotification(InstanceIdentifier<O> path);
 }
 
