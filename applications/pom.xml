@@ -88,7 +88,7 @@
         <module>of-switch-config-pusher</module>
         <module>lldp-speaker</module>
         <!-- deprecated apps -->
-        <module>old-notification-supplier</module>
+        <module>notification-supplier</module>
         <!-- nsf apps -->
         <module>inventory-manager</module>
         <module>statistics-manager</module>
