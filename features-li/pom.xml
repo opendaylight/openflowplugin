@@ -295,13 +295,13 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>old-notification-supplier</artifactId>
+            <artifactId>notification-supplier</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>old-notification-supplier</artifactId>
+            <artifactId>notification-supplier</artifactId>
         </dependency>
     </dependencies>
 </project>
