@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
@@ -56,7 +57,8 @@ public class SyncReactorImpl implements SyncReactor {
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
+                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                            final LogicalDatastoreType dsType) {
 
         LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
@@ -121,6 +123,7 @@ public class SyncReactorImpl implements SyncReactor {
                     );
                 }
 
+                LOG.trace("syncup errors: {}", input.getErrors());
                 return input.isSuccessful();
             }
         });

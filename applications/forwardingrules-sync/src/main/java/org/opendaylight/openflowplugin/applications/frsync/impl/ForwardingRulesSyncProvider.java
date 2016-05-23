@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
+import org.opendaylight.openflowplugin.applications.frsync.util.RetryRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
@@ -65,7 +66,6 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     private ListenerRegistration<NodeListener> dataTreeConfigChangeListener;
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
-
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
@@ -106,12 +106,14 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setFlatBatchService(flatBatchService)
                 .setTableForwarder(tableForwarder);
 
-        final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
-        final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl,
+        final RetryRegistry retryRegistry = new RetryRegistry();
+
+        final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
+        final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, retryRegistry);
+        final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
                 new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
 
-        final SyncReactor cfgReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
-        final SyncReactor operReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
+        final SyncReactor reactor = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
         final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
@@ -120,8 +122,10 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
-        final NodeListener<FlowCapableNode> nodeListenerConfig = new SimplifiedConfigListener(cfgReactor, configSnapshot, operationalDao);
-        final NodeListener<Node> nodeListenerOperational = new SimplifiedOperationalListener(operReactor, operationalSnapshot, configDao);
+        final NodeListener<FlowCapableNode> nodeListenerConfig =
+                new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+        final NodeListener<Node> nodeListenerOperational =
+                new SimplifiedOperationalRetryListener(reactor, operationalSnapshot, configDao, retryRegistry);
 
         try {
             SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
