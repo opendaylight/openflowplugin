@@ -24,12 +24,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class SynchronizationDiffInput {
 
     private final InstanceIdentifier<FlowCapableNode> nodeIdent;
-    final List<ItemSyncBox<Group>> groupsToAddOrUpdate;
-    final ItemSyncBox<Meter> metersToAddOrUpdate;
-    final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
-    final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
-    final ItemSyncBox<Meter> metersToRemove;
-    final List<ItemSyncBox<Group>> groupsToRemove;
+    private final List<ItemSyncBox<Group>> groupsToAddOrUpdate;
+    private final ItemSyncBox<Meter> metersToAddOrUpdate;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
+    private final ItemSyncBox<Meter> metersToRemove;
+    private final List<ItemSyncBox<Group>> groupsToRemove;
 
     public SynchronizationDiffInput(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                     final List<ItemSyncBox<Group>> groupsToAddOrUpdate,
