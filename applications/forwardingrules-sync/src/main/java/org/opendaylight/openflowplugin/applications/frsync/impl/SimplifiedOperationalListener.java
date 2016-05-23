@@ -19,6 +19,8 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.SnapshotElicitRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -41,12 +43,14 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     protected final SyncReactor reactor;
     private FlowCapableNodeSnapshotDao operationalSnapshot;
     private FlowCapableNodeDao configDao;
+    private SnapshotElicitRegistry snapshotElicitRegistry;
 
-    public SimplifiedOperationalListener(SyncReactor reactor,
-            FlowCapableNodeSnapshotDao operationalSnapshot, FlowCapableNodeDao configDao) {
+    public SimplifiedOperationalListener(SyncReactor reactor, FlowCapableNodeSnapshotDao operationalSnapshot,
+                                         FlowCapableNodeDao configDao, SnapshotElicitRegistry snapshotElicitRegistry) {
         this.reactor = reactor;
         this.operationalSnapshot = operationalSnapshot;
         this.configDao = configDao;
+        this.snapshotElicitRegistry = snapshotElicitRegistry;
     }
 
     @Override
@@ -67,12 +71,19 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             DataTreeModification<Node> modification) throws ReadFailedException, InterruptedException {
+        final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
         updateCache(modification);
 
         if (isAdd(modification) || isAddLogical(modification)) {
             return reconciliation(modification);
         }
         // TODO: else = explicit reconciliation required
+        else if (snapshotElicitRegistry.isRegistered(nodeId)) {
+            if (snapshotElicitRegistry.checkConsistency(modification)) {
+                snapshotElicitRegistry.unregisterForNextConsistentOperationalSnapshot(nodeId);
+                return reconciliation(modification);
+            }
+        }
 
         return skipModification(modification);
     }
