@@ -39,12 +39,12 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                 if (optFuture.isPresent()) {
                     final ListenableFuture<Boolean> future = optFuture.get();
                     final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
-                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId, threadName());
+                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId.getValue(), threadName());
                 }
             } catch (InterruptedException e) {
-                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId);
+                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId.getValue());
             } catch (Exception e) {
-                LOG.error("error processing inventory node modification: {}", nodeId, e);
+                LOG.error("error processing inventory node modification: {}", nodeId.getValue(), e);
             }
         }
     }

@@ -73,11 +73,6 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         return delegate.syncup(flowcapableNodePath, configTree, operationalTree);
     }
 
-    static String threadName() {
-        final Thread currentThread = Thread.currentThread();
-        return currentThread.getName();
-    }
-
     protected String updateThreadName(NodeId nodeId) {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
@@ -107,4 +102,5 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         }
         return oldName;
     }
+
 }
