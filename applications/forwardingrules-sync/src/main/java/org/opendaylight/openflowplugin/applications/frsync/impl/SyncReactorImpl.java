@@ -121,6 +121,7 @@ public class SyncReactorImpl implements SyncReactor {
                     );
                 }
 
+                LOG.trace("syncup errors: {}", input.getErrors());
                 return input.isSuccessful();
             }
         });

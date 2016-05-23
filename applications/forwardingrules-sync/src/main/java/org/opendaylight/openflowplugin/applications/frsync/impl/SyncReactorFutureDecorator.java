@@ -60,7 +60,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                 }
             }
         });
-        
+
         return syncup;
     }
 
