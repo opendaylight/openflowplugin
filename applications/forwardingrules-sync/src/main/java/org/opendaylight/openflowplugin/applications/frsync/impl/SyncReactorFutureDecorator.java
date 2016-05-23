@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -39,7 +40,8 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            final FlowCapableNode configTree, final FlowCapableNode operationalTree) throws InterruptedException {
+                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                            final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup {}", nodeId.getValue());
 
@@ -48,7 +50,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                 final String oldThreadName = updateThreadName(nodeId);
 
                 try {
-                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree)
+                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree, dsType)
                             .get(10000, TimeUnit.MILLISECONDS);
                     LOG.trace("ret {} {}", nodeId.getValue(), ret);
                     return true;
@@ -60,17 +62,17 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                 }
             }
         });
-        
+
         return syncup;
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            final FlowCapableNode configTree, final FlowCapableNode operationalTree)
-                    throws InterruptedException {
+                                                         final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                                         final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("doSyncupInFuture {}", nodeId.getValue());
 
-        return delegate.syncup(flowcapableNodePath, configTree, operationalTree);
+        return delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
     }
 
     static String threadName() {
