@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
@@ -54,13 +55,12 @@ public class SyncReactorImplTest {
     private static final NodeId NODE_ID = new NodeId("unit-nodeId");
     private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class);
-
     private SyncReactorImpl reactor;
+
     @Mock
     private DataBroker db;
     @Mock
     private SyncPlanPushStrategy syncPlanPushStrategy;
-
     @Captor
     private ArgumentCaptor<Group> groupCaptor;
     @Captor
@@ -107,7 +107,7 @@ public class SyncReactorImplTest {
                 Matchers.<SyncCrudCounters>any()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 
-        final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, configFcn, operationalFcn);
+        final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, configFcn, operationalFcn, LogicalDatastoreType.CONFIGURATION);
         try {
             Assert.assertTrue(syncupResult.isDone());
             final Boolean voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);

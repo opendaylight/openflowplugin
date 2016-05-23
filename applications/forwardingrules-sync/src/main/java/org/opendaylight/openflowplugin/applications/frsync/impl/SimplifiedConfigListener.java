@@ -63,7 +63,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
             LOG.info("Skip syncup, {} operational is not present", nodeId.getValue());
-            return Optional.absent();// we try to reconfigure switch is alive
+            return Optional.absent();
         }
 
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
@@ -95,9 +95,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNode)
                     throws InterruptedException {
         LOG.trace("onNodeAdded {}", nodePath);
-        
-        final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, dataAfter, operationalNode);
+        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
         return endResult;
     }
 
@@ -112,9 +110,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
             FlowCapableNode dataBefore, FlowCapableNode dataAfter, FlowCapableNode operationalNodeNode)
                     throws InterruptedException {
         LOG.trace("onNodeUpdated {}", nodePath);
-        
-        final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, dataAfter, dataBefore);
+        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
         return endResult;
     }
 
@@ -126,9 +122,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     protected ListenableFuture<Boolean> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
             FlowCapableNode dataBefore, FlowCapableNode operationalNode) throws InterruptedException {
         LOG.trace("onNodeDeleted {}", nodePath);
-        
-        final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, null, dataBefore);
+        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, null, dataBefore, dsType());
         return endResult;
     }
 
