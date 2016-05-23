@@ -43,7 +43,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
             final FlowCapableNode configTree, final FlowCapableNode operationalTree) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup {}", nodeId.getValue());
+        LOG.trace("syncup guard {}", nodeId.getValue());
 
         final long stampBeforeGuard = System.nanoTime();
         final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);//TODO handle InteruptedException
