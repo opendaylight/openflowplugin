@@ -412,6 +412,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
                 // b) notify listener
                 itemLifecycleListener.onRemoved(flowPath);
+                // c) trigger off a notification
+                notificationPublishService.offerNotification(flowRemovedNotification);
             } else {
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
                         getDeviceState().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
