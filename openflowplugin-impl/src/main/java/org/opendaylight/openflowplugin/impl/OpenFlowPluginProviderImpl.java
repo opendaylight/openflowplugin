@@ -195,12 +195,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         Preconditions.checkNotNull(rpcProviderRegistry, "missing RPC provider registry");
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
 
-        // Create dynamic unbound cached thread pool, that will reuse inactive threads, but also creates
-        // new threads when needed
-        threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), "opfpool");
-
         extensionConverterManager = new ExtensionConverterManagerImpl();
         // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
         // TODO: rewrite later!
