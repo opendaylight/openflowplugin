@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -41,7 +42,8 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            final FlowCapableNode configTree, final FlowCapableNode operationalTree) throws InterruptedException {
+                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                            final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup {}", nodeId.getValue());
 
@@ -57,7 +59,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             }
             
             final ListenableFuture<Boolean> endResult =
-                    delegate.syncup(flowcapableNodePath, configTree, operationalTree);//TODO handle InteruptedException
+                    delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);//TODO handle InteruptedException
             
             Futures.addCallback(endResult, new FutureCallback<Boolean>() {
                 @Override

@@ -63,7 +63,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
             LOG.info("Skip syncup, {} operational is not present", nodeId.getValue());
-            return Optional.absent();// we try to reconfigure switch is alive
+            return Optional.absent();
         }
 
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
@@ -97,7 +97,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         LOG.trace("onNodeAdded {}", nodePath);
         
         final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, dataAfter, operationalNode);
+                reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
         return endResult;
     }
 
@@ -114,7 +114,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         LOG.trace("onNodeUpdated {}", nodePath);
         
         final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, dataAfter, dataBefore);
+                reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
         return endResult;
     }
 
@@ -128,7 +128,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         LOG.trace("onNodeDeleted {}", nodePath);
         
         final ListenableFuture<Boolean> endResult =
-                reactor.syncup(nodePath, null, dataBefore);
+                reactor.syncup(nodePath, null, dataBefore, dsType());
         return endResult;
     }
 
