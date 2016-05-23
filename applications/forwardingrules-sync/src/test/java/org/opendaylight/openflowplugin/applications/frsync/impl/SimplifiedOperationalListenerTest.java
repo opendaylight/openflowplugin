@@ -29,16 +29,15 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.SnapshotElicitRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 
 /**
@@ -59,6 +58,8 @@ public class SimplifiedOperationalListenerTest {
     private ReadOnlyTransaction roTx;
     @Mock
     private DataObjectModification<Node> operationalModification;
+    @Mock
+    private SnapshotElicitRegistry snapshotElicitRegistry;
 
     private InstanceIdentifier<Node> nodePath;
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
@@ -73,7 +74,7 @@ public class SimplifiedOperationalListenerTest {
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.CONFIGURATION));
 
 
-        nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao);
+        nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnaphot, configDao, snapshotElicitRegistry);
         nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);

@@ -28,7 +28,9 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOd
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
+import org.opendaylight.openflowplugin.applications.frsync.util.SnapshotElicitRegistry;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -59,6 +61,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private final SalTableService salTableService;
     private final FlowCapableTransactionService transactionService;
     private final SalFlatBatchService flatBatchService;
+    private final OpendaylightDirectStatisticsService directStatisticsService;
 
     /** wildcard path to flow-capable-node augmentation of inventory node */
     private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
@@ -96,6 +99,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         this.flatBatchService =
                 Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                         "RPC SalFlatBatchService not found.");
+        this.directStatisticsService =
+                Preconditions.checkNotNull(rpcRegistry.getRpcService(OpendaylightDirectStatisticsService.class),
+                        "RPC OpendaylightDirectStatisticsService not found.");
 
         nodeConfigDataTreePath =
                 new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
@@ -139,8 +145,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     .setFlatBatchService(flatBatchService)
                     .setTableForwarder(tableForwarder);
 
-            final SyncReactorImpl syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
-            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorImpl,
+            final SnapshotElicitRegistry snapshotElicitRegistry = new SnapshotElicitRegistry(directStatisticsService);
+
+            final SyncReactorImpl syncReactor = new SyncReactorImpl(syncPlanPushStrategy);
+            final SyncReactorRetryDecorator syncReactorRetry = new SyncReactorRetryDecorator(syncReactor, snapshotElicitRegistry);
+
+            final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
                     new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
 
             final SyncReactor cfgReactor = new SyncReactorFutureWithCompressionDecorator(syncReactorGuard, syncThreadPool);
@@ -154,11 +164,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                     new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
             final NodeListener<FlowCapableNode> nodeListenerConfig =
-                    new SimplifiedConfigListener(
-                            cfgReactor,
-                            configSnapshot, operationalDao);
+                    new SimplifiedConfigListener(cfgReactor, configSnapshot, operationalDao);
             final NodeListener<Node> nodeListenerOperational =
-                    new SimplifiedOperationalListener(operReactor, operationalSnapshot, configDao);
+                    new SimplifiedOperationalListener(operReactor, operationalSnapshot, configDao, snapshotElicitRegistry);
 
             try {
                 SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
