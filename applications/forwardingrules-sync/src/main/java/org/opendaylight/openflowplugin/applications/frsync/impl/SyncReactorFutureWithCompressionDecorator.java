@@ -39,7 +39,7 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
             new HashMap<>();
     final Semaphore beforeCompressionGuard = new Semaphore(1, false);
 
-    public SyncReactorFutureWithCompressionDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+    public SyncReactorFutureWithCompressionDecorator(SyncReactorRetryDecorator delegate, ListeningExecutorService executorService) {
         super(delegate, executorService);
     }
 
@@ -51,8 +51,9 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
         try {
             beforeCompressionGuard.acquire();
 
+
             final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, configTree, operationalTree);
-            if (newFutureNecessary) {
+            if (newFutureNecessary && !delegate.inRetry()) {
                 super.syncup(flowcapableNodePath, configTree, operationalTree);
             }
             return Futures.immediateFuture(true);

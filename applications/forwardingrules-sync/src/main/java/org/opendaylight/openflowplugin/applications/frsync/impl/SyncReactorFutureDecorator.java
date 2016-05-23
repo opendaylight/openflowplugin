@@ -30,12 +30,12 @@ public class SyncReactorFutureDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
 
-    private final SyncReactor delegate;
+    protected final SyncReactorRetryDecorator delegate;
     private final ListeningExecutorService executorService;
 
     public static final String FRM_RPC_CLIENT_PREFIX = "FRM-RPC-client-";
 
-    public SyncReactorFutureDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+    public SyncReactorFutureDecorator(SyncReactorRetryDecorator delegate, ListeningExecutorService executorService) {
         this.delegate = delegate;
         this.executorService = executorService;
     }
@@ -109,4 +109,5 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         }
         return oldName;
     }
+
 }
