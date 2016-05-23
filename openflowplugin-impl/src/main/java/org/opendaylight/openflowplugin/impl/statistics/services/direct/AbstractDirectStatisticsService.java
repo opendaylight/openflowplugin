@@ -92,7 +92,7 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcReply = handleServiceCall(input);
         ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, resultTransformFunction);
 
-        if (input.isStoreStats()) {
+        if (Boolean.TRUE.equals(input.isStoreStats())) {
             rpcResult = Futures.transform(rpcResult, resultStoreFunction);
         }
 
