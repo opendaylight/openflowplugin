@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.SnapshotElicitRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -46,32 +47,42 @@ import com.google.common.util.concurrent.Futures;
 @RunWith(MockitoJUnitRunner.class)
 public class SimplifiedConfigListenerTest {
 
+    public static final NodeId NODE_ID = new NodeId("testNode");
     @Mock
     private SyncReactor reactor;
     @Mock
-    private DataBroker db;
+    private ReadOnlyTransaction roTx;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
-    private ReadOnlyTransaction roTx;
-    @Mock
     private DataObjectModification<FlowCapableNode> configModification;
+    @Mock
+    private FlowCapableNode configTree;
+    @Mock
+    private FlowCapableNode operationalTree;
 
-    private InstanceIdentifier<FlowCapableNode> nodePath;
+    private InstanceIdentifier<FlowCapableNode> fcNodePath;
     private SimplifiedConfigListener nodeListenerConfig;
 
     @Before
     public void setUp() throws Exception {
-        final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot,
+        final DataBroker db = Mockito.mock(DataBroker.class);
+        final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
 
         
-        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnaphot, operationalDao);
-        nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("testNode")))
+        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+        fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
+
+        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
+                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, fcNodePath);
+
+        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
+        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
     }
 
     @Test
@@ -80,24 +91,55 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChanged() throws Exception {
-        final FlowCapableNode configTree = Mockito.mock(FlowCapableNode.class);
-        final FlowCapableNode operationalTree = Mockito.mock(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
-                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, nodePath);
-
-        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
-        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+    public void testOnDataTreeChangedSyncupAdd() throws Exception {
         Mockito.when(configModification.getDataAfter()).thenReturn(configTree);
-        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
-        Mockito.doReturn(Futures.immediateCheckedFuture(Optional.of(operationalTree))).when(
-                roTx).read(LogicalDatastoreType.OPERATIONAL, nodePath);
-        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(),Matchers.<FlowCapableNode>any(),Matchers.<FlowCapableNode>any()))
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(operationalTree)));
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(), Matchers.<FlowCapableNode>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(nodePath, configTree, operationalTree);
+        Mockito.verify(reactor).syncup(fcNodePath, configTree, operationalTree);
         Mockito.verify(roTx).close();
     }
+
+    @Test
+    public void testOnDataTreeChangedSyncupUpdate() throws Exception {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(operationalTree)));
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(), Matchers.<FlowCapableNode>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reactor).syncup(fcNodePath, null, null);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedSyncupDelete() throws Exception {
+        Mockito.when(configModification.getDataBefore()).thenReturn(configTree);
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(operationalTree)));
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(), Matchers.<FlowCapableNode>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reactor).syncup(fcNodePath, null, configTree);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedSkip() throws Exception {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath)).
+                thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verify(roTx).close();
+    }
+
 }
