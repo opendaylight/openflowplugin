@@ -16,7 +16,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
@@ -36,12 +35,12 @@ import org.slf4j.LoggerFactory;
 public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
 
-    private final SyncReactor reactor;
-    private FlowCapableNodeSnapshotDao operationalSnapshot;
-    private FlowCapableNodeDao configDao;
+    protected final SyncReactor reactor;
+    protected final FlowCapableNodeSnapshotDao operationalSnapshot;
+    protected final FlowCapableNodeDao configDao;
 
-    public SimplifiedOperationalListener(SyncReactor reactor,
-            FlowCapableNodeSnapshotDao operationalSnapshot, FlowCapableNodeDao configDao) {
+    public SimplifiedOperationalListener(SyncReactor reactor, FlowCapableNodeSnapshotDao operationalSnapshot,
+                                         FlowCapableNodeDao configDao) {
         this.reactor = reactor;
         this.operationalSnapshot = operationalSnapshot;
         this.configDao = configDao;
@@ -64,14 +63,12 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<Node> modification) throws ReadFailedException, InterruptedException {
-        updateCache(modification);
+            DataTreeModification<Node> modification) throws InterruptedException {
 
+        updateCache(modification);
         if (isAdd(modification) || isAddLogical(modification)) {
             return reconciliation(modification);
         }
-        // TODO: else = explicit reconciliation required
-
         return skipModification(modification);
     }
 
@@ -82,12 +79,10 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      */
     protected void updateCache(DataTreeModification<Node> modification) {
         try {
-            boolean isDelete = isDelete(modification) || isDeleteLogical(modification);
-            if (isDelete) {
+            if (isDelete(modification) || isDeleteLogical(modification)) {
                 operationalSnapshot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
                 return;
             }
-
             operationalSnapshot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
         } catch(Exception e) {
             LOG.error("update cache failed {}", nodeId(modification), e);
@@ -98,7 +93,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         LOG.trace("Skipping Inventory Operational modification {}, before {}, after {}", nodeIdValue(modification),
                 modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
                 modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
-        return Optional.absent();// skip otherwise event
+        return Optional.absent();
     }
 
     /**
@@ -154,15 +149,14 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     protected Optional<ListenableFuture<Boolean>> reconciliation(
             DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = nodeId(modification);
-
-        LOG.debug("Reconciliation: {}", nodeId.getValue());
-
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
-        final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId(modification))).augmentation(FlowCapableNode.class);
 
-        if (nodeConfiguration.isPresent())
+        if (nodeConfiguration.isPresent()) {
+            LOG.debug("Reconciliation: {}", nodeId.getValue());
+            final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
+                    .child(Node.class, new NodeKey(nodeId(modification))).augmentation(FlowCapableNode.class);
             return Optional.of(reactor.syncup(nodePath, nodeConfiguration.get(), flowCapableNodeAfter(modification)));
+        }
         else
             return skipModification(modification);
     }
@@ -198,7 +192,6 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     static NodeId nodeId(DataTreeModification<Node> modification) {
         final DataObjectModification<Node> rootNode = modification.getRootNode();
         final Node dataAfter = rootNode.getDataAfter();
-
 
         if (dataAfter != null) {
             return dataAfter.getId();
