@@ -34,10 +34,10 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureWithCompressionDecorator.class);
 
-    @GuardedBy("beforeCompressionGuard")
-    final Map<InstanceIdentifier<FlowCapableNode>, Pair<FlowCapableNode, FlowCapableNode>> beforeCompression =
+    @GuardedBy("compressionGuard")
+    final Map<InstanceIdentifier<FlowCapableNode>, Pair<FlowCapableNode, FlowCapableNode>> compressionQueue =
             new HashMap<>();
-    final Semaphore beforeCompressionGuard = new Semaphore(1, false);
+    final Semaphore compressionGuard = new Semaphore(1, false);
 
     public SyncReactorFutureWithCompressionDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
         super(delegate, executorService);
@@ -49,7 +49,7 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
         LOG.trace("syncup {}", nodeId.getValue());
 
         try {
-            beforeCompressionGuard.acquire();
+            compressionGuard.acquire();
 
             final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, configTree, operationalTree);
             if (newFutureNecessary) {
@@ -57,7 +57,7 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
             }
             return Futures.immediateFuture(true);
         } finally {
-            beforeCompressionGuard.release();
+            compressionGuard.release();
         }
     }
 
@@ -79,13 +79,13 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
 
     protected boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
             final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
-        final Pair<FlowCapableNode, FlowCapableNode> previous = beforeCompression.get(flowcapableNodePath);
+        final Pair<FlowCapableNode, FlowCapableNode> previous = compressionQueue.get(flowcapableNodePath);
         if (previous != null) {
             final FlowCapableNode previousOperational = previous.getRight();
-            beforeCompression.put(flowcapableNodePath, Pair.of(configTree, previousOperational));
+            compressionQueue.put(flowcapableNodePath, Pair.of(configTree, previousOperational));
             return false;
         } else {
-            beforeCompression.put(flowcapableNodePath, Pair.of(configTree, operationalTree));
+            compressionQueue.put(flowcapableNodePath, Pair.of(configTree, operationalTree));
             return true;
         }
     }
@@ -94,14 +94,14 @@ public class SyncReactorFutureWithCompressionDecorator extends SyncReactorFuture
             final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
         try {
             try {
-                beforeCompressionGuard.acquire();
+                compressionGuard.acquire();
             } catch (InterruptedException e) {
                 return null;
             }
 
-            return beforeCompression.remove(flowcapableNodePath);
+            return compressionQueue.remove(flowcapableNodePath);
         } finally {
-            beforeCompressionGuard.release();
+            compressionGuard.release();
         }
     }
 }
