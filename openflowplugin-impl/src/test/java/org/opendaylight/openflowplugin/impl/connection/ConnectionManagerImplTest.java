@@ -61,8 +61,7 @@ public class ConnectionManagerImplTest {
 
     private final static int ECHO_REPLY_TIMEOUT = 500;
 
-    private final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
-            60L, TimeUnit.SECONDS,
+    private final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, 1, 60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>(), "ofppool");
 
     /**
