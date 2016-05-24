@@ -60,6 +60,9 @@ public class OpenFlowPluginProviderImplTest {
 
     private static final long RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
+    private static final int THREAD_POOL_MIN_THREADS = 1;
+    private static final int THREAD_POOL_MAX_THREADS = 32000;
+    private static final long THREAD_POOL_TIMEOUT = 60;
 
     private OpenFlowPluginProviderImpl provider;
 
@@ -71,7 +74,13 @@ public class OpenFlowPluginProviderImplTest {
         when(rpcProviderRegistry.addRpcImplementation(eq(StatisticsManagerControlService.class), any())).thenReturn(controlServiceRegistration);
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateCheckedFuture(null));
 
-        provider = new OpenFlowPluginProviderImpl(RPC_REQUESTS_QUOTA, GLOBAL_NOTIFICATION_QUOTA);
+        provider = new OpenFlowPluginProviderImpl(
+                RPC_REQUESTS_QUOTA,
+                GLOBAL_NOTIFICATION_QUOTA,
+                THREAD_POOL_MIN_THREADS,
+                THREAD_POOL_MAX_THREADS,
+                THREAD_POOL_TIMEOUT);
+
         provider.setDataBroker(dataBroker);
         provider.setRpcProviderRegistry(rpcProviderRegistry);
         provider.setNotificationProviderService(notificationService);

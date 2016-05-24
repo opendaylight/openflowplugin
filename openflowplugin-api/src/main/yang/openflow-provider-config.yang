@@ -64,5 +64,23 @@ module openflow-provider-config {
             type non-zero-uint32-type;
             default 2000;
         }
+
+        leaf thread-pool-min-threads {
+            description "Mininum (starting) number of threads in thread pool";
+            type uint16;
+            default 1;
+        }
+
+        leaf thread-pool-max-threads {
+            description "Maximum number of threads in thread pool";
+            type non-zero-uint16-type;
+            default 32000;
+        }
+
+        leaf thread-pool-timeout {
+            description "After how much time (in seconds) of inactivity will be threads in pool terminated";
+            type uint32;
+            default 60;
+        }
     }
 }
