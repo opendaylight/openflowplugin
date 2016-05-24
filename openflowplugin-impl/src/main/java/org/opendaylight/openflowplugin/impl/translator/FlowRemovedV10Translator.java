@@ -25,4 +25,15 @@ public class FlowRemovedV10Translator extends FlowRemovedTranslator {
         return MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowRemoved.getMatchV10(),
                 deviceState.getFeatures().getDatapathId(), OpenflowVersion.OF10);
     }
+
+    /**
+     * Always returns zero because OF10 FLOW_REMOVED doesn't contain table ID.
+     *
+     * @param flowRemoved  FLOW_REMOVED message.
+     * @return  Zero.
+     */
+    @Override
+    protected Short translateTableId(FlowRemoved flowRemoved) {
+        return Short.valueOf((short)0);
+    }
 }

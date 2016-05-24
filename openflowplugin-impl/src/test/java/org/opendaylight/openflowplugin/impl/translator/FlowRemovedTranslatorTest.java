@@ -91,19 +91,19 @@ public class FlowRemovedTranslatorTest {
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
         assertEquals(flowRemovedMessage.getPriority(), flowRemoved.getPriority());
-        assertEquals((long)flowRemovedMessage.getTableId().getValue(), (long)flowRemoved.getTableId());
+        assertEquals((short)0, flowRemoved.getTableId().shortValue());
     }
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved buildMessage(boolean isV10) {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
                 .setCookie(BigInteger.ONE)
-                .setPriority(1)
-                .setTableId(new TableId(42l));
+                .setPriority(1);
 
         if (isV10) {
             builder.setMatchV10(new MatchV10Builder().setWildcards(flowWildcards).build());
         } else {
-            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.<MatchEntry>emptyList()).build());
+            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.<MatchEntry>emptyList()).build())
+                .setTableId(new TableId(42l));
         }
 
         return builder.build();
