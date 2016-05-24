@@ -17,6 +17,9 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -51,6 +54,7 @@ import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyMXBean;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
@@ -86,11 +90,26 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean skipTableFeatures = true;
 
     private final LifecycleConductor conductor;
+    private final ThreadPoolExecutor threadPool;
 
-    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota, final Long globalNotificationQuota) {
+    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
+                                      final long globalNotificationQuota,
+                                      final int threadPoolMinThreads,
+                                      final int threadPoolMaxThreads,
+                                      final long threadPoolTimeout) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
         this.rpcRequestsQuota = (int) rpcRequestsQuota;
         this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
+
+        // Creates a thread pool that creates new threads as needed, but will reuse previously
+        // constructed threads when they are available.
+        // Threads that have not been used for x seconds are terminated and removed from the cache.
+        threadPool = new ThreadPoolLoggingExecutor(
+                Preconditions.checkNotNull(threadPoolMinThreads),
+                Preconditions.checkNotNull(threadPoolMaxThreads),
+                Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), "ofppool");
+
         conductor = new LifecycleConductorImpl(messageIntelligenceAgency);
     }
 
@@ -184,7 +203,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void initialize() {
-
         Preconditions.checkNotNull(dataBroker, "missing data broker");
         Preconditions.checkNotNull(rpcProviderRegistry, "missing RPC provider registry");
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
@@ -194,7 +212,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // TODO: rewrite later!
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
-        connectionManager = new ConnectionManagerImpl(echoReplyTimeout);
+        connectionManager = new ConnectionManagerImpl(echoReplyTimeout, threadPool);
 
         registerMXBean(messageIntelligenceAgency);
 
@@ -287,5 +305,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // TODO: needs to close org.opendaylight.openflowplugin.impl.role.OpenflowOwnershipListener after RoleContexts are down
         // TODO: must not be executed prior to all living RoleContexts have been closed (via closing living DeviceContexts)
         roleManager.close();
+
+        // Manually shutdown all remaining running threads in pool
+        threadPool.shutdown();
     }
 }
