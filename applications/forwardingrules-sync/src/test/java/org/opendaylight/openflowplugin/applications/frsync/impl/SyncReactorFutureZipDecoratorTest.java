@@ -11,10 +11,13 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
@@ -54,12 +57,12 @@ public class SyncReactorFutureZipDecoratorTest {
 
     @Before
     public void setUp() {
-        syncThreadPool = FrmExecutors.instance()
-                .newFixedThreadPool(1, new ThreadFactoryBuilder()
-                        .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
-                        .setDaemon(false)
-                        .build());
-
+        final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+                .setDaemon(false)
+                .setNameFormat("frsync-test%d")
+                .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
+                .build());
+        syncThreadPool = MoreExecutors.listeningDecorator(executorService);
         reactor = new SyncReactorFutureZipDecorator(delegate, syncThreadPool);
         fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
