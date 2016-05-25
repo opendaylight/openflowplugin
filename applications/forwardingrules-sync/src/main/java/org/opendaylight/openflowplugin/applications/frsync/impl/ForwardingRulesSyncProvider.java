@@ -10,9 +10,11 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -29,7 +31,6 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSn
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.RetryRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -46,8 +47,6 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
-    private static final int STARTUP_LOOP_TICK = 500;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final DataBroker dataService;
     private final SalTableService salTableService;
@@ -60,12 +59,13 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private static final InstanceIdentifier<Node> NODE_WC_PATH =
             InstanceIdentifier.create(Nodes.class).child(Node.class);
 
-
     private final DataTreeIdentifier<FlowCapableNode> nodeConfigDataTreePath;
     private final DataTreeIdentifier<Node> nodeOperationalDataTreePath;
 
     private ListenerRegistration<NodeListener> dataTreeConfigChangeListener;
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
+
+    private final ListeningExecutorService syncThreadPool;
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
@@ -80,23 +80,15 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
+        final ExecutorService executorService= Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+                .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                .setDaemon(false)
+                .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
+                .build());
+        syncThreadPool = MoreExecutors.listeningDecorator(executorService);
+
         broker.registerProvider(this);
     }
-
-    private final ListeningExecutorService syncThreadPool = FrmExecutors.instance()
-            // TODO improve log in ThreadPoolExecutor.afterExecute
-            // TODO max bloking queue size
-            // TODO core/min pool size
-            .newFixedThreadPool(6, new ThreadFactoryBuilder()
-                    .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
-                    .setDaemon(false)
-                    .setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                        @Override
-                        public void uncaughtException(Thread thread, Throwable e) {
-                            LOG.error("uncaught exception {}", thread, e);
-                        }
-                    })
-                    .build());
 
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
@@ -127,38 +119,20 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final NodeListener<Node> nodeListenerOperational =
                 new SimplifiedOperationalRetryListener(reactor, operationalSnapshot, configDao, retryRegistry);
 
-        try {
-            SimpleTaskRetryLooper looper1 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            dataTreeConfigChangeListener = looper1.loopUntilNoException(
-                    new Callable<ListenerRegistration<NodeListener>>() {
-                        @Override
-                        public ListenerRegistration<NodeListener> call() throws Exception {
-                            return dataService.registerDataTreeChangeListener(
-                                    nodeConfigDataTreePath, nodeListenerConfig);
-                        }
-                    });
+        dataTreeConfigChangeListener =
+                dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
+        dataTreeOperationalChangeListener =
+                dataService.registerDataTreeChangeListener(nodeOperationalDataTreePath, nodeListenerOperational);
 
-            SimpleTaskRetryLooper looper2 = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            dataTreeOperationalChangeListener = looper2.loopUntilNoException(
-                    new Callable<ListenerRegistration<NodeListener>>() {
-                        @Override
-                        public ListenerRegistration<NodeListener> call() throws Exception {
-                            return dataService.registerDataTreeChangeListener(
-                                    nodeOperationalDataTreePath, nodeListenerOperational);
-                        }
-                    });
-        } catch (final Exception e) {
-            LOG.warn("FR-Sync node DataChange listener registration fail!", e);
-            throw new IllegalStateException("FR-Sync startup fail!", e);
-        }
         LOG.info("ForwardingRulesSync has started.");
     }
 
-    public void close() throws Exception {
+    public void close() throws InterruptedException {
         if (dataTreeConfigChangeListener != null) {
             dataTreeConfigChangeListener.close();
             dataTreeConfigChangeListener = null;
         }
+
         if (dataTreeOperationalChangeListener != null) {
             dataTreeOperationalChangeListener.close();
             dataTreeOperationalChangeListener = null;
