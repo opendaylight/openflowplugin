@@ -48,10 +48,13 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         LOG.trace("syncup guard {}", nodeId.getValue());
 
         final long stampBeforeGuard = System.nanoTime();
-        final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);//TODO handle InteruptedException
+        final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);
+        if (guard == null) {
+            return Futures.immediateFuture(false);
+        }
+        final long stampAfterGuard = System.nanoTime();
 
         try {
-            final long stampAfterGuard = System.nanoTime();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("syncup start {} waiting:{} guard:{} thread:{}", nodeId.getValue(),
                         formatNanos(stampAfterGuard - stampBeforeGuard),
@@ -59,7 +62,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             }
 
             final ListenableFuture<Boolean> endResult =
-                    delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);//TODO handle InteruptedException
+                    delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
 
             Futures.addCallback(endResult, new FutureCallback<Boolean>() {
                 @Override
@@ -91,7 +94,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 }
             });
             return endResult;
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             releaseGuardForNodeId(guard);
             throw e;
         }
@@ -106,21 +109,17 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param flowcapableNodePath II of node for which guard should be acquired
      * @return semaphore guard
      */
-    private Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
-            throws InterruptedException {
+    private Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
+        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath),
-                "no guard for " + flowcapableNodePath);
-
-        if (LOG.isDebugEnabled()) {
-            final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-            try {
-                LOG.debug("syncup summon {} guard:{} thread:{}", nodeId.getValue(), guard, threadName());
-            } catch (Exception e) {
-                LOG.error("error logging guard after summon before aquiring {}", nodeId);
-            }
+                "no guard for " + nodeId.getValue());
+        try {
+            guard.acquire();
+        } catch (InterruptedException e) {
+            LOG.error("syncup summon {} failed {}", nodeId.getValue(), e);
+            return null;
         }
-
-        guard.acquire();
+        LOG.trace("syncup summon {} guard:{} thread:{}", nodeId.getValue(), guard, threadName());
         return guard;
     }
 
@@ -129,10 +128,10 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param guard semaphore guard which should be unlocked
      */
     private void releaseGuardForNodeId(final Semaphore guard) {
-        if (guard == null) {
-            return;
+        if (guard != null) {
+            guard.release();
+            LOG.trace("syncup release guard:{} thread:{}", guard, threadName());
         }
-        guard.release();
     }
 
     private static String threadName() {
