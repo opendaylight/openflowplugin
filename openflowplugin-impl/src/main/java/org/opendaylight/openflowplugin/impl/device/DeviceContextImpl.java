@@ -192,6 +192,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceCtxState = DEVICE_CONTEXT_STATE.INITIALIZATION;
 
         nodeId = primaryConnectionContext.getNodeId();
+
+        // Fill flow registry with flows
+        deviceFlowRegistry.fill(dataBroker, deviceState.getNodeInstanceIdentifier());
     }
 
     /**
