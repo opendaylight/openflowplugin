@@ -8,26 +8,53 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.Futures;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link DeviceFlowRegistryImpl}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class DeviceFlowRegistryImplTest {
-
+    private static final String NODE_ID = "openflow:1";
     private DeviceFlowRegistryImpl deviceFlowRegistry;
     private FlowRegistryKey key;
     private FlowDescriptor descriptor;
 
+    @Mock
+    DataBroker dataBroker;
+    @Mock
+    ReadOnlyTransaction readOnlyTransaction;
+
     @Before
     public void setUp() throws Exception {
-        deviceFlowRegistry = new DeviceFlowRegistryImpl();
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier
+                .create(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
+
+        deviceFlowRegistry = new DeviceFlowRegistryImpl(nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(flowStats);
         descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
@@ -35,6 +62,10 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
         deviceFlowRegistry.store(key, descriptor);
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
+
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+        OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
     }
 
     @Test
@@ -63,7 +94,7 @@ public class DeviceFlowRegistryImplTest {
         FlowId newFlowId;
 
         //store existing key
-        newFlowId = deviceFlowRegistry.storeIfNecessary(key, key.getTableId());
+        newFlowId = deviceFlowRegistry.storeIfNecessary(key);
 
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
         Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveIdForFlow(key));
@@ -72,7 +103,7 @@ public class DeviceFlowRegistryImplTest {
         //store new key
         final String alienPrefix = "#UF$TABLE*2-";
         final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
-        newFlowId = deviceFlowRegistry.storeIfNecessary(key2, key2.getTableId());
+        newFlowId = deviceFlowRegistry.storeIfNecessary(key2);
 
         Assert.assertTrue(newFlowId.getValue().startsWith(alienPrefix));
         Assert.assertTrue(deviceFlowRegistry.retrieveIdForFlow(key2).getFlowId().getValue().startsWith(alienPrefix));

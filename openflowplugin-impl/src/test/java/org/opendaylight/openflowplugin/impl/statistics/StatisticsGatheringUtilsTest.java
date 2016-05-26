@@ -405,7 +405,7 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testGatherStatistics_flow() throws Exception {
         final MultipartType type = MultipartType.OFPMPFLOW;
-        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class), Matchers.anyShort()))
+        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class)))
                 .thenReturn(new FlowId("openflow:21"));
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
@@ -436,7 +436,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("openflow:21")));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()), (short) 0);
+        verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()));
         verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
     }
 
