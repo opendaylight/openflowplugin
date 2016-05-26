@@ -49,23 +49,16 @@ public class FlowRegistryKeyFactory {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+
+            if (o == null || !(o instanceof FlowRegistryKey)) {
                 return false;
             }
 
-            final FlowRegistryKeyDto that = (FlowRegistryKeyDto) o;
+            final FlowRegistryKey that = (FlowRegistryKey) o;
 
-            if (priority != that.priority) {
-                return false;
-            }
-            if (tableId != that.tableId) {
-                return false;
-            }
-            if (!match.equals(that.match)) {
-                return false;
-            }
-
-            return true;
+            return getPriority() == that.getPriority() &&
+                    getTableId() == that.getTableId() &&
+                    getMatch().equals(that.getMatch());
         }
 
         @Override
@@ -89,6 +82,11 @@ public class FlowRegistryKeyFactory {
         @Override
         public BigInteger getCookie() {
             return cookie;
+        }
+
+        @Override
+        public Match getMatch() {
+            return match;
         }
     }
 }

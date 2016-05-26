@@ -402,7 +402,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             //2. create registry key
             final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
             //3. lookup flowId
-            final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowRegKey);
+            final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowRegKey, getDeviceState().getNodeInstanceIdentifier());
             //4. if flowId present:
             if (flowDescriptor != null) {
                 // a) construct flow path

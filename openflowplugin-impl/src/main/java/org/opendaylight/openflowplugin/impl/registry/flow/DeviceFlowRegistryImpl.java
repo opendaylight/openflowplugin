@@ -7,18 +7,39 @@
  */
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.base.Optional;
 import com.romix.scala.collection.concurrent.TrieMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.concurrent.GuardedBy;
+
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +54,40 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
 
     @Override
-    public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
-        FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
+    public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+        if (flowRegistry.containsKey(flowRegistryKey)) {
+            return flowRegistry.get(flowRegistryKey);
+        }
+
+        final short tableId = flowRegistryKey.getTableId();
+        final String hash = String.valueOf(flowRegistryKey.getMatch()) +
+                flowRegistryKey.getPriority() +
+                flowRegistryKey.getCookie();
+
+        final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> flowPath = instanceIdentifier
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(tableId))
+                .augmentation(FlowHashIdMapping.class)
+                .child(FlowHashIdMap.class, new FlowHashIdMapKey(hash));
+
+        final ReadTransaction transaction = OFSessionUtil.getSessionManager().getDataBroker().newReadOnlyTransaction();
+        FlowDescriptor flowDescriptor = null;
+
+        try {
+            Optional<FlowHashIdMap> flowHashIdMapOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, flowPath).get();
+
+            if (flowHashIdMapOptional.isPresent()) {
+                flowDescriptor = FlowDescriptorFactory.create(tableId, flowHashIdMapOptional.get().getFlowId());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Read transaction for identifier {} failed with exception: {}", instanceIdentifier, e);
+        }
+
+        if (flowDescriptor == null) {
+            flowDescriptor = FlowDescriptorFactory.create(tableId, storeIfNecessary(flowRegistryKey, tableId));
+        }
+
+        store(flowRegistryKey, flowDescriptor);
         return flowDescriptor;
     }
 

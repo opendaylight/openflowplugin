@@ -133,7 +133,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
                     if (itemLifecycleListener != null) {
                         final FlowDescriptor flowDescriptor =
-                                deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
+                                deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey, deviceContext.getDeviceState().getNodeInstanceIdentifier());
                         if (flowDescriptor != null) {
                             KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                     deviceContext.getDeviceState().getNodeInstanceIdentifier());
@@ -200,7 +200,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 deviceFlowRegistry.markToBeremoved(flowRegistryKey);
 
                 if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
+                    final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey, deviceContext.getDeviceState().getNodeInstanceIdentifier());
                     if (flowDescriptor != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                 deviceContext.getDeviceState().getNodeInstanceIdentifier());
