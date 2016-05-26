@@ -44,7 +44,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     public void setUp() throws Exception {
         service = new FlowDirectStatisticsService(requestContextStack, deviceContext);
         final DeviceFlowRegistry registry = mock(DeviceFlowRegistry.class);
-        when(registry.storeIfNecessary(any(), eq(TABLE_NO))).thenReturn(new FlowId("1"));
+        when(registry.storeIfNecessary(any())).thenReturn(new FlowId("1"));
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(registry);
     }
 

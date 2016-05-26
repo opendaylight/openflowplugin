@@ -179,6 +179,9 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                             notificationPublishService,
                             new AtomicLong());
                 }
+
+                // Fill flow registry with flows found in operational and config datastore
+                deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
             } else {
                 logText = "Stopp";
                 statisticsManager.stopScheduling(deviceInfo);
