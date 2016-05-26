@@ -243,15 +243,22 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", nodeId, oldRole, role);
             return Futures.immediateFuture(null);
         }
-        if (OfpRole.BECOMEMASTER.equals(role)) {
-            return onDeviceTakeClusterLeadership();
-        } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            return onDeviceLostClusterLeadership();
+
+        if (OfpRole.BECOMEMASTER.equals(role) || OfpRole.BECOMESLAVE.equals(role)) {
+            // Fill flow registry with flows
+            deviceFlowRegistry.fill(dataBroker, deviceState.getNodeInstanceIdentifier());
+
+            if (OfpRole.BECOMEMASTER.equals(role)) {
+                return onDeviceTakeClusterLeadership();
+            } else {
+                return onDeviceLostClusterLeadership();
+            }
         } else {
             LOG.warn("Unknown OFCluster Role {} for Node {}", role, nodeId);
             if (null != rpcContext) {
                 MdSalRegistrationUtils.unregisterServices(rpcContext);
             }
+
             return transactionChainManager.deactivateTransactionManager();
         }
     }
@@ -279,6 +286,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
+
         /* Routed RPC registration */
         MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
 
