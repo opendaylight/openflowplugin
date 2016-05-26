@@ -1,6 +1,9 @@
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
@@ -10,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -45,7 +50,6 @@ public abstract class ServiceMocking {
     protected static final String DUMMY_NODE_ID = "dummyNodeID";
     private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II
             = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
-
 
     @Mock
     protected RequestContextStack mockedRequestContextStack;
@@ -95,7 +99,7 @@ public abstract class ServiceMocking {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceContext.getMultiMsgCollector(Matchers.<RequestContext<List<MultipartReply>>>any())).thenReturn(multiMessageCollector);
+        when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
 
         setup();
     }

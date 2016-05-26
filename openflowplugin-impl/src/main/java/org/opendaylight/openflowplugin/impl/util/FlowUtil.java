@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.impl.util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,11 +23,13 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.BatchFlowIdGrouping;
@@ -56,15 +60,21 @@ public final class FlowUtil {
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
 
-    /** Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>, RpcResult<Void>>, RpcResult<RemoveFlowsBatchOutput>>
             FLOW_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
-    /** Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
             FLOW_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
-    /** Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>, RpcResult<Void>>, RpcResult<UpdateFlowsBatchOutput>>
             FLOW_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -145,6 +155,12 @@ public final class FlowUtil {
         return resultBld;
     }
 
+    /**
+     * Create alien flow id
+     *
+     * @param tableId the table id
+     * @return the flow id
+     */
     public static FlowId createAlienFlowId(final short tableId) {
         final StringBuilder sBuilder = new StringBuilder(ALIEN_SYSTEM_FLOW_ID)
                 .append(tableId).append('-').append(unaccountedFlowsCounter.incrementAndGet());
@@ -188,6 +204,8 @@ public final class FlowUtil {
     }
 
     /**
+     * Build flow path flow ref.
+     *
      * @param nodePath path to {@link Node}
      * @param tableId  path to {@link Table} under {@link Node}
      * @param flowId   path to {@link Flow} under {@link Table}
@@ -207,8 +225,8 @@ public final class FlowUtil {
      * Factory method: creates {@link Function} which keeps info of original inputs (passed to flow-rpc) and processes
      * list of all flow-rpc results.
      *
-     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type &lt;O&gt;
      * @param <O>             result container type
+     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type &lt;O&gt;
      * @return static reusable function
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(

@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+
 import java.math.BigInteger;
 
 /**
@@ -22,5 +24,5 @@ public interface FlowRegistryKey {
 
     BigInteger getCookie();
 
-
+    Match getMatch();
 }
