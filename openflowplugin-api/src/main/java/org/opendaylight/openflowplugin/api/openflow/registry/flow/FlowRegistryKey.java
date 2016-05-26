@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 import java.math.BigInteger;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
 /**
  * Marker interface identifying flow stored in OFP local flow registry.
@@ -22,5 +23,5 @@ public interface FlowRegistryKey {
 
     BigInteger getCookie();
 
-
+    Match getMatch();
 }
