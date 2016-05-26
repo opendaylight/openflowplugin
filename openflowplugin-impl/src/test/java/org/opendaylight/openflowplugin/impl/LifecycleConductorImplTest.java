@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -35,9 +37,15 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LifecycleConductorImplTest {
@@ -83,6 +91,7 @@ public class LifecycleConductorImplTest {
 
     @Before
     public void setUp() {
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
         lifecycleConductor.setSafelyManager(deviceManager);
@@ -95,6 +104,7 @@ public class LifecycleConductorImplTest {
         when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
         when(deviceInfo.getNodeId()).thenReturn(nodeId);
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
     }
@@ -188,7 +198,10 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleChangeOnDeviceTest4() {
+        final DataBroker dataBroker = mock(DataBroker.class);
+
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker));
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
@@ -200,9 +213,13 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleChangeOnDeviceTest5() {
+        final DataBroker dataBroker = mock(DataBroker.class);
+
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker));
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
+
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }

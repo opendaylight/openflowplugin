@@ -187,6 +187,10 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                         OfpRole.BECOMESLAVE);
             }
 
+            if (OfpRole.BECOMEMASTER.equals(newRole) || OfpRole.BECOMESLAVE.equals(newRole)) {
+                deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
+            }
+
             final ListenableFuture<Void> onClusterRoleChange = deviceManager.onClusterRoleChange(deviceInfo, newRole);
             Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
                 @Override

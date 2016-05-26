@@ -416,7 +416,7 @@ public class StatisticsGatheringUtilsTest {
     public void testGatherStatistics_flow() throws Exception {
         final short tableId = 0;
         final MultipartType type = MultipartType.OFPMPFLOW;
-        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class), Matchers.anyShort()))
+        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class)))
                 .thenReturn(new FlowId("openflow:21"));
 
         final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
@@ -456,7 +456,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("openflow:21")));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()), (short) 0);
+        verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()));
         verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
     }
 
