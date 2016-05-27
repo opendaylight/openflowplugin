@@ -8,11 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Nullable;
-
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -21,11 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Decorator for NodeId level syncup locking.
@@ -73,10 +70,10 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
                                 guard, threadName());
                     }
-                    
-                    lockReleaseForNodeId(nodeId, guard);
+
+                    releaseGuardForNodeId(nodeId, guard);
                 }
-                
+
                 @Override
                 public void onFailure(final Throwable t) {
                     if (LOG.isDebugEnabled()) {
@@ -87,13 +84,13 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
                                 guard, threadName());
                     }
-                    
-                    lockReleaseForNodeId(nodeId, guard);
+
+                    releaseGuardForNodeId(nodeId, guard);
                 }
             });
             return endResult;
         } catch(InterruptedException e) {
-            lockReleaseForNodeId(nodeId, guard);
+            releaseGuardForNodeId(nodeId, guard);
             throw e;
         }
     }
@@ -132,8 +129,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param nodeId
      * @param guard
      */
-    protected void lockReleaseForNodeId(final NodeId nodeId,
-            final Semaphore guard) {
+    protected void releaseGuardForNodeId(final NodeId nodeId, final Semaphore guard) {
         if (guard == null) {
             return;
         }
