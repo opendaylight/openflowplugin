@@ -8,15 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import java.util.concurrent.Semaphore;
-
-import javax.annotation.Nonnull;
-
-import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.concurrent.Semaphore;
+import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 
 /**
  * Key-based semaphore provider.

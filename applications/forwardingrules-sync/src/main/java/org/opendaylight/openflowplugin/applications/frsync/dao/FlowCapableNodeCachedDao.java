@@ -8,12 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
+import com.google.common.base.Optional;
 import javax.annotation.Nonnull;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-
-import com.google.common.base.Optional;
 
 /**
  * Implementation of data access object for {@link FlowCapableNode}.
