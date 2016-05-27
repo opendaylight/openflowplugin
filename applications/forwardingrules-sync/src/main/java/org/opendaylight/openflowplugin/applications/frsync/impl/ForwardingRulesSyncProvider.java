@@ -32,7 +32,6 @@ import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -57,7 +56,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private final SalGroupService salGroupService;
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
-    private final FlowCapableTransactionService transactionService;
+//    private final FlowCapableTransactionService transactionService;
     private final SalFlatBatchService flatBatchService;
 
     /** wildcard path to flow-capable-node augmentation of inventory node */
@@ -90,9 +89,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.transactionService =
-                Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
-                        "RPC SalTableService not found.");
+//        this.transactionService =
+//                Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
+//                        "RPC SalTableService not found.");
         this.flatBatchService =
                 Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                         "RPC SalFlatBatchService not found.");
@@ -121,9 +120,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
-        final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
-        final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
-        final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
+//        final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
+//        final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
+//        final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         {

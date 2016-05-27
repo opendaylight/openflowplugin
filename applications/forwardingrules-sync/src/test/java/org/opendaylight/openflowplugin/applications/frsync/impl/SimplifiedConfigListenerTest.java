@@ -8,8 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,13 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
-
 /**
  * Test for {@link SimplifiedConfigListener}.
  */
-@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class SimplifiedConfigListenerTest {
 
