@@ -74,7 +74,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                 guard, threadName());
                     }
                     
-                    lockReleaseForNodeId(nodeId, guard);
+                    releaseGuardForNodeId(nodeId, guard);
                 }
                 
                 @Override
@@ -88,12 +88,12 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                 guard, threadName());
                     }
                     
-                    lockReleaseForNodeId(nodeId, guard);
+                    releaseGuardForNodeId(nodeId, guard);
                 }
             });
             return endResult;
         } catch(InterruptedException e) {
-            lockReleaseForNodeId(nodeId, guard);
+            releaseGuardForNodeId(nodeId, guard);
             throw e;
         }
     }
@@ -132,8 +132,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * @param nodeId
      * @param guard
      */
-    protected void lockReleaseForNodeId(final NodeId nodeId,
-            final Semaphore guard) {
+    protected void releaseGuardForNodeId(final NodeId nodeId, final Semaphore guard) {
         if (guard == null) {
             return;
         }

@@ -57,7 +57,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private final SalGroupService salGroupService;
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
-    private final FlowCapableTransactionService transactionService;
+//    private final FlowCapableTransactionService transactionService;
     private final SalFlatBatchService flatBatchService;
 
     /** wildcard path to flow-capable-node augmentation of inventory node */
@@ -90,9 +90,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.transactionService =
-                Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
-                        "RPC SalTableService not found.");
+//        this.transactionService =
+//                Preconditions.checkNotNull(rpcRegistry.getRpcService(FlowCapableTransactionService.class),
+//                        "RPC SalTableService not found.");
         this.flatBatchService =
                 Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                         "RPC SalFlatBatchService not found.");
@@ -121,9 +121,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     @Override
     public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
-        final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
-        final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
-        final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
+//        final FlowForwarder flowForwarder = new FlowForwarder(salFlowService);
+//        final GroupForwarder groupForwarder = new GroupForwarder(salGroupService);
+//        final MeterForwarder meterForwarder = new MeterForwarder(salMeterService);
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         {
