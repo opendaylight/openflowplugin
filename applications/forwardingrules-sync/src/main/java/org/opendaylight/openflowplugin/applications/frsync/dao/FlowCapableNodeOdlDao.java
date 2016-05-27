@@ -9,10 +9,8 @@
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
 import com.google.common.base.Optional;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
