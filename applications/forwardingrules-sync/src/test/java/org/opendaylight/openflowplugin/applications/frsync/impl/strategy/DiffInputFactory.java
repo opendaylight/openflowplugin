@@ -43,7 +43,7 @@ public class DiffInputFactory {
         return groupBox;
     }
 
-    static Group createPlainGroup(final long gid) {
+    private static Group createPlainGroup(final long gid) {
         return new GroupBuilder().setGroupId(new GroupId(gid)).build();
     }
 
@@ -67,7 +67,7 @@ public class DiffInputFactory {
         return groupBox;
     }
 
-    static Meter createPlainMeter(final long mid) {
+    private static Meter createPlainMeter(final long mid) {
         return new MeterBuilder().setMeterId(new MeterId(mid)).build();
     }
 
@@ -91,7 +91,7 @@ public class DiffInputFactory {
         return groupBox;
     }
 
-    static Flow createPlainFlow(final String fid) {
+    private static Flow createPlainFlow(final String fid) {
         return new FlowBuilder().setId(new FlowId(fid)).build();
     }
 }

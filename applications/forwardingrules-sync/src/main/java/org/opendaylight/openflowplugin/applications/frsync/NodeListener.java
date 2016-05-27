@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.frsync;
 
 import java.util.EventListener;
-
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
