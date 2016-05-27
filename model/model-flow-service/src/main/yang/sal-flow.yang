@@ -151,8 +151,6 @@ module sal-flow {
     }
 
     notification flow-removed {
-        status deprecated;
-
         uses tr:transaction-metadata;
         leaf flow-ref {
             type types:flow-ref;
