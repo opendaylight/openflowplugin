@@ -287,7 +287,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 new BatchBuilder().setBatchOrder(9).build(),
                 new BatchBuilder().setBatchOrder(15).build()
         );
-        final Map<Range<Integer>, Batch> rangeBatchMap = SyncPlanPushStrategyFlatBatchImpl.mapBachesToRanges(inputBatchBag, 42);
+        final Map<Range<Integer>, Batch> rangeBatchMap = SyncPlanPushStrategyFlatBatchImpl.mapBatchesToRanges(inputBatchBag, 42);
 
         Assert.assertEquals(4, rangeBatchMap.size());
         int idx = 0;

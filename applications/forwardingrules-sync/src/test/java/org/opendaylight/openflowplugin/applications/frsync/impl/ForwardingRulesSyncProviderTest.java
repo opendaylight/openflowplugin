@@ -23,7 +23,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
@@ -62,7 +61,7 @@ public class ForwardingRulesSyncProviderTest {
         Mockito.verify(rpcRegistry).getRpcService(SalGroupService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalMeterService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
-        Mockito.verify(rpcRegistry).getRpcService(FlowCapableTransactionService.class);
+//        Mockito.verify(rpcRegistry).getRpcService(FlowCapableTransactionService.class);
 
         Mockito.verify(broker).registerProvider(provider);
     }
