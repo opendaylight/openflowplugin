@@ -52,9 +52,9 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     protected abstract Optional<ListenableFuture<Boolean>> processNodeModification(
             DataTreeModification<T> modification) throws ReadFailedException, InterruptedException;
 
-    public abstract LogicalDatastoreType dsType();
+    protected abstract LogicalDatastoreType dsType();
 
-    static String threadName() {
+    private static String threadName() {
         final Thread currentThread = Thread.currentThread();
         return currentThread.getName();
     }

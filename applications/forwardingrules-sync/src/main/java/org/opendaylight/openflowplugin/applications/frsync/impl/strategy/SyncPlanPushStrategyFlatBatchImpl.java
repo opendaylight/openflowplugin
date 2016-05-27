@@ -180,7 +180,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             @Override
             public void onSuccess(@Nullable final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null && !result.getResult().getBatchFailure().isEmpty()) {
-                    Map<Range<Integer>, Batch> batchMap = mapBachesToRanges(inputBatchBag, failureIndexLimit);
+                    Map<Range<Integer>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
 
                     for (BatchFailure batchFailure : result.getResult().getBatchFailure()) {
                         for (Map.Entry<Range<Integer>, Batch> rangeBatchEntry : batchMap.entrySet()) {
@@ -224,7 +224,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         }
     }
 
-    static Map<Range<Integer>, Batch> mapBachesToRanges(final List<Batch> inputBatchBag, final int failureIndexLimit) {
+    static Map<Range<Integer>, Batch> mapBatchesToRanges(final List<Batch> inputBatchBag, final int failureIndexLimit) {
         final Map<Range<Integer>, Batch> batchMap = new LinkedHashMap<>();
         final PeekingIterator<Batch> batchPeekingIterator = Iterators.peekingIterator(inputBatchBag.iterator());
         while (batchPeekingIterator.hasNext()) {
@@ -248,7 +248,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         // process flow remove
         if (flowItemSyncTableMap != null) {
             for (Map.Entry<TableKey, ItemSyncBox<Flow>> syncBoxEntry : flowItemSyncTableMap.entrySet()) {
-                final TableKey tableKey = syncBoxEntry.getKey();
                 final ItemSyncBox<Flow> flowItemSyncBox = syncBoxEntry.getValue();
 
                 if (!flowItemSyncBox.getItemsToPush().isEmpty()) {
@@ -422,7 +421,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         // process flow add+update
         if (flowItemSyncTableMap != null) {
             for (Map.Entry<TableKey, ItemSyncBox<Flow>> syncBoxEntry : flowItemSyncTableMap.entrySet()) {
-                final TableKey tableKey = syncBoxEntry.getKey();
                 final ItemSyncBox<Flow> flowItemSyncBox = syncBoxEntry.getValue();
 
                 if (!flowItemSyncBox.getItemsToPush().isEmpty()) {
