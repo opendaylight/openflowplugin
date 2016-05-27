@@ -62,7 +62,7 @@ public class ForwardingRulesSyncProviderTest {
         Mockito.verify(rpcRegistry).getRpcService(SalGroupService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalMeterService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
-        Mockito.verify(rpcRegistry).getRpcService(FlowCapableTransactionService.class);
+//        Mockito.verify(rpcRegistry).getRpcService(FlowCapableTransactionService.class);
 
         Mockito.verify(broker).registerProvider(provider);
     }
