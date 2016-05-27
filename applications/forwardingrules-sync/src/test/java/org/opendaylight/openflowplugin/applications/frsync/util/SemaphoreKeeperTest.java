@@ -15,7 +15,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class SemaphoreKeeperTest {
     private static final Logger LOG = LoggerFactory.getLogger(SemaphoreKeeperTest.class);
     private SemaphoreKeeperGuavaImpl<String> semaphoreKeeper;
-    final String key = "11";
+    private final String key = "11";
 
     @Before
     public void setUp() throws Exception {
