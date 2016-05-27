@@ -8,10 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Device synchronization API.

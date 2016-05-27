@@ -8,33 +8,32 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-
 /**
- * Static Factory for creating ExecutorServicess (because there is no dependency injection but
+ * Static Factory for creating ExecutorServices (because there is no dependency injection but
  * static getInstance).
  */
 public final class FrmExecutors {
-    public static PceExecursFactory instance() {
+    public static PceExecutorsFactory instance() {
         return DEFAULT_EXECUTORS;
     }
 
-    public interface PceExecursFactory {
+    public interface PceExecutorsFactory {
 
-        public ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory factory);
+        ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory factory);
     }
 
     /**
      * This will be rewritten in JUnits using SynchronousExecutorService
      */
     @VisibleForTesting // should not be private and final
-    static PceExecursFactory DEFAULT_EXECUTORS = new PceExecursFactory() {
+    static PceExecutorsFactory DEFAULT_EXECUTORS = new PceExecutorsFactory() {
 
         public ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory factory) {
             final ExecutorService executorService = Executors.newFixedThreadPool(nThreads, factory);
