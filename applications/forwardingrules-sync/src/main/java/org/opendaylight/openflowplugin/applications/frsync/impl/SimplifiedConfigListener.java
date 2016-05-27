@@ -8,8 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
-
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -22,9 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Listens to config changes and delegates add/remove/update/barrier to {@link SyncReactor}.

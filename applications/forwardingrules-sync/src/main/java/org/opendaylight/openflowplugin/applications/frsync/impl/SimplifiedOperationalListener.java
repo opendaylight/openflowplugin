@@ -8,9 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.List;
-
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -29,9 +30,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * Listens to operational new nodes and delegates add/remove/update/barrier to {@link SyncReactor}.
  */
@@ -39,15 +37,13 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
 
     protected final SyncReactor reactor;
-
-    private FlowCapableNodeSnapshotDao operationalSnaphot;
-
+    private FlowCapableNodeSnapshotDao operationalSnapshot;
     private FlowCapableNodeDao configDao;
 
     public SimplifiedOperationalListener(SyncReactor reactor,
-            FlowCapableNodeSnapshotDao operationalSnaphot, FlowCapableNodeDao configDao) {
+            FlowCapableNodeSnapshotDao operationalSnapshot, FlowCapableNodeDao configDao) {
         this.reactor = reactor;
-        this.operationalSnaphot = operationalSnaphot;
+        this.operationalSnapshot = operationalSnapshot;
         this.configDao = configDao;
     }
 
@@ -88,11 +84,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         try {
             boolean isDelete = isDelete(modification) || isDeleteLogical(modification);
             if (isDelete) {
-                operationalSnaphot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
+                operationalSnapshot.updateCache(nodeId(modification), Optional.<FlowCapableNode>absent());
                 return;
             }
 
-            operationalSnaphot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
+            operationalSnapshot.updateCache(nodeId(modification), Optional.fromNullable(flowCapableNodeAfter(modification)));
         } catch(Exception e) {
             LOG.error("update cache failed {}", nodeId(modification), e);
         }
