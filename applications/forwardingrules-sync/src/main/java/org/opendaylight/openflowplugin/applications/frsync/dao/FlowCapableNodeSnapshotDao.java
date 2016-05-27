@@ -8,14 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
+import com.google.common.base.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nonnull;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-
-import com.google.common.base.Optional;
 
 /**
  * Adding cache to data access object of {@link FlowCapableNode}.

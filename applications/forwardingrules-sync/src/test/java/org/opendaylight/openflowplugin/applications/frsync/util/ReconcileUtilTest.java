@@ -11,6 +11,14 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,15 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Test for {@link ReconcileUtil}.
@@ -236,8 +235,6 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(3L, 4L));
 
         thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
-                NODE_ID, installedGroups, pendingGroups);
     }
 
     /**
@@ -255,8 +252,6 @@ public class ReconcileUtilTest {
         pendingGroups.add(createGroupWithPreconditions(1L, 3L));
 
         thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
-                NODE_ID, installedGroups, pendingGroups);
     }
 
     @Test
