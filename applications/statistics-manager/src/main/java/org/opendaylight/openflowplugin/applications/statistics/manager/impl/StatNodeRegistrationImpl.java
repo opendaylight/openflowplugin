@@ -245,7 +245,6 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration,EntityOwne
         NodeIdentifierWithPredicates niWPredicates = (NodeIdentifierWithPredicates)yId.getLastPathArgument();
         Map<QName, Object> keyValMap = niWPredicates.getKeyValues();
         String nodeIdStr = (String)(keyValMap.get(ENTITY_NAME));
-        BigInteger dpId = new BigInteger(nodeIdStr.split(":")[1]);
         NodeId nodeId = new NodeId(nodeIdStr);
         setNodeOwnership(nodeId, ownershipChange.isOwner());
     }
