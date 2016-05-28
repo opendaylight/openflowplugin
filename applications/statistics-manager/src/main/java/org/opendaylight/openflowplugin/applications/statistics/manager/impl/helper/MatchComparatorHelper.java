@@ -13,7 +13,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -298,17 +301,30 @@ public class MatchComparatorHelper {
 
 
     private static boolean IpAddressEquals(Ipv6Prefix statsIpv6, Ipv6Prefix storedIpv6) {
-        final String[] statsIpMask = statsIpv6.getValue().split("/");
-        final String[] storedIpMask = storedIpv6.getValue().split("/");
-        if (! (statsIpMask.length > 1 && storedIpMask.length > 1 &&  statsIpMask[1].equals(storedIpMask[1]))){
+
+        Iterable<String> splittedIpMask = Splitter.on('/')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(statsIpv6.getValue());
+
+        Iterable<String> splittedStoredMask = Splitter.on('/')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(storedIpv6.getValue());
+
+        List<String> statsIpMask = Lists.newArrayList(splittedIpMask.iterator());
+        List<String> storedIpMask = Lists.newArrayList(splittedStoredMask.iterator());
+
+
+        if (! (statsIpMask.size() > 1 && storedIpMask.size() > 1 &&  statsIpMask.get(1).equals(storedIpMask.get(1)))){
             return false;
         }
 
-        final int prefix = Integer.parseInt(statsIpMask[1]);
+        final int prefix = Integer.parseInt(statsIpMask.get(1));
         final int byteIndex = prefix/BYTE_SIZE;
         final int lastByteBits = BYTE_SIZE - (prefix % BYTE_SIZE);
-        final InetAddress statsIp = InetAddresses.forString(statsIpMask[0]);
-        final InetAddress storedIp = InetAddresses.forString(storedIpMask[0]);
+        final InetAddress statsIp = InetAddresses.forString(statsIpMask.get(1));
+        final InetAddress storedIp = InetAddresses.forString(storedIpMask.get(1));
         byte[] statsIpArr = Arrays.copyOfRange(statsIp.getAddress(),0,byteIndex+1);
         byte[] storedIpArr = Arrays.copyOfRange(storedIp.getAddress(),0,byteIndex+1);
         statsIpArr[byteIndex] = (byte) (statsIpArr[byteIndex] & (0XFF << lastByteBits));
@@ -369,14 +385,19 @@ public class MatchComparatorHelper {
      */
     static IntegerIpAddress strIpToIntIp(final String ipAddresss) {
 
-        final String[] parts = ipAddresss.split("/");
-        final String ip = parts[0];
+        Iterable<String> splittedIpAddr = Splitter.on('/')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipAddresss);
+        List<String> parts = Lists.newArrayList(splittedIpAddr.iterator());
+        final String ip = parts.get(0);
+
         int prefix;
 
-        if (parts.length < 2) {
+        if (parts.size() < 2) {
             prefix = DEFAULT_SUBNET;
         } else {
-            prefix = Integer.parseInt(parts[1]);
+            prefix = Integer.parseInt(parts.get(1));
             if (prefix < 0 || prefix > IPV4_MASK_LENGTH) {
                 final StringBuilder stringBuilder = new StringBuilder(
                         "Valid values for mask are from range 0 - 32. Value ");
@@ -412,13 +433,20 @@ public class MatchComparatorHelper {
             String maskInBits;
             // converting byte array to bits
             maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+            Iterable<String> splittedMaskInBits = Splitter.on("(?!^)")
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(maskInBits);
+
+            ArrayList<String> stringMaskArrayList = Lists.newArrayList(splittedMaskInBits.iterator());;
+
             for(String string:stringMaskArrayList){
                 integerMaskArrayList.add(Integer.parseInt(string));
             }
             return checkArbitraryBitMask(integerMaskArrayList);
         }
     }
+
 
     static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
         if (arrayList.size()>0 && arrayList.size()< IPV4_MASK_LENGTH ) {
@@ -453,15 +481,27 @@ public class MatchComparatorHelper {
 
     static String normalizeIpv4Address(Ipv4Address ipAddress, DottedQuad netMask) {
         String actualIpAddress="";
-        String[] netMaskParts = netMask.getValue().split("\\.");
-        String[] ipAddressParts = ipAddress.getValue().split("\\.");
 
-        for (int i=0; i<ipAddressParts.length;i++) {
-            int integerFormatIpAddress=Integer.parseInt(ipAddressParts[i]);
-            int integerFormatNetMask=Integer.parseInt(netMaskParts[i]);
+        Iterable<String> splittedMaskParts = Splitter.on("\\.")
+                .trimResults()
+                .omitEmptyStrings()
+                .split(netMask.getValue());
+
+        Iterable<String> splittedIpAddrParts = Splitter.on("\\.")
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipAddress.getValue());
+
+        List<String> netMaskParts = Lists.newArrayList(splittedMaskParts.iterator());
+        List<String> ipAddressParts = Lists.newArrayList(splittedIpAddrParts.iterator());
+
+
+        for (int i=0; i<ipAddressParts.size();i++) {
+            int integerFormatIpAddress=Integer.parseInt(ipAddressParts.get(i));
+            int integerFormatNetMask=Integer.parseInt(netMaskParts.get(i));
             int ipAddressPart=(integerFormatIpAddress) & (integerFormatNetMask);
             actualIpAddress += ipAddressPart;
-            if (i != ipAddressParts.length -1 ) {
+            if (i != ipAddressParts.size() -1 ) {
                 actualIpAddress = actualIpAddress+".";
             }
         }
