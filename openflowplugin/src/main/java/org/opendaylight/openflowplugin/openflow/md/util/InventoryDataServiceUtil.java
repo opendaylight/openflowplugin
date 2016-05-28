@@ -11,6 +11,8 @@ import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class InventoryDataServiceUtil {
     public static final  String OF_URI_PREFIX = "openflow:";
+    private static final Splitter COLON_SPLITTER = Splitter.on(":");
     private static final Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
     /*
@@ -132,13 +135,14 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static String portNoStringfromNodeConnectorID(final String ncID) {
-    	String[] split = ncID.split(":");
+
+        List<String> splitStringList = COLON_SPLITTER.splitToList(ncID);
 
         // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
 
-        return split[split.length - 1];
+        return splitStringList.get(splitStringList.size()-1);
     }
 
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final String ncId) {
