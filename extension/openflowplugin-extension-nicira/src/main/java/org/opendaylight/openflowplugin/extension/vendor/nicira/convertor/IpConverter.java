@@ -7,7 +7,12 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author msunal
@@ -16,11 +21,19 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 public final class IpConverter {
 
     public static long Ipv4AddressToLong(Ipv4Address ipv4Address) {
-        String ipAddress = ipv4Address.getValue();
-        long result = 0;
-        String[] atoms = ipAddress.split("\\.");
-        for (int i = 3; i >= 0; i--) {
-            result |= (Long.parseLong(atoms[3 - i]) << (i * 8));
+        long result = 0 ;
+        Iterable<String> splitted = Splitter.on('.')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipv4Address.getValue());
+
+        List<String> splittedAddress = Lists.newArrayList(splitted.iterator());
+        int maxIndex = splittedAddress.size() - 1;
+        ListIterator<String> listIter = splittedAddress.listIterator();
+        while(listIter.hasNext()) {
+            String current = listIter.next();
+            int i = splittedAddress.indexOf(current);
+            result |= (Long.parseLong(current) << ((maxIndex-i) * 8));
         }
         return result & 0xFFFFFFFF;
     }
