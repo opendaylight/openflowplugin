@@ -15,6 +15,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -224,7 +227,11 @@ public final class IpConversionUtil {
          * the input is validated via regexps in Ipv6Prefix()
          */
 
-        String [] address =  (ipv6Address.getValue()).split("%");
+       Iterable<String> splittedV6Address = Splitter.on("%")
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipv6Address.getValue());
+        List<String> partsV6Address = Lists.newArrayList(splittedV6Address.iterator());
 
         int colonp;
         char ch;
@@ -234,7 +241,7 @@ public final class IpConversionUtil {
 
         int val;
 
-        char[] src = address[0].toCharArray();
+        char[] src = partsV6Address.get(0).toCharArray();
 
         byte[] dst = new byte[INADDR6SZ];
 
@@ -307,7 +314,7 @@ public final class IpConversionUtil {
 
                 Preconditions.checkArgument(j != (INADDR6SZ - INADDR4SZ - 1), "Invalid v4 in v6 mapping");
 
-                InetAddress _inet_form = InetAddresses.forString(address[0].substring(curtok, src_length));
+                InetAddress _inet_form = InetAddresses.forString(partsV6Address.get(0).substring(curtok, src_length));
 
                 Preconditions.checkArgument(_inet_form instanceof Inet4Address);
                 System.arraycopy(_inet_form.getAddress(), 0, dst, j, INADDR4SZ);
@@ -372,13 +379,16 @@ public final class IpConversionUtil {
 
         int mask = 128;
 
-        String [] address = null;
+        Iterable<String> splittedV6Prefix = Splitter.on("/")
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipv6Prefix.getValue());
+        List<String> partsV6Prefix = Lists.newArrayList(splittedV6Prefix.iterator());
 
         boolean valid = true;
 
-        address =  (ipv6Prefix.getValue()).split("/");
         try {
-            mask = Integer.parseInt(address[1]);
+            mask = Integer.parseInt(partsV6Prefix.get(1));
             if (mask > 128) {
                 valid = false;
             }
@@ -397,7 +407,7 @@ public final class IpConversionUtil {
 
         int val;
 
-        char[] src = address[0].toCharArray();
+        char[] src = partsV6Prefix.get(0).toCharArray();
 
         byte[] dst = new byte[INADDR6SZ + 1];
 
@@ -485,7 +495,7 @@ public final class IpConversionUtil {
 
                 Preconditions.checkArgument(j != (INADDR6SZ - INADDR4SZ - 1), "Invalid v4 in v6 mapping");
 
-                InetAddress _inet_form = InetAddresses.forString(address[0].substring(curtok, src_length));
+                InetAddress _inet_form = InetAddresses.forString(partsV6Prefix.get(0).substring(curtok, src_length));
 
                 Preconditions.checkArgument(_inet_form instanceof Inet4Address);
                 System.arraycopy(_inet_form.getAddress(), 0, dst, j, INADDR4SZ);
@@ -645,7 +655,14 @@ public final class IpConversionUtil {
             String maskInBits;
             // converting byte array to bits
             maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+
+            Iterable<String> splittedMask = Splitter.on("(?!^)")
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(maskInBits);
+            List<String> partsOfMask = Lists.newArrayList(splittedMask.iterator());
+
+            ArrayList<String> stringMaskArrayList = new ArrayList<String>(partsOfMask);
             for (String string:stringMaskArrayList) {
                 integerMaskArrayList.add(Integer.parseInt(string));
             }

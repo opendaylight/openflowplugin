@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -215,9 +216,8 @@ public class PacketOutConvertorTest {
      */
     private static PortNumber getPortNumber(final NodeConnectorKey nConKey,
                                             final Short ofVersion) {
-        String[] split = nConKey.getId().getValue().split(":");
-        Long port = OpenflowPortsUtil.getPortFromLogicalName(
-                OpenflowVersion.get(ofVersion), split[split.length - 1]);
+        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                OpenflowVersion.get(ofVersion), nConKey.getId());
         return new PortNumber(port);
     }
 
