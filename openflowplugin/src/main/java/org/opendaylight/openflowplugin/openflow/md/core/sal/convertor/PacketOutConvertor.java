@@ -14,6 +14,7 @@ import java.util.List;
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -123,8 +124,8 @@ public final class PacketOutConvertor {
         InstanceIdentifier.IdentifiableItem<?, ?> item = Arguments.checkInstanceOf(pathArgument,
                 InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
-        String[] split = key.getId().getValue().split(":");
-        Long port = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(ofVersion), split[split.length - 1]);
+        Long port =  InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                OpenflowVersion.get(ofVersion), key.getId());
         return new PortNumber(port);
     }
 }
