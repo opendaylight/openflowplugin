@@ -8,9 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.List;
-
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -28,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Listens to operational new nodes and delegates add/remove/update/barrier to {@link SyncReactor}.
@@ -159,14 +157,16 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = nodeId(modification);
 
-        LOG.debug("reconciliation {}", nodeId.getValue());
+        LOG.debug("Reconciliation: {}", nodeId.getValue());
 
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
         final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(nodeId(modification))).augmentation(FlowCapableNode.class);
-        final ListenableFuture<Boolean> rpcResult =
-                reactor.syncup(nodePath, nodeConfiguration.orNull(), flowCapableNodeAfter(modification));
-        return Optional.of(rpcResult);
+
+        if (nodeConfiguration.isPresent())
+            return Optional.of(reactor.syncup(nodePath, nodeConfiguration.get(), flowCapableNodeAfter(modification)));
+        else
+            return skipModification(modification);
     }
 
     static FlowCapableNode flowCapableNodeAfter(DataTreeModification<Node> modification) {
