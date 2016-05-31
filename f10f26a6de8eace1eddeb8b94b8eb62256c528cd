@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_82d100d0",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 5972
+      },
+      "writtenOn": "2016-05-31T02:00:40Z",
+      "side": 1,
+      "message": "the modification may make the return value different with previous, but i can not see the test with the different.",
+      "revId": "f10f26a6de8eace1eddeb8b94b8eb62256c528cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
