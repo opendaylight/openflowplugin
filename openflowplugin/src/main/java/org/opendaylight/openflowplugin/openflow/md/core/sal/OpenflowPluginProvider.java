@@ -67,6 +67,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
         entManager = new OfEntityManager(entityOwnershipService,getOpenflowPluginConfig());
         entManager.setDataBroker(dataBroker);
+        entManager.init();
 
         LOG.debug("dependencies gathered..");
         registrationManager = new SalRegistrationManager();
