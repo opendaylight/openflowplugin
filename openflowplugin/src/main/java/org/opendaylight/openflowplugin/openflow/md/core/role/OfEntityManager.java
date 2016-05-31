@@ -78,6 +78,16 @@ public class OfEntityManager implements TransactionChainListener{
 
     public void setDataBroker(DataBroker dbBroker) {
         this.dataBroker = dbBroker;
+    
+    }
+
+    public void registerEOSListener() {
+	if(entityOwnershipService!=null) {
+	    if(LOG.isDebugEnabled()) {
+	        LOG.debug("registerEOSListener with DEVICE_TYPE {} ", DEVICE_TYPE);
+	    }
+	    entityOwnershipService.registerListener(DEVICE_TYPE, ownershipListener);
+	 }
     }
 
     public void requestOpenflowEntityOwnership(final ModelDrivenSwitch ofSwitch,
@@ -87,9 +97,6 @@ public class OfEntityManager implements TransactionChainListener{
         MDSwitchMetaData entityMetaData =
                 new MDSwitchMetaData(ofSwitch,context,wrappedNotification,rpcProviderRegistry);
 
-        if (registeredListener.compareAndSet(false, true)) {
-            entityOwnershipService.registerListener(DEVICE_TYPE, ownershipListener);
-        }
         final Entity entity = new Entity(DEVICE_TYPE, ofSwitch.getNodeId().getValue());
         entsession.put(entity, entityMetaData);
 
