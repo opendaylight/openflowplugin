@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_9bb68689",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/util/OpenflowPortsUtilTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-01T14:28:30Z",
+      "side": 1,
+      "message": "Should be fixed at first. Comment out code which is causing verify failure is not the solution.",
+      "range": {
+        "startLine": 199,
+        "startChar": 12,
+        "endLine": 201,
+        "endChar": 15
+      },
+      "revId": "1b94d2ef625aa99b1a4b4b1ab8c076426fcee0f4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
