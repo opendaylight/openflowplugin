@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import java.util.Collections;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;

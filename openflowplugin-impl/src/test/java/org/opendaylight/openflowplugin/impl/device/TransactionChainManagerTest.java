@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
