@@ -7,9 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Collection;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.api.openflow.md.AbstractModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -26,8 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -52,9 +55,8 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     }
 
     @Override
-    public CompositeObjectRegistration<ModelDrivenSwitch> register(RpcProviderRegistry rpcProviderRegistry) {
-        CompositeObjectRegistrationBuilder<ModelDrivenSwitch> builder = CompositeObjectRegistration
-                .<ModelDrivenSwitch> builderFor(this);
+    public ModelDrivenSwitchRegistration register(RpcProviderRegistry rpcProviderRegistry) {
+        final Builder<RoutedRpcRegistration<?>> builder = ImmutableList.builder();
 
         final RoutedRpcRegistration<SalFlowService> flowRegistration = rpcProviderRegistry.addRoutedRpcImplementation(SalFlowService.class, this);
         flowRegistration.registerPath(NodeContext.class, getIdentifier());
@@ -108,7 +110,15 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         queueStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(queueStatisticsRegistration);
 
-        return builder.build();
+        final Collection<RoutedRpcRegistration<?>> registrations = builder.build();
+        return new AbstractModelDrivenSwitchRegistration(this) {
+            @Override
+            protected void removeRegistration() {
+                for (RoutedRpcRegistration<?> r : registrations) {
+                    r.close();
+                }
+            }
+        };
     }
 
     /**

@@ -24,8 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
+import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -147,13 +147,10 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /**
      * @param ctx
-     * @return {@link CompositeObjectRegistrationBuilder #toInstance()}
+     * @return {@link ObjectRegistration}
      */
-    public CompositeObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(
+    public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(
             final ProviderContext ctx) {
-        CompositeObjectRegistrationBuilder<OpenflowpluginGroupTestServiceProvider> builder = CompositeObjectRegistration
-                .<OpenflowpluginGroupTestServiceProvider> builderFor(this);
-
         RoutedRpcRegistration<SalGroupService> addRoutedRpcImplementation = ctx
                 .<SalGroupService> addRoutedRpcImplementation(
                         SalGroupService.class, this);
@@ -171,8 +168,12 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
         groupRegistration.registerPath(NodeContext.class, instance);
         RoutedRpcRegistration<SalGroupService> groupRegistration1 = this
                 .getGroupRegistration();
-        builder.add(groupRegistration1);
-        return builder.build();
+        return new AbstractObjectRegistration<OpenflowpluginGroupTestServiceProvider>(this) {
+            @Override
+            protected void removeRegistration() {
+                groupRegistration1.close();
+            }
+        };
     }
 
 }

@@ -10,11 +10,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
-import java.util.Collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,16 +22,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.AbstractModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -43,14 +45,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/26/14.
@@ -90,8 +88,7 @@ public class SalRegistrationManagerTest {
 
     private ModelDrivenSwitch mdSwitchOF13;
 
-    CompositeObjectRegistration<ModelDrivenSwitch> registration;
-
+    ModelDrivenSwitchRegistration registration;
 
     @Before
     public void setUp() {
@@ -107,7 +104,12 @@ public class SalRegistrationManagerTest {
 
 	OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
-        registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.<Registration>emptyList());
+        registration = new AbstractModelDrivenSwitchRegistration(mdSwitchOF13) {
+            @Override
+            protected void removeRegistration() {
+                // no-op
+            }
+        };
         context.setProviderRegistration(registration);
 
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
