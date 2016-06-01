@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.List;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

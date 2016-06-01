@@ -1,6 +1,9 @@
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
@@ -11,13 +14,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class AbstractRequestCallbackTest {
 

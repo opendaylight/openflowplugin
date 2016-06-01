@@ -1,12 +1,9 @@
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
 
 
 public class MessageIntelligenceAgencyImplTest {
