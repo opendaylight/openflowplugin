@@ -25,8 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
+import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -164,10 +164,8 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * @param ctx
      * @return {@link CompositeObjectRegistrationBuilder #toInstance()}
      */
-    public CompositeObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(
+    public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(
             final ProviderContext ctx) {
-        CompositeObjectRegistrationBuilder<OpenflowpluginMeterTestServiceProvider> builder = CompositeObjectRegistration
-                .<OpenflowpluginMeterTestServiceProvider> builderFor(this);
 
         RoutedRpcRegistration<SalMeterService> addRoutedRpcImplementation = ctx
                 .<SalMeterService> addRoutedRpcImplementation(
@@ -191,9 +189,13 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
         RoutedRpcRegistration<SalMeterService> meterRegistration1 = this
                 .getMeterRegistration();
 
-        builder.add(meterRegistration1);
+        return new AbstractObjectRegistration<OpenflowpluginMeterTestServiceProvider>(this) {
 
-        return builder.build();
+            @Override
+            protected void removeRegistration() {
+                meterRegistration1.close();
+            }
+        };
     }
 
 }
