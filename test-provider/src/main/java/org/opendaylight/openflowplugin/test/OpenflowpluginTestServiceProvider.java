@@ -25,8 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
+import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -168,11 +168,8 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * @param ctx
      * @return {@link CompositeObjectRegistrationBuilder #toInstance()}
      */
-    public CompositeObjectRegistration<OpenflowpluginTestServiceProvider> register(
+    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(
             final ProviderContext ctx) {
-        CompositeObjectRegistrationBuilder<OpenflowpluginTestServiceProvider> builder = CompositeObjectRegistration
-                .<OpenflowpluginTestServiceProvider> builderFor(this);
-
         RoutedRpcRegistration<SalFlowService> addRoutedRpcImplementation = ctx
                 .<SalFlowService> addRoutedRpcImplementation(
                         SalFlowService.class, this);
@@ -194,8 +191,11 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
         RoutedRpcRegistration<SalFlowService> flowRegistration2 = getFlowRegistration();
 
-        builder.add(flowRegistration2);
-
-        return builder.build();
+        return new AbstractObjectRegistration<OpenflowpluginTestServiceProvider>(this) {
+            @Override
+            protected void removeRegistration() {
+                flowRegistration2.close();
+            }
+        };
     }
 }

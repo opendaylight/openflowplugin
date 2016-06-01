@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.md;
 
 import com.google.common.base.Optional;
+import java.math.BigInteger;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -25,11 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.Identifiable;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import java.math.BigInteger;
 
 /**
  * interface concatenating all md-sal services provided by OF-switch
@@ -47,7 +45,7 @@ public interface ModelDrivenSwitch
      * @param rpcProviderRegistry
      * @return wrapped list of {service provider + path} registration couples
      */
-    CompositeObjectRegistration<ModelDrivenSwitch> register(RpcProviderRegistry rpcProviderRegistry);
+    ModelDrivenSwitchRegistration register(RpcProviderRegistry rpcProviderRegistry);
 
     /**
      * @return id of encapsulated node (served by this impl)

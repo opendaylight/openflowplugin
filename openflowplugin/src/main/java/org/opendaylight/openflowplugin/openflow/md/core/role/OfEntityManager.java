@@ -23,9 +23,9 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginConfig;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -348,13 +348,13 @@ public class OfEntityManager implements TransactionChainListener{
        // NOOP
     }
 
-    private void registerRoutedRPCForSwitch(MDSwitchMetaData entityMetadata) {
+    private static void registerRoutedRPCForSwitch(MDSwitchMetaData entityMetadata) {
         // Routed RPC registration is only done when *this* instance is owner of
         // the entity.
         if(entityMetadata.getOfSwitch().isEntityOwner()) {
             if (!entityMetadata.isRPCRegistrationDone.get()) {
                 entityMetadata.setIsRPCRegistrationDone(true);
-                CompositeObjectRegistration<ModelDrivenSwitch> registration =
+                ModelDrivenSwitchRegistration registration =
                         entityMetadata.getOfSwitch().register(entityMetadata.getRpcProviderRegistry());
 
                 entityMetadata.getContext().setProviderRegistration(registration);
@@ -368,9 +368,9 @@ public class OfEntityManager implements TransactionChainListener{
         }
     }
 
-    private void deregisterRoutedRPCForSwitch(MDSwitchMetaData entityMetadata) {
+    private static void deregisterRoutedRPCForSwitch(MDSwitchMetaData entityMetadata) {
 
-        CompositeObjectRegistration<ModelDrivenSwitch> registration = entityMetadata.getContext().getProviderRegistration();
+        ModelDrivenSwitchRegistration registration = entityMetadata.getContext().getProviderRegistration();
         if (null != registration) {
             registration.close();
             entityMetadata.getContext().setProviderRegistration(null);
@@ -380,7 +380,7 @@ public class OfEntityManager implements TransactionChainListener{
                 entityMetadata.getOfSwitch().getNodeId().getValue());
     }
 
-    private void sendNodeAddedNotification(MDSwitchMetaData entityMetadata) {
+    private static void sendNodeAddedNotification(MDSwitchMetaData entityMetadata) {
         //Node added notification need to be sent irrespective of whether
         // *this* instance is owner of the entity or not. Because yang notifications
         // are local, and we should maintain the behavior across the application.
