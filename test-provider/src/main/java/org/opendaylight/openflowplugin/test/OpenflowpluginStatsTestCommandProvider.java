@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -43,8 +42,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 

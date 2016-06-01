@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
