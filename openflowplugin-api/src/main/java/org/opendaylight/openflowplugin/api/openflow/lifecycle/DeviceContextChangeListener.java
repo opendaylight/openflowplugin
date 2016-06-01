@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * This API is for all listeners who wish to know about device context in cluster
