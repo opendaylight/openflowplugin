@@ -1,4 +1,4 @@
-package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
+package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor;
 
 import static org.junit.Assert.assertEquals;
 
