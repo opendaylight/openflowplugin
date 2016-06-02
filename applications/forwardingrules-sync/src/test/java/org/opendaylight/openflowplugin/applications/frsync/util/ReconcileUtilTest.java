@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
+import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -63,6 +64,7 @@ public class ReconcileUtilTest {
     private static final NodeId NODE_ID = new NodeId("unit-node-id");
     private InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID));
+    private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -328,8 +330,8 @@ public class ReconcileUtilTest {
 
     private ItemSyncBox<String> createSyncBox(final String pushes, final String updates) {
         ItemSyncBox<String> syncBox1 = new ItemSyncBox<>();
-        syncBox1.getItemsToPush().addAll(Arrays.asList(pushes.split(",")));
-        for (String orig : updates.split(",")) {
+        syncBox1.getItemsToPush().addAll(COMMA_SPLITTER.splitToList(pushes));
+        for (String orig : COMMA_SPLITTER.splitToList(updates)) {
             syncBox1.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(orig, orig + "_updated"));
         }
         return syncBox1;
