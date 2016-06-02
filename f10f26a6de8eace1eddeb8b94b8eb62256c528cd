@@ -16,6 +16,24 @@
       "revId": "f10f26a6de8eace1eddeb8b94b8eb62256c528cd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_474eccc2",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-02T11:49:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_82d100d0",
+      "revId": "f10f26a6de8eace1eddeb8b94b8eb62256c528cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
