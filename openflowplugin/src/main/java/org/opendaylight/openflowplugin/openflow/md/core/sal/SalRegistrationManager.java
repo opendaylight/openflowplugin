@@ -17,11 +17,13 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -39,12 +41,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +129,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         unregOpenflowEntityOwnership(nodeId);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
 
-        CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
+        ModelDrivenSwitchRegistration registration = context.getProviderRegistration();
         if (null != registration) {
             registration.close();
             context.setProviderRegistration(null);

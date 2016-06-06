@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
+import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -110,13 +110,10 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /**
      * @param ctx
-     * @return {@link CompositeObjectRegistrationBuilder #toInstance()}
+     * @return {@link ObjectRegistration}
      */
-    public CompositeObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
+    public ObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
             final ProviderContext ctx) {
-        CompositeObjectRegistrationBuilder<OpenflowpluginTableFeaturesTestServiceProvider> builder = CompositeObjectRegistration
-                .<OpenflowpluginTableFeaturesTestServiceProvider> builderFor(this);
-
         RoutedRpcRegistration<SalTableService> addRoutedRpcImplementation = ctx
                 .<SalTableService> addRoutedRpcImplementation(
                         SalTableService.class, this);
@@ -139,9 +136,12 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
         RoutedRpcRegistration<SalTableService> tableRegistration1 = this
                 .getTableRegistration();
 
-        builder.add(tableRegistration1);
-
-        return builder.build();
+        return new AbstractObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider>(this) {
+            @Override
+            protected void removeRegistration() {
+                tableRegistration1.close();
+            }
+        };
     }
 
 }

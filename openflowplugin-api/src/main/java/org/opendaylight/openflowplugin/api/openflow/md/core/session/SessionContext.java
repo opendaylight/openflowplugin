@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
@@ -20,7 +20,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 
 /**
  * @author mirehak
@@ -160,12 +159,12 @@ public interface SessionContext {
     /**
      * @param registration provider composite registration
      */
-    void setProviderRegistration(CompositeObjectRegistration<ModelDrivenSwitch> registration);
+    void setProviderRegistration(ModelDrivenSwitchRegistration registration);
 
     /**
      * @return provider composite registration
      */
-    CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration();
+    ModelDrivenSwitchRegistration getProviderRegistration();
 
     /**
      * @return seed value for random operations

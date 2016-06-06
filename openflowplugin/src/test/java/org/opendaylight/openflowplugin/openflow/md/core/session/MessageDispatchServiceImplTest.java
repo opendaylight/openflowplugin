@@ -24,7 +24,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyList
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
@@ -75,7 +75,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -323,7 +322,7 @@ class MockSessionContext implements SessionContext {
     private Map<SwitchConnectionDistinguisher, ConnectionConductor> map;
     private IMessageDispatchService messageService;
     private boolean isValid = true;
-    private CompositeObjectRegistration<ModelDrivenSwitch> registration;
+    private ModelDrivenSwitchRegistration registration;
     private int seed;
     private SwitchSessionKeyOF sessionKey;
 
@@ -450,13 +449,12 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration() {
+    public ModelDrivenSwitchRegistration getProviderRegistration() {
         return registration;
     }
 
     @Override
-    public void setProviderRegistration(
-            CompositeObjectRegistration<ModelDrivenSwitch> registration) {
+    public void setProviderRegistration(ModelDrivenSwitchRegistration registration) {
         this.registration = registration;
     }
 
