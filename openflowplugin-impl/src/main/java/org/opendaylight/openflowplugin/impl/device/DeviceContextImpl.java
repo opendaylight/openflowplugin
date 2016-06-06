@@ -281,11 +281,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
+        //1. translate to general flow (table, priority, match, cookie)
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
+                flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
+        // Trigger off a notification
+        notificationPublishService.offerNotification(flowRemovedNotification);
+
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
-            //1. translate to general flow (table, priority, match, cookie)
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
-                    flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
             //2. create registry key
             final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
             //3. lookup flowId
@@ -299,8 +302,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
                 // b) notify listener
                 itemLifecycleListener.onRemoved(flowPath);
-                // c) trigger off a notification
-                notificationPublishService.offerNotification(flowRemovedNotification);
             } else {
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
