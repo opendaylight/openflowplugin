@@ -1,0 +1,293 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_5ffcc83e",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "I would rather do retry in guard because it would ensure that we will not register twice. Like this:\n\ncompression(guard(retry(syncReactorImpl)))",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ff6e7c95",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "do not try to load operationalSnapshot from MDSAL in OperationalListener. Use reconciliation also in retry branch.\n\nLet\u0027s move call unregisterForNextConsistentOperationareturn to reconciliation() - it unregister will happan also if node was deleted and added before registered retry...\n\nlet\u0027s refactor like this:\n\nif(add) reconciliation\nelse if (retryNeeded) reconciliation",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1f541053",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "Use parent interface SyncReactor not specific SyncReactorRetryDecorator. Its better becasuse we can reorder decorators while initiating beans in modul provider.",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_5fe5e8a6",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureWithCompressionDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "Use only SyncReactor delegate (instead of SyncReactorRetryDecorator)",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_7f654c44",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureWithCompressionDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "We dont want global retry field (it is better to use nodeid specific information in solicitregistry).\n\nI dont think we need to modify this if statement. It is supposed to work ok as it is. Let\u0027s check it in junits.",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_bf49a48d",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureWithCompressionDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "add here to the if:\n\" \u0026\u0026 !registry.isConsistent(operationalTree)\"\n\nit enables use new fresh operational data for retry in else branch",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9f602037",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "please remove this field By the way:\n- it should be threadsafe\n- it is never set",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_3fe2b49f",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "remove this please",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9fee608a",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "SynchronizedHashMap needed",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ff695c26",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "move line before parse (see below)",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_5f77a802",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "add final please",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1f6d3033",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "NullPointerException might happen",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_bf8884e8",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "might return null",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1f3ff026",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "NullPointerExecption might happen",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_df3bb8e9",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedConfigListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "Add TC1 for COMPRESSION (without RETRY).\n- run CONFIG onDataTreeChange (simulate long running operation)\n- run CONFIG onDataTreeChange\n- check compressed value in syncReactor\n\n\nAdd TC2 for COMPRESSION (without RETRY).\n- run CONFIG onDataTreeChange (simulate very quick operation)\n- run CONFIG onDataTreeChange\n- verify not compressed value in syncReactor\n\nAdd TC3 for RETRY combined with COMPRESSION.\n- run CONFIG onDataTreeChange (simulate very quick operation but failed operation)\n- run CONFIG onDataTreeChange\n- simulate syncReactorError\n- run CONFIG onDataTreeChange (simulate very quick obut successful)\n- verify that new fresh operational are used\n\n\nCheck also that ElicitRegistry.unregister was called after node delete.",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1f5ed045",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedConfigListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "Please put here the bugzilla id 5920",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_bf408457",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T09:37:08Z",
+      "side": 1,
+      "message": "Add TC for RETRY combined with operational node REMOVE.\n- elicit registry should have removed nodeId\n\nAdd TC for RETRY combined with REMOVE after that ADD\n- verify fresh operational data were used in sync reactor",
+      "revId": "3fb2d7bab8a8d46291265af21e6176dbf94bb5b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
