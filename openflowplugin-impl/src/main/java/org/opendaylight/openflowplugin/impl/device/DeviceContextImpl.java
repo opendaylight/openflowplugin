@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -189,6 +190,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
+        flowLifeCycleKeeper.setItemLifecycleListener(new ItemLifecycleListenerImpl(this));
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         deviceCtxState = DEVICE_CONTEXT_STATE.INITIALIZATION;
 
