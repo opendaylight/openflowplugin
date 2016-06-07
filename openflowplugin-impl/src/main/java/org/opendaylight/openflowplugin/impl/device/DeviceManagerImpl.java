@@ -34,6 +34,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -114,10 +115,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
+    public void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo) throws Exception {
         // final phase - we have to add new Device to MD-SAL DataStore
-        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", nodeId);
-        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(nodeId));
+        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
+        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo.getNodeId()));
         ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
     }
@@ -178,7 +179,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceState.setValid(true);
 
-        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.gainDeviceInfo());
 
         return true;
     }

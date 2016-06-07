@@ -35,6 +35,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -98,6 +99,9 @@ public class RoleManagerImplTest {
     DeviceState deviceState;
 
     @Mock
+    DeviceInfo deviceInfo;
+
+    @Mock
     GetFeaturesOutput featuresOutput;
 
     private RoleManagerImpl roleManager;
@@ -121,12 +125,13 @@ public class RoleManagerImplTest {
         Mockito.when(entityOwnershipService.registerCandidate(Mockito.any(Entity.class))).thenReturn(entityOwnershipCandidateRegistration);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(featuresReply.getDatapathId()).thenReturn(new BigInteger("1"));
         Mockito.when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<NodeId>any());
+        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any());
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceContext>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
@@ -136,7 +141,7 @@ public class RoleManagerImplTest {
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
-        roleManagerSpy.onDeviceContextLevelUp(nodeId);
+        roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
     }
@@ -147,8 +152,8 @@ public class RoleManagerImplTest {
 
     @Test(expected = VerifyException.class)
     public void testOnDeviceContextLevelUp() throws Exception {
-        roleManagerSpy.onDeviceContextLevelUp(nodeId);
-        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(nodeId);
+        roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
+        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(deviceInfo);
         inOrder.verifyNoMoreInteractions();
     }
 
