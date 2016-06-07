@@ -49,8 +49,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
- * GroupForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}}
+ * FlowForwarder
+ * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
  * for WildCardedPath to {@link Flow} and ForwardingRulesCommiter interface for methods:
  *  add, update and remove {@link Flow} processing for
  *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
@@ -84,8 +84,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 }
             });
         } catch (final Exception e) {
-            LOG.warn("FRM Flow DataChange listener registration fail!");
-            LOG.debug("FRM Flow DataChange listener registration fail ..", e);
+            LOG.warn("FRM Flow DataTreeChange listener registration fail!");
+            LOG.debug("FRM Flow DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
         }
     }
