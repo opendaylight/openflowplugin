@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
@@ -26,8 +27,8 @@ public interface DeviceInitializationPhaseHandler {
     /**
      * Method represents an initialization cycle for {@link DeviceContext} preparation for use.
      *
-     * @param nodeId
+     * @param deviceInfo
      * @throws Exception - needs to be catch in ConnectionHandler implementation
      */
-    void onDeviceContextLevelUp(@CheckForNull NodeId nodeId) throws Exception;
+    void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo) throws Exception;
 }
