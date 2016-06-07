@@ -29,7 +29,7 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
                 .setCookie(new FlowCookie(input.getCookie()))
                 .setNode(new NodeRef(deviceState.getNodeInstanceIdentifier()))
                 .setPriority(input.getPriority())
-                .setTableId(input.getTableId().getValue().shortValue());
+                .setTableId(translateTableId(input));
 
         return flowRemovedBld.build();
     }
@@ -37,5 +37,15 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceState deviceState) {
         return MatchConvertorImpl.fromOFMatchToSALMatch(flowRemoved.getMatch(),
                 deviceState.getFeatures().getDatapathId(), OpenflowVersion.OF13);
+    }
+
+    /**
+     * Translate the table ID in the FLOW_REMOVED message to SAL table ID.
+     *
+     * @param flowRemoved  FLOW_REMOVED message.
+     * @return  SAL table ID.
+     */
+    protected Short translateTableId(FlowRemoved flowRemoved) {
+        return flowRemoved.getTableId().getValue().shortValue();
     }
 }
