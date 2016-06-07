@@ -17,6 +17,7 @@ module topology-lldp-discovery-impl {
     identity topology-lldp-discovery-impl {
         base config:module-type;
         config:java-name-prefix TopologyLldpDiscoveryImpl;
+        status deprecated;
     }
 
     augment "/config:modules/config:module/config:configuration" {

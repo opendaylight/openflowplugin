@@ -17,16 +17,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LLDPDiscoveryListener implements PacketProcessingListener {
+public class LLDPDiscoveryListener implements PacketProcessingListener {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
 
-    private LLDPLinkAger lldpLinkAger;
-    private NotificationProviderService notificationService;
+    private final LLDPLinkAger lldpLinkAger;
+    private final NotificationProviderService notificationService;
 
-    LLDPDiscoveryListener(NotificationProviderService notificationService) {
+    public LLDPDiscoveryListener(NotificationProviderService notificationService, LLDPLinkAger lldpLinkAger) {
         this.notificationService = notificationService;
+        this.lldpLinkAger = lldpLinkAger;
     }
 
+    @Override
     public void onPacketReceived(PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
         if(src != null) {
@@ -38,9 +40,5 @@ class LLDPDiscoveryListener implements PacketProcessingListener {
             notificationService.publish(ld);
             lldpLinkAger.put(ld);
         }
-    }
-
-    public void setLldpLinkAger(LLDPLinkAger lldpLinkAger) {
-        this.lldpLinkAger = lldpLinkAger;
     }
 }

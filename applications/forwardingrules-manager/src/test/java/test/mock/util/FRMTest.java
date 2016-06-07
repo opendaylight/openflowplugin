@@ -1,10 +1,5 @@
 package test.mock.util;
 
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -12,11 +7,17 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class FRMTest extends AbstractDataBrokerTest {
@@ -56,9 +57,9 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
     }
 
     public ForwardingRulesManagerConfig getConfig(){
-        ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder cfgBuilder =
-                new ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder();
+        ForwardingRulesManagerConfigBuilder cfgBuilder = new ForwardingRulesManagerConfigBuilder();
         cfgBuilder.setStaleMarkingEnabled(false);
+        cfgBuilder.setReconciliationRetryCount(0);
         return cfgBuilder.build();
 
     }

@@ -8,16 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_manager;
 
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerConfig;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.controller.sal.common.util.NoopAutoCloseable;
 
-public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_manager.AbstractForwardingRulesManagerModule {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerModule.class);
-    private static final boolean ENABLE_FGM_STALE_MARKING = false;
-    private static final int RECONCILIATION_RETRY_COUNT = 5;
+/**
+ * @deprecated Replaced by blueprint wiring
+ */
+@Deprecated
+public class ForwardingRulesManagerModule extends AbstractForwardingRulesManagerModule {
 
     public ForwardingRulesManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
@@ -28,56 +25,8 @@ public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugi
     }
 
     @Override
-    public void customValidation() {
-        // add custom validation form module attributes here.
+    public AutoCloseable createInstance() {
+        // FRM instance is created via blueprint so this in a no-op.
+        return NoopAutoCloseable.INSTANCE;
     }
-
-    @Override
-    public java.lang.AutoCloseable createInstance() {
-        LOG.info("FRM module initialization.");
-        final ForwardingRulesManagerConfig config = readConfig();
-        final ForwardingRulesManagerImpl forwardingrulessManagerProvider =
-                new ForwardingRulesManagerImpl(getDataBrokerDependency(), getRpcRegistryDependency(), config, getEntityOwnershipServiceDependency());
-        forwardingrulessManagerProvider.start();
-        LOG.info("FRM module started successfully.");
-        return new AutoCloseable() {
-            @Override
-            public void close() throws Exception {
-                try {
-                    forwardingrulessManagerProvider.close();
-                } catch (final Exception e) {
-                    LOG.warn("Unexpected error by stopping FRM", e);
-                }
-                LOG.info("FRM module stopped.");
-            }
-        };
-    }
-
-    private ForwardingRulesManagerConfig readConfig(){
-
-        final ForwardingRulesManagerConfig.ForwardingRulesManagerConfigBuilder fwdRulesMgrCfgBuilder = ForwardingRulesManagerConfig.builder();
-
-        if (getForwardingManagerSettings() != null && getForwardingManagerSettings().getStaleMarkingEnabled() != null){
-            fwdRulesMgrCfgBuilder.setStaleMarkingEnabled(getForwardingManagerSettings().getStaleMarkingEnabled());
-        }
-        else{
-            LOG.warn("Could not load XML configuration file via ConfigSubsystem! Fallback to default config value(s)");
-            fwdRulesMgrCfgBuilder.setStaleMarkingEnabled(ENABLE_FGM_STALE_MARKING);
-        }
-
-	if(getForwardingManagerSettings() != null && getForwardingManagerSettings().getReconciliationRetryCount()>0){
-	            fwdRulesMgrCfgBuilder.setReconciliationRetryCount(getForwardingManagerSettings().getReconciliationRetryCount());
-	}
-	else{
-	      LOG.warn("Could not load XML configuration file via ConfigSubsystem for reconciliation retry! " +
-	      "Fallback to default config value(s)");
-	      fwdRulesMgrCfgBuilder.setReconciliationRetryCount(RECONCILIATION_RETRY_COUNT);
-	     }
-
-
-
-        return fwdRulesMgrCfgBuilder.build();
-
-    }
-
 }

@@ -7,39 +7,35 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LLDPActivator implements BindingAwareProvider, AutoCloseable {
+public class LLDPActivator implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPActivator.class);
-    private static LLDPDiscoveryProvider provider = new LLDPDiscoveryProvider();
+
     private static String lldpSecureKey;
 
-    public LLDPActivator(String secureKey) {
-        lldpSecureKey = secureKey;
-    }
+    private final ListenerRegistration<NotificationListener> lldpNotificationRegistration;
 
-    public void onSessionInitiated(final ProviderContext session) {
-        DataProviderService dataService = session.<DataProviderService>getSALService(DataProviderService.class);
-        provider.setDataService(dataService);
-        NotificationProviderService notificationService = session.<NotificationProviderService>getSALService(NotificationProviderService.class);
-        provider.setNotificationService(notificationService);
-        provider.start();
+    public LLDPActivator(NotificationProviderService notificationService, LLDPDiscoveryListener lldpDiscoveryListener,
+            String secureKey) {
+        lldpSecureKey = secureKey;
+
+        LOG.info("Starting LLDPActivator with lldpSecureKey: {}", lldpSecureKey);
+
+        lldpNotificationRegistration = notificationService.registerNotificationListener(lldpDiscoveryListener);
+
+        LOG.info("LLDPDiscoveryListener started.");
     }
 
     @Override
-    public void close() throws Exception {
-        if(provider != null) {
-            try {
-                provider.close();
-            } catch (Exception e) {
-                LOG.warn("Exception when closing down topology-lldp-discovery",e);
-            }
-        }
+    public void close() {
+        lldpNotificationRegistration.close();
+
+        LOG.info("LLDPDiscoveryListener stopped.");
     }
 
     public static String getLldpSecureKey() {
