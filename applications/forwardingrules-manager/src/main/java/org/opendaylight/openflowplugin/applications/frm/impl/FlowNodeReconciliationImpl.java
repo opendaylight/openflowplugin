@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -22,8 +24,6 @@ import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Callable;
 
 import org.opendaylight.controller.md.sal.binding.api.*;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -33,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -55,15 +54,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -93,6 +89,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public static final String SEPARATOR = ":";
 
     private ListenerRegistration<FlowNodeReconciliationImpl> listenerRegistration;
+
+    private final int THREAD_POOL_SIZE = 4;
+    ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE
             = InstanceIdentifier.builder(Nodes.class)
@@ -220,39 +219,48 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         connectedNode.toString());
                 reconciliationPreProcess(connectedNode);
             }
-            reconciliation(connectedNode);
+            ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
+            executor.execute(reconciliationTask);
         }
     }
 
-    private void reconciliation(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private class ReconciliationTask implements Runnable {
 
-        String sNode = nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
-        long nDpId = getDpnIdFromNodeName(sNode);
+        InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
-        ReadOnlyTransaction trans = provider.getReadTranaction();
-        Optional<FlowCapableNode> flowNode = Optional.absent();
-
-        AtomicInteger counter = new AtomicInteger();
-        //initialize the counter
-        counter.set(0);
-        try {
-            flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
-        }
-        catch (Exception e) {
-            LOG.error("Fail with read Config/DS for Node {} !", nodeIdent, e);
+        public ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+           nodeIdentity = nodeIdent;
         }
 
-        if (flowNode.isPresent()) {
-            /* Tables - have to be pushed before groups */
-            // CHECK if while pusing the update, updateTableInput can be null to emulate a table add
-            List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
-                    ? flowNode.get().getTableFeatures() : Collections.<TableFeatures> emptyList() ;
-            for (TableFeatures tableFeaturesItem : tableList) {
-                TableFeaturesKey tableKey = tableFeaturesItem.getKey();
-                KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII
-                    = nodeIdent.child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
-                        provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdent);
+        @Override
+        public void run() {
+
+            String sNode = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            long nDpId = getDpnIdFromNodeName(sNode);
+
+            ReadOnlyTransaction trans = provider.getReadTranaction();
+            Optional<FlowCapableNode> flowNode = Optional.absent();
+
+            AtomicInteger counter = new AtomicInteger();
+            //initialize the counter
+            counter.set(0);
+            try {
+                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+            } catch (Exception e) {
+                LOG.error("Fail with read Config/DS for Node {} !", nodeIdentity, e);
             }
+
+            if (flowNode.isPresent()) {
+            /* Tables - have to be pushed before groups */
+                // CHECK if while pusing the update, updateTableInput can be null to emulate a table add
+                List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
+                        ? flowNode.get().getTableFeatures() : Collections.<TableFeatures>emptyList();
+                for (TableFeatures tableFeaturesItem : tableList) {
+                    TableFeaturesKey tableKey = tableFeaturesItem.getKey();
+                    KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII
+                            = nodeIdentity.child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
+                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
+                }
 
             /* Groups - have to be first */
                 List<Group> groups = flowNode.get().getGroup() != null
@@ -264,10 +272,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 List<Group> suspectedGroups = new ArrayList<>();
 
                 while ((!(toBeInstalledGroups.isEmpty()) || !(suspectedGroups.isEmpty())) &&
-                        (counter.get()<=provider.getConfiguration().getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
+                        (counter.get() <= provider.getConfiguration().getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
 
-                    if(toBeInstalledGroups.isEmpty() && ! suspectedGroups.isEmpty()){
-                        LOG.error("These Groups are pointing to node-connectors that are not up yet {}",suspectedGroups.toString());
+                    if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
+                        LOG.error("These Groups are pointing to node-connectors that are not up yet {}", suspectedGroups.toString());
                         toBeInstalledGroups.addAll(suspectedGroups);
                         break;
                     }
@@ -278,27 +286,27 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         boolean okToInstall = true;
                         for (Bucket bucket : group.getBuckets().getBucket()) {
                             for (Action action : bucket.getAction()) {
-                               //chained-port
+                                //chained-port
                                 if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase")){
-                                    String nodeConnectorUri = ((OutputActionCase)(action.getAction()))
+                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase")) {
+                                    String nodeConnectorUri = ((OutputActionCase) (action.getAction()))
                                             .getOutputAction().getOutputNodeConnector().getValue();
 
-                                    LOG.warn("Installing the group for node connector {}",nodeConnectorUri);
+                                    LOG.warn("Installing the group for node connector {}", nodeConnectorUri);
 
                                     //check if the nodeconnector is there in the multimap
                                     boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
                                             .isNodeConnectorUpdated(nDpId, nodeConnectorUri);
                                     //if yes set okToInstall = true
 
-                                    if(isPresent){
-                                       break;
+                                    if (isPresent) {
+                                        break;
                                     }//else put it in a different list and still set okToInstall = true
                                     else {
                                         suspectedGroups.add(group);
                                         LOG.error("Not yet received the node-connector updated for {} " +
-                                                "for the group with id {}",nodeConnectorUri,group.getGroupId().toString());
-                                         break;
+                                                "for the group with id {}", nodeConnectorUri, group.getGroupId().toString());
+                                        break;
                                     }
 
 
@@ -313,12 +321,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                     }
                                 }
                             }
-                            if (!okToInstall){
+                            if (!okToInstall) {
                                 //increment retry counter value
                                 counter.incrementAndGet();
                                 break;
                             }
-
 
 
                         }
@@ -326,8 +333,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                         if (okToInstall) {
                             final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
-                                    nodeIdent.child(Group.class, group.getKey());
-                            this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
+                                    nodeIdentity.child(Group.class, group.getKey());
+                            provider.getGroupCommiter().add(groupIdent, group, nodeIdentity);
                             alreadyInstalledGroupids.add(group.getGroupId().getValue());
                             iterator.remove();
                             // resetting the counter to zero
@@ -337,47 +344,47 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
 
             /* installation of suspected groups*/
-            if(!toBeInstalledGroups.isEmpty()){
-                for(Group group :toBeInstalledGroups){
-                    LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
-                            ,group.getGroupId().toString(),provider.getConfiguration().getReconciliationRetryCount());
-                    final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
-                            nodeIdent.child(Group.class, group.getKey());
-                    this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
+                if (!toBeInstalledGroups.isEmpty()) {
+                    for (Group group : toBeInstalledGroups) {
+                        LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
+                                , group.getGroupId().toString(), provider.getConfiguration().getReconciliationRetryCount());
+                        final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
+                                nodeIdentity.child(Group.class, group.getKey());
+                        provider.getGroupCommiter().add(groupIdent, group, nodeIdentity);
+                    }
                 }
-            }
             /* Meters */
-            List<Meter> meters = flowNode.get().getMeter() != null
-                    ? flowNode.get().getMeter() : Collections.<Meter> emptyList();
-            for (Meter meter : meters) {
-                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent =
-                        nodeIdent.child(Meter.class, meter.getKey());
-                this.provider.getMeterCommiter().add(meterIdent, meter, nodeIdent);
-            }
+                List<Meter> meters = flowNode.get().getMeter() != null
+                        ? flowNode.get().getMeter() : Collections.<Meter>emptyList();
+                for (Meter meter : meters) {
+                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent =
+                            nodeIdentity.child(Meter.class, meter.getKey());
+                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                }
             /* Flows */
-            List<Table> tables = flowNode.get().getTable() != null
-                    ? flowNode.get().getTable() : Collections.<Table> emptyList();
-            for (Table table : tables) {
-                final KeyedInstanceIdentifier<Table, TableKey> tableIdent =
-                        nodeIdent.child(Table.class, table.getKey());
-                List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow> emptyList();
-                for (Flow flow : flows) {
-                    final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
-                            tableIdent.child(Flow.class, flow.getKey());
-                    this.provider.getFlowCommiter().add(flowIdent, flow, nodeIdent);
+                List<Table> tables = flowNode.get().getTable() != null
+                        ? flowNode.get().getTable() : Collections.<Table>emptyList();
+                for (Table table : tables) {
+                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent =
+                            nodeIdentity.child(Table.class, table.getKey());
+                    List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                    for (Flow flow : flows) {
+                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
+                                tableIdent.child(Flow.class, flow.getKey());
+                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
+                    }
                 }
             }
-        }
         /* clean transaction */
-        trans.close();
+            trans.close();
+        }
     }
-	private long getDpnIdFromNodeName(String nodeName) {
+    private long getDpnIdFromNodeName(String nodeName) {
         String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-		return Long.parseLong(dpId);
-	}
+        return Long.parseLong(dpId);
+    }
 
     private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
 
         List<InstanceIdentifier<StaleFlow>> staleFlowsToBeBulkDeleted = Lists.newArrayList();
         List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
