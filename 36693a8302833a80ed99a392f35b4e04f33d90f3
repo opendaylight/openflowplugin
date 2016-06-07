@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_ff1fb7b5",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/rpc/RpcManagerImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 4862
+      },
+      "writtenOn": "2016-06-07T16:57:42Z",
+      "side": 1,
+      "message": "It is no longer used after some updates. I am removing it.",
+      "parentUuid": "fa57193c_62f8b149",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 4
+      },
+      "revId": "36693a8302833a80ed99a392f35b4e04f33d90f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
