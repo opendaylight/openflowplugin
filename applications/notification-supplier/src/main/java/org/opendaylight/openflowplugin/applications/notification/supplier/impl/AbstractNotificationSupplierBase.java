@@ -12,9 +12,9 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierDefinition;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -24,6 +24,10 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
 
 /**
  * Public abstract basic Supplier implementation contains code for a make Supplier instance,
@@ -35,9 +39,16 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 public abstract class AbstractNotificationSupplierBase<O extends DataObject> implements
         NotificationSupplierDefinition<O> {
 
-    protected final Class<O> clazz;
-    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractNotificationSupplierBase.class);
 
+    protected final Class<O> clazz;
+    private ListenerRegistration<DataTreeChangeListener<O>> listenerRegistration;
+    private static final int STARTUP_LOOP_TICK = 500;
+    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
+
+
+    final DataTreeIdentifier<O> treeId =
+            new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
     /**
      * Default constructor for all Notification Supplier implementation
      *
@@ -46,10 +57,20 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      */
     public AbstractNotificationSupplierBase(final DataBroker db, final Class<O> clazz) {
         Preconditions.checkArgument(db != null, "DataBroker can not be null!");
-        //TODO retries
-        listenerRegistration = db.registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
-                getWildCardPath()),this);
         this.clazz = clazz;
+
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+        try {
+            listenerRegistration =  looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener<O>>>() {
+                @Override
+                public ListenerRegistration<DataTreeChangeListener<O>> call() throws Exception {
+                    return db.registerDataTreeChangeListener(treeId, AbstractNotificationSupplierBase.this);
+                }
+            });
+        }catch(final Exception ex){
+            LOG.debug(" AbstractNotificationSupplierBase DataChange listener registration fail ..{}", ex.getMessage());
+            throw new IllegalStateException("Notification supplier startup fail! System needs restart.", ex);
+        }
     }
 
     @Override
