@@ -14,18 +14,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
@@ -39,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowTableStatNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openflow:111";
     private static final Short FLOW_TABLE_ID = 111;
     private static final String FLOW_ID = "test-flow-111";
     private FlowTableStatNotificationSupplierImpl notifSupplierImpl;
@@ -54,19 +60,19 @@ public class FlowTableStatNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -79,9 +85,11 @@ public class FlowTableStatNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestFlowTableStatPath(), createTestFlowTableStat());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestFlowTableStatPath(),null,createTestFlowTableStat(),
+                DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<FlowTableStatistics>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(FlowTableStatisticsUpdate.class));
     }
 

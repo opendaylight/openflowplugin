@@ -9,8 +9,12 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import com.google.common.base.Preconditions;
+
+import java.util.Collection;
 import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierForItemStat;
@@ -47,19 +51,50 @@ abstract class AbstractNotificationSupplierForItemStat<O extends DataObject,
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        Preconditions.checkArgument(change != null, "ChangeEvent can not be null!");
-        if (change.getCreatedData() != null && !(change.getCreatedData().isEmpty())) {
-            for (final Entry<InstanceIdentifier<?>, DataObject> createDataObj : change.getCreatedData().entrySet()) {
-                if (clazz.isAssignableFrom(createDataObj.getKey().getTargetType())) {
-                    final InstanceIdentifier<O> ii = createDataObj.getKey().firstIdentifierOf(clazz);
-                    final N notif = createNotification((O) createDataObj.getValue(), ii);
-                    if (notif != null) {
-                        notifProviderService.publish(notif);
+    public void onDataTreeChanged(Collection<DataTreeModification<O>> changes) {
+
+        Preconditions.checkNotNull(changes, "Changes may not be null!");
+
+        for (DataTreeModification<O> change : changes) {
+            final InstanceIdentifier<O> key = change.getRootPath().getRootIdentifier();
+            final DataObjectModification<O> mod = change.getRootNode();
+            switch (mod.getModificationType()) {
+                case DELETE:
+                    remove(key, mod.getDataBefore());
+                    break;
+                case SUBTREE_MODIFIED:
+                    update(key, mod.getDataBefore(), mod.getDataAfter());
+                    break;
+                case WRITE:
+                    if (mod.getDataBefore() == null) {
+                        add(key, mod.getDataAfter());
+                    } else {
+                        update(key, mod.getDataBefore(), mod.getDataAfter());
                     }
-                }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
             }
         }
     }
+
+
+    public void add(InstanceIdentifier<O> identifier , O add ){
+        final N notif = createNotification(add, identifier);
+        if (notif != null) {
+            notifProviderService.publish(notif);
+        }
+    }
+
+
+    public void remove(InstanceIdentifier<O> identifier , O del){
+        //EMPTY NO-OP
+    }
+
+
+    public void update(InstanceIdentifier<O> identifier , O before, O after){
+        //EMPTY NO-OP
+    }
+
 }
 

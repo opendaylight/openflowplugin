@@ -9,8 +9,12 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item;
 
 import com.google.common.base.Preconditions;
+
+import java.util.Collection;
 import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierForItem;
@@ -51,41 +55,56 @@ abstract class AbstractNotificationSupplierForItem<O extends DataObject,
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        Preconditions.checkArgument(change != null, "ChangeEvent can not be null!");
-        if (change.getCreatedData() != null && !(change.getCreatedData().isEmpty())) {
-            for (final Entry<InstanceIdentifier<?>, DataObject> createDataObj : change.getCreatedData().entrySet()) {
-                if (clazz.isAssignableFrom(createDataObj.getKey().getTargetType())) {
-                    final InstanceIdentifier<O> ii = createDataObj.getKey().firstIdentifierOf(clazz);
-                    final C notif = createNotification((O) createDataObj.getValue(), ii);
-                    if (notif != null) {
-                        notificationProviderService.publish(notif);
-                    }
-                }
-            }
-        }
+    public void onDataTreeChanged(Collection<DataTreeModification<O>> changes) {
 
-        if (change.getUpdatedData() != null && !(change.getUpdatedData().isEmpty())) {
-            for (final Entry<InstanceIdentifier<?>, DataObject> updateDataObj : change.getUpdatedData().entrySet()) {
-                if (clazz.isAssignableFrom(updateDataObj.getKey().getTargetType())) {
-                    final InstanceIdentifier<O> ii = updateDataObj.getKey().firstIdentifierOf(clazz);
-                    final U notif = updateNotification((O) updateDataObj.getValue(), ii);
-                    if (notif != null) {
-                        notificationProviderService.publish(notif);
-                    }
-                }
-            }
-        }
+        Preconditions.checkNotNull(changes, "Changes may not be null!");
 
-        if (change.getRemovedPaths() != null && !(change.getRemovedPaths().isEmpty())) {
-            for (final InstanceIdentifier<?> deleteDataPath : change.getRemovedPaths()) {
-                if (clazz.isAssignableFrom(deleteDataPath.getTargetType())) {
-                    final D notif = deleteNotification(deleteDataPath.firstIdentifierOf(clazz));
-                    if (notif != null) {
-                        notificationProviderService.publish(notif);
+        for (DataTreeModification<O> change : changes) {
+            final InstanceIdentifier<O> key = change.getRootPath().getRootIdentifier();
+            final DataObjectModification<O> mod = change.getRootNode();
+            switch (mod.getModificationType()) {
+                case DELETE:
+                    remove(key, mod.getDataBefore());
+                    break;
+                case SUBTREE_MODIFIED:
+                    update(key, mod.getDataBefore(), mod.getDataAfter());
+                    break;
+                case WRITE:
+                    if (mod.getDataBefore() == null) {
+                        add(key, mod.getDataAfter());
+                    } else {
+                        update(key, mod.getDataBefore(), mod.getDataAfter());
                     }
-                }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
             }
         }
     }
+
+
+    public void add(InstanceIdentifier<O> identifier , O add ){
+        final C notif = createNotification(add, identifier);
+        if (notif != null) {
+            notificationProviderService.publish(notif);
+        }
+    }
+
+
+    public void remove(InstanceIdentifier<O> identifier , O del){
+        final D notif = deleteNotification(identifier.firstIdentifierOf(clazz));
+        if (notif != null) {
+            notificationProviderService.publish(notif);
+        }
+    }
+
+
+    public void update(InstanceIdentifier<O> identifier , O before, O after){
+
+        final U notif = updateNotification(after, identifier);
+        if (notif != null) {
+            notificationProviderService.publish(notif);
+        }
+    }
+
 }
