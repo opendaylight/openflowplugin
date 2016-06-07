@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -50,9 +51,9 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
 
         final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
@@ -63,10 +64,10 @@ public class RpcManagerImpl implements RpcManager {
 
         deviceContext.setRpcContext(rpcContext);
 
-        Verify.verify(contexts.putIfAbsent(nodeId, rpcContext) == null, "RpcCtx still not closed for node {}", nodeId);
+        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
 
         // finish device initialization cycle back to DeviceManager
-        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
     }
 
     @Override
