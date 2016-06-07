@@ -43,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
  * Context can have at any point in time. Should this quota be exceeded, any further attempt to make
  * a request to the switch will fail immediately, with proper error indication.
  * </p>
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceContext extends AutoCloseable,
         DeviceReplyProcessor,
