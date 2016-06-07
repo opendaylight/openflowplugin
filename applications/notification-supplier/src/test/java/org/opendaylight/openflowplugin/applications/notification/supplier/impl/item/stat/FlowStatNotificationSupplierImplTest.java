@@ -14,14 +14,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -42,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowStatNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openflow:111";
     private static final Short FLOW_TABLE_ID = 111;
     private static final String FLOW_ID = "test-flow-111";
     private FlowStatNotificationSupplierImpl notifSupplierImpl;
@@ -57,19 +62,19 @@ public class FlowStatNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -81,9 +86,11 @@ public class FlowStatNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestFlowStatPath(), createTestFlowStat());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestFlowStatPath(),null,createTestFlowStat(),
+                DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<FlowStatistics>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(FlowsStatisticsUpdate.class));
     }
 

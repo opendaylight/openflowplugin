@@ -14,16 +14,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
@@ -40,7 +46,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class GroupStatNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openflow:111";
     private static final Long FLOW_TABLE_ID = 111L;
     private GroupStatNotificationSupplierImpl notifSupplierImpl;
     private NotificationProviderService notifProviderService;
@@ -54,19 +60,19 @@ public class GroupStatNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -79,9 +85,11 @@ public class GroupStatNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestGroupStatPath(), createTestGroupStat());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestGroupStatPath(),null,createTestGroupStat(),
+                DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<GroupStatistics>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(GroupStatisticsUpdated.class));
     }
 

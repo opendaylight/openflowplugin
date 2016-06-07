@@ -12,6 +12,8 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -31,10 +33,11 @@ public class TestSupplierVerifyHelper {
      * @param dataBroker
      */
     public static void verifyDataChangeRegistration(DataBroker dataBroker) {
-        Mockito.verify(dataBroker).registerDataChangeListener(
-                Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.notNull(InstanceIdentifier.class),
-                Matchers.notNull(DataChangeListener.class),
-                Matchers.eq(AsyncDataBroker.DataChangeScope.BASE));
+
+        Mockito.verify(dataBroker).registerDataTreeChangeListener(
+                Matchers.<DataTreeIdentifier>any(),
+                Matchers.<DataTreeChangeListener>any());
+
+
     }
 }
