@@ -46,7 +46,7 @@ import java.util.concurrent.Future;
 
 /**
  * MeterForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}}
+ * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
  * for WildCardedPath to {@link Meter} and ForwardingRulesCommiter interface for methods:
  *  add, update and remove {@link Meter} processing for
  *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
@@ -77,9 +77,9 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
                 }
             });
         } catch (final Exception e) {
-            LOG.warn("FRM Meter DataChange listener registration fail!");
-            LOG.debug("FRM Meter DataChange listener registration fail ..", e);
-            throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
+            LOG.warn("FRM Meter DataTreeChange listener registration fail!");
+            LOG.debug("FRM Meter DataTreeChange listener registration fail ..", e);
+            throw new IllegalStateException("MeterForwarder startup fail! System needs restart.", e);
         }
     }
 
@@ -157,7 +157,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Meter> identifier, Meter del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent.toString(), del.toString());
+        LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent.toString(), del.toString());
         StaleMeter staleMeter = makeStaleMeter(identifier, del, nodeIdent);
         persistStaleMeter(staleMeter, nodeIdent);
     }
