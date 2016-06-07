@@ -23,10 +23,17 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,7 +227,94 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
+    public DeviceInfo gainDeviceInfo() {
+        return new DeviceInfoImpl(
+                nodeId,
+                DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
+                featuresReply.getVersion(),
+                featuresReply.getDatapathId(),
+                IetfInetUtil.INSTANCE.ipAddressFor(connectionAdapter.getRemoteAddress().getAddress()));
+    }
+
+    @Override
     public void setHandshakeContext(HandshakeContext handshakeContext) {
         this.handshakeContext = handshakeContext;
+    }
+
+
+    private class DeviceInfoImpl implements DeviceInfo {
+
+        final private NodeId nodeId;
+        final private KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+        final private Short version;
+        final private BigInteger datapathId;
+        final private IpAddress ipAddress;
+        private boolean valid;
+        private boolean sync;
+
+        DeviceInfoImpl(
+                final NodeId nodeId,
+                final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
+                final Short version,
+                final BigInteger datapathId,
+                final IpAddress ipAddress) {
+            this.nodeId = nodeId;
+            this.nodeII = nodeII;
+            this.version = version;
+            this.datapathId = datapathId;
+            this.ipAddress = ipAddress;
+            this.valid = false;
+            this.sync = false;
+        }
+
+        @Override
+        public NodeId getNodeId() {
+            return nodeId;
+        }
+
+        @Override
+        public KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier() {
+            return nodeII;
+        }
+
+        @Override
+        public Short getVersion() {
+            return version;
+        }
+
+        @Override
+        public BigInteger getDatapathId() {
+            return datapathId;
+        }
+
+        @Override
+        public IpAddress getIpAddress() {
+            return null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DeviceInfoImpl that = (DeviceInfoImpl) o;
+
+            if (!nodeId.equals(that.nodeId)) return false;
+            if (!nodeII.equals(that.nodeII)) return false;
+            if (!version.equals(that.version)) return false;
+            if (!datapathId.equals(that.datapathId)) return false;
+            return ipAddress.equals(that.ipAddress);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeId.hashCode();
+            result = 31 * result + nodeII.hashCode();
+            result = 31 * result + version.hashCode();
+            result = 31 * result + datapathId.hashCode();
+            result = 31 * result + ipAddress.hashCode();
+            return result;
+        }
     }
 }

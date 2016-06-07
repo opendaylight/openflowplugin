@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.connection;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -20,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Each OpenFlow session is tracked by a Connection Context. These attach to a particular Device Context in such a way,
  * that there is at most one primary session associated with a Device Context.
  * </p>
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface ConnectionContext {
 
@@ -136,4 +136,10 @@ public interface ConnectionContext {
      * change internal state to {@link ConnectionContext.CONNECTION_STATE#WORKING}
      */
     void changeStateToWorking();
+
+    /**
+     * Create and return basic device info
+     * @return
+     */
+    DeviceInfo gainDeviceInfo();
 }
