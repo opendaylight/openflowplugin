@@ -27,6 +27,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
@@ -76,6 +77,8 @@ public class RpcManagerImplTest {
     private RpcContext removedContexts;
     @Mock
     private ConcurrentMap<NodeId, RpcContext> contexts;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -109,6 +112,7 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
@@ -119,33 +123,33 @@ public class RpcManagerImplTest {
 
     @Test
     public void onDeviceContextLevelUp() throws Exception {
-        rpcManager.onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
         verify(conductor).getDeviceContext(Mockito.<NodeId>any());
     }
 
     @Test
     public void onDeviceContextLevelUpTwice() throws Exception {
-        rpcManager.onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
         expectedException.expect(VerifyException.class);
-        rpcManager.onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
     public void testOnDeviceContextLevelUpMaster() throws Exception {
-        rpcManager.onDeviceContextLevelUp(nodeId);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
     public void testOnDeviceContextLevelUpSlave() throws Exception {
-        rpcManager.onDeviceContextLevelUp(nodeId);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
     public void testOnDeviceContextLevelUpOther() throws Exception {
-        rpcManager.onDeviceContextLevelUp(nodeId);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(nodeId);
+        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
