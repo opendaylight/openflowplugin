@@ -22,10 +22,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdated;
@@ -45,8 +49,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class GroupNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openflow:111";
     private static final Long GROUP_ID = 111L;
+    private static final Long  UPDATED_GROUP_ID = 100L;
+
     private GroupNotificationSupplierImpl notifSupplierImpl;
     private NotificationProviderService notifProviderService;
     private DataBroker dataBroker;
@@ -59,19 +65,19 @@ public class GroupNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -85,9 +91,11 @@ public class GroupNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestGroupPath(), createTestGroup());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestGroupPath(),null,createTestGroup(),
+                DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<Group>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(GroupAdded.class));
     }
 
@@ -112,9 +120,11 @@ public class GroupNotificationSupplierImplTest {
 
     @Test
     public void testUpdateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestGroupPath(), createTestGroup());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestGroupPath(),createTestGroup(),createUpdatedTestGroup(),
+                DataObjectModification.ModificationType.SUBTREE_MODIFIED);
+        Collection<DataTreeModification<Group>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(GroupUpdated.class));
     }
 
@@ -139,9 +149,11 @@ public class GroupNotificationSupplierImplTest {
 
     @Test
     public void testDeleteChangeEvent() {
-        final Set<InstanceIdentifier<?>> removeData = new HashSet<>();
-        removeData.add(createTestGroupPath());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(null, null, removeData));
+        final TestData testData = new TestData(createTestGroupPath(),createTestGroup(),null,
+                DataObjectModification.ModificationType.DELETE);
+        Collection<DataTreeModification<Group>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(GroupRemoved.class));
     }
 
@@ -160,5 +172,12 @@ public class GroupNotificationSupplierImplTest {
         builder.setGroupId(new GroupId(GROUP_ID));
         return builder.build();
     }
+
+    private static Group createUpdatedTestGroup() {
+        final GroupBuilder builder = new GroupBuilder();
+        builder.setGroupId(new GroupId(UPDATED_GROUP_ID));
+        return builder.build();
+    }
+
 }
 

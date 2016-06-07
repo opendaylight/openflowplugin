@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.notification.supplier;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * @param <O> - {@link DataObject} represent Data Tree Item from DataStore
  */
-public interface NotificationSupplierDefinition<O extends DataObject> extends AutoCloseable, DataChangeListener {
+public interface NotificationSupplierDefinition<O extends DataObject> extends AutoCloseable, DataTreeChangeListener<O> {
 
     /**
      * Method return wildCardPath for Listener registration and for identify
@@ -28,5 +28,6 @@ public interface NotificationSupplierDefinition<O extends DataObject> extends Au
      * @return {@link InstanceIdentifier}
      */
     InstanceIdentifier<O> getWildCardPath();
+
 }
 

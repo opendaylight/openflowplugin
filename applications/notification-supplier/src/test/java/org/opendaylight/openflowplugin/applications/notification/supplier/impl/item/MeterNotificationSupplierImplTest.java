@@ -18,17 +18,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -45,8 +51,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class MeterNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openfow:111";
     private static final Long METER_ID = 111L;
+    private static final Long UPDATED_METER_ID = 100L;
+
     private MeterNotificationSupplierImpl notifSupplierImpl;
     private NotificationProviderService notifProviderService;
     private DataBroker dataBroker;
@@ -59,19 +67,19 @@ public class MeterNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -85,9 +93,11 @@ public class MeterNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestMeterPath(), createTestMeter());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestMeterPath(),null,createTestMeter(),
+                DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(MeterAdded.class));
     }
 
@@ -113,9 +123,11 @@ public class MeterNotificationSupplierImplTest {
 
     @Test
     public void testUdateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestMeterPath(), createTestMeter());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestMeterPath(),createTestMeter(),createUpdatedTestMeter(),
+                DataObjectModification.ModificationType.SUBTREE_MODIFIED);
+        Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(MeterUpdated.class));
     }
 
@@ -140,9 +152,11 @@ public class MeterNotificationSupplierImplTest {
 
     @Test
     public void testDeleteChangeEvent() {
-        final Set<InstanceIdentifier<?>> removeData = new HashSet<>();
-        removeData.add(createTestMeterPath());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(null, null, removeData));
+        final TestData testData = new TestData(createTestMeterPath(),createTestMeter(),null,
+                DataObjectModification.ModificationType.DELETE);
+        Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(MeterRemoved.class));
     }
 
@@ -159,6 +173,12 @@ public class MeterNotificationSupplierImplTest {
     private static Meter createTestMeter() {
         final MeterBuilder builder = new MeterBuilder();
         builder.setMeterId(new MeterId(METER_ID));
+        return builder.build();
+    }
+
+    private static Meter createUpdatedTestMeter(){
+        final MeterBuilder builder = new MeterBuilder();
+        builder.setMeterId(new MeterId(UPDATED_METER_ID));
         return builder.build();
     }
 }
