@@ -21,6 +21,7 @@ import io.netty.util.TimerTask;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -87,15 +88,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelUp(final NodeId nodeId) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(nodeId, shuttingDownStatisticsPolling, conductor);
-        Verify.verify(contexts.putIfAbsent(nodeId, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", nodeId);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo.getNodeId(), shuttingDownStatisticsPolling, conductor);
+        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
         deviceContext.getDeviceState().setDeviceSynchronized(true);
-        deviceInitPhaseHandler.onDeviceContextLevelUp(nodeId);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
     }
 
     @VisibleForTesting
