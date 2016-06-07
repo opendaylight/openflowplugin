@@ -41,6 +41,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -96,16 +97,16 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @Override
-    public void onDeviceContextLevelUp(@CheckForNull final NodeId nodeId) throws Exception {
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
-        final RoleContext roleContext = new RoleContextImpl(nodeId, entityOwnershipService, makeEntity(nodeId), makeTxEntity(nodeId), conductor);
+    public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo) throws Exception {
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo.getNodeId(), entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
-        Verify.verify(contexts.putIfAbsent(nodeId, roleContext) == null, "Role context for master Node %s is still not closed.", nodeId);
+        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
         makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, true);
         /* First start to watch entity so we don't miss any notification, and then try to register in EOS */
         watchingEntities.put(roleContext.getEntity(), roleContext);
         notifyListenersRoleInitializationDone(roleContext.getNodeId(), roleContext.initialization());
-        deviceInitializationPhaseHandler.onDeviceContextLevelUp(nodeId);
+        deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo);
     }
 
     @Override

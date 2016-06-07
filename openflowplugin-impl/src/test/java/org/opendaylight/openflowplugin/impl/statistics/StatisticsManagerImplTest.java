@@ -40,6 +40,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -81,6 +82,7 @@ public class StatisticsManagerImplTest {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
+    public static final NodeId NODE_ID = new NodeId("ofp-unit-dummy-node-id");
 
     @Mock
     RequestContextStack mockedRequestContextStack;
@@ -124,6 +126,8 @@ public class StatisticsManagerImplTest {
     private GetFeaturesOutput featuresOutput;
     @Mock
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -143,7 +147,7 @@ public class StatisticsManagerImplTest {
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(mockedPrimConnectionContext.getNodeId()).thenReturn(new NodeId("ut-node:123"));
+        when(mockedPrimConnectionContext.getNodeId()).thenReturn(NODE_ID);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueue);
 
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
@@ -155,7 +159,8 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.getFeatures()).thenReturn(featuresOutput);
         when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
-        when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
+        when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
+        when(mockedDeviceState.getNodeId()).thenReturn(NODE_ID);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
@@ -197,8 +202,8 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
+        statisticsManager.onDeviceContextLevelUp(deviceInfo);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
@@ -206,7 +211,7 @@ public class StatisticsManagerImplTest {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
         final Map<NodeId, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
 
-        contextsMap.put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        contextsMap.put(deviceInfo.getNodeId(), statisticContext);
         Assert.assertEquals(1, contextsMap.size());
 
         statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
@@ -248,7 +253,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo.getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -284,7 +289,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo.getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -321,7 +326,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo.getNodeId(), statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
