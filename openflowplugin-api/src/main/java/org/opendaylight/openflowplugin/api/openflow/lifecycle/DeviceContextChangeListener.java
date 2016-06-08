@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * This API is for all listeners who wish to know about device context in cluster
@@ -17,16 +17,16 @@ public interface DeviceContextChangeListener {
 
     /**
      * Notification about start phase in device context, right after successful handshake
-     * @param nodeId
+     * @param deviceInfo
      * @param success or failure
      */
-    void deviceStartInitializationDone(final NodeId nodeId, final boolean success);
+    void deviceStartInitializationDone(final DeviceInfo deviceInfo, final boolean success);
 
     /**
      * Notification about start phase in device context, after all other contexts initialized properly
-     * @param nodeId
+     * @param deviceInfo
      * @param success
      */
-    void deviceInitializationDone(final NodeId nodeId, final boolean success);
+    void deviceInitializationDone(final DeviceInfo deviceInfo, final boolean success);
 
 }

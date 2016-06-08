@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -46,7 +47,7 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
     private DeviceManager deviceManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
-    private ConcurrentHashMap<NodeId, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private StatisticsManager statisticsManager;
 
     public LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -66,63 +67,63 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
         }
     }
 
-    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId){
-        LOG.debug("Listener {} for service change for node {} registered.", manager, nodeId);
-        serviceChangeListeners.put(nodeId, manager);
+    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo){
+        LOG.debug("Listener {} for service change for node {} registered.", manager, deviceInfo.getNodeId());
+        serviceChangeListeners.put(deviceInfo, manager);
     }
 
     @VisibleForTesting
-    void notifyServiceChangeListeners(final NodeId nodeId, final boolean success){
+    void notifyServiceChangeListeners(final DeviceInfo deviceInfo, final boolean success){
         if (serviceChangeListeners.size() == 0) {
             return;
         }
         LOG.debug("Notifying registered listeners for service change, no. of listeners {}", serviceChangeListeners.size());
-        for (final Map.Entry<NodeId, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
-            if (nodeIdServiceChangeListenerEntry.getKey().equals(nodeId)) {
-                LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), nodeId, success);
-                nodeIdServiceChangeListenerEntry.getValue().servicesChangeDone(nodeId, success);
-                serviceChangeListeners.remove(nodeId);
+        for (final Map.Entry<DeviceInfo, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
+            if (nodeIdServiceChangeListenerEntry.getKey().equals(deviceInfo)) {
+                LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), deviceInfo, success);
+                nodeIdServiceChangeListenerEntry.getValue().servicesChangeDone(deviceInfo, success);
+                serviceChangeListeners.remove(deviceInfo);
             }
         }
     }
 
     @Override
-    public void roleInitializationDone(final NodeId nodeId, final boolean success) {
+    public void roleInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in role context was NOT successful, closing connection.", nodeId);
-            closeConnection(nodeId);
+            LOG.warn("Initialization phase for node {} in role context was NOT successful, closing connection.", deviceInfo);
+            closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in role context was successful, continuing to next context.", nodeId);
+            LOG.info("initialization phase for node {} in role context was successful, continuing to next context.", deviceInfo);
         }
     }
 
-    public void closeConnection(final NodeId nodeId) {
-        LOG.debug("Close connection called for node {}", nodeId);
-        final DeviceContext deviceContext = getDeviceContext(nodeId);
+    public void closeConnection(final DeviceInfo deviceInfo) {
+        LOG.debug("Close connection called for node {}", deviceInfo);
+        final DeviceContext deviceContext = getDeviceContext(deviceInfo);
         if (null != deviceContext) {
             deviceContext.shutdownConnection();
         }
     }
 
     @Override
-    public void roleChangeOnDevice(final NodeId nodeId, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+    public void roleChangeOnDevice(final DeviceInfo deviceInfo, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
 
-        final DeviceContext deviceContext = getDeviceContext(nodeId);
+        final DeviceContext deviceContext = getDeviceContext(deviceInfo);
 
         if (null == deviceContext) {
             LOG.warn("Something went wrong, device context for nodeId: {} doesn't exists");
             return;
         }
         if (!success) {
-            LOG.warn("Role change to {} in role context for node {} was NOT successful, closing connection", newRole, nodeId);
-            closeConnection(nodeId);
+            LOG.warn("Role change to {} in role context for node {} was NOT successful, closing connection", newRole, deviceInfo);
+            closeConnection(deviceInfo);
         } else {
             if (initializationPhase) {
                 LOG.debug("Initialization phase skipping starting services.");
                 return;
             }
 
-            LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, nodeId);
+            LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, deviceInfo);
 
             if (OfpRole.BECOMEMASTER.equals(newRole)) {
                 statisticsManager.startScheduling(deviceContext.getPrimaryConnectionContext().getDeviceInfo());
@@ -134,14 +135,14 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
             Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(@Nullable final Void aVoid) {
-                    LOG.info("Starting/Stopping services for node {} was successful", nodeId);
-                    if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(nodeId, true);
+                    LOG.info("Starting/Stopping services for node {} was successful", deviceInfo);
+                    if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(deviceInfo, true);
                 }
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    LOG.warn("Starting/Stopping services for node {} was NOT successful, closing connection", nodeId);
-                    closeConnection(nodeId);
+                    LOG.warn("Starting/Stopping services for node {} was NOT successful, closing connection", deviceInfo);
+                    closeConnection(deviceInfo);
                 }
             });
         }
@@ -152,43 +153,45 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     }
 
     @Override
-    public DeviceContext getDeviceContext(final NodeId nodeId){
-         return deviceManager.getDeviceContextFromNodeId(nodeId);
+    public DeviceContext getDeviceContext(DeviceInfo deviceInfo){
+         return deviceManager.getDeviceContextFromNodeId(deviceInfo);
     }
 
-    public Short gainVersionSafely(final NodeId nodeId) {
-        return (null != getDeviceContext(nodeId)) ? getDeviceContext(nodeId).getPrimaryConnectionContext().getFeatures().getVersion() : null;
+    @Override
+    public Short gainVersionSafely(final DeviceInfo deviceInfo) {
+        return (null != getDeviceContext(deviceInfo)) ? getDeviceContext(deviceInfo).getPrimaryConnectionContext().getFeatures().getVersion() : null;
     }
 
     public Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit) {
         return hashedWheelTimer.newTimeout(task, delay, unit);
     }
 
-    public ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(final NodeId nodeId){
-        return (null != getDeviceContext(nodeId)) ? getDeviceContext(nodeId).getPrimaryConnectionContext().getConnectionState() : null;
-    }
-
-    public Long reserveXidForDeviceMessage(final NodeId nodeId){
-        return null != getDeviceContext(nodeId) ? getDeviceContext(nodeId).reserveXidForDeviceMessage() : null;
+    ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(final DeviceInfo deviceInfo){
+        return (null != getDeviceContext(deviceInfo)) ? getDeviceContext(deviceInfo).getPrimaryConnectionContext().getConnectionState() : null;
     }
 
     @Override
-    public void deviceStartInitializationDone(final NodeId nodeId, final boolean success) {
+    public Long reserveXidForDeviceMessage(final DeviceInfo deviceInfo){
+        return null != getDeviceContext(deviceInfo) ? getDeviceContext(deviceInfo).reserveXidForDeviceMessage() : null;
+    }
+
+    @Override
+    public void deviceStartInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", nodeId);
-            closeConnection(nodeId);
+            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo);
+            closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in device context was successful. Continuing to next context.", nodeId);
+            LOG.info("initialization phase for node {} in device context was successful. Continuing to next context.", deviceInfo);
         }
     }
 
     @Override
-    public void deviceInitializationDone(final NodeId nodeId, final boolean success) {
+    public void deviceInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", nodeId);
-            closeConnection(nodeId);
+            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo);
+            closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", nodeId);
+            LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", deviceInfo);
         }
     }
 

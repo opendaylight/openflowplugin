@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -53,6 +54,9 @@ public class FlowRemovedTranslatorTest {
     private DeviceState deviceState;
 
     @Mock
+    private DeviceInfo deviceInfo;
+
+    @Mock
     private GetFeaturesOutput features;
 
     @Mock
@@ -69,15 +73,14 @@ public class FlowRemovedTranslatorTest {
         translatorV10 = new FlowRemovedV10Translator();
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeId);
-        when(deviceState.getFeatures()).thenReturn(features);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeId);
         when(features.getDatapathId()).thenReturn(BigInteger.TEN);
     }
 
     @Test
     public void testTranslate() throws Exception {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage = buildMessage(false);
-        final FlowRemoved flowRemoved = translator.translate(flowRemovedMessage, deviceState, null);
+        final FlowRemoved flowRemoved = translator.translate(flowRemovedMessage, deviceInfo, null);
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
         assertEquals(flowRemovedMessage.getPriority(), flowRemoved.getPriority());
@@ -87,7 +90,7 @@ public class FlowRemovedTranslatorTest {
     @Test
     public void testTranslateV10() throws Exception {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage = buildMessage(true);
-        final FlowRemoved flowRemoved = translatorV10.translate(flowRemovedMessage, deviceState, null);
+        final FlowRemoved flowRemoved = translatorV10.translate(flowRemovedMessage, deviceInfo, null);
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
         assertEquals(flowRemovedMessage.getPriority(), flowRemoved.getPriority());

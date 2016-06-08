@@ -113,7 +113,7 @@ public class RoleContextImplTest {
     @Test
     public void testCreateRequestContext() throws Exception {
         roleContext.createRequestContext();
-        Mockito.verify(conductor).reserveXidForDeviceMessage(nodeId);
+        Mockito.verify(conductor).reserveXidForDeviceMessage(deviceInfo);
     }
 
     @Test(expected = NullPointerException.class)
