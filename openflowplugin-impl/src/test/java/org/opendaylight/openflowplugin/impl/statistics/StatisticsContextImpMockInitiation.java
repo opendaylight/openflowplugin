@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -49,6 +50,7 @@ class StatisticsContextImpMockInitiation {
     StatisticsGatheringService mockedStatisticsGatheringService;
     StatisticsGatheringOnTheFlyService mockedStatisticsOnFlyGatheringService;
     ConnectionContext mockedConnectionContext;
+    DeviceInfo mockedDeviceInfo;
 
     static final KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
@@ -62,6 +64,7 @@ class StatisticsContextImpMockInitiation {
         mockedStatisticsOnFlyGatheringService = mock(StatisticsGatheringOnTheFlyService.class);
         mockedConnectionContext = mock(ConnectionContext.class);
         mockedDeviceState = mock(DeviceState.class);
+        mockedDeviceInfo = mock(DeviceInfo.class);
 
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         final MessageSpy mockedMessageSpy = mock(MessageSpy.class);

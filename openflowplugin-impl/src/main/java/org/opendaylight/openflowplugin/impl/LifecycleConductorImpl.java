@@ -125,9 +125,9 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
             LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, nodeId);
 
             if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                statisticsManager.startScheduling(nodeId);
+                statisticsManager.startScheduling(deviceContext.getPrimaryConnectionContext().getDeviceInfo());
             } else {
-                statisticsManager.stopScheduling(nodeId);
+                statisticsManager.stopScheduling(deviceContext.getPrimaryConnectionContext().getDeviceInfo());
             }
 
             final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(null, newRole);
