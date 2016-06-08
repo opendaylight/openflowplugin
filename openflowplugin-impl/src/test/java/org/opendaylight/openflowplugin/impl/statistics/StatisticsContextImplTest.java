@@ -32,7 +32,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -52,7 +51,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Before
     public void setUp() throws Exception {
         when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
-        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 
@@ -100,14 +99,13 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testGatherDynamicData_all() throws Exception {
         Mockito.reset(mockedDeviceState);
-        when(mockedDeviceState.getFeatures()).thenReturn(mock(GetFeaturesOutput.class));
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isGroupAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         initStatisticsContext();
 
         when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))

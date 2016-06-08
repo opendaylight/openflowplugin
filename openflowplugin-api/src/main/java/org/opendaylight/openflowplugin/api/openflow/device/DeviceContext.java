@@ -103,6 +103,8 @@ public interface DeviceContext extends AutoCloseable,
      */
     DeviceState getDeviceState();
 
+    DeviceInfo getDeviceInfo();
+
     /**
      * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
      * TransactionChainManager represents possibility to write or delete Node subtree data

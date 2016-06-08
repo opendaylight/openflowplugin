@@ -22,6 +22,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -64,6 +65,8 @@ public abstract class AbstractStatsServiceTest {
     protected TranslatorLibrary translatorLibrary;
     @Mock
     protected DeviceState deviceState;
+    @Mock
+    protected DeviceInfo deviceInfo;
 
 
     public static final NodeId NODE_ID = new NodeId("unit-test-node:123");
@@ -91,9 +94,10 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class))).thenReturn(multiMsgCollector);
         Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceState.getNodeId()).thenReturn(NODE_ID);
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
+        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);

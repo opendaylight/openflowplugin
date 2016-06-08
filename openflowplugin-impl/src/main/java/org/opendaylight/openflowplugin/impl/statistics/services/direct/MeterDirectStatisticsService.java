@@ -87,7 +87,7 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
     @Override
     protected void storeStatistics(GetMeterStatisticsOutput output) throws Exception {
         final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final MeterStats meterStatistics : output.getMeterStats()) {
             final InstanceIdentifier<MeterStatistics> meterPath = nodePath

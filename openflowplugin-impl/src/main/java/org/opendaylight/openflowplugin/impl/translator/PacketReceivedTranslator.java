@@ -10,7 +10,8 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
@@ -33,10 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
  */
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
     @Override
-    public PacketReceived translate(final PacketInMessage input, final DeviceState deviceState, final Object connectionDistinguisher) {
+    public PacketReceived translate(final PacketInMessage input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
 
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
-        BigInteger datapathId = deviceState.getFeatures().getDatapathId();
+        BigInteger datapathId = deviceInfo.getDatapathId();
 
         // TODO: connection cookie from connection distinguisher
         // packetReceivedBuilder.setConnectionCookie(new ConnectionCookie(input.getCookie().longValue()));
@@ -49,7 +50,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         }
 
         // Try to create the NodeConnectorRef
-        BigInteger dataPathId = deviceState.getFeatures().getDatapathId();
+        BigInteger dataPathId = deviceInfo.getDatapathId();
         NodeConnectorRef nodeConnectorRef = NodeConnectorRefToPortTranslator.toNodeConnectorRef(input, dataPathId);
 
         // If we was able to create NodeConnectorRef, use it

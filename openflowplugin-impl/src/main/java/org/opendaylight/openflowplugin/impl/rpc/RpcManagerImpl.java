@@ -52,14 +52,14 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
         final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 deviceContext,
                 deviceContext.getMessageSpy(),
                 maxRequestsQuota,
-                deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                deviceInfo.getNodeInstanceIdentifier());
 
         deviceContext.setRpcContext(rpcContext);
 

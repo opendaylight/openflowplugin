@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * This API is defined for listening when services (Statistics and RPCs) are fully stopped
@@ -18,9 +18,9 @@ public interface ServiceChangeListener {
 
     /**
      * Notification when services (rpc, statistics) are started or stopped working
-     * @param nodeId
+     * @param deviceInfo
      * @param success
      */
-    void servicesChangeDone(NodeId nodeId, boolean success);
+    void servicesChangeDone(DeviceInfo deviceInfo, boolean success);
 
 }

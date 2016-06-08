@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -34,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+
+import java.math.BigInteger;
 
 
 class StatisticsContextImpMockInitiation {
@@ -80,10 +81,11 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isMetersAvailable()).thenReturn(isMeter);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
@@ -92,9 +94,9 @@ class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockedDeviceManager.getDeviceContextFromNodeId(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         mockConductor.setSafelyDeviceManager(mockedDeviceManager);
-        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
 
     }
 }

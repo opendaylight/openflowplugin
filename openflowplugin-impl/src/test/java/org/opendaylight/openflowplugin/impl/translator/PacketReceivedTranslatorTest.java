@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -63,6 +64,8 @@ public class PacketReceivedTranslatorTest {
     @Mock
     DeviceContext deviceContext;
     @Mock
+    DeviceInfo deviceInfo;
+    @Mock
     List<PhyPort> phyPorts;
     @Mock
     PhyPort phyPort;
@@ -84,8 +87,8 @@ public class PacketReceivedTranslatorTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(featuresReply.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(getFeaturesOutput.getPhyPort()).thenReturn(phyPorts);
         Mockito.when(phyPort.getPortNo()).thenReturn(PORT_NO_DS);
@@ -98,9 +101,9 @@ public class PacketReceivedTranslatorTest {
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
         final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator();
         final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
-        final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceState, null);
+        final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceInfo, null);
 
         Assert.assertArrayEquals(packetInMessage.getData(), packetReceived.getPayload());
         Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",

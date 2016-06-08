@@ -156,12 +156,11 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.getFeatures()).thenReturn(featuresOutput);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
-        when(mockedDeviceState.getNodeId()).thenReturn(NODE_ID);
 
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
@@ -183,8 +182,8 @@ public class StatisticsManagerImplTest {
 
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
-        when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
-        when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(mockedDeviceContext);
+        when(conductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
     }
 
     @Test
@@ -375,7 +374,7 @@ public class StatisticsManagerImplTest {
         final TimeCounter mockTimerCounter = Mockito.mock(TimeCounter.class);
 
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
-        verify(mockedDeviceContext).getDeviceState();
+        verify(mockedDeviceContext).getDeviceInfo();
 
         when(mockedDeviceContext.getDeviceState().isValid()).thenReturn(true);
         statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);

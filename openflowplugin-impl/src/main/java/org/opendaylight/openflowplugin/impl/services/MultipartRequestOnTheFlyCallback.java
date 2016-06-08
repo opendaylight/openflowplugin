@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -36,29 +37,32 @@ import org.slf4j.LoggerFactory;
 final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<List<MultipartReply>> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartRequestOnTheFlyCallback.class);
     private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
-    private final DeviceState deviceState;
+    private final DeviceInfo deviceInfo;
     private final DeviceFlowRegistry registry;
     private boolean virgin = true;
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
+    private final DeviceState deviceState;
 
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
                                             final Class<?> requestType,
                                             final MessageSpy messageSpy,
                                             final EventIdentifier eventIdentifier,
-                                            final DeviceState deviceState,
+                                            final DeviceInfo deviceInfo,
                                             final DeviceFlowRegistry registry,
-                                            final TxFacade txFacade) {
+                                            final TxFacade txFacade,
+                                            final DeviceState deviceState) {
         super(context, requestType, messageSpy, eventIdentifier);
 
-        this.deviceState = deviceState;
+        this.deviceInfo = deviceInfo;
         this.registry = registry;
         this.txFacade = txFacade;
+        this.deviceState = deviceState;
 
         //TODO: this is focused on flow stats only - need more general approach if used for more than flow stats
-        doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceState.getNodeId().toString());
+        doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceInfo.getNodeId().toString());
     }
 
     public EventIdentifier getDoneEventIdentifier() {
@@ -90,13 +94,13 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
             final MultipartReply singleReply = multipartReply;
             final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(
-                    deviceState.getFeatures().getDatapathId(), deviceState.getFeatures().getVersion(), singleReply);
+                    deviceInfo.getDatapathId(), deviceInfo.getVersion(), singleReply);
             final Iterable<? extends DataObject> allMultipartData = multipartDataList;
 
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
             ListenableFuture<Void> future;
             if (virgin) {
-                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceState, registry, txFacade);
+                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade, deviceState);
                 virgin = false;
             } else {
                 future = Futures.immediateFuture(null);
@@ -107,7 +111,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
                 @Override
                 public Void apply(final Void input) {
                     StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,
-                            deviceState, registry, txFacade);
+                            deviceInfo, registry, txFacade);
 
                     if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
                         endCollecting();

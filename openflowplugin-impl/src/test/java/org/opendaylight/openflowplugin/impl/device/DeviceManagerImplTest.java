@@ -190,7 +190,6 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
         verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
@@ -204,7 +203,7 @@ public class DeviceManagerImplTest {
                 .setPortNo(41L);
         when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
         final MessageTranslator<Object, Object> mockedTranslator = mock(MessageTranslator.class);
-        when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceState>any(), Matchers.any()))
+        when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceInfo>any(), Matchers.any()))
                 .thenReturn(null);
         when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
 
@@ -215,7 +214,6 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
         verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
