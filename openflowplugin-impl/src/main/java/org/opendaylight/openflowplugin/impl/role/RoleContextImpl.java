@@ -16,11 +16,11 @@ import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlready
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ class RoleContextImpl implements RoleContext {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
     private static final int TIMEOUT = 12;
 
-    private final NodeId nodeId;
+    private final DeviceInfo deviceInfo;
     private final EntityOwnershipService entityOwnershipService;
     private volatile EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration = null;
     private volatile EntityOwnershipCandidateRegistration txEntityOwnershipCandidateRegistration = null;
@@ -48,23 +48,23 @@ class RoleContextImpl implements RoleContext {
 
     private final LifecycleConductor conductor;
 
-    public RoleContextImpl(final NodeId nodeId, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity, final LifecycleConductor lifecycleConductor) {
+    RoleContextImpl(final DeviceInfo deviceInfo, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity, final LifecycleConductor lifecycleConductor) {
         this.entityOwnershipService = entityOwnershipService;
         this.entity = entity;
         this.txEntity = txEntity;
-        this.nodeId = nodeId;
+        this.deviceInfo = deviceInfo;
         this.conductor = lifecycleConductor;
     }
 
     @Override
     public boolean initialization() {
-        LOG.info("Initialization main candidate for node {}", nodeId);
+        LOG.info("Initialization main candidate for node {}", deviceInfo.getNodeId());
         return registerCandidate(this.entity);
     }
 
     @Override
     public void unregisterAllCandidates() {
-        LOG.info("Role context closed, unregistering all candidates for ownership for node {}", nodeId);
+        LOG.info("Role context closed, unregistering all candidates for ownership for node {}", deviceInfo.getNodeId());
         if (isMainCandidateRegistered()) {
             unregisterCandidate(this.entity);
         }
@@ -76,7 +76,7 @@ class RoleContextImpl implements RoleContext {
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(nodeId)) {
+        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(deviceInfo.getNodeId())) {
             @Override
             public void close() {
             }
@@ -105,8 +105,8 @@ class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public NodeId getNodeId() {
-        return nodeId;
+    public DeviceInfo getDeviceInfo() {
+        return deviceInfo;
     }
 
     @Override
