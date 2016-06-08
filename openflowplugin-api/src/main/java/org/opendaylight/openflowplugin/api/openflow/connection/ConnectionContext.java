@@ -141,5 +141,7 @@ public interface ConnectionContext {
      * Create and return basic device info
      * @return
      */
-    DeviceInfo gainDeviceInfo();
+    DeviceInfo getDeviceInfo();
+
+    void createDeviceInfo();
 }

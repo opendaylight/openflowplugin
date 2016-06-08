@@ -41,9 +41,4 @@ public interface DeviceInfo {
      */
     BigInteger getDatapathId();
 
-    /**
-     * @return IP adress
-     */
-    IpAddress getIpAddress();
-
 }
