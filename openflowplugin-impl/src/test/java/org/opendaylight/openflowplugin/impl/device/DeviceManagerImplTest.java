@@ -163,7 +163,6 @@ public class DeviceManagerImplTest {
         final DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
         final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(deviceInfo.getNodeId()).thenReturn(mockedNodeId);
 
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
