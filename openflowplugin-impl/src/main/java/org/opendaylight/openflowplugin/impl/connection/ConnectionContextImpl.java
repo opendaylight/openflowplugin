@@ -51,6 +51,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
+    private DeviceInfo deviceInfo;
 
     /**
      * @param connectionAdapter
@@ -227,13 +228,17 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public DeviceInfo gainDeviceInfo() {
-        return new DeviceInfoImpl(
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
+    }
+
+    @Override
+    public void createDeviceInfo() {
+        this.deviceInfo = new DeviceInfoImpl(
                 nodeId,
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
                 featuresReply.getVersion(),
-                featuresReply.getDatapathId(),
-                IetfInetUtil.INSTANCE.ipAddressFor(connectionAdapter.getRemoteAddress().getAddress()));
+                featuresReply.getDatapathId());
     }
 
     @Override
@@ -248,23 +253,16 @@ public class ConnectionContextImpl implements ConnectionContext {
         final private KeyedInstanceIdentifier<Node, NodeKey> nodeII;
         final private Short version;
         final private BigInteger datapathId;
-        final private IpAddress ipAddress;
-        private boolean valid;
-        private boolean sync;
 
         DeviceInfoImpl(
                 final NodeId nodeId,
                 final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
                 final Short version,
-                final BigInteger datapathId,
-                final IpAddress ipAddress) {
+                final BigInteger datapathId) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
             this.version = version;
             this.datapathId = datapathId;
-            this.ipAddress = ipAddress;
-            this.valid = false;
-            this.sync = false;
         }
 
         @Override
@@ -288,11 +286,6 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public IpAddress getIpAddress() {
-            return null;
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -302,8 +295,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             if (!nodeId.equals(that.nodeId)) return false;
             if (!nodeII.equals(that.nodeII)) return false;
             if (!version.equals(that.version)) return false;
-            if (!datapathId.equals(that.datapathId)) return false;
-            return ipAddress.equals(that.ipAddress);
+            return datapathId.equals(that.datapathId);
 
         }
 
@@ -313,7 +305,6 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + nodeII.hashCode();
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
-            result = 31 * result + ipAddress.hashCode();
             return result;
         }
     }
