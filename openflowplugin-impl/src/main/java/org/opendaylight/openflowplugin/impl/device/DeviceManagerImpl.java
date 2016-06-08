@@ -179,7 +179,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceState.setValid(true);
 
-        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.gainDeviceInfo());
+        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo());
 
         return true;
     }
