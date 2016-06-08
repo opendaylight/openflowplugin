@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -39,12 +40,11 @@ import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerIm
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatisticsContextImpl implements StatisticsContext {
+class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
@@ -63,12 +63,10 @@ public class StatisticsContextImpl implements StatisticsContext {
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
 
-    private final LifecycleConductor conductor;
     private volatile boolean schedulingEnabled;
 
-    public StatisticsContextImpl(@CheckForNull final NodeId nodeId, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
-        this.conductor = lifecycleConductor;
-        this.deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(nodeId));
+    StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
+        this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo.getNodeId()));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
         emptyFuture = Futures.immediateFuture(false);
