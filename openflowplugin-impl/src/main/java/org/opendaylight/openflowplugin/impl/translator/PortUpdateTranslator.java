@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import java.util.Collections;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -24,17 +24,17 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
 
     @Override
     public FlowCapableNodeConnector translate(final PortGrouping input,
-                                              final DeviceState deviceState, final Object connectionDistinguisher) {
+                                              final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
         final FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         //OF1.0
-        if (deviceState.getVersion() == OFConstants.OFP_VERSION_1_0) {
+        if (deviceInfo.getVersion() == OFConstants.OFP_VERSION_1_0) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeaturesV10()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfigV10()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeaturesV10()));
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeaturesV10()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getStateV10()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeaturesV10()));
-        } else if (deviceState.getVersion() == OFConstants.OFP_VERSION_1_3) {
+        } else if (deviceInfo.getVersion() == OFConstants.OFP_VERSION_1_3) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeatures()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfig()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeatures()));

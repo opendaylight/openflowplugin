@@ -15,24 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
+ * Holder of device's structure
  */
 public interface DeviceState {
-
-    /**
-     * @return id of encapsulated node
-     */
-    NodeId getNodeId();
-
-    /**
-     * @return {@link Node} instance identifier
-     */
-    KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier();
-
-    /**
-     * @return the features of corresponding switch
-     */
-    GetFeaturesOutput getFeatures();
 
     /**
      * @return true if this session is valid
@@ -43,13 +28,6 @@ public interface DeviceState {
      * @param valid the valid to set
      */
     void setValid(boolean valid);
-
-    /**
-     * Return node current OF protocol version
-     *
-     * @return
-     */
-    short getVersion();
 
     /**
      * Return true if we have relevant meter information

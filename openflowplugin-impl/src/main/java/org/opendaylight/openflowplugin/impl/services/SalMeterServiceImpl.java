@@ -149,7 +149,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> meterPath
                     = createMeterPath(meterId,
-                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(meterPath);
         }
     }
@@ -158,7 +158,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> groupPath
                     = createMeterPath(meterId,
-                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new MeterBuilder(data).build());
         }
     }

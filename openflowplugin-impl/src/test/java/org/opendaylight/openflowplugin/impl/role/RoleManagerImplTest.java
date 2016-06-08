@@ -140,13 +140,13 @@ public class RoleManagerImplTest {
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
-        Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo2.getNodeId()).thenReturn(nodeId2);
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         roleManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
-        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
         roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
@@ -262,13 +262,13 @@ public class RoleManagerImplTest {
     public void testAddListener() throws Exception {
         roleManager.addRoleChangeListener((new RoleChangeListener() {
             @Override
-            public void roleInitializationDone(final NodeId nodeId, final boolean success) {
-                Assert.assertTrue(nodeId.equals(nodeId));
+            public void roleInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
+                Assert.assertTrue(deviceInfo.equals(deviceInfo));
                 Assert.assertTrue(success);
             }
 
             @Override
-            public void roleChangeOnDevice(final NodeId nodeId_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+            public void roleChangeOnDevice(final DeviceInfo nodeId_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
                 Assert.assertTrue(nodeId.equals(nodeId_));
                 Assert.assertTrue(success);
                 Assert.assertFalse(initializationPhase);

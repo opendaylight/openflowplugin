@@ -18,10 +18,10 @@ public interface MessageTranslator<I, O> {
     /**
      * Translates from input to output
      * @param input
-     * @param deviceState
+     * @param deviceInfo
      * @param connectionDistinguisher
      * @return message of output type
      */
-    O translate(I input, DeviceState deviceState, Object connectionDistinguisher);
+    O translate(I input, DeviceInfo deviceInfo, Object connectionDistinguisher);
 
 }

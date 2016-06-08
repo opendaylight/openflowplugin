@@ -116,7 +116,7 @@ public class QueueDirectStatisticsService extends AbstractDirectStatisticsServic
 
     @Override
     protected void storeStatistics(GetQueueStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceState().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceInfo().getNodeInstanceIdentifier();
 
         for (final QueueIdAndStatisticsMap queueStatistics : output.getQueueIdAndStatisticsMap()) {
             if (queueStatistics.getQueueId() != null) {

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -92,9 +91,9 @@ class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockedDeviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(mockedDeviceContext);
         mockConductor.setSafelyDeviceManager(mockedDeviceManager);
-        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
 
     }
 }

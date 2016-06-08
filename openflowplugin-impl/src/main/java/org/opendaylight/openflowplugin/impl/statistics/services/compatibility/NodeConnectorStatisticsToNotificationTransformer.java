@@ -47,7 +47,7 @@ public class NodeConnectorStatisticsToNotificationTransformer {
                                                                         final TransactionId emulatedTxId) {
 
         NodeConnectorStatisticsUpdateBuilder notification = new NodeConnectorStatisticsUpdateBuilder();
-        notification.setId(deviceContext.getDeviceState().getNodeId());
+        notification.setId(deviceContext.getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
@@ -71,7 +71,7 @@ public class NodeConnectorStatisticsToNotificationTransformer {
                 new NodeConnectorStatisticsAndPortNumberMapBuilder();
         statsBuilder.setNodeConnectorId(
                 InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                        deviceContext.getDeviceState().getFeatures().getDatapathId(),
+                        deviceContext.getDeviceInfo().getDatapathId(),
                         portStats.getPortNo(), ofVersion));
 
         BytesBuilder bytesBuilder = new BytesBuilder();

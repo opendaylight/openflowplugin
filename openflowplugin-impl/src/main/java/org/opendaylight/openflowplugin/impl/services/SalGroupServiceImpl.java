@@ -144,7 +144,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(groupPath);
         }
     }
@@ -153,7 +153,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new GroupBuilder(data).build());
         }
     }

@@ -97,7 +97,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     }
                     if (itemLifecycleListener != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                                deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
                         final FlowBuilder flowBuilder = new FlowBuilder(input).setId(flowDescriptor.getFlowId());
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
@@ -136,7 +136,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                                 deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
                         if (flowDescriptor != null) {
                             KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                                    deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
                             itemLifecycleListener.onRemoved(flowPath);
                         }
                     }
@@ -203,7 +203,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
                     if (flowDescriptor != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                                deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
                         itemLifecycleListener.onRemoved(flowPath);
                     }
                 }
@@ -215,7 +215,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
                     if (itemLifecycleListener != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                                deviceContext.getDeviceState().getNodeInstanceIdentifier());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
                         final FlowBuilder flowBuilder = new FlowBuilder(input.getUpdatedFlow()).setId(flowDescriptor.getFlowId());
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }

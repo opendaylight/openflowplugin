@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class AggregatedFlowStatisticsTranslator implements MessageTranslator<MultipartReply, AggregatedFlowStatistics> {
     @Override
-    public AggregatedFlowStatistics translate(final MultipartReply input, final DeviceState deviceState, final Object connectionDistinguisher) {
+    public AggregatedFlowStatistics translate(final MultipartReply input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
         AggregatedFlowStatisticsBuilder aggregatedFlowStatisticsBuilder = new AggregatedFlowStatisticsBuilder();
 
         MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase)input.getMultipartReplyBody();
