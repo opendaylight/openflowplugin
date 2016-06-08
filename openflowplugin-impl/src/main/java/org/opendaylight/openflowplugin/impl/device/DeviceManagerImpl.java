@@ -70,7 +70,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private NotificationPublishService notificationPublishService;
 
-    private final ConcurrentMap<NodeId, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
 
     private final long barrierIntervalNanos;
     private final int barrierCountLimit;
@@ -117,7 +117,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo) throws Exception {
         // final phase - we have to add new Device to MD-SAL DataStore
         LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
-        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo.getNodeId()));
+        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
     }
@@ -165,7 +165,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 translatorLibrary,
                 switchFeaturesMandatory);
 
-        Verify.verify(deviceContexts.putIfAbsent(deviceInfo.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
+        Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
@@ -313,7 +313,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @VisibleForTesting
-    void addDeviceContextToMap(final NodeId nodeId, final DeviceContext deviceContext){
-        deviceContexts.put(nodeId, deviceContext);
+    void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
+        deviceContexts.put(deviceInfo, deviceContext);
     }
 }
