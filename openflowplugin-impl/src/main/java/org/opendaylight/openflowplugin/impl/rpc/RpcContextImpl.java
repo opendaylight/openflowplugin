@@ -29,7 +29,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RpcContextImpl implements RpcContext {
+class RpcContextImpl implements RpcContext {
     private static final Logger LOG = LoggerFactory.getLogger(RpcContextImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
     private final MessageSpy messageSpy;
@@ -40,7 +40,7 @@ public class RpcContextImpl implements RpcContext {
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
-    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry,
+    RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry,
                           final XidSequencer xidSequencer,
                           final MessageSpy messageSpy,
                           final int maxRequests,
@@ -132,7 +132,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @VisibleForTesting
-    public boolean isEmptyRpcRegistrations() {
+    boolean isEmptyRpcRegistrations() {
         return this.rpcRegistrations.isEmpty();
     }
 
