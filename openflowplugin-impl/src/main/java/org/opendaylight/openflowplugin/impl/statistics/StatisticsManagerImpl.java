@@ -59,7 +59,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
-    private final ConcurrentMap<NodeId, StatisticsContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private static final long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
@@ -93,7 +93,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo.getNodeId(), shuttingDownStatisticsPolling, conductor);
-        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
+        Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
         deviceContext.getDeviceState().setDeviceSynchronized(true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
@@ -150,14 +150,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
         final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
-        final TimerTask timerTask = new TimerTask() {
-
-            @Override
-            public void run(final Timeout timeout) throws Exception {
-                if (!deviceStatisticsCollectionFuture.isDone()) {
-                    LOG.info("Statistics collection for node {} still in progress even after {} secs", nodeId, STATS_TIMEOUT_SEC);
-                    deviceStatisticsCollectionFuture.cancel(true);
-                }
+        final TimerTask timerTask = timeout -> {
+            if (!deviceStatisticsCollectionFuture.isDone()) {
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", nodeId, STATS_TIMEOUT_SEC);
+                deviceStatisticsCollectionFuture.cancel(true);
             }
         };
 
@@ -169,12 +165,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                      final TimeCounter timeCounter) {
         LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceContext.getDeviceState().getNodeId());
         if (!shuttingDownStatisticsPolling) {
-            final Timeout pollTimeout = conductor.newTimeout(new TimerTask() {
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    pollStatistics(deviceContext, statisticsContext, timeCounter);
-                }
-            }, currentTimerDelay, TimeUnit.MILLISECONDS);
+            final Timeout pollTimeout = conductor.newTimeout(timeout -> pollStatistics(deviceContext, statisticsContext, timeCounter), currentTimerDelay, TimeUnit.MILLISECONDS);
             statisticsContext.setPollTimeout(pollTimeout);
         }
     }
@@ -203,7 +194,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        final StatisticsContext statisticsContext = contexts.remove(deviceInfo.getNodeId());
+        final StatisticsContext statisticsContext = contexts.remove(deviceInfo);
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for device: {}", deviceInfo.getNodeId());
             statisticsContext.close();
