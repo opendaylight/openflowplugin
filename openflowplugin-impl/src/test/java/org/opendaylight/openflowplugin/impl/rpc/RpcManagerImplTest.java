@@ -103,28 +103,26 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
-        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         rpcManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
-        Mockito.when(deviceState.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
-        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
     }
 
     @Test
     public void onDeviceContextLevelUp() throws Exception {
         rpcManager.onDeviceContextLevelUp(deviceInfo);
-        verify(conductor).getDeviceContext(Mockito.<NodeId>any());
+        verify(conductor).getDeviceContext(deviceInfo);
     }
 
     @Test

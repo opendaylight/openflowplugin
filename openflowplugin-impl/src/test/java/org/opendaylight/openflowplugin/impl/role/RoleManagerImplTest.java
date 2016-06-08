@@ -115,23 +115,22 @@ public class RoleManagerImplTest {
     private final NodeId nodeId2 = NodeId.getDefaultInstance("openflow:2");
 
 
-    private final EntityOwnershipChange masterEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), false, true, true);
-    private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), false, true, true);
-    private final EntityOwnershipChange slaveEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true);
-    private final EntityOwnershipChange slaveTxEntityLast = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), true, false, false);
-    private final EntityOwnershipChange masterEntityNotOwner = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true);
+    private final EntityOwnershipChange masterEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), false, true, true, false);
+    private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), false, true, true, false);
+    private final EntityOwnershipChange slaveEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true, false);
+    private final EntityOwnershipChange slaveTxEntityLast = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), true, false, false, false);
+    private final EntityOwnershipChange masterEntityNotOwner = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), true, false, true, false);
 
     private InOrder inOrder;
 
     @Before
     public void setUp() throws Exception {
         CheckedFuture<Void, TransactionCommitFailedException> future = Futures.immediateCheckedFuture(null);
-        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
         Mockito.when(entityOwnershipService.registerListener(Mockito.anyString(), Mockito.any(EntityOwnershipListener.class))).thenReturn(entityOwnershipListenerRegistration);
         Mockito.when(entityOwnershipService.registerCandidate(Mockito.any(Entity.class))).thenReturn(entityOwnershipCandidateRegistration);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
@@ -141,13 +140,14 @@ public class RoleManagerImplTest {
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
-        Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo2.getNodeId()).thenReturn(nodeId2);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         roleManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
-        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
         roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
@@ -248,7 +248,7 @@ public class RoleManagerImplTest {
         Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(false);
         roleManagerSpy.changeOwnershipForTxEntity(slaveTxEntityLast, roleContextSpy);
         verify(roleContextSpy).close();
-        verify(conductor).closeConnection(nodeId);
+        verify(conductor).closeConnection(deviceInfo);
     }
 
     @Test
@@ -256,48 +256,48 @@ public class RoleManagerImplTest {
         Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(true);
         roleManagerSpy.changeOwnershipForTxEntity(masterEntityNotOwner, roleContextSpy);
         verify(roleContextSpy).close();
-        verify(conductor).closeConnection(nodeId);
+        verify(conductor).closeConnection(deviceInfo);
     }
 
     @Test
     public void testAddListener() throws Exception {
         roleManager.addRoleChangeListener((new RoleChangeListener() {
             @Override
-            public void roleInitializationDone(final NodeId nodeId, final boolean success) {
-                Assert.assertTrue(nodeId.equals(nodeId));
+            public void roleInitializationDone(final DeviceInfo deviceInfo_, final boolean success) {
+                Assert.assertTrue(deviceInfo.equals(deviceInfo_));
                 Assert.assertTrue(success);
             }
 
             @Override
-            public void roleChangeOnDevice(final NodeId nodeId_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
-                Assert.assertTrue(nodeId.equals(nodeId_));
+            public void roleChangeOnDevice(final DeviceInfo deviceInfo_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+                Assert.assertTrue(deviceInfo.equals(deviceInfo_));
                 Assert.assertTrue(success);
                 Assert.assertFalse(initializationPhase);
                 Assert.assertTrue(newRole.equals(OfpRole.BECOMEMASTER));
             }
         }));
-        roleManager.notifyListenersRoleInitializationDone(nodeId, true);
-        roleManager.notifyListenersRoleChangeOnDevice(nodeId, true, OfpRole.BECOMEMASTER, false);
+        roleManager.notifyListenersRoleInitializationDone(deviceInfo, true);
+        roleManager.notifyListenersRoleChangeOnDevice(deviceInfo, true, OfpRole.BECOMEMASTER, false);
     }
 
     @Test
     public void testMakeDeviceRoleChange() throws Exception{
         roleManagerSpy.makeDeviceRoleChange(OfpRole.BECOMEMASTER, roleContextSpy, true);
         verify(roleManagerSpy, atLeastOnce()).sendRoleChangeToDevice(Mockito.<OfpRole>any(), Mockito.<RoleContext>any());
-        verify(roleManagerSpy, atLeastOnce()).notifyListenersRoleChangeOnDevice(Mockito.<NodeId>any(), eq(true), Mockito.<OfpRole>any(), eq(true));
+        verify(roleManagerSpy, atLeastOnce()).notifyListenersRoleChangeOnDevice(Mockito.<DeviceInfo>any(), eq(true), Mockito.<OfpRole>any(), eq(true));
     }
 
     @Test
     public void testServicesChangeDone() throws Exception {
         roleManagerSpy.setRoleContext(nodeId2, roleContextSpy);
-        roleManagerSpy.servicesChangeDone(nodeId2, true);
+        roleManagerSpy.servicesChangeDone(deviceInfo2, true);
         verify(roleContextSpy).unregisterCandidate(Mockito.<Entity>any());
     }
 
     @Test
     public void testServicesChangeDoneContextIsNull() throws Exception {
         roleManagerSpy.setRoleContext(nodeId, roleContextSpy);
-        roleManagerSpy.servicesChangeDone(nodeId2, true);
+        roleManagerSpy.servicesChangeDone(deviceInfo2, true);
         verify(roleContextSpy, never()).unregisterCandidate(Mockito.<Entity>any());
     }
 }

@@ -29,15 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * org.opendaylight.openflowplugin.impl.device
  *
  * test of {@link DeviceStateImpl} - lightweight version, using basic ways (TDD)
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Mar 29, 2015
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceStateImplTest {
 
-    private NodeId nodeId;
     @Mock
     private FeaturesReply featuresReply;
     private DeviceStateImpl deviceState;
@@ -50,48 +45,9 @@ public class DeviceStateImplTest {
 
     @Before
     public void initialization() {
-        nodeId = new NodeId("test-node-id");
         Mockito.when(featuresReply.getVersion()).thenReturn(version);
         Mockito.when(featuresReply.getPhyPort()).thenReturn(pPort);
-        deviceState = new DeviceStateImpl(featuresReply, nodeId);
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#DeviceStateImpl(FeaturesReply, NodeId)}.
-     */
-    @Test(expected=NullPointerException.class)
-    public void testDeviceStateImplNullNodeId(){
-        new DeviceStateImpl(featuresReply, null);
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#DeviceStateImpl(FeaturesReply, NodeId)}.
-     */
-    @Test(expected=IllegalArgumentException.class)
-    public void testDeviceStateImplNullFeaturesReply(){
-        new DeviceStateImpl(null, nodeId);
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getNodeId()}.
-     */
-    @Test
-    public void testGetNodeId(){
-        final NodeId getNodeId = deviceState.getNodeId();
-        Assert.assertNotNull(getNodeId);
-        Assert.assertEquals(nodeId, getNodeId);
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getFeatures()}.
-     */
-    @Test
-    public void testGetFeatures(){
-        final GetFeaturesOutputBuilder expetedResult = new GetFeaturesOutputBuilder(featuresReply);
-        final GetFeaturesOutput getFeatures = deviceState.getFeatures();
-        Assert.assertNotNull(getFeatures);
-        Assert.assertEquals(expetedResult.getVersion(), getFeatures.getVersion());
-        Assert.assertEquals(expetedResult.getPhyPort(), getFeatures.getPhyPort());
+        deviceState = new DeviceStateImpl();
     }
 
     @Test

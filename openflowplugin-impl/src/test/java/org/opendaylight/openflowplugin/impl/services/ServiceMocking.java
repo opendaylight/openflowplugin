@@ -14,6 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -64,6 +65,8 @@ public abstract class ServiceMocking {
     @Mock
     protected DeviceState mockedDeviceState;
     @Mock
+    protected DeviceInfo mockedDeviceInfo;
+    @Mock
     protected DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
     @Mock
     protected RequestContext mockedRequestContext;
@@ -88,13 +91,15 @@ public abstract class ServiceMocking {
         when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_II);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getMultiMsgCollector(Matchers.<RequestContext<List<MultipartReply>>>any())).thenReturn(multiMessageCollector);
 
         setup();

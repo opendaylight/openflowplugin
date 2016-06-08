@@ -130,7 +130,7 @@ public class NodeConnectorDirectStatisticsService extends AbstractDirectStatisti
 
     @Override
     protected void storeStatistics(GetNodeConnectorStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceState().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceInfo().getNodeInstanceIdentifier();
 
         for (final NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatistics : output.getNodeConnectorStatisticsAndPortNumberMap()) {
             final InstanceIdentifier<FlowCapableNodeConnectorStatistics> nodeConnectorPath = nodePath

@@ -91,9 +91,9 @@ public final class AggregateFlowsInTableService extends AbstractCompatibleStatSe
         final TranslatorKey translatorKey = new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
         final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
 
-        final AggregatedFlowStatistics flowStatistics = messageTranslator.translate(mpReply, getDeviceContext().getDeviceState(), null);
+        final AggregatedFlowStatistics flowStatistics = messageTranslator.translate(mpReply, getDeviceContext().getDeviceInfo(), null);
         final AggregateFlowStatisticsUpdateBuilder notification = new AggregateFlowStatisticsUpdateBuilder(flowStatistics)
-                .setId(getDeviceContext().getDeviceState().getNodeId())
+                .setId(getDeviceContext().getDeviceInfo().getNodeId())
                 .setMoreReplies(Boolean.FALSE)
                 .setTransactionId(emulatedTxId);
 

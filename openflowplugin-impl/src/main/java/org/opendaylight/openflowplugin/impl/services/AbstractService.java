@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -46,15 +47,14 @@ abstract class AbstractService<I, O> {
     private EventIdentifier eventIdentifier;
 
     public AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        final DeviceState deviceState = deviceContext.getDeviceState();
-        final GetFeaturesOutput features = deviceState.getFeatures();
+        final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
 
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
-        this.datapathId = features.getDatapathId();
-        this.version = features.getVersion();
+        this.datapathId = deviceInfo.getDatapathId();
+        this.version = deviceInfo.getVersion();
         this.messageSpy = deviceContext.getMessageSpy();
-        this.nodeId = deviceState.getNodeId();
+        this.nodeId = deviceInfo.getNodeId();
     }
 
     public EventIdentifier getEventIdentifier() {
