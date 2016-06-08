@@ -102,12 +102,18 @@ public class RoleManagerImplTest {
     DeviceInfo deviceInfo;
 
     @Mock
+    DeviceInfo deviceInfo2;
+
+
+    @Mock
     GetFeaturesOutput featuresOutput;
 
     private RoleManagerImpl roleManager;
     private RoleManagerImpl roleManagerSpy;
     private RoleContext roleContextSpy;
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
+    private final NodeId nodeId2 = NodeId.getDefaultInstance("openflow:2");
+
 
     private final EntityOwnershipChange masterEntity = new EntityOwnershipChange(RoleManagerImpl.makeEntity(nodeId), false, true, true);
     private final EntityOwnershipChange masterTxEntity = new EntityOwnershipChange(RoleManagerImpl.makeTxEntity(nodeId), false, true, true);
@@ -135,6 +141,8 @@ public class RoleManagerImplTest {
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
         Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(deviceInfo2.getNodeId()).thenReturn(nodeId2);
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         roleManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
@@ -142,6 +150,7 @@ public class RoleManagerImplTest {
         roleManagerSpy = Mockito.spy(roleManager);
         roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
+        Mockito.when(roleContextSpy.getDeviceInfo().getNodeId()).thenReturn(nodeId);
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
     }
 
@@ -238,7 +247,6 @@ public class RoleManagerImplTest {
         Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(false);
         roleManagerSpy.changeOwnershipForTxEntity(slaveTxEntityLast, roleContextSpy);
         verify(roleContextSpy).close();
-        verify(roleContextSpy).getNodeId();
         verify(conductor).closeConnection(nodeId);
     }
 
@@ -280,7 +288,6 @@ public class RoleManagerImplTest {
 
     @Test
     public void testServicesChangeDone() throws Exception {
-        final NodeId nodeId2 = NodeId.getDefaultInstance("openflow:2");
         roleManagerSpy.setRoleContext(nodeId2, roleContextSpy);
         roleManagerSpy.servicesChangeDone(nodeId2, true);
         verify(roleContextSpy).unregisterCandidate(Mockito.<Entity>any());
@@ -288,7 +295,6 @@ public class RoleManagerImplTest {
 
     @Test
     public void testServicesChangeDoneContextIsNull() throws Exception {
-        final NodeId nodeId2 = NodeId.getDefaultInstance("openflow:2");
         roleManagerSpy.setRoleContext(nodeId, roleContextSpy);
         roleManagerSpy.servicesChangeDone(nodeId2, true);
         verify(roleContextSpy, never()).unregisterCandidate(Mockito.<Entity>any());
