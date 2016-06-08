@@ -99,13 +99,13 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo) throws Exception {
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
-        final RoleContext roleContext = new RoleContextImpl(deviceInfo.getNodeId(), entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo, entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
         makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, true);
         /* First start to watch entity so we don't miss any notification, and then try to register in EOS */
+        notifyListenersRoleInitializationDone(roleContext.getDeviceInfo().getNodeId(), roleContext.initialization());
         watchingEntities.put(roleContext.getEntity(), roleContext);
-        notifyListenersRoleInitializationDone(roleContext.getNodeId(), roleContext.initialization());
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo);
     }
 
@@ -119,10 +119,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             final RoleContext roleContext = iterator.next();
             watchingEntities.remove(roleContext.getEntity());
             watchingEntities.remove(roleContext.getTxEntity());
-            contexts.remove(roleContext.getNodeId());
+            contexts.remove(roleContext.getDeviceInfo().getNodeId());
             if (roleContext.isTxCandidateRegistered()) {
                 LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
-                removeDeviceFromOperationalDS(roleContext.getNodeId());
+                removeDeviceFromOperationalDS(roleContext.getDeviceInfo().getNodeId());
             } else {
                 roleContext.close();
             }
@@ -164,7 +164,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         LOG.debug("Received EOS message: wasOwner:{} isOwner:{} hasOwner:{} inJeopardy:{} for entity type {} and node {}",
                 ownershipChange.wasOwner(), ownershipChange.isOwner(), ownershipChange.hasOwner(), ownershipChange.inJeopardy(),
                 ownershipChange.getEntity().getType(),
-                roleContext != null ? roleContext.getNodeId() : "-> no watching entity, disregarding notification <-");
+                roleContext != null ? roleContext.getDeviceInfo().getNodeId() : "-> no watching entity, disregarding notification <-");
 
         if (roleContext != null) {
             if (ownershipChange.getEntity().equals(roleContext.getEntity())) {
@@ -186,30 +186,30 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                     ownershipChange.getEntity().getType(), roleContext.getNodeId());
             if (!ownershipChange.wasOwner() && ownershipChange.isOwner() && !ownershipChange.inJeopardy()) {
                 // SLAVE -> MASTER
-                LOG.debug("SLAVE to MASTER for node {}", roleContext.getNodeId());
+                LOG.debug("SLAVE to MASTER for node {}", roleContext.getDeviceInfo().getNodeId());
                 if (roleContext.registerCandidate(roleContext.getTxEntity())) {
-                    LOG.debug("Starting watching tx entity for node {}", roleContext.getNodeId());
+                    LOG.debug("Starting watching tx entity for node {}", roleContext.getDeviceInfo().getNodeId());
                     watchingEntities.putIfAbsent(roleContext.getTxEntity(), roleContext);
                 }
             } else if ((ownershipChange.wasOwner() && !ownershipChange.isOwner()) || (ownershipChange.inJeopardy())) {
                 // MASTER -> SLAVE
-                LOG.debug("MASTER to SLAVE for node {}", roleContext.getNodeId());
-                conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getNodeId());
+                LOG.debug("MASTER to SLAVE for node {}", roleContext.getDeviceInfo().getNodeId());
+                conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getDeviceInfo().getNodeId());
                 makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, false);
             }
         } else {
             LOG.debug("Main-EntityOwnershipRegistration is not active for entity type {} and node {}",
-                    ownershipChange.getEntity(), roleContext.getNodeId());
+                    ownershipChange.getEntity(), roleContext.getDeviceInfo().getNodeId());
             watchingEntities.remove(ownershipChange.getEntity(), roleContext);
             if (roleContext.isTxCandidateRegistered()) {
-                LOG.debug("tx candidate still registered for node {}, probably connection lost, trying to unregister tx candidate", roleContext.getNodeId());
+                LOG.debug("tx candidate still registered for node {}, probably connection lost, trying to unregister tx candidate", roleContext.getDeviceInfo().getNodeId());
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && !ownershipChange.hasOwner()) {
-                    LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getNodeId());
+                    LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
+                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo().getNodeId());
                 }
             } else {
-                final NodeId nodeId = roleContext.getNodeId();
+                final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
                 contexts.remove(nodeId, roleContext);
                 roleContext.close();
                 conductor.closeConnection(nodeId);
@@ -257,7 +257,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         } else {
             LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity().getType());
             watchingEntities.remove(roleContext.getTxEntity(), roleContext);
-            final NodeId nodeId = roleContext.getNodeId();
+            final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
             contexts.remove(nodeId, roleContext);
             roleContext.close();
             conductor.closeConnection(nodeId);
@@ -270,23 +270,23 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         Futures.addCallback(roleChangeFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
             @Override
             public void onSuccess(@Nullable final RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                LOG.info("Role {} successfully set on device {}", role, roleContext.getNodeId());
-                notifyListenersRoleChangeOnDevice(roleContext.getNodeId(), true, role, init);
+                LOG.info("Role {} successfully set on device {}", role, roleContext.getDeviceInfo().getNodeId());
+                notifyListenersRoleChangeOnDevice(roleContext.getDeviceInfo().getNodeId(), true, role, init);
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
-                LOG.warn("Unable to set role {} on device {}", role, roleContext.getNodeId());
-                notifyListenersRoleChangeOnDevice(roleContext.getNodeId(), false, role, init);
+                LOG.warn("Unable to set role {} on device {}", role, roleContext.getDeviceInfo().getNodeId());
+                notifyListenersRoleChangeOnDevice(roleContext.getDeviceInfo().getNodeId(), false, role, init);
             }
         });
     }
 
     @VisibleForTesting
     ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole, final RoleContext roleContext) {
-        LOG.debug("Sending new role {} to device {}", newRole, roleContext.getNodeId());
+        LOG.debug("Sending new role {} to device {}", newRole, roleContext.getDeviceInfo().getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-        final Short version = conductor.gainVersionSafely(roleContext.getNodeId());
+        final Short version = conductor.gainVersionSafely(roleContext.getDeviceInfo().getNodeId());
         if (null == version) {
             LOG.debug("Device version is null");
             return Futures.immediateFuture(null);
@@ -296,14 +296,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             return Futures.immediateFuture(null);
         } else {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
-                    .setNode(new NodeRef(DeviceStateUtil.createNodeInstanceIdentifier(roleContext.getNodeId()))).build();
+                    .setNode(new NodeRef(DeviceStateUtil.createNodeInstanceIdentifier(roleContext.getDeviceInfo().getNodeId()))).build();
             setRoleOutputFuture = roleContext.getSalRoleService().setRole(setRoleInput);
             final TimerTask timerTask = new TimerTask() {
 
                 @Override
                 public void run(final Timeout timeout) throws Exception {
                     if (!setRoleOutputFuture.isDone()) {
-                        LOG.warn("New role {} was not propagated to device {} during 10 sec", newRole, roleContext.getNodeId());
+                        LOG.warn("New role {} was not propagated to device {} during 10 sec", newRole, roleContext.getDeviceInfo().getNodeId());
                         setRoleOutputFuture.cancel(true);
                     }
                 }
