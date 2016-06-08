@@ -40,6 +40,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -124,6 +125,8 @@ public class StatisticsManagerImplTest {
     private GetFeaturesOutput featuresOutput;
     @Mock
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -197,8 +200,8 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
+        statisticsManager.onDeviceContextLevelUp(deviceInfo);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(deviceInfo);
     }
 
     @Test
@@ -210,9 +213,9 @@ public class StatisticsManagerImplTest {
         Assert.assertEquals(1, contextsMap.size());
 
         statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
-        statisticsManager.onDeviceContextLevelDown(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelDown(deviceInfo);
         verify(statisticContext).close();
-        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(mockedDeviceContext);
+        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
         Assert.assertEquals(0, contextsMap.size());
     }
 
