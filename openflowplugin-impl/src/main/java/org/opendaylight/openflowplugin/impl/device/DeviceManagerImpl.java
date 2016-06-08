@@ -14,7 +14,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
@@ -127,19 +126,19 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public boolean deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
 
-        NodeId nodeId = connectionContext.getNodeId();
+        DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         /**
          * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
-         if (deviceContexts.containsKey(nodeId)) {
+         if (deviceContexts.containsKey(deviceInfo.getNodeId())) {
             LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
              return false;
          }
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), nodeId);
+                connectionContext.getConnectionAdapter().getRemoteAddress(), deviceInfo.getNodeId());
 
         // Add Disconnect handler
         connectionContext.setDeviceDisconnectedHandler(DeviceManagerImpl.this);
@@ -166,7 +165,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 translatorLibrary,
                 switchFeaturesMandatory);
 
-        Verify.verify(deviceContexts.putIfAbsent(nodeId, deviceContext) == null, "DeviceCtx still not closed.");
+        Verify.verify(deviceContexts.putIfAbsent(deviceInfo.getNodeId(), deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
@@ -235,9 +234,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        LOG.debug("onDeviceContextClosed for Node {}", deviceContext.getDeviceState().getNodeId());
-        deviceContexts.remove(deviceContext.getPrimaryConnectionContext().getNodeId(), deviceContext);
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
+        LOG.debug("onDeviceContextClosed for Node {}", deviceInfo.getNodeId());
+        deviceContexts.remove(deviceInfo.getNodeId());
         updatePacketInRateLimiters();
     }
 
@@ -274,11 +273,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
-        final NodeId nodeId = connectionContext.getNodeId();
-        final DeviceContext deviceCtx = this.deviceContexts.get(nodeId);
+        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo.getNodeId());
 
         if (null == deviceCtx) {
-            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", nodeId);
+            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getNodeId());
             return;
         }
 
@@ -292,25 +291,21 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", nodeId);
-                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
+                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getNodeId());
+                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", nodeId, t);
-                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceCtx);
+                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getNodeId(), t);
+                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
             });
             /* Add timer for Close TxManager because it could fain ind cluster without notification */
-            final TimerTask timerTask = new TimerTask() {
-
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    if (!future.isDone()) {
-                        LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", nodeId);
-                        future.cancel(false);
-                    }
+            final TimerTask timerTask = timeout -> {
+                if (!future.isDone()) {
+                    LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getNodeId());
+                    future.cancel(false);
                 }
             };
             conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);

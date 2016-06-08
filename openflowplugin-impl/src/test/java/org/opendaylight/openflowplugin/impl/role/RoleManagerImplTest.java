@@ -132,7 +132,7 @@ public class RoleManagerImplTest {
         Mockito.when(featuresReply.getDatapathId()).thenReturn(new BigInteger("1"));
         Mockito.when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any());
-        Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceContext>any());
+        Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
         Mockito.when(deviceManager.getDeviceContextFromNodeId(Mockito.<NodeId>any())).thenReturn(deviceContext);
@@ -178,8 +178,8 @@ public class RoleManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelDown() throws Exception {
-        roleManagerSpy.onDeviceContextLevelDown(deviceContext);
-        inOrder.verify(roleManagerSpy).onDeviceContextLevelDown(deviceContext);
+        roleManagerSpy.onDeviceContextLevelDown(deviceInfo);
+        inOrder.verify(roleManagerSpy).onDeviceContextLevelDown(deviceInfo);
         inOrder.verifyNoMoreInteractions();
     }
 
