@@ -82,7 +82,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                          }
         ).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
         Mockito.when(translator.translate(
-                        Matchers.any(MultipartReply.class), Matchers.same(deviceState), Matchers.isNull())
+                        Matchers.any(MultipartReply.class), Matchers.same(deviceInfo), Matchers.isNull())
         ).thenReturn(new AggregatedFlowStatisticsBuilder().build());
 
 

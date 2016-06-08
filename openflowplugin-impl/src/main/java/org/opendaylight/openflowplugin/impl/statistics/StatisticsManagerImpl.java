@@ -90,7 +90,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
@@ -104,7 +104,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 final StatisticsContext statisticsContext,
                                 final TimeCounter timeCounter) {
 
-        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final NodeId nodeId = deviceContext.getDeviceInfo().getNodeId();
 
         if (!statisticsContext.isSchedulingEnabled()) {
             LOG.debug("Disabling statistics scheduling for device: {}", nodeId);
@@ -141,7 +141,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /** This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
-                    conductor.closeConnection(deviceContext.getDeviceState().getNodeId());
+                    conductor.closeConnection(deviceContext.getDeviceInfo());
                 } else {
                     scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
                 }
@@ -163,7 +163,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private void scheduleNextPolling(final DeviceContext deviceContext,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
-        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceContext.getDeviceState().getNodeId());
+        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceContext.getDeviceInfo().getNodeId());
         if (!shuttingDownStatisticsPolling) {
             final Timeout pollTimeout = conductor.newTimeout(timeout -> pollStatistics(deviceContext, statisticsContext, timeCounter), currentTimerDelay, TimeUnit.MILLISECONDS);
             statisticsContext.setPollTimeout(pollTimeout);
@@ -272,7 +272,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
 
         LOG.info("Scheduling statistics poll for device: {}", deviceInfo.getNodeId());
-        final DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo.getNodeId());
+        final DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
 
         if (deviceContext == null) {
             LOG.warn("Device context not found for device: {}", deviceInfo.getNodeId());

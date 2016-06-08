@@ -85,7 +85,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     @Override
     public FlowTableStatisticsUpdate transformToNotification(List<MultipartReply> mpReplyList, TransactionId emulatedTxId) {
         FlowTableStatisticsUpdateBuilder notification = new FlowTableStatisticsUpdateBuilder();
-        notification.setId(getDeviceContext().getDeviceState().getNodeId());
+        notification.setId(getDeviceContext().getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 

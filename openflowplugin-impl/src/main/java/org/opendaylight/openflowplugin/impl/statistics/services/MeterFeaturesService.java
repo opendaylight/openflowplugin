@@ -70,7 +70,7 @@ final class MeterFeaturesService
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
         MeterFeaturesUpdatedBuilder notification = new MeterFeaturesUpdatedBuilder();
-        notification.setId(getDeviceContext().getDeviceState().getNodeId());
+        notification.setId(getDeviceContext().getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 

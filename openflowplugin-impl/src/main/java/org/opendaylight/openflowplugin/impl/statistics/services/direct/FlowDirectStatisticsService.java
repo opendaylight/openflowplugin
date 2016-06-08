@@ -132,7 +132,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
     @Override
     protected void storeStatistics(GetFlowStatisticsOutput output) throws Exception {
         final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final FlowAndStatisticsMapList flowStatistics : output.getFlowAndStatisticsMapList()) {
             final FlowId flowId = generateFlowId(flowStatistics);
