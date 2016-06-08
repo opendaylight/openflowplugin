@@ -215,9 +215,9 @@ public class StatisticsManagerImplTest {
         Assert.assertEquals(1, contextsMap.size());
 
         statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
-        statisticsManager.onDeviceContextLevelDown(mockedDeviceContext);
+        statisticsManager.onDeviceContextLevelDown(deviceInfo);
         verify(statisticContext).close();
-        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(mockedDeviceContext);
+        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
         Assert.assertEquals(0, contextsMap.size());
     }
 
