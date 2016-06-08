@@ -164,7 +164,7 @@ public class DeviceManagerImplTest {
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
         }
-        deviceManager.addDeviceContextToMap(mockedNodeId, mockedDeviceContext);
+        deviceManager.addDeviceContextToMap(deviceInfo, mockedDeviceContext);
         deviceManager.onDeviceContextLevelUp(deviceInfo);
         if (withException) {
             verify(mockedDeviceContext).close();
