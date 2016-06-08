@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -97,9 +98,10 @@ public class DeviceInitializationUtils {
     public static ListenableFuture<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
-        final short version = deviceState.getVersion();
-        LOG.trace("initalizeNodeInformation for node {}", deviceState.getNodeId());
+        final short version = deviceInfo.getVersion();
+        LOG.trace("initalizeNodeInformation for node {}", deviceInfo.getNodeId());
         final SettableFuture<Void> returnFuture = SettableFuture.<Void>create();
         addNodeToOperDS(deviceContext, returnFuture);
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
@@ -112,14 +114,14 @@ public class DeviceInitializationUtils {
             // create empty tables after device description is processed
             chainTableTrunkWriteOF10(deviceContext, deviceFeaturesFuture);
 
-            final short ofVersion = deviceContext.getDeviceState().getVersion();
+            final short ofVersion = deviceInfo.getVersion();
             final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
             final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook()
                     .lookupTranslator(translatorKey);
             final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
-                final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext.getDeviceState(), null);
+                final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext.getDeviceInfo(), null);
 
                 final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(
                         dataPathId.toString(), port.getPortNo(), ofVersion);
@@ -128,19 +130,19 @@ public class DeviceInitializationUtils {
                 ncBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
                         new FlowCapableNodeConnectorStatisticsDataBuilder().build());
                 final NodeConnector connector = ncBuilder.build();
-                final InstanceIdentifier<NodeConnector> connectorII = deviceState.getNodeInstanceIdentifier().child(
+                final InstanceIdentifier<NodeConnector> connectorII = deviceInfo.getNodeInstanceIdentifier().child(
                         NodeConnector.class, connector.getKey());
                 try {
                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                 } catch (final Exception e) {
-                    LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(),
+                    LOG.debug("Failed to write node {} to DS ", deviceInfo.getNodeId().toString(),
                             e);
                 }
 
             }
         } else if (OFConstants.OFP_VERSION_1_3 == version) {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
-            LOG.debug("Setting capabilities for device {}", deviceContext.getDeviceState().getNodeId());
+            LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
             deviceFeaturesFuture = createDeviceFeaturesForOF13(deviceContext, deviceState, switchFeaturesMandatory);
         } else {
@@ -151,7 +153,7 @@ public class DeviceInitializationUtils {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                LOG.debug("All init data for node {} is in submited.", deviceState.getNodeId());
+                LOG.debug("All init data for node {} is in submited.", deviceInfo.getNodeId());
                 returnFuture.set(null);
             }
 
@@ -160,7 +162,7 @@ public class DeviceInitializationUtils {
                 // FIXME : remove session
                 LOG.trace("Device capabilities gathering future failed.");
                 LOG.trace("more info in exploration failure..", t);
-                LOG.debug("All init data for node {} was not submited correctly - connection has to go down.", deviceState.getNodeId());
+                LOG.debug("All init data for node {} was not submited correctly - connection has to go down.", deviceInfo.getNodeId());
                 returnFuture.setException(t);
             }
         });
@@ -170,13 +172,13 @@ public class DeviceInitializationUtils {
     private static void addNodeToOperDS(final DeviceContext deviceContext, final SettableFuture<Void> future) {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = deviceContext.getDeviceState();
-        final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(
+        final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceContext.getDeviceInfo().getNodeId()).setNodeConnector(
                 Collections.<NodeConnector>emptyList());
         try {
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(),
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
                     nodeBuilder.build());
         } catch (final Exception e) {
-            LOG.warn("Failed to write node {} to DS ", deviceState.getNodeId(), e);
+            LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
             future.cancel(true);
         }
     }
@@ -184,7 +186,7 @@ public class DeviceInitializationUtils {
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(
             final DeviceContext deviceContext, final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
-                deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
         return Futures.allAsList(Arrays.asList(replyDesc));
     }
@@ -193,7 +195,7 @@ public class DeviceInitializationUtils {
             final DeviceContext deviceContext, final DeviceState deviceState, final boolean switchFeaturesMandatory) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
-                deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
         //first process description reply, write data to DS and write consequent data if successful
         return Futures.transform(replyDesc,
@@ -203,32 +205,32 @@ public class DeviceInitializationUtils {
                             final RpcResult<List<MultipartReply>> rpcResult) throws Exception {
 
                         translateAndWriteReply(MultipartType.OFPMPDESC, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), rpcResult.getResult());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), rpcResult.getResult());
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(
                                 MultipartType.OFPMPMETERFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
                         createSuccessProcessingCallback(MultipartType.OFPMPMETERFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), replyMeterFeature);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyMeterFeature);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(
                                 MultipartType.OFPMPGROUPFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPGROUPFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), replyGroupFeatures);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroupFeatures);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(
                                 MultipartType.OFPMPTABLEFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPTABLEFEATURES, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), replyTableFeatures);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyTableFeatures);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(
-                                MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(),
-                                deviceState.getVersion());
+                                MultipartType.OFPMPPORTDESC, deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
+                                deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPPORTDESC, deviceContext,
-                                deviceState.getNodeInstanceIdentifier(), replyPortDescription);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyPortDescription);
                         if (switchFeaturesMandatory) {
                             return Futures.allAsList(Arrays.asList(replyMeterFeature, replyGroupFeatures,
                                     replyTableFeatures, replyPortDescription));
@@ -311,11 +313,11 @@ public class DeviceInitializationUtils {
                         final MultipartReplyPortDesc portDesc = ((MultipartReplyPortDescCase) body)
                                 .getMultipartReplyPortDesc();
                         for (final PortGrouping port : portDesc.getPorts()) {
-                            final short ofVersion = dContext.getDeviceState().getVersion();
+                            final short ofVersion = dContext.getDeviceInfo().getVersion();
                             final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
                             final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = dContext.oook()
                                     .lookupTranslator(translatorKey);
-                            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext.getDeviceState(), null);
+                            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext.getDeviceInfo(), null);
 
                             final BigInteger dataPathId = dContext.getPrimaryConnectionContext().getFeatures()
                                     .getDatapathId();
@@ -340,18 +342,18 @@ public class DeviceInitializationUtils {
                 }
             }
         } catch (final Exception e) {
-            LOG.debug("Failed to write node {} to DS ", dContext.getDeviceState().getNodeId().toString(), e);
+            LOG.debug("Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
     private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
         final FlowCapableNodeBuilder flowCapableNodeBuilder = new FlowCapableNodeBuilder();
-        final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier()
+        final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceInfo().getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
         } catch (final Exception e) {
-            LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceState().getNodeId().toString(), e);
+            LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
@@ -362,7 +364,7 @@ public class DeviceInitializationUtils {
 
         if (remoteAddress == null) {
             LOG.warn("IP address of the node {} cannot be obtained. No connection with switch.", deviceContext
-                    .getDeviceState().getNodeId());
+                    .getDeviceInfo().getNodeId());
             return null;
         }
         LOG.info("IP address of switch is: {}", remoteAddress);
@@ -384,7 +386,7 @@ public class DeviceInitializationUtils {
             try {
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBuilder.build());
             } catch (final Exception e) {
-                LOG.debug("Failed to write node {} to DS ", dContext.getDeviceState().getNodeId().toString(), e);
+                LOG.debug("Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
             }
 
         }
@@ -398,7 +400,7 @@ public class DeviceInitializationUtils {
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
                 final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
-                    LOG.info("Static node {} info: {} collected", deviceContext.getDeviceState().getNodeId(), type);
+                    LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo().getNodeId(), type);
                     translateAndWriteReply(type, deviceContext, nodeII, result);
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
@@ -486,8 +488,8 @@ public class DeviceInitializationUtils {
                 }
                 if (allSucceeded) {
                     createEmptyFlowCapableNodeInDs(deviceContext);
-                    makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(),
-                            deviceContext.getDeviceState().getFeatures().getTables());
+                    makeEmptyTables(deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
+                            deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
                 }
             }
 

@@ -116,14 +116,14 @@ public class RpcManagerImplTest {
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
-        Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
+        Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
     }
 
     @Test
     public void onDeviceContextLevelUp() throws Exception {
         rpcManager.onDeviceContextLevelUp(deviceInfo);
-        verify(conductor).getDeviceContext(Mockito.<NodeId>any());
+        verify(conductor).getDeviceContext(deviceInfo);
     }
 
     @Test

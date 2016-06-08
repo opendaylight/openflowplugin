@@ -32,7 +32,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -52,7 +51,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Before
     public void setUp() throws Exception {
         when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
-        when(mockConductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 

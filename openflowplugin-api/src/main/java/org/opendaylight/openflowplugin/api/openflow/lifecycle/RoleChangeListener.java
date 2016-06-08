@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
@@ -18,18 +18,18 @@ public interface RoleChangeListener {
 
     /**
      * Notification when initialization for role context is done
-     * @param nodeId
+     * @param deviceInfo
      * @param success or failure
      */
-    void roleInitializationDone(final NodeId nodeId, final boolean success);
+    void roleInitializationDone(final DeviceInfo deviceInfo, final boolean success);
 
     /**
      * Notification when the role change on device is done
-     * @param nodeId
+     * @param deviceInfo
      * @param success
      * @param newRole
      * @param initializationPhase
      */
-    void roleChangeOnDevice(final NodeId nodeId, final boolean success, final OfpRole newRole, final boolean initializationPhase);
+    void roleChangeOnDevice(final DeviceInfo deviceInfo, final boolean success, final OfpRole newRole, final boolean initializationPhase);
 
 }

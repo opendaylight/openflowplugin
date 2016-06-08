@@ -74,7 +74,7 @@ final class GroupFeaturesService
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
         GroupFeaturesUpdatedBuilder notification = new GroupFeaturesUpdatedBuilder();
-        notification.setId(getDeviceContext().getDeviceState().getNodeId());
+        notification.setId(getDeviceContext().getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 

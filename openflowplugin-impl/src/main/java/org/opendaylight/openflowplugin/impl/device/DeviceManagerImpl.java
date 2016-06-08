@@ -44,7 +44,6 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderK
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -156,7 +155,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final DeviceState deviceState = createDeviceState(connectionContext);
+        final DeviceState deviceState = new DeviceStateImpl();
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext,
                 deviceState,
                 dataBroker,
@@ -181,10 +180,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo());
 
         return true;
-    }
-
-    private static DeviceStateImpl createDeviceState(final @Nonnull ConnectionContext connectionContext) {
-        return new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
     }
 
     private void updatePacketInRateLimiters() {
@@ -236,7 +231,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         LOG.debug("onDeviceContextClosed for Node {}", deviceInfo.getNodeId());
-        deviceContexts.remove(deviceInfo.getNodeId());
+        deviceContexts.remove(deviceInfo);
         updatePacketInRateLimiters();
     }
 
@@ -246,8 +241,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public DeviceContext getDeviceContextFromNodeId(final NodeId nodeId) {
-        return deviceContexts.get(nodeId);
+    public DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo) {
+        return deviceContexts.get(deviceInfo);
     }
 
     @Override

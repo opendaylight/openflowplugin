@@ -15,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -42,10 +41,10 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * Returning device context from map maintained in device manager
      * This prevent to send whole device context to another context
      * If device context not exists for nodeId it will return null
-     * @param nodeId
-     * @return device context or null
+     *
+     * @param deviceInfo@return device context or null
      */
-    DeviceContext getDeviceContextFromNodeId(NodeId nodeId);
+    DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo);
 
     void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 }

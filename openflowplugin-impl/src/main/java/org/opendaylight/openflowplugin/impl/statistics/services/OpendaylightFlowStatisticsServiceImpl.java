@@ -58,7 +58,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                         List<AggregatedFlowStatistics> aggregStats = new ArrayList<AggregatedFlowStatistics>();
 
                         for (MultipartReply multipartReply : input.getResult()) {
-                            aggregStats.add(messageTranslator.translate(multipartReply, deviceContext.getDeviceState(), null));
+                            aggregStats.add(messageTranslator.translate(multipartReply, deviceContext.getDeviceInfo(), null));
                         }
 
                         GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder getAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder =

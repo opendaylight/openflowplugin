@@ -28,16 +28,9 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  * DeviceState is builded from {@link FeaturesReply} and {@link NodeId}. Both values are inside
  * {@link org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext}
  *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p/>
- *         Created: Mar 29, 2015
  */
 class DeviceStateImpl implements DeviceState {
 
-    private final GetFeaturesOutput featuresOutput;
-    private final NodeId nodeId;
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-    private final short version;
     private boolean valid;
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
@@ -48,29 +41,9 @@ class DeviceStateImpl implements DeviceState {
     private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
 
-    public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
-        Preconditions.checkArgument(featuresReply != null);
-        featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
-        this.nodeId = Preconditions.checkNotNull(nodeId);
-        nodeII = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
-        version = featuresReply.getVersion();
+    DeviceStateImpl() {
         statPollEnabled = false;
         deviceSynchronized = false;
-    }
-
-    @Override
-    public NodeId getNodeId() {
-        return nodeId;
-    }
-
-    @Override
-    public KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier() {
-        return nodeII;
-    }
-
-    @Override
-    public GetFeaturesOutput getFeatures() {
-        return featuresOutput;
     }
 
     @Override
@@ -81,11 +54,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setValid(final boolean valid) {
         this.valid = valid;
-    }
-
-    @Override
-    public short getVersion() {
-        return version;
     }
 
     @Override
