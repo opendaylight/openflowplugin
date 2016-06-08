@@ -34,6 +34,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -77,7 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -145,7 +145,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final boolean switchFeaturesMandatory;
     private StatisticsContext statisticsContext;
 
-    private final NodeId nodeId;
+    private final DeviceInfo deviceInfo;
 
     private volatile DEVICE_CONTEXT_STATE deviceCtxState;
     private boolean isStatisticsRpcEnabled;
@@ -190,8 +190,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         deviceCtxState = DEVICE_CONTEXT_STATE.INITIALIZATION;
-
-        nodeId = primaryConnectionContext.getNodeId();
+        deviceInfo = primaryConnectionContext.getDeviceInfo();
     }
 
     /**
@@ -221,7 +220,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
         LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                .getRemoteAddress(), nodeId);
+                .getRemoteAddress(), deviceInfo.getNodeId());
         auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
@@ -237,10 +236,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onClusterRoleChange(final OfpRole oldRole, @CheckForNull final OfpRole role) {
-        LOG.trace("onClusterRoleChange {} for node:", role, nodeId);
+        LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
         Preconditions.checkArgument(role != null);
         if (role.equals(oldRole)) {
-            LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", nodeId, oldRole, role);
+            LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", deviceInfo.getNodeId(), oldRole, role);
             return Futures.immediateFuture(null);
         }
         if (OfpRole.BECOMEMASTER.equals(role)) {
@@ -248,7 +247,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         } else if (OfpRole.BECOMESLAVE.equals(role)) {
             return onDeviceLostClusterLeadership();
         } else {
-            LOG.warn("Unknown OFCluster Role {} for Node {}", role, nodeId);
+            LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceInfo.getNodeId());
             if (null != rpcContext) {
                 MdSalRegistrationUtils.unregisterServices(rpcContext);
             }
@@ -258,7 +257,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onDeviceLostClusterLeadership() {
-        LOG.trace("onDeviceLostClusterLeadership for node: {}", nodeId);
+        LOG.trace("onDeviceLostClusterLeadership for node: {}", deviceInfo.getNodeId());
         if (null != rpcContext) {
             MdSalRegistrationUtils.registerSlaveServices(rpcContext, OfpRole.BECOMESLAVE);
         }
@@ -267,15 +266,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onDeviceTakeClusterLeadership() {
-        LOG.trace("onDeviceTakeClusterLeadership for node: {}", nodeId);
+        LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceInfo.getNodeId());
         /* validation */
         if (statisticsContext == null) {
-            final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", nodeId);
+            final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceInfo.getDatapathId());
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
         if (rpcContext == null) {
-            final String errMsg = String.format("DeviceCtx %s is up but we are missing RpcContext", nodeId);
+            final String errMsg = String.format("DeviceCtx %s is up but we are missing RpcContext", deviceInfo.getDatapathId());
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
@@ -320,7 +319,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.warn(errMsg);
                     throw new IllegalStateException(errMsg);
                 }
-                LOG.debug("Get Initial Device {} information is successful", nodeId);
+                LOG.debug("Get Initial Device {} information is successful", deviceInfo.getNodeId());
                 getDeviceState().setDeviceSynchronized(true);
                 initialSubmitTransaction();
                 getDeviceState().setStatisticsPollingEnabledProp(true);
@@ -627,10 +626,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public synchronized void shutdownConnection() {
-        LOG.debug("Shutdown method for node {}", nodeId);
+        LOG.debug("Shutdown method for node {}", deviceInfo.getNodeId());
         deviceState.setValid(false);
         if (DEVICE_CONTEXT_STATE.TERMINATION.equals(deviceCtxState)) {
-            LOG.debug("DeviceCtx for Node {} is in termination process.", nodeId);
+            LOG.debug("DeviceCtx for Node {} is in termination process.", deviceInfo.getNodeId());
             return;
         }
         deviceCtxState = DEVICE_CONTEXT_STATE.TERMINATION;
