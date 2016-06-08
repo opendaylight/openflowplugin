@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * Interface represent handler for dead device connection annihilating cycle.
@@ -21,7 +22,7 @@ public interface DeviceTerminationPhaseHandler {
     /**
      * Method represents a termination cycle for {@link DeviceContext}.
      *
-     * @param deviceContext - {@link DeviceContext}
+     * @param deviceInfo - {@link DeviceInfo}
      */
-    void onDeviceContextLevelDown(@CheckForNull DeviceContext deviceContext);
+    void onDeviceContextLevelDown(@CheckForNull DeviceInfo deviceInfo);
 }
