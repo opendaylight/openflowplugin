@@ -207,9 +207,9 @@ public class StatisticsManagerImplTest {
     @Test
     public void testOnDeviceContextClosed() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        final Map<NodeId, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
+        final Map<DeviceInfo, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
 
-        contextsMap.put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        contextsMap.put(deviceInfo, statisticContext);
         Assert.assertEquals(1, contextsMap.size());
 
         statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
@@ -219,13 +219,13 @@ public class StatisticsManagerImplTest {
         Assert.assertEquals(0, contextsMap.size());
     }
 
-    private static Map<NodeId, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
+    private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
             throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts map for testing shall be accessed in some more civilized way
         final Field contextsField = StatisticsManagerImpl.class.getDeclaredField("contexts");
         Assert.assertNotNull(contextsField);
         contextsField.setAccessible(true);
-        return (Map<NodeId, StatisticsContext>) contextsField.get(statisticsManager);
+        return (Map<DeviceInfo, StatisticsContext>) contextsField.get(statisticsManager);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -287,7 +287,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -324,7 +324,7 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
-        getContextsMap(statisticsManager).put(mockedDeviceContext.getDeviceState().getNodeId(), statisticContext);
+        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -359,7 +359,7 @@ public class StatisticsManagerImplTest {
     @Test
     public void testCalculateTimerDelay() throws Exception {
         final TimeCounter timeCounter = Mockito.mock(TimeCounter.class);
-        when(timeCounter.getAverageTimeBetweenMarks()).thenReturn((Long)2000L, (Long)4000L);
+        when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(2000L, (Long)4000L);
 
         statisticsManager.calculateTimerDelay(timeCounter);
         Assert.assertEquals(3000L, StatisticsManagerImpl.getCurrentTimerDelay());
