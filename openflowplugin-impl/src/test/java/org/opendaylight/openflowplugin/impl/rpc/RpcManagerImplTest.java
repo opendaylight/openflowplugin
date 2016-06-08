@@ -76,7 +76,7 @@ public class RpcManagerImplTest {
     @Mock
     private RpcContext removedContexts;
     @Mock
-    private ConcurrentMap<NodeId, RpcContext> contexts;
+    private ConcurrentMap<DeviceInfo, RpcContext> contexts;
     @Mock
     private DeviceInfo deviceInfo;
 
@@ -118,7 +118,7 @@ public class RpcManagerImplTest {
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(conductor.getDeviceContext(Mockito.<NodeId>any())).thenReturn(deviceContext);
-        Mockito.when(contexts.remove(nodeId)).thenReturn(removedContexts);
+        Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class RpcManagerImplTest {
      */
     @Test
     public void onDeviceContextLevelDown1() {
-        rpcManager.addRecordToContexts(nodeId,removedContexts);
+        rpcManager.addRecordToContexts(deviceInfo,removedContexts);
         rpcManager.onDeviceContextLevelDown(deviceInfo);
         verify(removedContexts,times(1)).close();
         verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
@@ -183,7 +183,7 @@ public class RpcManagerImplTest {
 
     @Test
     public void close() {
-        rpcManager.addRecordToContexts(nodeId,removedContexts);
+        rpcManager.addRecordToContexts(deviceInfo,removedContexts);
         rpcManager.close();
         verify(removedContexts,atLeastOnce()).close();
     }
