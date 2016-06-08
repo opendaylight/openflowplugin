@@ -79,13 +79,13 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        final RpcContext removedContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
+        final RpcContext removedContext = contexts.remove(deviceInfo.getNodeId());
         if (removedContext != null) {
             LOG.info("Unregister RPCs services for device context closure");
             removedContext.close();
         }
-        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceContext);
+        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
 
     @Override

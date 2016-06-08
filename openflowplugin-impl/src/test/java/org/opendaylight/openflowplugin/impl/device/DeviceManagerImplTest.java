@@ -74,6 +74,7 @@ public class DeviceManagerImplTest {
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
     private static final int barrierCountLimit = 25600;
     private static final int barrierIntervalNanos = 500;
+    public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
 
     @Mock
     CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
@@ -106,10 +107,12 @@ public class DeviceManagerImplTest {
     public void setUp() throws Exception {
         OpenflowPortsUtil.init();
 
-        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+        when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
+        when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 
         final Capabilities capabilitiesV13 = mock(Capabilities.class);
         final CapabilitiesV10 capabilitiesV10 = mock(CapabilitiesV10.class);
@@ -233,7 +236,7 @@ public class DeviceManagerImplTest {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
 
         final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.put(mockedNodeId, deviceContext);
+        deviceContexts.put(DUMMY_NODE_ID, deviceContext);
 
         deviceManager.onDeviceDisconnected(connectionContext);
 
