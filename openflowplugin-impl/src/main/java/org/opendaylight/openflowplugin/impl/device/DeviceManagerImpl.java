@@ -132,7 +132,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
-         if (deviceContexts.containsKey(deviceInfo.getNodeId())) {
+         if (deviceContexts.containsKey(deviceInfo)) {
             LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
              return false;
          }
