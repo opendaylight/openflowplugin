@@ -79,7 +79,7 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
     private TransmitPacketInput buildTransmitPacketInput() {
         TransmitPacketInputBuilder transmitPacketInputBld = new TransmitPacketInputBuilder()
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
-                .setNode(new NodeRef(mockedDeviceState.getNodeInstanceIdentifier()))
+                .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
                 .setPayload(ULTIMATE_PAYLOAD.getBytes())
                 .setEgress(new NodeConnectorRef(pathToNodeconnector));
         return transmitPacketInputBld.build();

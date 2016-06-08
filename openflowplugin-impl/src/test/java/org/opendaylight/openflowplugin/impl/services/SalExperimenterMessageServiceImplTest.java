@@ -74,7 +74,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
     private SendExperimenterInput buildSendExperimenterInput() {
         SendExperimenterInputBuilder sendExperimenterInputBld = new SendExperimenterInputBuilder()
-                .setNode(new NodeRef(mockedDeviceState.getNodeInstanceIdentifier()))
+                .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
                 .setExperimenterMessageOfChoice(new DummyExperimenter());
         return sendExperimenterInputBld.build();
     }
