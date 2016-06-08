@@ -51,6 +51,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
+    private DeviceInfo deviceInfo;
 
     /**
      * @param connectionAdapter
@@ -227,8 +228,13 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public DeviceInfo gainDeviceInfo() {
-        return new DeviceInfoImpl(
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
+    }
+
+    @Override
+    public void createDeviceInfo() {
+        this.deviceInfo = new DeviceInfoImpl(
                 nodeId,
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
                 featuresReply.getVersion(),
