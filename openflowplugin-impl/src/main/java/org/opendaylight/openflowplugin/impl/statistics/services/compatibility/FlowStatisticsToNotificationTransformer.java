@@ -11,7 +11,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
@@ -32,18 +33,18 @@ public class FlowStatisticsToNotificationTransformer {
 
     /**
      * @param mpResult      raw multipart response from device
-     * @param deviceState   device state
+     * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,
-                                                                final DeviceState deviceState,
+                                                                final DeviceInfo deviceInfo,
                                                                 final OpenflowVersion ofVersion,
                                                                 final TransactionId emulatedTxId) {
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
-        notification.setId(deviceState.getNodeId());
+        notification.setId(deviceInfo.getNodeId());
         notification.setFlowAndStatisticsMapList(statsList);
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
@@ -55,7 +56,7 @@ public class FlowStatisticsToNotificationTransformer {
             MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
             List<FlowAndStatisticsMapList> outStatsItem = flowStatsConvertor.toSALFlowStatsList(
                     replyBody.getFlowStats(),
-                    deviceState.getFeatures().getDatapathId(),
+                    deviceInfo.getDatapathId(),
                     ofVersion);
             statsList.addAll(outStatsItem);
         }

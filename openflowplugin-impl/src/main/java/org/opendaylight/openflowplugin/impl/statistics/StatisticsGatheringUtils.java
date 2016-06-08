@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -149,7 +150,7 @@ public final class StatisticsGatheringUtils {
             public ListenableFuture<Boolean> apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 boolean isMultipartProcessed = Boolean.TRUE;
                 if (rpcResult.isSuccessful()) {
-                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
+                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceContext.getDeviceInfo().getNodeId(), type);
 
                     // TODO: in case the result value is null then multipart data probably got processed on the fly -
                     // TODO: this contract should by clearly stated and enforced - now simple true value is returned
@@ -168,7 +169,7 @@ public final class StatisticsGatheringUtils {
                             }
                         } catch (final Exception e) {
                             LOG.warn("stats processing of type {} for node {} failed during transfomation step",
-                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                                    type, deviceContext.getDeviceInfo().getNodeId(), e);
                             return Futures.immediateFailedFuture(e);
                         }
 
@@ -198,19 +199,19 @@ public final class StatisticsGatheringUtils {
                             }
                         } catch (final Exception e) {
                             LOG.warn("stats processing of type {} for node {} failed during write-to-tx step",
-                                    type, deviceContext.getDeviceState().getNodeId(), e);
+                                    type, deviceContext.getDeviceInfo().getNodeId(), e);
                             return Futures.immediateFailedFuture(e);
                         }
 
-                        LOG.debug("Stats reply added to transaction for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
+                        LOG.debug("Stats reply added to transaction for node {} of type {}", deviceContext.getDeviceInfo().getNodeId(), type);
 
                         //TODO : implement experimenter
                     } else {
-                        LOG.debug("Stats reply was empty for node {} of type {}", deviceContext.getDeviceState().getNodeId(), type);
+                        LOG.debug("Stats reply was empty for node {} of type {}", deviceContext.getDeviceInfo().getNodeId(), type);
                     }
 
                 } else {
-                    LOG.debug("Stats reply FAILED for node {} of type {}: {}", deviceContext.getDeviceState().getNodeId(), type, rpcResult.getErrors());
+                    LOG.debug("Stats reply FAILED for node {} of type {}: {}", deviceContext.getDeviceInfo().getNodeId(), type, rpcResult.getErrors());
                     isMultipartProcessed = Boolean.FALSE;
                 }
                 return Futures.immediateFuture(isMultipartProcessed);
@@ -219,7 +220,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processMeterConfigStatsUpdated(final Iterable<MeterConfigStatsUpdated> data, final DeviceContext deviceContext) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceState());
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceInfo());
         deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (final MeterConfigStatsUpdated meterConfigStatsUpdated : data) {
             for (final MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
@@ -238,13 +239,13 @@ public final class StatisticsGatheringUtils {
 
     private static ListenableFuture<Boolean> processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data,
                                                                    final DeviceContext deviceContext, final EventIdentifier eventIdentifier) {
-        final ListenableFuture<Void> deleFuture = deleteAllKnownFlows(deviceContext.getDeviceState(),
-                deviceContext.getDeviceFlowRegistry(), deviceContext);
+        final ListenableFuture<Void> deleFuture = deleteAllKnownFlows(deviceContext.getDeviceInfo(),
+                deviceContext.getDeviceFlowRegistry(), deviceContext, deviceContext.getDeviceState());
         return Futures.transform(deleFuture, new Function<Void, Boolean>() {
 
             @Override
             public Boolean apply(final Void input) {
-                writeFlowStatistics(data, deviceContext.getDeviceState(), deviceContext.getDeviceFlowRegistry(),
+                writeFlowStatistics(data, deviceContext.getDeviceInfo(), deviceContext.getDeviceFlowRegistry(),
                         deviceContext);
                 deviceContext.submitTransaction();
                 EventsTimeCounter.markEnd(eventIdentifier);
@@ -254,10 +255,10 @@ public final class StatisticsGatheringUtils {
     }
 
     public static void writeFlowStatistics(final Iterable<FlowsStatisticsUpdate> data,
-                                           final DeviceState deviceState,
+                                           final DeviceInfo deviceInfo,
                                            final DeviceFlowRegistry registry,
                                            final TxFacade txFacade) {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceState);
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         try {
             for (final FlowsStatisticsUpdate flowsStatistics : data) {
                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
@@ -292,12 +293,14 @@ public final class StatisticsGatheringUtils {
         return flowStatisticsDataBld;
     }
 
-    public static ListenableFuture<Void> deleteAllKnownFlows(final DeviceState deviceState,
+    public static ListenableFuture<Void> deleteAllKnownFlows(final DeviceInfo deviceInfo,
                                                              final DeviceFlowRegistry registry,
-                                                             final TxFacade txFacade) {
+                                                             final TxFacade txFacade,
+                                                             final DeviceState deviceState) {
+        //TODO:Make check for phase from enum
         /* DeviceState.deviceSynchronized is a marker for actual phase - false means initPhase, true means noInitPhase */
         if (deviceState.deviceSynchronized()) {
-            final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceState);
+            final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
             final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
             final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
                     LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
@@ -338,7 +341,7 @@ public final class StatisticsGatheringUtils {
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
         // TODO: clean all queues of all node-connectors before writing up-to-date stats
-        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
         for (final QueueStatisticsUpdate queueStatisticsUpdate : data) {
             for (final QueueIdAndStatisticsMap queueStat : queueStatisticsUpdate.getQueueIdAndStatisticsMap()) {
                 if (queueStat.getQueueId() != null) {
@@ -365,7 +368,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceState());
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceInfo());
         for (final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
 
             for (final FlowTableAndStatisticsMap tableStat : flowTableStatisticsUpdate.getFlowTableAndStatisticsMap()) {
@@ -379,7 +382,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceContext deviceContext) throws Exception {
-        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceState().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodeIdent = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
         for (final NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate : data) {
             for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort : nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
                 final FlowCapableNodeConnectorStatistics stats = new FlowCapableNodeConnectorStatisticsBuilder(nConnectPort).build();
@@ -397,7 +400,7 @@ public final class StatisticsGatheringUtils {
 
     private static void processMetersStatistics(final Iterable<MeterStatisticsUpdated> data,
                                                 final DeviceContext deviceContext) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceState());
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceInfo());
         for (final MeterStatisticsUpdated meterStatisticsUpdated : data) {
             for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
                 final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
@@ -422,7 +425,7 @@ public final class StatisticsGatheringUtils {
 
     private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent =
-                deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+                deviceContext.getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         deleteAllKnownGroups(deviceContext, fNodeIdent);
 
         for (final GroupDescStatsUpdated groupDescStatsUpdated : data) {
@@ -451,7 +454,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceState());
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceContext.getDeviceInfo());
         for (final GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
 
@@ -467,8 +470,8 @@ public final class StatisticsGatheringUtils {
         deviceContext.submitTransaction();
     }
 
-    private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(final DeviceState deviceState) {
-        return deviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+    private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(final DeviceInfo deviceInfo) {
+        return deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
     }
 
     /**
@@ -477,7 +480,7 @@ public final class StatisticsGatheringUtils {
      * @param deviceContext txManager + node path keeper
      */
     static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
-        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceState()
+        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceInfo()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
@@ -503,7 +506,7 @@ public final class StatisticsGatheringUtils {
      * @param succeeded     outcome of currently finished gathering
      */
     static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
-        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceState()
+        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceInfo()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
 

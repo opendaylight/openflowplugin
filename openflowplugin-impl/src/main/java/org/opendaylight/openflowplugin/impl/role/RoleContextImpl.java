@@ -76,7 +76,7 @@ class RoleContextImpl implements RoleContext {
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(deviceInfo.getNodeId())) {
+        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(deviceInfo)) {
             @Override
             public void close() {
             }

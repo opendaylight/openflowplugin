@@ -24,6 +24,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -64,6 +65,8 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
     @Mock
     private DeviceState deviceState;
     @Mock
+    private DeviceInfo deviceInfo;
+    @Mock
     private MessageTranslator<Object, Object> translator;
     @Mock
     private GetFeaturesOutput featuresOutput;
@@ -95,9 +98,9 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceState.getNodeId()).thenReturn(NODE_ID);
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
+        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting();
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
 
@@ -140,7 +143,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                 .setFlowCount(new Counter32(12L))
                 .setPacketCount(new Counter64(BigInteger.valueOf(13L)))
                 .build();
-        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceState), Matchers.any()))
+        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceInfo), Matchers.any()))
                 .thenReturn(aggregatedStats);
 
 

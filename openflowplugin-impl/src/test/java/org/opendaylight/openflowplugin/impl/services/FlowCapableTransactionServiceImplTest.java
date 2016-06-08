@@ -51,6 +51,6 @@ public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
 
     private SendBarrierInput buildSendBarrierInput() {
         return new SendBarrierInputBuilder()
-                .setNode(new NodeRef(mockedDeviceState.getNodeInstanceIdentifier())).build();
+                .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier())).build();
     }
 }

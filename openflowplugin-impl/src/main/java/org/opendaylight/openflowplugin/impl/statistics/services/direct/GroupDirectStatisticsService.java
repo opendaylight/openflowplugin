@@ -87,7 +87,7 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
     @Override
     protected void storeStatistics(GetGroupStatisticsOutput output) throws Exception {
         final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final GroupStats groupStatistics : output.getGroupStats()) {
             final InstanceIdentifier<GroupStatistics> groupStatisticsPath = nodePath
