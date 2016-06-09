@@ -90,7 +90,7 @@ public class LifecycleConductorImplTest {
 
     @Test
     public void addOneTimeListenerWhenServicesChangesDoneTest() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
+        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
         assertEquals(false,lifecycleConductor.isServiceChangeListenersEmpty());
     }
 
@@ -110,7 +110,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void notifyServiceChangeListenersTest2() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
+        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
         assertEquals(false,lifecycleConductor.isServiceChangeListenersEmpty());
         lifecycleConductor.notifyServiceChangeListeners(deviceInfo,true);
         assertEquals(true,lifecycleConductor.isServiceChangeListenersEmpty());
@@ -122,7 +122,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleInitializationDoneTest1() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
+        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
         lifecycleConductor.roleInitializationDone(deviceInfo,false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
@@ -132,7 +132,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleInitializationDoneTest2() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
+        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
         lifecycleConductor.roleInitializationDone(deviceInfo,true);
         verify(deviceContext,times(0)).shutdownConnection();
     }

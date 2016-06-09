@@ -36,9 +36,9 @@ public interface LifecycleConductor {
     /**
      * Registers ont time listener for notify when services rpc, statistics are done stop or start
      * @param manager service change listener
-     * @param nodeId node identification
+     * @param deviceInfo node identification
      */
-    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId);
+    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo);
 
     /**
      * Returns device of version

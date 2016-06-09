@@ -295,7 +295,7 @@ public class RoleManagerImplTest {
         roleManager.notifyListenersRoleInitializationDone(deviceInfo, true);
         roleManager.notifyListenersRoleChangeOnDevice(deviceInfo, true, OfpRole.BECOMEMASTER, false);
     }
-    
+
     @Test
     public void testServicesChangeDone() throws Exception {
         roleManagerSpy.setRoleContext(deviceInfo2, roleContextSpy);

@@ -192,7 +192,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
                 // MASTER -> SLAVE
                 LOG.debug("MASTER to SLAVE for node {}", roleContext.getDeviceInfo().getNodeId());
-                conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getDeviceInfo().getNodeId());
+                conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getDeviceInfo());
                 makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, false);
             }
         } else {

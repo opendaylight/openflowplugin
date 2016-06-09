@@ -47,29 +47,32 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
     private DeviceManager deviceManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
-    private ConcurrentHashMap<NodeId, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private StatisticsManager statisticsManager;
 
-    public LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
+    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
         Preconditions.checkNotNull(messageIntelligenceAgency);
         this.messageIntelligenceAgency = messageIntelligenceAgency;
     }
 
+    @Override
     public void setSafelyDeviceManager(final DeviceManager deviceManager) {
         if (this.deviceManager == null) {
             this.deviceManager = deviceManager;
         }
     }
 
+    @Override
     public void setSafelyStatisticsManager(final StatisticsManager statisticsManager) {
         if (this.statisticsManager == null) {
             this.statisticsManager = statisticsManager;
         }
     }
 
-    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId){
-        LOG.debug("Listener {} for service change for node {} registered.", manager, nodeId);
-        serviceChangeListeners.put(nodeId, manager);
+    @Override
+    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo){
+        LOG.debug("Listener {} for service change for node {} registered.", manager, deviceInfo.getNodeId());
+        serviceChangeListeners.put(deviceInfo, manager);
     }
 
     @VisibleForTesting
@@ -78,7 +81,7 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
             return;
         }
         LOG.debug("Notifying registered listeners for service change, no. of listeners {}", serviceChangeListeners.size());
-        for (final Map.Entry<NodeId, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
+        for (final Map.Entry<DeviceInfo, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
             if (nodeIdServiceChangeListenerEntry.getKey().equals(deviceInfo)) {
                 LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), deviceInfo, success);
                 nodeIdServiceChangeListenerEntry.getValue().servicesChangeDone(deviceInfo, success);
