@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -18,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  * Manager to start or stop scheduling statistics
  */
 public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler,
-        DeviceTerminationPhaseHandler, AutoCloseable {
+        DeviceTerminationPhaseHandler, AutoCloseable, OFPManager {
 
     void startScheduling(DeviceInfo deviceInfo);
     void stopScheduling(DeviceInfo deviceInfo);
