@@ -79,8 +79,8 @@ public class LifecycleConductorImplTest {
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
 
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
-        lifecycleConductor.setSafelyDeviceManager(deviceManager);
-        lifecycleConductor.setSafelyStatisticsManager(statisticsManager);
+        lifecycleConductor.setSafelyManager(deviceManager);
+        lifecycleConductor.setSafelyManager(statisticsManager);
 
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
         when(deviceInfo.getNodeId()).thenReturn(nodeId);
