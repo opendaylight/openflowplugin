@@ -46,19 +46,15 @@ public class MdSalRegistrationUtilsTest {
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
 
         final DeviceState mockedDeviceState = mock(DeviceState.class);
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-
         final DeviceInfo mockedDeviceInfo = mock(DeviceInfo.class);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
 
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
 
-        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
-
         final BigInteger mockedDataPathId = mock(BigInteger.class);
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(mockedDataPathId);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);

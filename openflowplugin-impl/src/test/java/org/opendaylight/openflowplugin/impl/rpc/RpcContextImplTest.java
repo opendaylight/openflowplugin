@@ -48,8 +48,6 @@ public class RpcContextImplTest {
     @Mock
     private DeviceState deviceState;
     @Mock
-    private DeviceInfo deviceInfo;
-    @Mock
     private XidSequencer xidSequencer;
     @Mock
     private MessageSpy messageSpy;
@@ -61,6 +59,8 @@ public class RpcContextImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private TestRpcService serviceInstance;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 

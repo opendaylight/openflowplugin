@@ -73,7 +73,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private final DataBroker dataBroker;
     private final EntityOwnershipService entityOwnershipService;
-    private final ConcurrentMap<NodeId, RoleContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, RoleContext> contexts = new ConcurrentHashMap<>();
     private final ConcurrentMap<Entity, RoleContext> watchingEntities = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     private final EntityOwnershipListenerRegistration txEntityOwnershipListenerRegistration;
@@ -100,7 +100,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
         final RoleContext roleContext = new RoleContextImpl(deviceInfo, entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
-        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
+        Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
         makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, true);
         notifyListenersRoleInitializationDone(roleContext.getDeviceInfo(), roleContext.initialization());
         watchingEntities.put(roleContext.getEntity(), roleContext);
@@ -117,10 +117,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             final RoleContext roleContext = iterator.next();
             watchingEntities.remove(roleContext.getEntity());
             watchingEntities.remove(roleContext.getTxEntity());
-            contexts.remove(roleContext.getDeviceInfo().getNodeId());
+            contexts.remove(roleContext.getDeviceInfo());
             if (roleContext.isTxCandidateRegistered()) {
                 LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
-                removeDeviceFromOperationalDS(roleContext.getDeviceInfo().getNodeId());
+                removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
             } else {
                 roleContext.close();
             }
@@ -130,7 +130,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         LOG.trace("onDeviceContextLevelDown for node {}", deviceInfo.getNodeId());
-        final RoleContext roleContext = contexts.get(deviceInfo.getNodeId());
+        final RoleContext roleContext = contexts.get(deviceInfo);
         if (roleContext != null) {
             LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", deviceInfo.getNodeId());
             if (roleContext.isMainCandidateRegistered()) {
@@ -204,11 +204,10 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && !ownershipChange.hasOwner()) {
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo().getNodeId());
+                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
                 }
             } else {
-                final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
-                contexts.remove(nodeId, roleContext);
+                contexts.remove(roleContext.getDeviceInfo(), roleContext);
                 roleContext.close();
                 conductor.closeConnection(roleContext.getDeviceInfo());
             }
@@ -238,10 +237,9 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (!ownershipChange.hasOwner()) {
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo().getNodeId());
+                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
                 } else {
-                    final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
-                    contexts.remove(nodeId, roleContext);
+                    contexts.remove(roleContext.getDeviceInfo(), roleContext);
                     roleContext.close();
                     conductor.closeConnection(roleContext.getDeviceInfo());
                 }
@@ -249,8 +247,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         } else {
             LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity().getType());
             watchingEntities.remove(roleContext.getTxEntity(), roleContext);
-            final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
-            contexts.remove(nodeId, roleContext);
+            contexts.remove(roleContext.getDeviceInfo(), roleContext);
             roleContext.close();
             conductor.closeConnection(roleContext.getDeviceInfo());
         }
@@ -278,7 +275,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole, final RoleContext roleContext) {
         LOG.debug("Sending new role {} to device {}", newRole, roleContext.getDeviceInfo().getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-        final Short version = conductor.gainVersionSafely(roleContext.getDeviceInfo());
+        final Short version = roleContext.getDeviceInfo().getVersion();
         if (null == version) {
             LOG.debug("Device version is null");
             return Futures.immediateFuture(null);
@@ -302,17 +299,17 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @VisibleForTesting
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final NodeId nodeId) {
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
 
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-        delWtx.delete(LogicalDatastoreType.OPERATIONAL, DeviceStateUtil.createNodeInstanceIdentifier(nodeId));
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()));
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
 
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("Delete Node {} was successful", nodeId);
-                final RoleContext roleContext = contexts.remove(nodeId);
+                LOG.debug("Delete Node {} was successful", deviceInfo);
+                final RoleContext roleContext = contexts.remove(deviceInfo);
                 if (roleContext != null) {
                     roleContext.close();
                 }
@@ -320,9 +317,9 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete Node {} failed. {}", nodeId, t);
-                contexts.remove(nodeId);
-                final RoleContext roleContext = contexts.remove(nodeId);
+                LOG.warn("Delete Node {} failed. {}", deviceInfo, t);
+                contexts.remove(deviceInfo);
+                final RoleContext roleContext = contexts.remove(deviceInfo);
                 if (roleContext != null) {
                     roleContext.close();
                 }
@@ -339,7 +336,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     @Override
     public void servicesChangeDone(final DeviceInfo deviceInfo, final boolean success) {
         LOG.debug("Services stopping done for node {} as " + (success ? "successful" : "unsuccessful"), deviceInfo);
-        final RoleContext roleContext = contexts.get(deviceInfo.getNodeId());
+        final RoleContext roleContext = contexts.get(deviceInfo);
         if (null != roleContext) {
             /* Services stopped or failure */
             roleContext.unregisterCandidate(roleContext.getTxEntity());
@@ -347,17 +344,17 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @VisibleForTesting
-    RoleContext getRoleContext(final NodeId nodeId){
-        return contexts.get(nodeId);
+    RoleContext getRoleContext(final DeviceInfo deviceInfo){
+        return contexts.get(deviceInfo);
     }
 
     /**
      * This method is only for testing
      */
     @VisibleForTesting
-    void setRoleContext(NodeId nodeId, RoleContext roleContext){
-        if(!contexts.containsKey(nodeId)) {
-            contexts.put(nodeId, roleContext);
+    void setRoleContext(DeviceInfo deviceInfo, RoleContext roleContext){
+        if(!contexts.containsKey(deviceInfo)) {
+            contexts.put(deviceInfo, roleContext);
         }
     }
 
