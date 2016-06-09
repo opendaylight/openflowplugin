@@ -19,6 +19,7 @@ module lldp-speaker {
     identity lldp-speaker {
         base "config:module-type";
         config:java-name-prefix LLDPSpeaker;
+        status deprecated;
     }
 
     typedef oper-status {
