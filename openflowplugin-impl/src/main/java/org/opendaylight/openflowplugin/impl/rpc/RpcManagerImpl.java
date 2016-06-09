@@ -34,6 +34,7 @@ public class RpcManagerImpl implements RpcManager {
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private final int maxRequestsQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
+    private boolean isStatisticsRpcEnabled;
 
     private final LifecycleConductor conductor;
 
@@ -65,6 +66,8 @@ public class RpcManagerImpl implements RpcManager {
         deviceContext.setRpcContext(rpcContext);
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
+
+        rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
@@ -106,5 +109,11 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public <T extends OFPContext> T gainContext(DeviceInfo deviceInfo) {
         return (T) contexts.get(deviceInfo);
+    }
+
+
+    @Override
+    public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
+        isStatisticsRpcEnabled = statisticsRpcEnabled;
     }
 }
