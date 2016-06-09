@@ -52,8 +52,6 @@ public interface DeviceContext extends AutoCloseable,
         XidSequencer,
         OFPContext{
 
-    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
-
     /**
      * distinguished device context states
      */

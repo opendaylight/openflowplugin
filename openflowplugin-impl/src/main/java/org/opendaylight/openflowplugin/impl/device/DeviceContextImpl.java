@@ -148,8 +148,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInfo deviceInfo;
 
     private volatile DEVICE_CONTEXT_STATE deviceCtxState;
-    private boolean isStatisticsRpcEnabled;
-
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -262,11 +260,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final String errMsg = String.format("DeviceCtx %s is up but we are missing RpcContext", deviceInfo.getDatapathId());
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
-        }
-
-        if (isStatisticsRpcEnabled) {
-            MdSalRegistrationUtils.registerStatCompatibilityServices(getRpcContext(), this,
-                    notificationPublishService, new AtomicLong());
         }
 
         /* Prepare init info collecting */
@@ -632,11 +625,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
-    }
-
-    @Override
-    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
-        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
     }
 
     @Override
