@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_372646b8",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcFutureResultTransformFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 396
+      },
+      "writtenOn": "2016-06-09T16:54:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_0c505531",
+      "range": {
+        "startLine": 181,
+        "startChar": 41,
+        "endLine": 181,
+        "endChar": 47
+      },
+      "revId": "84e0a21667ed22809188cc5aab52f4c705ff98a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
