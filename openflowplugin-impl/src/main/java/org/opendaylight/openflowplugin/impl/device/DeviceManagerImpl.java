@@ -30,6 +30,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -310,5 +311,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @VisibleForTesting
     void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
         deviceContexts.put(deviceInfo, deviceContext);
+    }
+
+    @Override
+    public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
+        return (T) deviceContexts.get(deviceInfo);
     }
 }
