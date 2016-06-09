@@ -201,6 +201,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         conductor.setSafelyManager(deviceManager);
+        conductor.setNotificationPublishService(notificationPublishService);
 
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
@@ -223,8 +224,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager.setDeviceTerminationPhaseHandler(roleManager);
         roleManager.setDeviceTerminationPhaseHandler(deviceManager);
 
-        deviceManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
-        deviceManager.setNotificationPublishService(notificationPublishService);
+        rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();

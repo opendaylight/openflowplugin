@@ -21,17 +21,10 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  * This interface is responsible for instantiating DeviceContext and
  * registering transaction chain for each DeviceContext. Each device
  * has its own device context managed by this manager.
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnectedHandler, DeviceLifecycleSupervisor,
         DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler, TranslatorLibrarian, AutoCloseable, OFPManager {
 
-    /**
-     * Sets notification publish service
-     *
-     * @param notificationPublishService
-     */
-    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     /**
      * invoked after all services injected
@@ -47,6 +40,5 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      */
     DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo);
 
-    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 }
 

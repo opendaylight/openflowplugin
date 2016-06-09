@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -49,13 +50,6 @@ public interface LifecycleConductor {
     void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo);
 
     /**
-     * Returns device of version
-     * @param deviceInfo node identification
-     * @return null if device context doesn't exists
-     */
-    Short gainVersionSafely(final DeviceInfo deviceInfo);
-
-    /**
      * Set new timeout for {@link io.netty.util.HashedWheelTimer}
      * @param task timer task
      * @param delay delay
@@ -82,4 +76,8 @@ public interface LifecycleConductor {
      * @return
      */
     Long reserveXidForDeviceMessage(final DeviceInfo deviceInfo);
+
+    NotificationPublishService getNotificationPublishService();
+
+    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 }

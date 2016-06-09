@@ -19,9 +19,11 @@ import io.netty.util.TimerTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -31,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChang
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -53,6 +56,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     private RpcManager rpcManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
     private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
+    private NotificationPublishService notificationPublishService;
 
     LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
         Preconditions.checkNotNull(messageIntelligenceAgency);
@@ -134,7 +138,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                 return;
             }
 
-            LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, deviceInfo);
+            LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo);
 
             final String logText;
 
@@ -145,6 +149,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                         rpcManager.gainContext(deviceInfo),
                         deviceContext,
                         OfpRole.BECOMEMASTER);
+                if (((RpcContext)rpcManager.gainContext(deviceInfo)).isStatisticsRpcEnabled()) {
+                    MdSalRegistrationUtils.registerStatCompatibilityServices(
+                            rpcManager.gainContext(deviceInfo),
+                            deviceManager.gainContext(deviceInfo),
+                            notificationPublishService,
+                            new AtomicLong());
+                }
             } else {
                 logText = "Stopp";
                 statisticsManager.stopScheduling(deviceInfo);
@@ -176,12 +187,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
     @Override
     public DeviceContext getDeviceContext(DeviceInfo deviceInfo){
-         return deviceManager.getDeviceContextFromNodeId(deviceInfo);
-    }
-
-    @Override
-    public Short gainVersionSafely(final DeviceInfo deviceInfo) {
-        return (null != getDeviceContext(deviceInfo)) ? getDeviceContext(deviceInfo).getPrimaryConnectionContext().getFeatures().getVersion() : null;
+         return deviceManager.gainContext(deviceInfo);
     }
 
     public Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit) {
@@ -222,4 +228,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         return this.serviceChangeListeners.isEmpty();
     }
 
+    @Override
+    public NotificationPublishService getNotificationPublishService() {
+        return notificationPublishService;
+    }
+
+    @Override
+    public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
+        this.notificationPublishService = notificationPublishService;
+    }
 }
