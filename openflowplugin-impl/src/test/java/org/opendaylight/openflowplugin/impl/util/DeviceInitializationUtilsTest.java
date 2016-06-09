@@ -134,6 +134,8 @@ public class DeviceInitializationUtilsTest {
     private DeviceInfo mockedDeviceInfo;
     @Mock
     private DeviceInitializationUtils deviceInitializationUtils;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     @Before
     public void setUp() throws Exception {

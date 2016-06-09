@@ -33,20 +33,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceStateImplTest {
 
-    @Mock
-    private FeaturesReply featuresReply;
     private DeviceStateImpl deviceState;
-
-    private final short version = 13;
-    private final long portNr = 10L;
-    private final Long portBandwidth = 1024L;
-    private final List<PhyPort> pPort = Arrays.asList(new PhyPortBuilder()
-                    .setPortNo(portNr).setMaxSpeed(portBandwidth).build());
 
     @Before
     public void initialization() {
-        Mockito.when(featuresReply.getVersion()).thenReturn(version);
-        Mockito.when(featuresReply.getPhyPort()).thenReturn(pPort);
         deviceState = new DeviceStateImpl();
     }
 
