@@ -139,7 +139,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final Map<Long, NodeConnectorRef> nodeConnectorCache;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
-    private RpcContext rpcContext;
     private ExtensionConverterProvider extensionConverterProvider;
 
     private final boolean switchFeaturesMandatory;
@@ -253,11 +252,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         /* validation */
         if (statisticsContext == null) {
             final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceInfo.getDatapathId());
-            LOG.warn(errMsg);
-            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
-        }
-        if (rpcContext == null) {
-            final String errMsg = String.format("DeviceCtx %s is up but we are missing RpcContext", deviceInfo.getDatapathId());
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
@@ -568,16 +562,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ItemLifeCycleRegistry getItemLifeCycleSourceRegistry() {
         return itemLifeCycleSourceRegistry;
-    }
-
-    @Override
-    public void setRpcContext(final RpcContext rpcContext) {
-        this.rpcContext = rpcContext;
-    }
-
-    @Override
-    public RpcContext getRpcContext() {
-        return rpcContext;
     }
 
     @Override
