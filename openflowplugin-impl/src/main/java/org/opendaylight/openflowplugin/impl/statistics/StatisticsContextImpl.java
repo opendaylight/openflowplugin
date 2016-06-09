@@ -265,42 +265,98 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringOnTheFlyService, deviceContext, /*MultipartType.OFPMPFLOW*/ multipartType) : emptyFuture;
+                statisticsGatheringOnTheFlyService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPFLOW*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
         return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPTABLE*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPTABLE*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
         return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPPORTSTATS*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPPORTSTATS*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
-        return devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPQUEUE*/ multipartType) : emptyFuture;
+        return !devState.isQueueStatisticsAvailable() ? emptyFuture : StatisticsGatheringUtils.gatherStatistics(
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPQUEUE*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState);
     }
 
     private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUPDESC*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPGROUPDESC*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPGROUP*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPGROUP*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETERCONFIG*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService, deviceContext, /*MultipartType.OFPMPMETER*/ multipartType) : emptyFuture;
+                statisticsGatheringService,
+                deviceContext.getDeviceInfo(),
+                /*MultipartType.OFPMPMETER*/ multipartType,
+                deviceContext,
+                deviceContext.getDeviceFlowRegistry(),
+                deviceContext.getDeviceGroupRegistry(),
+                deviceContext.getDeviceMeterRegistry(),
+                devState) : emptyFuture;
     }
 
     @VisibleForTesting
