@@ -34,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
+import java.math.BigInteger;
+
 
 class StatisticsContextImpMockInitiation {
     Boolean isTable = false;
@@ -69,9 +71,13 @@ class StatisticsContextImpMockInitiation {
         final MessageSpy mockedMessageSpy = mock(MessageSpy.class);
         final OutboundQueue mockedOutboundQueue = mock(OutboundQueue.class);
         final DeviceManager mockedDeviceManager = mock(DeviceManager.class);
-        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
 
         mockConductor = mock(LifecycleConductor.class);
+
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
+        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(isTable);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(isFlow);
@@ -80,10 +86,8 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
-
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
-        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(mockedDeviceInfo.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
 
         when(mockedConnectionContext.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
