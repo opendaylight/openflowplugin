@@ -206,10 +206,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
-    void setRpcContext(RpcContext rpcContext);
-
-    RpcContext getRpcContext();
-
     void setStatisticsContext(StatisticsContext statisticsContext);
 
     StatisticsContext getStatisticsContext();
