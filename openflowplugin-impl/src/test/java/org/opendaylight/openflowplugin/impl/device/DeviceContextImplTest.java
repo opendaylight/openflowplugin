@@ -16,6 +16,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
@@ -36,9 +37,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -58,6 +58,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -103,6 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -120,14 +122,14 @@ public class DeviceContextImplTest {
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("55");
     Xid xid;
     Xid xidMulti;
-    DeviceContextImpl deviceContext;
+
+    DeviceContext deviceContext;
     @Mock
     TransactionChainManager txChainManager;
     @Mock
     RequestContext<GetAsyncReply> requestContext;
     @Mock
     RequestContext<MultipartReply> requestContextMultiReply;
-
     @Mock
     ConnectionContext connectionContext;
     @Mock
@@ -174,13 +176,14 @@ public class DeviceContextImplTest {
     private DeviceContext deviceContextSpy;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
         Mockito.when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -216,11 +219,12 @@ public class DeviceContextImplTest {
         Mockito.when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
 
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, false);
-
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
+
+        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
     }
 
     @Test(expected = NullPointerException.class)
@@ -259,10 +263,10 @@ public class DeviceContextImplTest {
     public void testInitialSubmitTransaction() throws Exception {
         Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
-        deviceContext.getTransactionChainManager().activateTransactionManager() ;
-        deviceContext.getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
-        deviceContext.initialSubmitTransaction();
+        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         verify(wTx).submit();
     }
 
@@ -310,8 +314,8 @@ public class DeviceContextImplTest {
     @Test
     public void testAddDeleteToTxChain() throws Exception{
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
-        deviceContext.getTransactionChainManager().activateTransactionManager() ;
-        deviceContext.getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         verify(wTx).delete(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
     }
@@ -321,8 +325,8 @@ public class DeviceContextImplTest {
      */
     @Test
     public void testSubmitTransaction() throws Exception {
-        deviceContext.getTransactionChainManager().activateTransactionManager() ;
-        deviceContext.getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
         assertTrue(deviceContext.submitTransaction());
     }
 
@@ -462,7 +466,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testPortStatusMessage() {
+    public void testPortStatusMessage() throws Exception{
         final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
         final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
@@ -475,8 +479,9 @@ public class DeviceContextImplTest {
         when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
 
         OpenflowPortsUtil.init();
-        deviceContext.processPortStatusMessage(mockedPortStatusMessage);
-//        verify(txChainManager).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class), any(DataObject.class));
+        deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
+        verify(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
+        verify(deviceContextSpy).submitTransaction();
     }
 
     @Test
@@ -530,7 +535,7 @@ public class DeviceContextImplTest {
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
-        deviceContext.setExtensionConverterProvider(mockedExtensionConverterProvider);
+        ((DeviceContextImpl) deviceContext).setExtensionConverterProvider(mockedExtensionConverterProvider);
         deviceContext.processExperimenterMessage(experimenterMessage);
 
         verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
@@ -548,25 +553,22 @@ public class DeviceContextImplTest {
 
     @Test
     public void testOnClusterRoleChange() throws Exception {
-        // test role.equals(oldRole)
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER).get());
 
         // test call transactionChainManager.deactivateTransactionManager()
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
         // test call MdSalRegistrationUtils.unregisterServices(rpcContext)
         final RpcContext rpcContext = mock(RpcContext.class);
         deviceContextSpy.setRpcContext(rpcContext);
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
         final StatisticsContext statisticsContext = mock(StatisticsContext.class);
         deviceContextSpy.setStatisticsContext(statisticsContext);
 
-        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMEMASTER);
+        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER);
         verify(deviceContextSpy).onDeviceTakeClusterLeadership();
 
         Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
-        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMESLAVE);
-        verify(deviceContextSpy).onDeviceLostClusterLeadership();
+        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE);
     }
 }
