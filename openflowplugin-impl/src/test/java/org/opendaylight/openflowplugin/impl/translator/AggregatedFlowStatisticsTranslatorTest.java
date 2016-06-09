@@ -30,8 +30,6 @@ public class AggregatedFlowStatisticsTranslatorTest {
 
     private AggregatedFlowStatisticsTranslator translator;
     @Mock
-    private DeviceState deviceState;
-    @Mock
     private DeviceInfo deviceInfo;
 
     @Before

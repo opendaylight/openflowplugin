@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import com.google.common.base.VerifyException;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -43,10 +45,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -104,6 +109,11 @@ public class RoleManagerImplTest {
     @Mock
     DeviceInfo deviceInfo2;
 
+    @Mock
+    MessageSpy messageSpy;
+
+    @Mock
+    OutboundQueue outboundQueue;
 
     @Mock
     GetFeaturesOutput featuresOutput;
@@ -131,11 +141,14 @@ public class RoleManagerImplTest {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
+        Mockito.when(deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider()).thenReturn(outboundQueue);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(connectionContext.getNodeId()).thenReturn(nodeId);
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        Mockito.when(featuresReply.getDatapathId()).thenReturn(new BigInteger("1"));
-        Mockito.when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(new BigInteger("1"));
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any());
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
@@ -150,8 +163,11 @@ public class RoleManagerImplTest {
         Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
         roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
-        roleContextSpy = Mockito.spy(roleManager.getRoleContext(nodeId));
+        Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
+        roleContextSpy = Mockito.spy(roleManager.getRoleContext(deviceInfo));
+        Mockito.when(roleContextSpy.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(roleContextSpy.getDeviceInfo().getNodeId()).thenReturn(nodeId);
+//        Mockito.when(roleManagerSpy.sendRoleChangeToDevice(Mockito.<OfpRole>any(), Mockito.<RoleContext>any())).thenReturn(rpcFuture);
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
     }
 
@@ -172,7 +188,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(masterTxEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(deviceInfo);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -181,7 +197,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(slaveEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(deviceInfo);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -230,7 +246,7 @@ public class RoleManagerImplTest {
         inOrder.verify(roleContextSpy, Mockito.atLeastOnce()).isTxCandidateRegistered();
         inOrder.verify(roleContextSpy, Mockito.calls(1)).unregisterCandidate(Mockito.<Entity>any());
         inOrder.verify(roleContextSpy, Mockito.never()).close();
-        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<NodeId>any());
+        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test
@@ -270,7 +286,7 @@ public class RoleManagerImplTest {
 
             @Override
             public void roleChangeOnDevice(final DeviceInfo deviceInfo_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
-                Assert.assertTrue(deviceInfo.equals(deviceInfo_));
+                Assert.assertTrue(RoleManagerImplTest.this.deviceInfo.equals(deviceInfo_));
                 Assert.assertTrue(success);
                 Assert.assertFalse(initializationPhase);
                 Assert.assertTrue(newRole.equals(OfpRole.BECOMEMASTER));
@@ -279,24 +295,17 @@ public class RoleManagerImplTest {
         roleManager.notifyListenersRoleInitializationDone(deviceInfo, true);
         roleManager.notifyListenersRoleChangeOnDevice(deviceInfo, true, OfpRole.BECOMEMASTER, false);
     }
-
-    @Test
-    public void testMakeDeviceRoleChange() throws Exception{
-        roleManagerSpy.makeDeviceRoleChange(OfpRole.BECOMEMASTER, roleContextSpy, true);
-        verify(roleManagerSpy, atLeastOnce()).sendRoleChangeToDevice(Mockito.<OfpRole>any(), Mockito.<RoleContext>any());
-        verify(roleManagerSpy, atLeastOnce()).notifyListenersRoleChangeOnDevice(Mockito.<DeviceInfo>any(), eq(true), Mockito.<OfpRole>any(), eq(true));
-    }
-
+    
     @Test
     public void testServicesChangeDone() throws Exception {
-        roleManagerSpy.setRoleContext(nodeId2, roleContextSpy);
+        roleManagerSpy.setRoleContext(deviceInfo2, roleContextSpy);
         roleManagerSpy.servicesChangeDone(deviceInfo2, true);
         verify(roleContextSpy).unregisterCandidate(Mockito.<Entity>any());
     }
 
     @Test
     public void testServicesChangeDoneContextIsNull() throws Exception {
-        roleManagerSpy.setRoleContext(nodeId, roleContextSpy);
+        roleManagerSpy.setRoleContext(deviceInfo, roleContextSpy);
         roleManagerSpy.servicesChangeDone(deviceInfo2, true);
         verify(roleContextSpy, never()).unregisterCandidate(Mockito.<Entity>any());
     }
