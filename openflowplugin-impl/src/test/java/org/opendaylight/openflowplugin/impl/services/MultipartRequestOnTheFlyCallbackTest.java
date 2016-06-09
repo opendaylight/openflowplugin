@@ -28,6 +28,7 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -88,6 +89,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Mock
     private DeviceState mockedDeviceState;
     @Mock
+    private DeviceInfo mockedDeviceInfo;
+    @Mock
     private GetFeaturesOutput mocketGetFeaturesOutput;
     @Mock
     private DeviceFlowRegistry mockedFlowRegistry;
@@ -113,15 +116,14 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mocketGetFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnection);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
-        when(mockedDeviceState.getFeatures()).thenReturn(mocketGetFeaturesOutput);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
         when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
-        when(mockedDeviceState.getNodeId()).thenReturn(mockedNodeId);
+        when(mockedDeviceInfo.getNodeId()).thenReturn(mockedNodeId);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.<Table> emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
@@ -137,7 +139,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
             }
         };
         multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
-                mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceContext.getDeviceState(),
+                mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceContext.getDeviceInfo(),
                 mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext);
     }
 
@@ -205,7 +207,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setMultipartReplyBody(multipartReplyFlowCaseBuilder.build())
                 .setXid(21L);
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceState.getNodeInstanceIdentifier()
+        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         final TableBuilder tableDataBld = new TableBuilder();

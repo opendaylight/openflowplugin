@@ -21,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
@@ -58,6 +59,8 @@ public class RpcContextImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private TestRpcService serviceInstance;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
@@ -67,7 +70,7 @@ public class RpcContextImplTest {
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
 
         rpcContext = new RpcContextImpl(rpcProviderRegistry,deviceContext, messageSpy, MAX_REQUESTS,nodeInstanceIdentifier);

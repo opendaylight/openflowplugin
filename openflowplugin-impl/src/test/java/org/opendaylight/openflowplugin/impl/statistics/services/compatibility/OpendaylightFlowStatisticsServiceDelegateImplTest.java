@@ -95,7 +95,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1));
 
-        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceState), Matchers.any()))
+        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceInfo), Matchers.any()))
                 .thenReturn(new AggregatedFlowStatisticsBuilder()
                         .setByteCount(new Counter64(BigInteger.valueOf(50L)))
                         .setPacketCount(new Counter64(BigInteger.valueOf(51L)))

@@ -51,7 +51,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Before
     public void setUp() throws Exception {
         when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
-        when(mockConductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 
@@ -99,14 +99,13 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testGatherDynamicData_all() throws Exception {
         Mockito.reset(mockedDeviceState);
-        when(mockedDeviceState.getFeatures()).thenReturn(mock(GetFeaturesOutput.class));
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isGroupAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         initStatisticsContext();
 
         when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))

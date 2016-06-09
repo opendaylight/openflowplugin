@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -67,6 +68,8 @@ public abstract class AbstractDirectStatisticsServiceTest {
     @Mock
     protected DeviceState deviceState;
     @Mock
+    protected DeviceInfo deviceInfo;
+    @Mock
     protected GetFeaturesOutput getFeaturesOutput;
 
     protected NodeConnectorId nodeConnectorId;
@@ -96,10 +99,9 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(deviceContext.oook()).thenReturn(translatorLibrary);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
-        when(deviceState.getNodeId()).thenReturn(new NodeId(NODE_ID));
-        when(deviceState.getVersion()).thenReturn(OF_VERSION);
-        when(deviceState.getFeatures()).thenReturn(getFeaturesOutput);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
+        when(deviceInfo.getNodeId()).thenReturn(new NodeId(NODE_ID));
+        when(deviceInfo.getVersion()).thenReturn(OF_VERSION);
         when(getFeaturesOutput.getVersion()).thenReturn(OF_VERSION);
         when(getFeaturesOutput.getDatapathId()).thenReturn(DATAPATH_ID);
         when(connectionContext.getFeatures()).thenReturn(features);

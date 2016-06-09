@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -45,17 +46,15 @@ public class MdSalRegistrationUtilsTest {
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
 
         final DeviceState mockedDeviceState = mock(DeviceState.class);
+        final DeviceInfo mockedDeviceInfo = mock(DeviceInfo.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
 
-        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
-
         final BigInteger mockedDataPathId = mock(BigInteger.class);
         when(mockedFeatures.getDatapathId()).thenReturn(mockedDataPathId);
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(mockedDataPathId);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(mockedDataPathId);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         MdSalRegistrationUtils.registerMasterServices(mockedRpcContext, mockedDeviceContext, OfpRole.BECOMEMASTER);

@@ -40,6 +40,7 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -136,8 +137,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGatheringUtilsTest {
 
-    public static final String DUMMY_NODE_ID_VALUE = "1";
-    public static final NodeId DUMMY_NODE_ID = new NodeId(DUMMY_NODE_ID_VALUE);
+    static final String DUMMY_NODE_ID_VALUE = "1";
+    static final NodeId DUMMY_NODE_ID = new NodeId(DUMMY_NODE_ID_VALUE);
 
     private final KeyedInstanceIdentifier<Node, NodeKey> dummyNodePath = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(DUMMY_NODE_ID));
@@ -159,6 +160,8 @@ public class StatisticsGatheringUtilsTest {
     private ConnectionContext connectionAdapter;
     @Mock
     private StatisticsGatherer statisticsService;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     public StatisticsGatheringUtilsTest() {
         OpenflowPortsUtil.init();
@@ -173,13 +176,10 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
         when(connectionAdapter.getNodeId()).thenReturn(DUMMY_NODE_ID);
-        when(deviceState.getFeatures()).thenReturn(features);
         when(connectionAdapter.getFeatures()).thenReturn(features);
-
-        when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(features.getDatapathId()).thenReturn(BigInteger.ONE);
-
-        when(deviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);
+        when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
+        when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
     }
 
     @After
@@ -194,7 +194,7 @@ public class StatisticsGatheringUtilsTest {
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
         StatisticsGatheringUtils.writeFlowStatistics(prepareFlowStatisticsData(),
-                deviceContext.getDeviceState(), deviceContext.getDeviceFlowRegistry(), deviceContext);
+                deviceContext.getDeviceInfo(), deviceContext.getDeviceFlowRegistry(), deviceContext);
 
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
@@ -494,7 +494,7 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testDeleteAllKnownFlowsNotSync() throws Exception {
         when(deviceState.deviceSynchronized()).thenReturn(false);
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceState(),
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceInfo(),
                 deviceContext.getDeviceFlowRegistry(), deviceContext);
         Mockito.verifyNoMoreInteractions(deviceFlowRegistry);
     }
@@ -503,7 +503,7 @@ public class StatisticsGatheringUtilsTest {
     public void testDeleteAllKnownFlows() throws Exception {
         final short tableId = 0;
         when(deviceState.deviceSynchronized()).thenReturn(true);
-        final InstanceIdentifier<FlowCapableNode> nodePath = deviceState.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
@@ -511,10 +511,10 @@ public class StatisticsGatheringUtilsTest {
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
         when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
-        final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceState.getNodeInstanceIdentifier()
+        final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceState(),
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext.getDeviceInfo(),
                 deviceContext.getDeviceFlowRegistry(), deviceContext);
 
         verify(deviceContext).writeToTransaction(

@@ -31,6 +31,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -66,6 +67,8 @@ public class TransactionChainManagerTest {
     @Mock
     DeviceState deviceState;
     @Mock
+    DeviceInfo deviceInfo;
+    @Mock
     LifecycleConductor conductor;
 
     @Mock
@@ -85,9 +88,9 @@ public class TransactionChainManagerTest {
                 .thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
-        txChainManager = new TransactionChainManager(dataBroker, deviceState, conductor);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        txChainManager = new TransactionChainManager(dataBroker, deviceInfo, conductor);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
