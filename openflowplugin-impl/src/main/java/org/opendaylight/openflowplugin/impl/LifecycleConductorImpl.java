@@ -34,7 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListe
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,23 +136,34 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
             LOG.info("Role change to {} in role context for node {} was successful, starting/stopping services.", newRole, deviceInfo);
 
+            final String logText;
+
             if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                statisticsManager.startScheduling(deviceContext.getPrimaryConnectionContext().getDeviceInfo());
+                logText = "Start";
+                statisticsManager.startScheduling(deviceInfo);
+                MdSalRegistrationUtils.registerMasterServices(
+                        rpcManager.gainContext(deviceInfo),
+                        deviceContext,
+                        OfpRole.BECOMEMASTER);
             } else {
-                statisticsManager.stopScheduling(deviceContext.getPrimaryConnectionContext().getDeviceInfo());
+                logText = "Stopp";
+                statisticsManager.stopScheduling(deviceInfo);
+                MdSalRegistrationUtils.registerSlaveServices(
+                        rpcManager.gainContext(deviceInfo),
+                        OfpRole.BECOMESLAVE);
             }
 
-            final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(null, newRole);
+            final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(newRole);
             Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(@Nullable final Void aVoid) {
-                    LOG.info("Starting/Stopping services for node {} was successful", deviceInfo);
+                    LOG.info("{}ing services for node {} was successful", logText, deviceInfo);
                     if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(deviceInfo, true);
                 }
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    LOG.warn("Starting/Stopping services for node {} was NOT successful, closing connection", deviceInfo);
+                    LOG.warn("ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
                     closeConnection(deviceInfo);
                 }
             });
