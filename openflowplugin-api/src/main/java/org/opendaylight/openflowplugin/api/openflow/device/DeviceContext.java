@@ -13,7 +13,7 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -114,13 +114,12 @@ public interface DeviceContext extends AutoCloseable,
      * newRole is {@link OfpRole#BECOMESLAVE}.
      * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
      * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
-     * @param oldRole - old role for quick validation for needed processing
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      * @return RoleChangeTxChainManager future for activation/deactivation
      * @deprecated replaced by method onDeviceTakeClusterLeadership and onDevicLostClusterLeadership
      */
     @Deprecated
-    ListenableFuture<Void> onClusterRoleChange(@Nullable OfpRole oldRole, @CheckForNull OfpRole role);
+    ListenableFuture<Void> onClusterRoleChange(@CheckForNull OfpRole role);
 
     /**
      * Method has to activate TransactionChainManager and prepare all Contexts from Device Contects suite
@@ -128,13 +127,6 @@ public interface DeviceContext extends AutoCloseable,
      * @return DeviceInitialization furure
      */
     ListenableFuture<Void> onDeviceTakeClusterLeadership();
-
-    /**
-     * Method has to deactivate TransactionChainManager and prepare all Contexts from Device Contects suite
-     * to Lost ClusterLeadership role {@link OfpRole#BECOMESLAVE} (e.g. Stop RPC rounting, stop StatPolling ...)
-     * @return RoleChangeTxChainManager future for deactivation
-     */
-    ListenableFuture<Void> onDeviceLostClusterLeadership();
 
     /**
      * Method has to close TxManager ASAP we are notified about Closed Connection

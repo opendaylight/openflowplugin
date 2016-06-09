@@ -36,9 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -549,24 +547,24 @@ public class DeviceContextImplTest {
     @Test
     public void testOnClusterRoleChange() throws Exception {
         // test role.equals(oldRole)
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER, OfpRole.BECOMEMASTER).get());
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER).get());
 
         // test call transactionChainManager.deactivateTransactionManager()
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
         // test call MdSalRegistrationUtils.unregisterServices(rpcContext)
         final RpcContext rpcContext = mock(RpcContext.class);
         deviceContextSpy.setRpcContext(rpcContext);
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE, OfpRole.NOCHANGE).get());
+        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
         final StatisticsContext statisticsContext = mock(StatisticsContext.class);
         deviceContextSpy.setStatisticsContext(statisticsContext);
 
-        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMEMASTER);
+        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER);
         verify(deviceContextSpy).onDeviceTakeClusterLeadership();
 
         Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
-        deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE, OfpRole.BECOMESLAVE);
+        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE);
         verify(deviceContextSpy).onDeviceLostClusterLeadership();
     }
 }

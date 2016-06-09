@@ -177,7 +177,7 @@ public class LifecycleConductorImplTest {
     public void roleChangeOnDeviceTest4() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
+        when(deviceContext.onClusterRoleChange(OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
         verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
     }
@@ -189,7 +189,7 @@ public class LifecycleConductorImplTest {
     public void roleChangeOnDeviceTest5() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
+        when(deviceContext.onClusterRoleChange(OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }

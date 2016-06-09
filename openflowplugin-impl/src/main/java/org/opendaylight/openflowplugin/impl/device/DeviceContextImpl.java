@@ -241,31 +241,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onClusterRoleChange(final OfpRole oldRole, @CheckForNull final OfpRole role) {
+    public ListenableFuture<Void> onClusterRoleChange(@CheckForNull final OfpRole role) {
         LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
-        Preconditions.checkArgument(role != null);
-        if (role.equals(oldRole)) {
-            LOG.debug("Demanded role change for device {} is not changed. OldRole: {}, NewRole {}", deviceInfo.getNodeId(), oldRole, role);
-            return Futures.immediateFuture(null);
-        }
         if (OfpRole.BECOMEMASTER.equals(role)) {
             return onDeviceTakeClusterLeadership();
-        } else if (OfpRole.BECOMESLAVE.equals(role)) {
-            return onDeviceLostClusterLeadership();
-        } else {
-            LOG.warn("Unknown OFCluster Role {} for Node {}", role, deviceInfo.getNodeId());
-            if (null != rpcContext) {
-                MdSalRegistrationUtils.unregisterServices(rpcContext);
-            }
-            return transactionChainManager.deactivateTransactionManager();
-        }
-    }
-
-    @Override
-    public ListenableFuture<Void> onDeviceLostClusterLeadership() {
-        LOG.trace("onDeviceLostClusterLeadership for node: {}", deviceInfo.getNodeId());
-        if (null != rpcContext) {
-            MdSalRegistrationUtils.registerSlaveServices(rpcContext, OfpRole.BECOMESLAVE);
         }
         return transactionChainManager.deactivateTransactionManager();
     }
@@ -284,8 +263,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
-        /* Routed RPC registration */
-        MdSalRegistrationUtils.registerMasterServices(getRpcContext(), DeviceContextImpl.this, OfpRole.BECOMEMASTER);
 
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(getRpcContext(), this,
