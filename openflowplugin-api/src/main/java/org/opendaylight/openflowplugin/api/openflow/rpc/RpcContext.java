@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -15,9 +16,8 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * tracks the state of any user requests and how they map onto protocol requests. It uses
  * {@link org.opendaylight.openflowplugin.api.openflow.device.RequestContext} to perform requests.
  * <p>
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcContext extends RequestContextStack, AutoCloseable {
+public interface RpcContext extends RequestContextStack, AutoCloseable, OFPContext {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
     <S extends RpcService> S lookupRpcService(Class<S> serviceClass);

@@ -15,6 +15,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -48,7 +49,8 @@ public interface DeviceContext extends AutoCloseable,
         DeviceReplyProcessor,
         PortNumberCache,
         TxFacade,
-        XidSequencer {
+        XidSequencer,
+        OFPContext{
 
     void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 
