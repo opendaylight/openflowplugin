@@ -9,12 +9,15 @@ package org.opendaylight.openflowplugin.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
+
+import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -29,8 +32,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -49,7 +55,11 @@ public class LifecycleConductorImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
+    private RpcContext rpcContext;
+    @Mock
     private DeviceManager deviceManager;
+    @Mock
+    private RpcManager rpcManager;
     @Mock
     private DeviceState deviceState;
     @Mock
@@ -75,15 +85,19 @@ public class LifecycleConductorImplTest {
 
     @Before
     public void setUp() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
 
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
         lifecycleConductor.setSafelyManager(deviceManager);
         lifecycleConductor.setSafelyManager(statisticsManager);
+        lifecycleConductor.setSafelyManager(rpcManager);
 
-        when(connectionContext.getFeatures()).thenReturn(featuresReply);
+        when(deviceManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(deviceContext);
+        when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
         when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+
     }
 
 
@@ -142,7 +156,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleChangeOnDeviceTest1() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(null);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,false);
         verify(deviceContext,times(0)).shutdownConnection();
         lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
@@ -154,7 +168,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleChangeOnDeviceTest2() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
@@ -165,7 +179,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void roleChangeOnDeviceTest3() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,true);
         verify(deviceContext,times(0)).shutdownConnection();
     }
@@ -176,7 +190,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleChangeOnDeviceTest4() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
         verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
@@ -188,29 +202,10 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleChangeOnDeviceTest5() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
-    }
-
-    /**
-     * If getDeviceContext returns null nothing should happen
-     */
-    @Test
-    public void gainVersionSafelyTest1() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
-        assertNull(lifecycleConductor.gainVersionSafely(deviceInfo));
-    }
-
-    /**
-     * If getDeviceContext returns deviceContext getPrimaryConnectionContext() should be called
-     */
-    @Test
-    public void gainVersionSafelyTest2() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.gainVersionSafely(deviceInfo);
-        verify(deviceContext,times(1)).getPrimaryConnectionContext();
     }
 
     /**
@@ -218,7 +213,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void gainConnectionStateSafelyTest1() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(null);
         assertNull(lifecycleConductor.gainConnectionStateSafely(deviceInfo));
     }
 
@@ -237,7 +232,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void reserveXidForDeviceMessageTest1() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
+        when(deviceManager.gainContext(deviceInfo)).thenReturn(null);
         assertNull(lifecycleConductor.reserveXidForDeviceMessage(deviceInfo));
     }
 

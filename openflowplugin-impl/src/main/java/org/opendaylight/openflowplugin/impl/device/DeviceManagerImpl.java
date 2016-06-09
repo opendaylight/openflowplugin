@@ -68,7 +68,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
-    private NotificationPublishService notificationPublishService;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
 
@@ -78,7 +77,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ScheduledThreadPoolExecutor spyPool;
 
     private final LifecycleConductor conductor;
-    private boolean isStatisticsRpcEnabled;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
@@ -168,8 +166,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
-        deviceContext.setNotificationPublishService(notificationPublishService);
+        deviceContext.setNotificationPublishService(conductor.getNotificationPublishService());
 
         updatePacketInRateLimiters();
 
@@ -210,11 +207,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setNotificationPublishService(final NotificationPublishService notificationService) {
-        notificationPublishService = notificationService;
-    }
-
-    @Override
     public void close() {
         for (final Iterator<DeviceContext> iterator = Iterators.consumingIterator(deviceContexts.values().iterator());
                 iterator.hasNext();) {
@@ -244,11 +236,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo) {
         return deviceContexts.get(deviceInfo);
-    }
-
-    @Override
-    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
-        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
     }
 
     @Override
