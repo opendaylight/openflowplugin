@@ -137,8 +137,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGatheringUtilsTest {
 
-    public static final String DUMMY_NODE_ID_VALUE = "1";
-    public static final NodeId DUMMY_NODE_ID = new NodeId(DUMMY_NODE_ID_VALUE);
+    static final String DUMMY_NODE_ID_VALUE = "1";
+    static final NodeId DUMMY_NODE_ID = new NodeId(DUMMY_NODE_ID_VALUE);
 
     private final KeyedInstanceIdentifier<Node, NodeKey> dummyNodePath = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(DUMMY_NODE_ID));
