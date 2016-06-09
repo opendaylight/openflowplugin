@@ -183,8 +183,8 @@ public class StatisticsGatheringUtilsTest {
 
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
-
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);
+        when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
     }
 
     @After
@@ -478,7 +478,15 @@ public class StatisticsGatheringUtilsTest {
         when(statisticsService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.eq(type)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
-        final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(statisticsService, deviceContext, type);
+        final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(
+                statisticsService,
+                deviceContext.getDeviceInfo(),
+                type,
+                deviceContext,
+                deviceFlowRegistry,
+                deviceGroupRegistry,
+                deviceMeterRegistry,
+                deviceState);
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
         verify(deviceContext).submitTransaction();
     }
