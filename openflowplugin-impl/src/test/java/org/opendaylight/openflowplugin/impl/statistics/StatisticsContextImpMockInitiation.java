@@ -100,7 +100,7 @@ class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
         when(mockedDeviceManager.getDeviceContextFromNodeId(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
-        mockConductor.setSafelyDeviceManager(mockedDeviceManager);
+        mockConductor.setSafelyManager(mockedDeviceManager);
         when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
 
     }
