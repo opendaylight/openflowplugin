@@ -20,6 +20,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -311,5 +312,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
         this.deviceTerminPhaseHandler = handler;
+    }
+
+    @Override
+    public <T extends OFPContext> T gainContext(DeviceInfo deviceInfo) {
+        return (T) contexts.get(deviceInfo);
     }
 }

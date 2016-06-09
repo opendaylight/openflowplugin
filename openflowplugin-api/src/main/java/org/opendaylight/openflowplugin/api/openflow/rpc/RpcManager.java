@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
@@ -20,6 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable, DeviceTerminationPhaseHandler {
+public interface RpcManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable, DeviceTerminationPhaseHandler, OFPManager {
 
 }
