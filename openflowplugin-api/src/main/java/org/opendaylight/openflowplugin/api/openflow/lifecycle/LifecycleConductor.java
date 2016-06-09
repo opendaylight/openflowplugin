@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -32,6 +33,13 @@ public interface LifecycleConductor {
      * @param deviceInfo@return null if context doesn't exists
      */
     DeviceContext getDeviceContext(DeviceInfo deviceInfo);
+
+
+    /**
+     * Setter for device manager once set it cant be unset or overwritten
+     * @param manager
+     */
+    void setSafelyManager(OFPManager manager);
 
     /**
      * Registers ont time listener for notify when services rpc, statistics are done stop or start
@@ -67,18 +75,6 @@ public interface LifecycleConductor {
      * @param deviceInfo node identification
      */
     void closeConnection(final DeviceInfo deviceInfo);
-
-    /**
-     * Setter for device manager once set it cant be unset or overwritten
-     * @param deviceManager should be set in OpenFlowPluginProviderImpl
-     */
-    void setSafelyDeviceManager(final DeviceManager deviceManager);
-
-    /**
-     * Setter for statistics manager once set it cant be unset or overwritten
-     * @param statisticsManager should be set in OpenFlowPluginProviderImpl
-     */
-    void setSafelyStatisticsManager(final StatisticsManager statisticsManager);
 
     /**
      * Xid from outboundqueue

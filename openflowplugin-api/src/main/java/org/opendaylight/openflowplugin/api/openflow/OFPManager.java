@@ -8,5 +8,5 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 public interface OFPManager {
 
     <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo);
-    
+
 }
