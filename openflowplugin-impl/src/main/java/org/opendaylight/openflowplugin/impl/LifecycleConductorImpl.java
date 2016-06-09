@@ -50,23 +50,26 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private StatisticsManager statisticsManager;
 
-    public LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
+    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
         Preconditions.checkNotNull(messageIntelligenceAgency);
         this.messageIntelligenceAgency = messageIntelligenceAgency;
     }
 
+    @Override
     public void setSafelyDeviceManager(final DeviceManager deviceManager) {
         if (this.deviceManager == null) {
             this.deviceManager = deviceManager;
         }
     }
 
+    @Override
     public void setSafelyStatisticsManager(final StatisticsManager statisticsManager) {
         if (this.statisticsManager == null) {
             this.statisticsManager = statisticsManager;
         }
     }
 
+    @Override
     public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo){
         LOG.debug("Listener {} for service change for node {} registered.", manager, deviceInfo.getNodeId());
         serviceChangeListeners.put(deviceInfo, manager);
