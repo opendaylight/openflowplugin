@@ -25,4 +25,8 @@ public interface RpcContext extends RequestContextStack, AutoCloseable, OFPConte
 
     @Override
     void close();
+
+    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
+
+    boolean isStatisticsRpcEnabled();
 }

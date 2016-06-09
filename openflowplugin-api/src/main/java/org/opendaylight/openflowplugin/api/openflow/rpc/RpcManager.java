@@ -23,4 +23,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  */
 public interface RpcManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable, DeviceTerminationPhaseHandler, OFPManager {
 
+    void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
 }
