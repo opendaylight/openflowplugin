@@ -100,6 +100,8 @@ public class StatisticsManagerImplTest {
     @Mock
     DeviceState mockedDeviceState;
     @Mock
+    DeviceInfo mockedDeviceInfo;
+    @Mock
     DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
     @Mock
     DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
@@ -155,10 +157,9 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.getFeatures()).thenReturn(featuresOutput);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
-        when(mockedDeviceState.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
+        when(mockedDeviceInfo.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);

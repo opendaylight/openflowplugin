@@ -100,7 +100,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void notifyServiceChangeListenersTest1() {
-        lifecycleConductor.notifyServiceChangeListeners(nodeId,true);
+        lifecycleConductor.notifyServiceChangeListeners(deviceInfo,true);
         when(serviceChangeListeners.size()).thenReturn(0);
         verify(serviceChangeListeners,times(0)).remove(nodeId);
     }
@@ -112,7 +112,7 @@ public class LifecycleConductorImplTest {
     public void notifyServiceChangeListenersTest2() {
         lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
         assertEquals(false,lifecycleConductor.isServiceChangeListenersEmpty());
-        lifecycleConductor.notifyServiceChangeListeners(nodeId,true);
+        lifecycleConductor.notifyServiceChangeListeners(deviceInfo,true);
         assertEquals(true,lifecycleConductor.isServiceChangeListenersEmpty());
     }
 
@@ -123,7 +123,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleInitializationDoneTest1() {
         lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
-        lifecycleConductor.roleInitializationDone(nodeId,false);
+        lifecycleConductor.roleInitializationDone(deviceInfo,false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
 
@@ -133,7 +133,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleInitializationDoneTest2() {
         lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, nodeId);
-        lifecycleConductor.roleInitializationDone(nodeId,true);
+        lifecycleConductor.roleInitializationDone(deviceInfo,true);
         verify(deviceContext,times(0)).shutdownConnection();
     }
 
@@ -143,9 +143,9 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleChangeOnDeviceTest1() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
-        lifecycleConductor.roleChangeOnDevice(nodeId,true,ofpRole,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,false);
         verify(deviceContext,times(0)).shutdownConnection();
-        lifecycleConductor.roleChangeOnDevice(nodeId,false,ofpRole,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
         verify(deviceContext,times(0)).shutdownConnection();
     }
 
@@ -155,7 +155,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleChangeOnDeviceTest2() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.roleChangeOnDevice(nodeId,false,ofpRole,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
 
@@ -166,7 +166,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void roleChangeOnDeviceTest3() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.roleChangeOnDevice(nodeId,true,ofpRole,true);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,true);
         verify(deviceContext,times(0)).shutdownConnection();
     }
 
@@ -178,7 +178,7 @@ public class LifecycleConductorImplTest {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
-        lifecycleConductor.roleChangeOnDevice(nodeId,true,OfpRole.BECOMEMASTER,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
         verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
     }
 
@@ -190,7 +190,7 @@ public class LifecycleConductorImplTest {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
-        lifecycleConductor.roleChangeOnDevice(nodeId,true,OfpRole.BECOMESLAVE,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }
 
@@ -200,7 +200,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void gainVersionSafelyTest1() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
-        assertNull(lifecycleConductor.gainVersionSafely(nodeId));
+        assertNull(lifecycleConductor.gainVersionSafely(deviceInfo));
     }
 
     /**
@@ -209,7 +209,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void gainVersionSafelyTest2() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.gainVersionSafely(nodeId);
+        lifecycleConductor.gainVersionSafely(deviceInfo);
         verify(deviceContext,times(1)).getPrimaryConnectionContext();
     }
 
@@ -219,7 +219,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void gainConnectionStateSafelyTest1() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
-        assertNull(lifecycleConductor.gainConnectionStateSafely(nodeId));
+        assertNull(lifecycleConductor.gainConnectionStateSafely(deviceInfo));
     }
 
     /**
@@ -228,7 +228,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void gainConnectionStateSafelyTest2() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.gainConnectionStateSafely(nodeId);
+        lifecycleConductor.gainConnectionStateSafely(deviceInfo);
         verify(deviceContext,times(1)).getPrimaryConnectionContext();
     }
 
@@ -238,7 +238,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void reserveXidForDeviceMessageTest1() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(null);
-        assertNull(lifecycleConductor.reserveXidForDeviceMessage(nodeId));
+        assertNull(lifecycleConductor.reserveXidForDeviceMessage(deviceInfo));
     }
 
     /**
@@ -247,7 +247,7 @@ public class LifecycleConductorImplTest {
     @Test
     public void reserveXidForDeviceMessageTest2() {
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.reserveXidForDeviceMessage(nodeId);
+        lifecycleConductor.reserveXidForDeviceMessage(deviceInfo);
         verify(deviceContext,times(1)).reserveXidForDeviceMessage();
     }
 
@@ -256,7 +256,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void deviceStartInitializationDoneTest() {
-        lifecycleConductor.deviceStartInitializationDone(nodeId, false);
+        lifecycleConductor.deviceStartInitializationDone(deviceInfo, false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
 
@@ -265,7 +265,7 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void deviceInitializationDoneTest() {
-        lifecycleConductor.deviceInitializationDone(nodeId, false);
+        lifecycleConductor.deviceInitializationDone(deviceInfo, false);
         verify(deviceContext,times(1)).shutdownConnection();
     }
 }

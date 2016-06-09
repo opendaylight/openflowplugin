@@ -79,8 +79,7 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isMetersAvailable()).thenReturn(isMeter);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
@@ -91,9 +90,9 @@ class StatisticsContextImpMockInitiation {
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(mockedDeviceContext);
+        when(mockedDeviceManager.getDeviceContextFromNodeId(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         mockConductor.setSafelyDeviceManager(mockedDeviceManager);
-        when(mockConductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
+        when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
 
     }
 }

@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -40,6 +41,8 @@ public class PortUpdateTranslatorTest {
     private DeviceContext deviceContext;
     @Mock
     private DeviceState deviceState;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig portConfig;
     private StateBuilder portStateBld;
@@ -59,13 +62,13 @@ public class PortUpdateTranslatorTest {
 
     @Test
     public void testTranslate_13() throws Exception {
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
                         .getDefaultInstance("hundredGbFd");
 
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceState, null);
+        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
 
         commonCheck(nodeConnector);
 
@@ -88,14 +91,14 @@ public class PortUpdateTranslatorTest {
 
     @Test
     public void testTranslate_10() throws Exception {
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
                         null, null, null, false, false, true, null, null,
                         null, false, false, null, null, null, null, null
                 );
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceState, null);
+        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
 
         commonCheck(nodeConnector);
 

@@ -46,6 +46,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -131,6 +132,8 @@ public class DeviceInitializationUtilsTest {
     private DeviceContextImpl mockedDeviceContext;
     @Mock
     private DeviceInitializationUtils deviceInitializationUtils;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     @Before
     public void setUp() throws Exception {
@@ -156,10 +159,9 @@ public class DeviceInitializationUtilsTest {
 
         GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
         when(mockedFeatures.getTables()).thenReturn((short) 2);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+        when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
 
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getMultiMsgCollector(Mockito.any(RequestContext.class))).thenReturn(msgCollector);
         when(mockedDeviceContext.oook()).thenReturn(tLibrary);
@@ -179,9 +181,8 @@ public class DeviceInitializationUtilsTest {
 
         final GetFeaturesOutput mockedFeatures = mock(GetFeaturesOutput.class);
         when(mockedFeatures.getTables()).thenReturn((short) 2);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeatures);
 
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final RpcResult<List<MultipartReply>> mockedRpcResult = mock(RpcResult.class);
@@ -280,7 +281,7 @@ public class DeviceInitializationUtilsTest {
         when(mockedPrimaryConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnectionContext);
         final DeviceState mockedDeviceState = mock(DeviceState.class);
-        when(mockedDeviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+        when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         final MessageTranslator mockedTranslator = mock(MessageTranslator.class);
         when(translatorLibrary.lookupTranslator(any(TranslatorKey.class))).thenReturn(mockedTranslator);
