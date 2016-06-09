@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
+
+import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -29,6 +31,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -67,6 +72,10 @@ public class LifecycleConductorImplTest {
     @Mock
     private StatisticsManager statisticsManager;
     @Mock
+    private RpcManager rpcManager;
+    @Mock
+    private RpcContext rpcContext;
+    @Mock
     private DeviceInfo deviceInfo;
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
@@ -81,9 +90,13 @@ public class LifecycleConductorImplTest {
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
         lifecycleConductor.setSafelyManager(deviceManager);
         lifecycleConductor.setSafelyManager(statisticsManager);
+        lifecycleConductor.setSafelyManager(rpcManager);
 
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
         when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
     }
 
 
@@ -177,7 +190,7 @@ public class LifecycleConductorImplTest {
     public void roleChangeOnDeviceTest4() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
+        when(deviceContext.onClusterRoleChange(OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
         verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
     }
@@ -189,7 +202,7 @@ public class LifecycleConductorImplTest {
     public void roleChangeOnDeviceTest5() {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
-        when(deviceContext.onClusterRoleChange(null, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
+        when(deviceContext.onClusterRoleChange(OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }
