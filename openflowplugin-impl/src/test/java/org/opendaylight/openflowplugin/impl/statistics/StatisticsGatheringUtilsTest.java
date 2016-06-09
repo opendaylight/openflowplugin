@@ -473,7 +473,14 @@ public class StatisticsGatheringUtilsTest {
         when(statisticsService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.eq(type)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
-        final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(statisticsService, deviceContext, type);
+        final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(
+                statisticsService,
+                deviceContext.getDeviceInfo(),
+                type,
+                deviceContext,
+                deviceFlowRegistry,
+                deviceGroupRegistry,
+                deviceMeterRegistry);
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
         verify(deviceContext).submitTransaction();
     }
