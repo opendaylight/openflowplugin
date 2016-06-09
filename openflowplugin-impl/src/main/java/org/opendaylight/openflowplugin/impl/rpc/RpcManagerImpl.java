@@ -63,8 +63,6 @@ public class RpcManagerImpl implements RpcManager {
                 maxRequestsQuota,
                 deviceInfo.getNodeInstanceIdentifier());
 
-        deviceContext.setRpcContext(rpcContext);
-
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
 
         rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
