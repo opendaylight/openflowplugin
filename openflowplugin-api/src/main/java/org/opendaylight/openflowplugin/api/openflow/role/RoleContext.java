@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.role;
 
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -16,9 +17,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalR
 import javax.annotation.Nonnull;
 
 /**
- * Rewrote whole role context to prevent errors to change role on cluster
+ * Role context for change role on cluster
  */
-public interface RoleContext extends  RequestContextStack, AutoCloseable {
+public interface RoleContext extends  RequestContextStack, AutoCloseable, OFPContext {
 
     /**
      * Initialization method is responsible for a registration of
