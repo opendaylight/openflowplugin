@@ -35,6 +35,7 @@ class RpcContextImpl implements RpcContext {
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
     private final XidSequencer xidSequencer;
+    private boolean isStatisticsRpcEnabled;
 
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
@@ -136,5 +137,13 @@ class RpcContextImpl implements RpcContext {
         return this.rpcRegistrations.isEmpty();
     }
 
+    @Override
+    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
+    }
 
+    @Override
+    public boolean isStatisticsRpcEnabled() {
+        return isStatisticsRpcEnabled;
+    }
 }
