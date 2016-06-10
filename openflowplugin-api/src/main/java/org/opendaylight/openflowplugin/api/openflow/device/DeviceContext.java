@@ -107,13 +107,6 @@ public interface DeviceContext extends AutoCloseable,
     DeviceInfo getDeviceInfo();
 
     /**
-     * Method has to activate TransactionChainManager and prepare all Contexts from Device Contects suite
-     * to Taking ClusterLeadership role {@link OfpRole#BECOMEMASTER} (e.g. Routed RPC registration, StatPolling ...)
-     * @return DeviceInitialization furure
-     */
-    ListenableFuture<Void> onDeviceTakeClusterLeadership();
-
-    /**
      * Method has to close TxManager ASAP we are notified about Closed Connection
      * @return sync. future for Slave and MD-SAL completition for Master
      */

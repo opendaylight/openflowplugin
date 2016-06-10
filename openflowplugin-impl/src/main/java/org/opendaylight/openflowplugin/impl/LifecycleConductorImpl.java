@@ -35,6 +35,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
@@ -190,11 +191,17 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
          return deviceManager.gainContext(deviceInfo);
     }
 
+    @Override
+    public StatisticsContext getStatisticsContext(DeviceInfo deviceInfo){
+        return statisticsManager.gainContext(deviceInfo);
+    }
+
     public Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit) {
         return hashedWheelTimer.newTimeout(task, delay, unit);
     }
 
-    ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(final DeviceInfo deviceInfo){
+    @Override
+    public ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(final DeviceInfo deviceInfo){
         return (null != getDeviceContext(deviceInfo)) ? getDeviceContext(deviceInfo).getPrimaryConnectionContext().getConnectionState() : null;
     }
 
