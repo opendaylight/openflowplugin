@@ -68,7 +68,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard, threadName());
+                                guard.toString(), threadName());
                     }
 
                     releaseGuardForNodeId(nodeId, guard);
@@ -78,11 +78,11 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 public void onFailure(final Throwable t) {
                     if (LOG.isDebugEnabled()) {
                         final long stampFinished = System.nanoTime();
-                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} thread:{}", nodeId.getValue(),
+                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard, threadName());
+                                guard.availablePermits(), threadName());
                     }
 
                     releaseGuardForNodeId(nodeId, guard);
