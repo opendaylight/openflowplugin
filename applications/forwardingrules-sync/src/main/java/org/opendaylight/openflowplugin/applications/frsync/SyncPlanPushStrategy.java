@@ -22,7 +22,8 @@ public interface SyncPlanPushStrategy {
     /**
      * @param resultVehicle bootstrap future - execution will chain it's async calls to this one
      * @param diffInput     wraps all diff data required for any strategy ({add,remove,update} x {flow,group,meter})
-     * @param counters      reference to internal one-shot statistics - summary off successfully pushed items shall be recorded here
+     * @param counters      reference to internal one-shot statistics - summary off successfully pushed items
+     *                      shall be recorded here
      * @return last future of the chain
      */
     ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,

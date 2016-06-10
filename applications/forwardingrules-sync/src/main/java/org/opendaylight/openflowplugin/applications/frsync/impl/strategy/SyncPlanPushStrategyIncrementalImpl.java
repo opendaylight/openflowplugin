@@ -152,7 +152,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
 
-    protected ListenableFuture<RpcResult<Void>> addMissingFlows(final NodeId nodeId,
+    ListenableFuture<RpcResult<Void>> addMissingFlows(final NodeId nodeId,
                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                                 final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox,
                                                                 final SyncCrudCounters counters) {
@@ -216,7 +216,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 */
     }
 
-    protected ListenableFuture<RpcResult<Void>> removeRedundantFlows(final NodeId nodeId,
+    ListenableFuture<RpcResult<Void>> removeRedundantFlows(final NodeId nodeId,
                                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                                      final Map<TableKey, ItemSyncBox<Flow>> removalPlan,
                                                                      final SyncCrudCounters counters) {
@@ -249,7 +249,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
     }
 
-    protected ListenableFuture<RpcResult<Void>> removeRedundantMeters(final NodeId nodeId,
+    ListenableFuture<RpcResult<Void>> removeRedundantMeters(final NodeId nodeId,
                                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                                       final ItemSyncBox<Meter> meterRemovalPlan,
                                                                       final SyncCrudCounters counters) {
@@ -412,7 +412,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                         PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
-    protected ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
+    ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
                                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                                  final ItemSyncBox<Meter> syncBox,
                                                                  final SyncCrudCounters counters) {
@@ -463,7 +463,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 */
     }
 
-    protected ListenableFuture<RpcResult<Void>> addMissingGroups(final NodeId nodeId,
+    ListenableFuture<RpcResult<Void>> addMissingGroups(final NodeId nodeId,
                                                                  final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                                  final List<ItemSyncBox<Group>> groupsAddPlan,
                                                                  final SyncCrudCounters counters) {

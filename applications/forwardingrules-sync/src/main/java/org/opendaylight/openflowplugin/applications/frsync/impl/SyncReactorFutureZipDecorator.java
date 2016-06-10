@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -34,8 +33,8 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureZipDecorator.class);
 
     @GuardedBy("compressionGuard")
-    protected final Map<InstanceIdentifier<FlowCapableNode>, ZipQueueEntry> compressionQueue = new HashMap<>();
-    protected final Semaphore compressionGuard = new Semaphore(1, false);
+    private final Map<InstanceIdentifier<FlowCapableNode>, ZipQueueEntry> compressionQueue = new HashMap<>();
+    private final Semaphore compressionGuard = new Semaphore(1, false);
 
     public SyncReactorFutureZipDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
         super(delegate, executorService);
@@ -79,9 +78,9 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
      * If there is config delta in compression queue for the device and new configuration is coming,
      * update its zip queue entry. Create/replace zip queue entry for the device with operational delta otherwise.
      */
-    protected boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                             final LogicalDatastoreType dsType) {
+    private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+                                           final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                           final LogicalDatastoreType dsType) {
         final ZipQueueEntry previousEntry = compressionQueue.get(flowcapableNodePath);
 
         if (previousEntry != null && dsType == LogicalDatastoreType.CONFIGURATION
@@ -118,8 +117,4 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         }
     }
 
-    @VisibleForTesting
-    Map<InstanceIdentifier<FlowCapableNode>, ZipQueueEntry> getCompressionQueue() {
-        return compressionQueue;
-    }
 }

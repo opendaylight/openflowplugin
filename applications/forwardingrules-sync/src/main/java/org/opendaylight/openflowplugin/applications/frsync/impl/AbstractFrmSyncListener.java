@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -39,18 +38,18 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                 if (optFuture.isPresent()) {
                     final ListenableFuture<Boolean> future = optFuture.get();
                     final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
-                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId, threadName());
+                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId.getValue(), threadName());
                 }
             } catch (InterruptedException e) {
-                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId);
+                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId.getValue());
             } catch (Exception e) {
-                LOG.error("error processing inventory node modification: {}", nodeId, e);
+                LOG.error("error processing inventory node modification: {}", nodeId.getValue(), e);
             }
         }
     }
 
     protected abstract Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<T> modification) throws ReadFailedException, InterruptedException;
+            DataTreeModification<T> modification) throws InterruptedException;
 
     protected abstract LogicalDatastoreType dsType();
 
