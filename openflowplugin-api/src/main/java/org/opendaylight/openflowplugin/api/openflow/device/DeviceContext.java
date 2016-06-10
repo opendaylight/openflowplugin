@@ -165,10 +165,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
-    void setStatisticsContext(StatisticsContext statisticsContext);
-
-    StatisticsContext getStatisticsContext();
-
     @Override
     void close();
 }

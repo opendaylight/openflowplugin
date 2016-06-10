@@ -96,7 +96,7 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
                     .child(MeterStatistics.class);
 
             final MeterStatistics stats = new MeterStatisticsBuilder(meterStatistics).build();
-            getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, meterPath, stats);
+            getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, meterPath, stats);
         }
     }
 }

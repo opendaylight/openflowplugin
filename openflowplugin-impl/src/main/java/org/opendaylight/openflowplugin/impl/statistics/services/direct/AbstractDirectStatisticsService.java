@@ -60,7 +60,7 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
 
                     if (input.isSuccessful()) {
                         storeStatistics(input.getResult());
-                        getDeviceContext().submitTransaction(); // TODO: If submitTransaction will ever return future, chain it
+                        getTxFacade().submitTransaction(); // TODO: If submitTransaction will ever return future, chain it
                     }
 
                     return Futures.immediateFuture(input);

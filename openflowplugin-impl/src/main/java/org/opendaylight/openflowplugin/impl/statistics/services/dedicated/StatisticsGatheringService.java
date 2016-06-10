@@ -38,7 +38,7 @@ public class StatisticsGatheringService extends AbstractMultipartService<Multipa
 
     @Override
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
-        LOG.debug("Getting statistics for node {} of type {}", getNodeId(), type);
+        LOG.debug("Getting statistics for node {} of type {}", getDeviceInfo().getNodeId(), type);
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
         return handleServiceCall(type);
