@@ -53,7 +53,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     public Future<BigInteger> getGenerationIdFromDevice(final Short version) {
-        LOG.info("getGenerationIdFromDevice called for device:{}", getNodeId().getValue());
+        LOG.info("getGenerationIdFromDevice called for device:{}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
@@ -73,7 +73,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                         finalFuture.set(roleRequestOutput.getGenerationId());
                     } else {
                         LOG.info("roleRequestOutput is null in getGenerationIdFromDevice");
-                        finalFuture.setException(new RoleChangeException("Exception in getting generationId for device:" + getNodeId().getValue()));
+                        finalFuture.setException(new RoleChangeException("Exception in getting generationId for device:" + getDeviceInfo().getNodeId().getValue()));
                     }
 
                 } else {
@@ -96,7 +96,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
     public Future<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Short version, final BigInteger generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
-                getNodeId(), ofpRole);
+                getDeviceInfo().getNodeId(), ofpRole);
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
         roleRequestInputBuilder.setRole(toOFJavaRole(ofpRole));
         roleRequestInputBuilder.setVersion(version);
@@ -109,7 +109,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
             @Override
             public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 LOG.info("submitRoleChange onSuccess for device:{}, role:{}",
-                        getNodeId(), ofpRole);
+                        getDeviceInfo().getNodeId(), ofpRole);
                 final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
                 final Collection<RpcError> rpcErrors = roleRequestOutputRpcResult.getErrors();
                 if (roleRequestOutput != null) {
@@ -131,7 +131,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("submitRoleChange onFailure for device:{}, role:{}",
-                        getNodeId(), ofpRole, throwable);
+                        getDeviceInfo().getNodeId(), ofpRole, throwable);
                 finalFuture.setException(throwable);
             }
         });

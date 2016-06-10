@@ -56,6 +56,6 @@ final class GroupStatsService
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext().getDeviceInfo(), emulatedTxId);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId);
     }
 }

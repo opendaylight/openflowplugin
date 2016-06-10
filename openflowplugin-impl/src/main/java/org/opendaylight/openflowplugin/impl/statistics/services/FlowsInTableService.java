@@ -73,9 +73,8 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
         // convert and inject match
         final short version = getVersion();
-        final DeviceContext deviceContext = getDeviceContext();
         MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder,
-                deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
+                getDeviceInfo().getDatapathId());
 
         // Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
@@ -93,6 +92,6 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext().getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
     }
 }

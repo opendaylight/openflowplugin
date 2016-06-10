@@ -17,9 +17,11 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -46,7 +48,7 @@ abstract class AbstractService<I, O> {
     private final NodeId nodeId;
     private EventIdentifier eventIdentifier;
 
-    public AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
 
         this.requestContextStack = requestContextStack;
@@ -73,6 +75,7 @@ abstract class AbstractService<I, O> {
         return datapathId;
     }
 
+    @Deprecated
     public NodeId getNodeId() {
         return nodeId;
     }
@@ -81,9 +84,16 @@ abstract class AbstractService<I, O> {
         return requestContextStack;
     }
 
+    @Deprecated
     public DeviceContext getDeviceContext() {
         return deviceContext;
     }
+
+    protected DeviceRegistry getDeviceRegistry() {return deviceContext;}
+
+    public DeviceInfo getDeviceInfo() {return deviceContext.getDeviceInfo();}
+
+    public TxFacade getTxFacade() {return deviceContext;}
 
     public MessageSpy getMessageSpy() {
         return messageSpy;
