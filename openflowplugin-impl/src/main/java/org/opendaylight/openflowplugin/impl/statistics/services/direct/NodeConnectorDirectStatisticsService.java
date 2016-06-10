@@ -130,7 +130,7 @@ public class NodeConnectorDirectStatisticsService extends AbstractDirectStatisti
 
     @Override
     protected void storeStatistics(GetNodeConnectorStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceInfo().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodePath = getDeviceInfo().getNodeInstanceIdentifier();
 
         for (final NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatistics : output.getNodeConnectorStatisticsAndPortNumberMap()) {
             final InstanceIdentifier<FlowCapableNodeConnectorStatistics> nodeConnectorPath = nodePath
@@ -139,7 +139,7 @@ public class NodeConnectorDirectStatisticsService extends AbstractDirectStatisti
                     .child(FlowCapableNodeConnectorStatistics.class);
 
             final FlowCapableNodeConnectorStatistics stats = new FlowCapableNodeConnectorStatisticsBuilder(nodeConnectorStatistics).build();
-            getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, nodeConnectorPath, stats);
+            getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, nodeConnectorPath, stats);
         }
     }
 }

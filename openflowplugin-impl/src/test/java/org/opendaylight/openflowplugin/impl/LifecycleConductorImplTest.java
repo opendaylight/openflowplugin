@@ -222,7 +222,6 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void gainConnectionStateSafelyTest2() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         lifecycleConductor.gainConnectionStateSafely(deviceInfo);
         verify(deviceContext,times(1)).getPrimaryConnectionContext();
     }
@@ -241,7 +240,6 @@ public class LifecycleConductorImplTest {
      */
     @Test
     public void reserveXidForDeviceMessageTest2() {
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         lifecycleConductor.reserveXidForDeviceMessage(deviceInfo);
         verify(deviceContext,times(1)).reserveXidForDeviceMessage();
     }

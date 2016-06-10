@@ -86,8 +86,7 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
 
     @Override
     protected void storeStatistics(GetGroupStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final GroupStats groupStatistics : output.getGroupStats()) {
             final InstanceIdentifier<GroupStatistics> groupStatisticsPath = nodePath
@@ -96,7 +95,7 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
                     .child(GroupStatistics.class);
 
             final GroupStatistics stats = new GroupStatisticsBuilder(groupStatistics).build();
-            getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, groupStatisticsPath, stats);
+            getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, groupStatisticsPath, stats);
         }
     }
 }

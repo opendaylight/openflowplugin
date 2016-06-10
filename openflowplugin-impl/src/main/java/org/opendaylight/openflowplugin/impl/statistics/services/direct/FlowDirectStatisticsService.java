@@ -131,8 +131,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
 
     @Override
     protected void storeStatistics(GetFlowStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final FlowAndStatisticsMapList flowStatistics : output.getFlowAndStatisticsMapList()) {
             final FlowId flowId = generateFlowId(flowStatistics);
@@ -149,7 +148,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
                     .child(Table.class, new TableKey(flowStatistics.getTableId()))
                     .child(Flow.class, flowKey);
 
-            getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, flowStatisticsPath, flowBuilder.build());
+            getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, flowStatisticsPath, flowBuilder.build());
         }
     }
 
@@ -162,6 +161,6 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
 
         final short tableId = flowStatistics.getTableId();
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
-        return getDeviceContext().getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
+        return getDeviceRegistry().getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
     }
 }

@@ -116,7 +116,7 @@ public class QueueDirectStatisticsService extends AbstractDirectStatisticsServic
 
     @Override
     protected void storeStatistics(GetQueueStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<Node> nodePath = getDeviceContext().getDeviceInfo().getNodeInstanceIdentifier();
+        final InstanceIdentifier<Node> nodePath = getDeviceInfo().getNodeInstanceIdentifier();
 
         for (final QueueIdAndStatisticsMap queueStatistics : output.getQueueIdAndStatisticsMap()) {
             if (queueStatistics.getQueueId() != null) {
@@ -139,7 +139,7 @@ public class QueueDirectStatisticsService extends AbstractDirectStatisticsServic
                         .setQueueId(queueStatistics.getQueueId())
                         .addAugmentation(FlowCapableNodeConnectorQueueStatisticsData.class, statBuild.build()).build();
 
-                getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, queueStatisticsPath, stats);
+                getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, queueStatisticsPath, stats);
             }
         }
     }

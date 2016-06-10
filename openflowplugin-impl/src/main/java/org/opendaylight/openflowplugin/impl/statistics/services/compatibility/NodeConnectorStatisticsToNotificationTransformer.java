@@ -12,6 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
@@ -36,18 +37,18 @@ public class NodeConnectorStatisticsToNotificationTransformer {
 
     /**
      * @param mpReplyList   raw multipart response from device
-     * @param deviceContext device context
+     * @param deviceInfo    device basic info
      * @param ofVersion     device version
      * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static NodeConnectorStatisticsUpdate transformToNotification(final List<MultipartReply> mpReplyList,
-                                                                        final DeviceContext deviceContext,
+                                                                        final DeviceInfo deviceInfo,
                                                                         final OpenflowVersion ofVersion,
                                                                         final TransactionId emulatedTxId) {
 
         NodeConnectorStatisticsUpdateBuilder notification = new NodeConnectorStatisticsUpdateBuilder();
-        notification.setId(deviceContext.getDeviceInfo().getNodeId());
+        notification.setId(deviceInfo.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
@@ -58,7 +59,7 @@ public class NodeConnectorStatisticsToNotificationTransformer {
             MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
             for (PortStats portStats : replyBody.getPortStats()) {
                 NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
-                        processSingleNodeConnectorStats(deviceContext, ofVersion, portStats);
+                        processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
                 notification.getNodeConnectorStatisticsAndPortNumberMap().add(statsBuilder.build());
             }
         }
@@ -66,12 +67,12 @@ public class NodeConnectorStatisticsToNotificationTransformer {
     }
 
     @VisibleForTesting
-    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(DeviceContext deviceContext, OpenflowVersion ofVersion, PortStats portStats) {
+    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(DeviceInfo deviceInfo, OpenflowVersion ofVersion, PortStats portStats) {
         NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                 new NodeConnectorStatisticsAndPortNumberMapBuilder();
         statsBuilder.setNodeConnectorId(
                 InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                        deviceContext.getDeviceInfo().getDatapathId(),
+                        deviceInfo.getDatapathId(),
                         portStats.getPortNo(), ofVersion));
 
         BytesBuilder bytesBuilder = new BytesBuilder();
