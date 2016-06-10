@@ -43,7 +43,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                             final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup {}", nodeId.getValue());
+        LOG.trace("syncup future {}", nodeId.getValue());
 
         final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {
@@ -70,14 +70,9 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                                                          final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                                          final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture {}", nodeId.getValue());
+        LOG.trace("doSyncupInFuture future {}", nodeId.getValue());
 
         return delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
-    }
-
-    static String threadName() {
-        final Thread currentThread = Thread.currentThread();
-        return currentThread.getName();
     }
 
     protected String updateThreadName(NodeId nodeId) {
