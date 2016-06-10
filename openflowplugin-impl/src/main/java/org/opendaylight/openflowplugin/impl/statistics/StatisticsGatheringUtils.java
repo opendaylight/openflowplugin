@@ -27,6 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -130,9 +131,7 @@ public final class StatisticsGatheringUtils {
                                                       final DeviceInfo deviceInfo,
                                                       final MultipartType type,
                                                       final TxFacade txFacade,
-                                                      final DeviceFlowRegistry flowRegistry,
-                                                      final DeviceGroupRegistry groupRegistry,
-                                                      final DeviceMeterRegistry meterRegistry) {
+                                                      final DeviceRegistry registry) {
         EventIdentifier wholeProcessEventIdentifier = null;
         if (MultipartType.OFPMPFLOW.equals(type)) {
             wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
@@ -142,17 +141,14 @@ public final class StatisticsGatheringUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, flowRegistry, groupRegistry, meterRegistry);
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
                                                                              final DeviceInfo deviceInfo,
                                                                              final EventIdentifier eventIdentifier,
                                                                              final MultipartType type,
-                                                                             final TxFacade txFacade,
-                                                                             final DeviceFlowRegistry flowRegistry,
-                                                                             final DeviceGroupRegistry groupRegistry,
-                                                                             final DeviceMeterRegistry meterRegistry) {
+                                                                             final TxFacade txFacade, DeviceRegistry registry) {
         return Futures.transform(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -197,12 +193,12 @@ public final class StatisticsGatheringUtils {
                             } else if (multipartData instanceof FlowsStatisticsUpdate) {
                                 /* FlowStat Processing is realized by NettyThread only by initPhase, otherwise it is realized
                                  * by MD-SAL thread */
-                                return processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceInfo, eventIdentifier, txFacade, flowRegistry);
+                                return processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceInfo, eventIdentifier, txFacade, registry.getDeviceFlowRegistry());
 
                             } else if (multipartData instanceof GroupDescStatsUpdated) {
-                                processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceInfo, txFacade, groupRegistry);
+                                processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceInfo, txFacade, registry.getDeviceGroupRegistry());
                             } else if (multipartData instanceof MeterConfigStatsUpdated) {
-                                processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceInfo, txFacade, meterRegistry);
+                                processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceInfo, txFacade, registry.getDeviceMeterRegistry());
                             } else {
                                 isMultipartProcessed = Boolean.FALSE;
                             }
