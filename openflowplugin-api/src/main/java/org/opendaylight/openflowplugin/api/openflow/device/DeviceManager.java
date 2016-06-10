@@ -56,7 +56,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * @return RoleChangeTxChainManager future for activation/deactivation
      */
     ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role);
-
+    
 
 }
 
