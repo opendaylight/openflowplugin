@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -48,6 +47,7 @@ import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolList
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,7 +257,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-        final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo.getNodeId());
+        final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo);
 
         if (null == deviceCtx) {
             LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getNodeId());
@@ -304,4 +304,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
         return (T) deviceContexts.get(deviceInfo);
     }
+
+    @Override
+    public ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role) {
+        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
+        LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
+        if (OfpRole.BECOMEMASTER.equals(role)) {
+            return deviceContext.onDeviceTakeClusterLeadership();
+        }
+        return ((DeviceContextImpl)deviceContext).getTransactionChainManager().deactivateTransactionManager();
+    }
+
 }

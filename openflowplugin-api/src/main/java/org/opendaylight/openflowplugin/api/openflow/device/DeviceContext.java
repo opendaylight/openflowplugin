@@ -107,20 +107,6 @@ public interface DeviceContext extends AutoCloseable,
     DeviceInfo getDeviceInfo();
 
     /**
-     * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
-     * TransactionChainManager represents possibility to write or delete Node subtree data
-     * for actual Controller Cluster Node. We are able to have an active TxManager only if
-     * newRole is {@link OfpRole#BECOMESLAVE}.
-     * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
-     * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
-     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
-     * @return RoleChangeTxChainManager future for activation/deactivation
-     * @deprecated replaced by method onDeviceTakeClusterLeadership and onDevicLostClusterLeadership
-     */
-    @Deprecated
-    ListenableFuture<Void> onClusterRoleChange(@CheckForNull OfpRole role);
-
-    /**
      * Method has to activate TransactionChainManager and prepare all Contexts from Device Contects suite
      * to Taking ClusterLeadership role {@link OfpRole#BECOMEMASTER} (e.g. Routed RPC registration, StatPolling ...)
      * @return DeviceInitialization furure
