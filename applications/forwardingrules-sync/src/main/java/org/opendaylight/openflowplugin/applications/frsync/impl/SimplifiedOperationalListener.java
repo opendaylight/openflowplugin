@@ -16,7 +16,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
@@ -64,7 +63,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<Node> modification) throws ReadFailedException, InterruptedException {
+            DataTreeModification<Node> modification) throws InterruptedException {
         updateCache(modification);
 
         if (isAdd(modification) || isAddLogical(modification)) {

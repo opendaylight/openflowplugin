@@ -58,8 +58,10 @@ public class SyncReactorImpl implements SyncReactor {
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree) {
 
-        LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
+        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
+        LOG.trace("syncup impl {} cfg:{} oper:{}", nodeId.getValue(), configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
+
         /**
          * instructions:
          *  - extract diff changes and prepare change steps in safe order
@@ -72,8 +74,6 @@ public class SyncReactorImpl implements SyncReactor {
          * reconciliation strategy - phase 2: - remove redundant objects in following order:
          *  - flows - meters - groups (reordered)
          **/
-
-        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
 
         final List<ItemSyncBox<Group>> groupsToAddOrUpdate = extractGroupsToAddOrUpdate(nodeId, configTree, operationalTree);
         final ItemSyncBox<Meter> metersToAddOrUpdate = extractMetersToAddOrUpdate(nodeId, configTree, operationalTree);
