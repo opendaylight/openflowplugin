@@ -263,15 +263,14 @@ class StatisticsContextImpl implements StatisticsContext {
         return null;
     }
 
+    //TODO: Refactor twice sending deviceContext into gatheringStatistics
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringOnTheFlyService,
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPFLOW*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
@@ -280,9 +279,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPTABLE*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
@@ -291,9 +288,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPPORTSTATS*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
@@ -302,9 +297,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPQUEUE*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry());
+                deviceContext);
     }
 
     private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
@@ -313,9 +306,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPGROUPDESC*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
@@ -324,9 +315,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPGROUP*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
@@ -335,9 +324,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
@@ -346,9 +333,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPMETER*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry()) : emptyFuture;
+                deviceContext) : emptyFuture;
     }
 
     @VisibleForTesting
