@@ -544,22 +544,4 @@ public class DeviceContextImplTest {
         assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
     }
-
-    @Test
-    public void testOnClusterRoleChange() throws Exception {
-
-        // test call transactionChainManager.deactivateTransactionManager()
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
-
-        Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
-
-        final StatisticsContext statisticsContext = mock(StatisticsContext.class);
-        deviceContextSpy.setStatisticsContext(statisticsContext);
-
-        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMEMASTER);
-        verify(deviceContextSpy).onDeviceTakeClusterLeadership();
-
-        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
-        deviceContextSpy.onClusterRoleChange(OfpRole.BECOMESLAVE);
-    }
 }
