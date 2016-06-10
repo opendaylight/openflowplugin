@@ -50,7 +50,8 @@ public interface DeviceContext extends AutoCloseable,
         PortNumberCache,
         TxFacade,
         XidSequencer,
-        OFPContext{
+        OFPContext,
+        DeviceRegistry{
 
     /**
      * distinguished device context states
@@ -145,27 +146,6 @@ public interface DeviceContext extends AutoCloseable,
      * @return
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
-
-    /**
-     * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
-     *
-     * @return
-     */
-    DeviceFlowRegistry getDeviceFlowRegistry();
-
-    /**
-     * Method exposes device group registry used for storing group ids.
-     *
-     * @return
-     */
-    DeviceGroupRegistry getDeviceGroupRegistry();
-
-    /**
-     * Method exposes device meter registry used for storing meter ids.
-     *
-     * @return
-     */
-    DeviceMeterRegistry getDeviceMeterRegistry();
 
 
     /**
