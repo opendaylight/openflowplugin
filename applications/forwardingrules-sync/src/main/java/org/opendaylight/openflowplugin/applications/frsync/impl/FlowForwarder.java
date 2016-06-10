@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
-    private SalFlowService salFlowService;
+    private final SalFlowService salFlowService;
 
     public FlowForwarder(final SalFlowService salFlowService) {
         this.salFlowService = salFlowService;
@@ -53,7 +53,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Flow REMOVE request Tbl id, node Id {} {}",
                 identifier, nodeIdent);
-        
+
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
@@ -77,7 +77,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Flow UPDATE request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, update);
-        
+
         final Future<RpcResult<UpdateFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
@@ -106,7 +106,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding the Flow ADD request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, addDataObj);
-        
+
         final Future<RpcResult<AddFlowOutput>> output;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {

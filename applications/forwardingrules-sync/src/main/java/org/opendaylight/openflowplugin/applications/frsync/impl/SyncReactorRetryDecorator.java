@@ -24,21 +24,21 @@ import org.slf4j.LoggerFactory;
 /**
  * Adding retry mechanism in case of unsuccessful syncup.
  */
-public class SyncReactorRetryDecorator implements SyncReactor{
+public class SyncReactorRetryDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorRetryDecorator.class);
 
     private final SyncReactor delegate;
     private final RetryRegistry retryRegistry;
 
-    public SyncReactorRetryDecorator (final SyncReactor delegate, RetryRegistry retryRegistry) {
+    public SyncReactorRetryDecorator(final SyncReactor delegate, RetryRegistry retryRegistry) {
         this.delegate = delegate;
         this.retryRegistry = retryRegistry;
     }
 
-    public ListenableFuture<Boolean> syncup (final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                             final LogicalDatastoreType dsType) throws InterruptedException {
+    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                            final LogicalDatastoreType dsType) throws InterruptedException {
 
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup retry {}", nodeId.getValue());

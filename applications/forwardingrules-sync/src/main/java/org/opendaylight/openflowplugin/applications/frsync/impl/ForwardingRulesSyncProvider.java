@@ -46,17 +46,17 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
-    public static final int STARTUP_LOOP_TICK = 500;
-    public static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final int STARTUP_LOOP_TICK = 500;
+    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final DataBroker dataService;
     private final SalTableService salTableService;
     private final SalFlatBatchService flatBatchService;
 
-    /** wildcard path to flow-capable-node augmentation of inventory node */
+    /** Wildcard path to flow-capable-node augmentation of inventory node. */
     private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
             InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class);
-    /** wildcard path to node (not flow-capable-node augmentation) of inventory node */
+    /** Wildcard path to node (not flow-capable-node augmentation) of inventory node. */
     private static final InstanceIdentifier<Node> NODE_WC_PATH =
             InstanceIdentifier.create(Nodes.class).child(Node.class);
 
