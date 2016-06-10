@@ -61,7 +61,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class ReconcileUtilTest {
 
     private static final NodeId NODE_ID = new NodeId("unit-node-id");
-    private InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
+    private final InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID));
     private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 

@@ -68,7 +68,7 @@ public final class FlowCapableNodeLookups {
 
         return flowMap;
     }
-    
+
     public static Flow flowMapLookupExisting(Flow flow, Map<SwitchFlowId, Flow> flowConfigMap) {
         return flowConfigMap.get(new SwitchFlowId(flow));
     }

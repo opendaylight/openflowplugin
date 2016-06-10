@@ -33,8 +33,7 @@ public class ItemSyncBox<I> {
     }
 
     /**
-     * Tuple holder for original and updated item
-     *
+     * Tuple holder for original and updated item.
      * @param <I> basic type
      */
     public static final class ItemUpdateTuple<I> {

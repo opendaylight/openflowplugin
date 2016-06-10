@@ -24,8 +24,8 @@ public interface SyncReactor {
      * @param dsType type of DS change
      * @return synchronization outcome
      */
-    ListenableFuture<Boolean> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                     FlowCapableNode configTree, FlowCapableNode operationalTree,
-                                     LogicalDatastoreType dsType) throws InterruptedException;
+    ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree,
+                                     final LogicalDatastoreType dsType) throws InterruptedException;
 
 }

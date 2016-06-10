@@ -40,7 +40,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
     public Semaphore summonGuard(final @Nonnull K key) {
         return semaphoreCache.getUnchecked(key);
     }
-    
+
     @Override
     public String toString() {
         return super.toString() + " size:" + (semaphoreCache == null ? null : semaphoreCache.size()) + " " + semaphoreCache;

@@ -9,21 +9,22 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.impl.SyncReactorFutureZipDecorator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 
 /**
- * Simple compression queue entry for {@link org.opendaylight.openflowplugin.applications.frsync.impl.SyncReactorFutureZipDecorator}.
+ * Simple compression queue entry for {@link SyncReactorFutureZipDecorator}.
  */
 public class ZipQueueEntry {
-    private FlowCapableNode after;
-    private FlowCapableNode before;
-    private LogicalDatastoreType dsTypeBefore;
+    private final FlowCapableNode after;
+    private final FlowCapableNode before;
+    private final LogicalDatastoreType dsTypeBefore;
 
-    public ZipQueueEntry(final FlowCapableNode after, final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
+    public ZipQueueEntry(final FlowCapableNode after, final FlowCapableNode before,
+                         final LogicalDatastoreType dsTypeBefore) {
         this.after = after;
         this.before = before;
         this.dsTypeBefore = dsTypeBefore;
-
     }
 
     public FlowCapableNode getLeft() {

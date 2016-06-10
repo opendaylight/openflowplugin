@@ -65,16 +65,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link SyncPlanPushStrategyIncrementalImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncPlanPushStrategyIncrementalImplTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyIncrementalImplTest.class);
 
     private static final NodeId NODE_ID = new NodeId("unit-nodeId");
     private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
