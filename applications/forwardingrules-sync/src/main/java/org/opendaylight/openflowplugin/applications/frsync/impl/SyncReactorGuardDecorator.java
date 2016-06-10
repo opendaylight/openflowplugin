@@ -58,17 +58,17 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             
             final ListenableFuture<Boolean> endResult =
                     delegate.syncup(flowcapableNodePath, configTree, operationalTree);//TODO handle InteruptedException
-            
+
             Futures.addCallback(endResult, new FutureCallback<Boolean>() {
                 @Override
                 public void onSuccess(@Nullable final Boolean result) {
                     if (LOG.isDebugEnabled()) {
                         final long stampFinished = System.nanoTime();
-                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}, thread:{}", nodeId.getValue(),
+                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard, threadName());
+                                guard.availablePermits(), threadName());
                     }
 
                     releaseGuardForNodeId(nodeId, guard);
@@ -78,11 +78,11 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 public void onFailure(final Throwable t) {
                     if (LOG.isDebugEnabled()) {
                         final long stampFinished = System.nanoTime();
-                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} thread:{}", nodeId.getValue(),
+                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard, threadName());
+                                guard.availablePermits(), threadName());
                     }
 
                     releaseGuardForNodeId(nodeId, guard);
