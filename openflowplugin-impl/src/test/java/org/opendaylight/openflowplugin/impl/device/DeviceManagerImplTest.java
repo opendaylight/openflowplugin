@@ -74,6 +74,7 @@ public class DeviceManagerImplTest {
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
     private static final int barrierCountLimit = 25600;
     private static final int barrierIntervalNanos = 500;
+    public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
 
     @Mock
     CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
@@ -106,10 +107,12 @@ public class DeviceManagerImplTest {
     public void setUp() throws Exception {
         OpenflowPortsUtil.init();
 
-        when(mockConnectionContext.getNodeId()).thenReturn(new NodeId("dummyNodeId"));
+        when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+        when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
+        when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 
         final Capabilities capabilitiesV13 = mock(Capabilities.class);
         final CapabilitiesV10 capabilitiesV10 = mock(CapabilitiesV10.class);
@@ -187,7 +190,6 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
         verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
@@ -212,7 +214,6 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        order.verify(mockConnectionContext).getNodeId();
         verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
@@ -231,8 +232,8 @@ public class DeviceManagerImplTest {
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
 
-        final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.put(mockedNodeId, deviceContext);
+        final ConcurrentHashMap<DeviceInfo, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.put(deviceInfo, deviceContext);
 
         deviceManager.onDeviceDisconnected(connectionContext);
 
@@ -275,8 +276,8 @@ public class DeviceManagerImplTest {
     public void testClose() throws Exception {
         final DeviceContext deviceContext = mock(DeviceContext.class);
         final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        final ConcurrentHashMap<NodeId, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.put(mockedNodeId, deviceContext);
+        final ConcurrentHashMap<DeviceInfo, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
+        deviceContexts.put(deviceInfo, deviceContext);
         Assert.assertEquals(1, deviceContexts.size());
 
         deviceManager.close();
@@ -285,12 +286,12 @@ public class DeviceManagerImplTest {
         verify(deviceContext, Mockito.never()).close();
     }
 
-    private static ConcurrentHashMap<NodeId, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static ConcurrentHashMap<DeviceInfo, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);
         contextsField.setAccessible(true);
-        return (ConcurrentHashMap<NodeId, DeviceContext>) contextsField.get(deviceManager);
+        return (ConcurrentHashMap<DeviceInfo, DeviceContext>) contextsField.get(deviceManager);
     }
 
 }

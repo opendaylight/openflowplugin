@@ -164,7 +164,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                         OfpRole.BECOMESLAVE);
             }
 
-            final ListenableFuture<Void> onClusterRoleChange = deviceContext.onClusterRoleChange(newRole);
+            final ListenableFuture<Void> onClusterRoleChange = deviceManager.onClusterRoleChange(deviceInfo, newRole);
             Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(@Nullable final Void aVoid) {

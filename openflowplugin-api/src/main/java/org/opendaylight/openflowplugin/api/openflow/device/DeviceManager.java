@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -16,6 +16,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+
+import javax.annotation.CheckForNull;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -39,6 +42,21 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * @param deviceInfo@return device context or null
      */
     DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo);
+
+    /**
+     * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
+     * TransactionChainManager represents possibility to write or delete Node subtree data
+     * for actual Controller Cluster Node. We are able to have an active TxManager only if
+     * newRole is {@link OfpRole#BECOMESLAVE}.
+     * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
+     * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
+     *
+     * @param deviceInfo
+     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
+     * @return RoleChangeTxChainManager future for activation/deactivation
+     */
+    ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role);
+
 
 }
 
