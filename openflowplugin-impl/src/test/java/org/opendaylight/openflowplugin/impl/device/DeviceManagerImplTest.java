@@ -186,7 +186,6 @@ public class DeviceManagerImplTest {
         deviceManager.deviceConnected(mockConnectionContext);
 
         final InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).getFeatures();
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
@@ -210,7 +209,6 @@ public class DeviceManagerImplTest {
         deviceManager.deviceConnected(mockConnectionContext);
 
         final InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).getFeatures();
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
