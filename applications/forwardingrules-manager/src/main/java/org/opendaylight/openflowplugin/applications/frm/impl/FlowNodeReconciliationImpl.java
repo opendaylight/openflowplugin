@@ -175,7 +175,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public void remove(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode del,
                        InstanceIdentifier<FlowCapableNode> nodeIdent) {
         if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
-            LOG.warn("Node removed: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Node removed: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            }
 
             if ( ! nodeIdent.isWildcarded()) {
                 flowNodeDisconnected(nodeIdent);
@@ -187,7 +189,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
                     InstanceIdentifier<FlowCapableNode> nodeIdent) {
         if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
-            LOG.warn("Node added: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Node added: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            }
 
             if ( ! nodeIdent.isWildcarded()) {
                 flowNodeConnected(nodeIdent);
