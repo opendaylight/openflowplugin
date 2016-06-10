@@ -153,7 +153,6 @@ public class RoleManagerImplTest {
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
-        Mockito.when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo2.getNodeId()).thenReturn(nodeId2);
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);

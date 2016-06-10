@@ -73,7 +73,7 @@ final class AllMeterConfigStatsService
     @Override
     public MeterConfigStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
         MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
-        message.setId(getDeviceContext().getDeviceInfo().getNodeId());
+        message.setId(getDeviceInfo().getNodeId());
         message.setMoreReplies(Boolean.FALSE);
         message.setTransactionId(emulatedTxId);
 

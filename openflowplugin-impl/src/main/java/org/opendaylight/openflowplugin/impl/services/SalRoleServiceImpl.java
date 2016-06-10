@@ -157,14 +157,14 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
-        LOG.info("RoleChangeTask called on device:{} OFPRole:{}", getNodeId().getValue(), role);
+        LOG.info("RoleChangeTask called on device:{} OFPRole:{}", getDeviceInfo().getNodeId().getValue(), role);
 
         final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
-            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getNodeId().getValue(), generationId);
+            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getDeviceInfo().getNodeId().getValue(), generationId);
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
-            LOG.debug("nextGenerationId received from device:{} is {}", getNodeId().getValue(), nextGenerationId);
+            LOG.debug("nextGenerationId received from device:{} is {}", getDeviceInfo().getNodeId().getValue(), nextGenerationId);
             final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, getVersion(), nextGenerationId);
             return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
         });

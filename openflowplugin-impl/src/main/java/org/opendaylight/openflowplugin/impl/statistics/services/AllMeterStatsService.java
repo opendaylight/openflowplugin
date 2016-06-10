@@ -65,6 +65,6 @@ final class AllMeterStatsService
 
     @Override
     public MeterStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return MeterStatisticsToNotificationTransformer.transformToNotification(result, getDeviceContext().getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return MeterStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
     }
 }
