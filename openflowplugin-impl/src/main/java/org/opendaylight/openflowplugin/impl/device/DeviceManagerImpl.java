@@ -8,9 +8,11 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -40,10 +42,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
+import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -310,9 +314,61 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
         LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
         if (OfpRole.BECOMEMASTER.equals(role)) {
-            return deviceContext.onDeviceTakeClusterLeadership();
+            return onDeviceTakeClusterLeadership(deviceInfo);
         }
         return ((DeviceContextImpl)deviceContext).getTransactionChainManager().deactivateTransactionManager();
+    }
+
+    private ListenableFuture<Void> onDeviceTakeClusterLeadership(final DeviceInfo deviceInfo) {
+        LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceInfo.getNodeId());
+        /* validation */
+        StatisticsContext statisticsContext = conductor.getStatisticsContext(deviceInfo);
+        if (statisticsContext == null) {
+            final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceInfo.getDatapathId());
+            LOG.warn(errMsg);
+            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
+        }
+        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
+        /* Prepare init info collecting */
+        deviceContext.getDeviceState().setDeviceSynchronized(false);
+        ((DeviceContextImpl)deviceContext).getTransactionChainManager().activateTransactionManager();
+        /* Init Collecting NodeInfo */
+        final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
+                deviceContext, switchFeaturesMandatory);
+        /* Init Collecting StatInfo */
+        final ListenableFuture<Boolean> statPollFuture = Futures.transform(initCollectingDeviceInfo,
+                new AsyncFunction<Void, Boolean>() {
+
+                    @Override
+                    public ListenableFuture<Boolean> apply(@Nonnull final Void input) throws Exception {
+                        statisticsContext.statListForCollectingInitialization();
+                        return statisticsContext.gatherDynamicData();
+                    }
+                });
+
+        return Futures.transform(statPollFuture, new Function<Boolean, Void>() {
+
+            @Override
+            public Void apply(final Boolean input) {
+                if (ConnectionContext.CONNECTION_STATE.RIP.equals(conductor.gainConnectionStateSafely(deviceInfo))) {
+                    final String errMsg = String.format("We lost connection for Device %s, context has to be closed.",
+                            deviceInfo.getNodeId());
+                    LOG.warn(errMsg);
+                    throw new IllegalStateException(errMsg);
+                }
+                if (!input) {
+                    final String errMsg = String.format("Get Initial Device %s information fails",
+                            deviceInfo.getNodeId());
+                    LOG.warn(errMsg);
+                    throw new IllegalStateException(errMsg);
+                }
+                LOG.debug("Get Initial Device {} information is successful", deviceInfo.getNodeId());
+                deviceContext.getDeviceState().setDeviceSynchronized(true);
+                ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
+                deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
+                return null;
+            }
+        });
     }
 
 }

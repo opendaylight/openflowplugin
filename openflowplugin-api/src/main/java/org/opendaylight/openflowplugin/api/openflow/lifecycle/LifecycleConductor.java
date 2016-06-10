@@ -12,9 +12,11 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -50,6 +52,13 @@ public interface LifecycleConductor {
     void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo);
 
     /**
+     * Returns statistics context from statistics managers contexts maps
+     *
+     * @param deviceInfo@return null if context doesn't exists
+     */
+    StatisticsContext getStatisticsContext(DeviceInfo deviceInfo);
+
+    /**
      * Set new timeout for {@link io.netty.util.HashedWheelTimer}
      * @param task timer task
      * @param delay delay
@@ -69,6 +78,8 @@ public interface LifecycleConductor {
      * @param deviceInfo node identification
      */
     void closeConnection(final DeviceInfo deviceInfo);
+
+    ConnectionContext.CONNECTION_STATE gainConnectionStateSafely(DeviceInfo deviceInfo);
 
     /**
      * Xid from outboundqueue

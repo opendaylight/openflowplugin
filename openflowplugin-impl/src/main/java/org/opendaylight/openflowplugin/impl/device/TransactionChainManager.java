@@ -111,7 +111,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * registration for this class instance as {@link TransactionChainListener} to provide possibility a make DS
      * transactions. Call this method for MASTER role only.
      */
-    public void activateTransactionManager() {
+    void activateTransactionManager() {
         LOG.trace("activateTransactionManager for node {} transaction submit is set to {}", nodeId(), submitIsEnabled);
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING.equals(transactionChainManagerStatus)) {
@@ -134,7 +134,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      * Call this method for SLAVE only.
      * @return Future
      */
-    public ListenableFuture<Void> deactivateTransactionManager() {
+    ListenableFuture<Void> deactivateTransactionManager() {
         final ListenableFuture<Void> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
