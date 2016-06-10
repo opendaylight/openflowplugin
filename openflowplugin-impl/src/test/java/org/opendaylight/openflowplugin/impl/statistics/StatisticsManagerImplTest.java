@@ -7,20 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,6 +63,19 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -140,11 +143,6 @@ public class StatisticsManagerImplTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
 
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
-
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
@@ -158,9 +156,10 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
-
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         when(mockedDeviceInfo.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
 
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl());
@@ -246,9 +245,8 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
-                Optional.<Timeout>absent());
+                Optional.<Timeout>empty());
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
@@ -266,7 +264,7 @@ public class StatisticsManagerImplTest {
         Mockito.verify(statisticContext).getPollTimeout();
     }
 
-    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode) throws InterruptedException, java.util.concurrent.ExecutionException {
+    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode) throws InterruptedException, ExecutionException {
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
     }
@@ -282,7 +280,6 @@ public class StatisticsManagerImplTest {
         final Timeout pollTimeout = Mockito.mock(Timeout.class);
         final ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
                 Optional.of(pollTimeout));
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
@@ -317,7 +314,6 @@ public class StatisticsManagerImplTest {
                 .setItemLifecycleListener(itemLifeCycleListenerCapt.capture());
 
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.getPollTimeout()).thenReturn(
                 Optional.of(pollTimeout));
         when(statisticContext.getItemLifeCycleListener()).thenReturn(
@@ -373,25 +369,25 @@ public class StatisticsManagerImplTest {
         final StatisticsContext statisticsContext = Mockito.mock(StatisticsContext.class);
         final TimeCounter mockTimerCounter = Mockito.mock(TimeCounter.class);
 
-        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         verify(mockedDeviceContext).getDeviceState();
 
         when(mockedDeviceContext.getDeviceState().isValid()).thenReturn(true);
-        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         // TODO Make scheduleNextPolling visible for tests?
 
         when(mockedDeviceContext.getDeviceState().isStatisticsPollingEnabled()).thenReturn(true);
-        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         // TODO Make scheduleNextPolling visible for tests?
 
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
         when(statisticsContext.isSchedulingEnabled()).thenReturn(Boolean.TRUE);
-        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         Mockito.verify(mockTimerCounter).markStart();
         Mockito.verify(mockTimerCounter).addTimeMark();
 
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
-        statisticsManager.pollStatistics(mockedDeviceContext, statisticsContext, mockTimerCounter);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         Mockito.verify(mockTimerCounter,times(2)).addTimeMark();
     }
 }

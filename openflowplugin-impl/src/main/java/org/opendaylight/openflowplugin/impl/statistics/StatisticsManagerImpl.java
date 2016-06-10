@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
@@ -23,13 +22,13 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -44,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -101,29 +102,28 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @VisibleForTesting
-    void pollStatistics(final DeviceContext deviceContext,
-                                final StatisticsContext statisticsContext,
-                                final TimeCounter timeCounter) {
-
-        final NodeId nodeId = deviceContext.getDeviceInfo().getNodeId();
+    void pollStatistics(final DeviceState deviceState,
+                        final StatisticsContext statisticsContext,
+                        final TimeCounter timeCounter,
+                        final DeviceInfo deviceInfo) {
 
         if (!statisticsContext.isSchedulingEnabled()) {
-            LOG.debug("Disabling statistics scheduling for device: {}", nodeId);
+            LOG.debug("Disabling statistics scheduling for device: {}", deviceInfo.getNodeId());
             return;
         }
         
-        if (!deviceContext.getDeviceState().isValid()) {
-            LOG.debug("Session is not valid for device: {}", nodeId);
+        if (!deviceState.isValid()) {
+            LOG.debug("Session is not valid for device: {}", deviceInfo.getNodeId());
             return;
         }
 
-        if (!deviceContext.getDeviceState().isStatisticsPollingEnabled()) {
-            LOG.debug("Statistics polling is currently disabled for device: {}", nodeId);
-            scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+        if (!deviceState.isStatisticsPollingEnabled()) {
+            LOG.debug("Statistics polling is currently disabled for device: {}", deviceInfo.getNodeId());
+            scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
             return;
         }
 
-        LOG.debug("POLLING ALL STATISTICS for device: {}", nodeId);
+        LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo.getNodeId());
         timeCounter.markStart();
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -131,7 +131,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             public void onSuccess(final Boolean o) {
                 timeCounter.addTimeMark();
                 calculateTimerDelay(timeCounter);
-                scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
             }
 
             @Override
@@ -142,9 +142,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /** This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
-                    conductor.closeConnection(deviceContext.getDeviceInfo());
+                    conductor.closeConnection(deviceInfo);
                 } else {
-                    scheduleNextPolling(deviceContext, statisticsContext, timeCounter);
+                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
             }
         });
@@ -153,7 +153,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", nodeId, STATS_TIMEOUT_SEC);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getNodeId(), STATS_TIMEOUT_SEC);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
@@ -161,12 +161,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         conductor.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
-    private void scheduleNextPolling(final DeviceContext deviceContext,
+    private void scheduleNextPolling(final DeviceState deviceState,
+                                     final DeviceInfo deviceInfo,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
-        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceContext.getDeviceInfo().getNodeId());
+        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
         if (!shuttingDownStatisticsPolling) {
-            final Timeout pollTimeout = conductor.newTimeout(timeout -> pollStatistics(deviceContext, statisticsContext, timeCounter), currentTimerDelay, TimeUnit.MILLISECONDS);
+            final Timeout pollTimeout = conductor.newTimeout(timeout -> pollStatistics(deviceState, statisticsContext, timeCounter, deviceInfo), currentTimerDelay, TimeUnit.MILLISECONDS);
             statisticsContext.setPollTimeout(pollTimeout);
         }
     }
@@ -219,22 +220,21 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             if (!workMode.equals(targetWorkMode)) {
                 shuttingDownStatisticsPolling = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
                 // iterate through stats-ctx: propagate mode
-                for (final StatisticsContext statisticsContext : contexts.values()) {
-                    final DeviceContext deviceContext = statisticsContext.getDeviceContext();
+                for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     switch (targetWorkMode) {
                         case COLLECTALL:
-                            scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                            scheduleNextPolling(conductor.getDeviceContext(entry.getKey()).getDeviceState(), entry.getKey(), entry.getValue(), new TimeCounter());
+                            for (final ItemLifeCycleSource lifeCycleSource : conductor.getDeviceContext(entry.getKey()).getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(null);
                             }
                             break;
                         case FULLYDISABLED:
-                            final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
+                            final Optional<Timeout> pollTimeout = entry.getValue().getPollTimeout();
                             if (pollTimeout.isPresent()) {
                                 pollTimeout.get().cancel();
                             }
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
-                                lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
+                            for (final ItemLifeCycleSource lifeCycleSource : conductor.getDeviceContext(entry.getKey()).getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                                lifeCycleSource.setItemLifecycleListener(entry.getValue().getItemLifeCycleListener());
                             }
                             break;
                         default:
@@ -273,15 +273,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
 
         LOG.info("Scheduling statistics poll for device: {}", deviceInfo.getNodeId());
-        final DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
-
-        if (deviceContext == null) {
-            LOG.warn("Device context not found for device: {}", deviceInfo.getNodeId());
-            return;
-        }
 
         statisticsContext.setSchedulingEnabled(true);
-        scheduleNextPolling(deviceContext, statisticsContext, new TimeCounter());
+        scheduleNextPolling(conductor.getDeviceContext(deviceInfo).getDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
     }
 
     @Override
