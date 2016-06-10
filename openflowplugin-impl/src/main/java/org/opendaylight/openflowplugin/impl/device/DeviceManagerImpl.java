@@ -150,8 +150,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         //FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
         connectionAdapter.setPacketInFiltering(true);
 
-        final Short version = connectionContext.getFeatures().getVersion();
-        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
+        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(deviceInfo.getVersion());
 
         connectionContext.setOutboundQueueProvider(outboundQueueProvider);
         final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
@@ -164,8 +163,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 dataBroker,
                 conductor,
                 outboundQueueProvider,
-                translatorLibrary,
-                switchFeaturesMandatory);
+                translatorLibrary);
 
         Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
 
@@ -235,11 +233,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void initialize() {
         spyPool.scheduleAtFixedRate(conductor.getMessageIntelligenceAgency(), spyRate, spyRate, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo) {
-        return deviceContexts.get(deviceInfo);
     }
 
     @Override

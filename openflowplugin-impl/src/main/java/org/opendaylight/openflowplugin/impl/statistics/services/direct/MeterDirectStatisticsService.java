@@ -86,8 +86,7 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
 
     @Override
     protected void storeStatistics(GetMeterStatisticsOutput output) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceContext()
-                .getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath = getDeviceInfo().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
 
         for (final MeterStats meterStatistics : output.getMeterStats()) {
             final InstanceIdentifier<MeterStatistics> meterPath = nodePath
@@ -96,7 +95,7 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
                     .child(MeterStatistics.class);
 
             final MeterStatistics stats = new MeterStatisticsBuilder(meterStatistics).build();
-            getDeviceContext().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, meterPath, stats);
+            getTxFacade().writeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, meterPath, stats);
         }
     }
 }
