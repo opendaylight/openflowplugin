@@ -15,9 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
  * Simple compression queue entry for {@link org.opendaylight.openflowplugin.applications.frsync.impl.SyncReactorFutureZipDecorator}.
  */
 public class ZipQueueEntry {
-    private FlowCapableNode after;
-    private FlowCapableNode before;
-    private LogicalDatastoreType dsTypeBefore;
+    private final FlowCapableNode after;
+    private final FlowCapableNode before;
+    private final LogicalDatastoreType dsTypeBefore;
 
     public ZipQueueEntry(final FlowCapableNode after, final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
         this.after = after;

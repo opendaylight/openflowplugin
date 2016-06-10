@@ -34,7 +34,7 @@ public class SyncReactorRetryDecoratorTest {
     private static final NodeId NODE_ID = new NodeId("test-node");
     private SyncReactorRetryDecorator reactor;
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
-    final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
+    private final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
 
     @Mock
     private SyncReactorImpl delegate;

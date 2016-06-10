@@ -91,7 +91,7 @@ public class SemaphoreKeeperTest {
             for (int i = 0; i < steps; i++) {
                 executorService.submit(task);
             }
-            Thread.sleep(1000L);
+            Thread.sleep(100L);
             System.gc();
 
             executorService.shutdown();

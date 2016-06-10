@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
-    private SalFlowService salFlowService;
+    private final SalFlowService salFlowService;
 
     public FlowForwarder(final SalFlowService salFlowService) {
         this.salFlowService = salFlowService;

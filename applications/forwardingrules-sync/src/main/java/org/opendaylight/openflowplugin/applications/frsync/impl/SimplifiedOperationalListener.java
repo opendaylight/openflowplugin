@@ -16,7 +16,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
@@ -36,9 +35,9 @@ import org.slf4j.LoggerFactory;
 public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
 
-    protected final SyncReactor reactor;
-    protected final FlowCapableNodeSnapshotDao operationalSnapshot;
-    protected final FlowCapableNodeDao configDao;
+    private final SyncReactor reactor;
+    private final FlowCapableNodeSnapshotDao operationalSnapshot;
+    private final FlowCapableNodeDao configDao;
 
     public SimplifiedOperationalListener(SyncReactor reactor, FlowCapableNodeSnapshotDao operationalSnapshot,
                                          FlowCapableNodeDao configDao) {
@@ -64,7 +63,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<Node> modification) throws ReadFailedException, InterruptedException {
+            DataTreeModification<Node> modification) throws InterruptedException {
 
         updateCache(modification);
         if (isReconciliationNeeded(modification)) {
@@ -163,7 +162,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
     }
 
-    static FlowCapableNode flowCapableNodeAfter(DataTreeModification<Node> modification) {
+    private static FlowCapableNode flowCapableNodeAfter(DataTreeModification<Node> modification) {
         final Node dataAfter = modification.getRootNode().getDataAfter();
         if (dataAfter == null) {
             return null;
@@ -171,7 +170,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return dataAfter.getAugmentation(FlowCapableNode.class);
     }
 
-    static boolean safeConnectorsEmpty(Node node) {
+    private static boolean safeConnectorsEmpty(Node node) {
         if (node == null) {
             return true;
         }
@@ -181,7 +180,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return nodeConnectors == null || nodeConnectors.isEmpty();
     }
 
-    static String nodeIdValue(DataTreeModification<Node> modification) {
+    private static String nodeIdValue(DataTreeModification<Node> modification) {
         final NodeId nodeId = nodeId(modification);
 
         if (nodeId == null) {

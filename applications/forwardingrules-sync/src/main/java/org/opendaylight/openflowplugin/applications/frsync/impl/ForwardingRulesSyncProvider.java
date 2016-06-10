@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
-    public static final int STARTUP_LOOP_TICK = 500;
-    public static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final int STARTUP_LOOP_TICK = 500;
+    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final DataBroker dataService;
     private final SalTableService salTableService;

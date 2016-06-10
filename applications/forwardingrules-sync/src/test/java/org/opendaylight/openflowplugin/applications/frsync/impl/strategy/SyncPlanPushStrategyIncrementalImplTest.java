@@ -74,8 +74,6 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class SyncPlanPushStrategyIncrementalImplTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyIncrementalImplTest.class);
-
     private static final NodeId NODE_ID = new NodeId("unit-nodeId");
     private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class);

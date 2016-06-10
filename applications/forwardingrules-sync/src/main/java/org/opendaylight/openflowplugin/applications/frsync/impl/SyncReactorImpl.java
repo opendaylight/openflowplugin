@@ -60,8 +60,10 @@ public class SyncReactorImpl implements SyncReactor {
                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                             final LogicalDatastoreType dsType) {
 
-        LOG.trace("syncup {} cfg:{} oper:{}", nodeIdent, configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
+        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
+        LOG.trace("syncup impl {} cfg:{} oper:{}", nodeId.getValue(), configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
+
         /**
          * instructions:
          *  - extract diff changes and prepare change steps in safe order
@@ -74,8 +76,6 @@ public class SyncReactorImpl implements SyncReactor {
          * reconciliation strategy - phase 2: - remove redundant objects in following order:
          *  - flows - meters - groups (reordered)
          **/
-
-        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
 
         final List<ItemSyncBox<Group>> groupsToAddOrUpdate = extractGroupsToAddOrUpdate(nodeId, configTree, operationalTree);
         final ItemSyncBox<Meter> metersToAddOrUpdate = extractMetersToAddOrUpdate(nodeId, configTree, operationalTree);
@@ -130,9 +130,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static List<ItemSyncBox<Group>> extractGroupsToAddOrUpdate(final NodeId nodeId,
-                                                               final FlowCapableNode flowCapableNodeConfigured,
-                                                               final FlowCapableNode flowCapableNodeOperational) {
+    private static List<ItemSyncBox<Group>> extractGroupsToAddOrUpdate(final NodeId nodeId,
+                                                                       final FlowCapableNode flowCapableNodeConfigured,
+                                                                       final FlowCapableNode flowCapableNodeOperational) {
         final List<Group> groupsConfigured = ReconcileUtil.safeGroups(flowCapableNodeConfigured);
         final List<Group> groupsOperational = ReconcileUtil.safeGroups(flowCapableNodeOperational);
         final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
@@ -144,9 +144,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static ItemSyncBox<Meter> extractMetersToAddOrUpdate(final NodeId nodeId,
-                                                         final FlowCapableNode flowCapableNodeConfigured,
-                                                         final FlowCapableNode flowCapableNodeOperational) {
+    private static ItemSyncBox<Meter> extractMetersToAddOrUpdate(final NodeId nodeId,
+                                                                 final FlowCapableNode flowCapableNodeConfigured,
+                                                                 final FlowCapableNode flowCapableNodeOperational) {
         final List<Meter> metersConfigured = ReconcileUtil.safeMeters(flowCapableNodeConfigured);
         final List<Meter> metersOperational = ReconcileUtil.safeMeters(flowCapableNodeOperational);
         final Map<MeterId, Meter> meterOperationalMap = FlowCapableNodeLookups.wrapMetersToMap(metersOperational);
@@ -155,9 +155,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToAddOrUpdate(final NodeId nodeId,
-                                                                      final FlowCapableNode flowCapableNodeConfigured,
-                                                                      final FlowCapableNode flowCapableNodeOperational) {
+    private static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToAddOrUpdate(final NodeId nodeId,
+                                                                              final FlowCapableNode flowCapableNodeConfigured,
+                                                                              final FlowCapableNode flowCapableNodeOperational) {
         final List<Table> tablesConfigured = ReconcileUtil.safeTables(flowCapableNodeConfigured);
         if (tablesConfigured.isEmpty()) {
             return Collections.emptyMap();
@@ -170,9 +170,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToRemove(final NodeId nodeId,
-                                                                 final FlowCapableNode flowCapableNodeConfigured,
-                                                                 final FlowCapableNode flowCapableNodeOperational) {
+    private static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToRemove(final NodeId nodeId,
+                                                                         final FlowCapableNode flowCapableNodeConfigured,
+                                                                         final FlowCapableNode flowCapableNodeOperational) {
         final List<Table> tablesOperational = ReconcileUtil.safeTables(flowCapableNodeOperational);
         if (tablesOperational.isEmpty()) {
             return Collections.emptyMap();
@@ -185,9 +185,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static ItemSyncBox<Meter> extractMetersToRemove(final NodeId nodeId,
-                                                    final FlowCapableNode flowCapableNodeConfigured,
-                                                    final FlowCapableNode flowCapableNodeOperational) {
+    private static ItemSyncBox<Meter> extractMetersToRemove(final NodeId nodeId,
+                                                            final FlowCapableNode flowCapableNodeConfigured,
+                                                            final FlowCapableNode flowCapableNodeOperational) {
         final List<Meter> metersConfigured = ReconcileUtil.safeMeters(flowCapableNodeConfigured);
         final List<Meter> metersOperational = ReconcileUtil.safeMeters(flowCapableNodeOperational);
         final Map<MeterId, Meter> meterConfiguredMap = FlowCapableNodeLookups.wrapMetersToMap(metersConfigured);
@@ -196,9 +196,9 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @VisibleForTesting
-    static List<ItemSyncBox<Group>> extractGroupsToRemove(final NodeId nodeId,
-                                                          final FlowCapableNode flowCapableNodeConfigured,
-                                                          final FlowCapableNode flowCapableNodeOperational) {
+    private static List<ItemSyncBox<Group>> extractGroupsToRemove(final NodeId nodeId,
+                                                                  final FlowCapableNode flowCapableNodeConfigured,
+                                                                  final FlowCapableNode flowCapableNodeOperational) {
         final List<Group> groupsConfigured = ReconcileUtil.safeGroups(flowCapableNodeConfigured);
         final List<Group> groupsOperational = ReconcileUtil.safeGroups(flowCapableNodeOperational);
         final Map<Long, Group> groupConfiguredMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);

@@ -28,11 +28,9 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorFutureDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
-
+    public static final String FRM_RPC_CLIENT_PREFIX = "FRM-RPC-client-";
     private final SyncReactor delegate;
     private final ListeningExecutorService executorService;
-
-    public static final String FRM_RPC_CLIENT_PREFIX = "FRM-RPC-client-";
 
     public SyncReactorFutureDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
         this.delegate = delegate;
@@ -43,7 +41,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                             final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup {}", nodeId.getValue());
+        LOG.trace("syncup future {}", nodeId.getValue());
 
         final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {
@@ -70,17 +68,12 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                                                          final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                                          final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture {}", nodeId.getValue());
+        LOG.trace("doSyncupInFuture future {}", nodeId.getValue());
 
         return delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
     }
 
-    static String threadName() {
-        final Thread currentThread = Thread.currentThread();
-        return currentThread.getName();
-    }
-
-    protected String updateThreadName(NodeId nodeId) {
+    private String updateThreadName(NodeId nodeId) {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
         try {
@@ -95,7 +88,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         return oldName;
     }
 
-    protected String updateThreadName(String name) {
+    private String updateThreadName(String name) {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
         try {

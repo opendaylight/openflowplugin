@@ -69,8 +69,7 @@ public class SimplifiedOperationalRetryListener extends SimplifiedOperationalLis
      * @param modification operational modification
      * @return true if device is registered for retry and actual modification is consistent, false otherwise
      */
-    @VisibleForTesting
-    boolean isRegisteredAndConsistentForRetry(DataTreeModification<Node> modification) {
+    private boolean isRegisteredAndConsistentForRetry(DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
 
         if (!retryRegistry.isRegistered(nodeId)) {
@@ -98,7 +97,7 @@ public class SimplifiedOperationalRetryListener extends SimplifiedOperationalLis
         }
 
         try {
-            Date timestampOfRegistration = retryRegistry.getRegistration(nodeId);;
+            Date timestampOfRegistration = retryRegistry.getRegistration(nodeId);
             final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(RetryRegistry.DATE_AND_TIME_FORMAT);
             Date timestampOfStatistics = simpleDateFormat.parse(gatheringStatusEnd.getEnd().getValue());
             if (timestampOfStatistics.after(timestampOfRegistration)) {
