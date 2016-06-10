@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -49,7 +50,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
             new Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>() {
                 @Override
                 public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(final RpcResult<List<MultipartReply>> input) {
-                    final DeviceContext deviceContext = matchingFlowsInTable.getDeviceContext();
+                    final DeviceInfo deviceInfo = matchingFlowsInTable.getDeviceInfo();
                     final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;
                     if (input.isSuccessful()) {
                         MultipartReply reply = input.getResult().get(0);
@@ -58,7 +59,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                         List<AggregatedFlowStatistics> aggregStats = new ArrayList<AggregatedFlowStatistics>();
 
                         for (MultipartReply multipartReply : input.getResult()) {
-                            aggregStats.add(messageTranslator.translate(multipartReply, deviceContext.getDeviceInfo(), null));
+                            aggregStats.add(messageTranslator.translate(multipartReply, deviceInfo, null));
                         }
 
                         GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder getAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder =

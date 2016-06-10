@@ -35,15 +35,6 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
     void initialize();
 
     /**
-     * Returning device context from map maintained in device manager
-     * This prevent to send whole device context to another context
-     * If device context not exists for nodeId it will return null
-     *
-     * @param deviceInfo@return device context or null
-     */
-    DeviceContext getDeviceContextFromNodeId(DeviceInfo deviceInfo);
-
-    /**
      * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
      * TransactionChainManager represents possibility to write or delete Node subtree data
      * for actual Controller Cluster Node. We are able to have an active TxManager only if
@@ -56,7 +47,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * @return RoleChangeTxChainManager future for activation/deactivation
      */
     ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role);
-    
+
 
 }
 

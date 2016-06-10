@@ -47,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
  */
 public interface DeviceContext extends AutoCloseable,
         DeviceReplyProcessor,
-        PortNumberCache,
         TxFacade,
         XidSequencer,
         OFPContext,
@@ -164,10 +163,6 @@ public interface DeviceContext extends AutoCloseable,
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
-
-    void setStatisticsContext(StatisticsContext statisticsContext);
-
-    StatisticsContext getStatisticsContext();
 
     @Override
     void close();
