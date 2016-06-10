@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
@@ -18,15 +17,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.Timeout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -43,6 +33,17 @@ import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.Statis
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 class StatisticsContextImpl implements StatisticsContext {
 
@@ -205,7 +206,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public Optional<Timeout> getPollTimeout() {
-        return Optional.fromNullable(pollTimeout);
+        return Optional.ofNullable(pollTimeout);
     }
 
     private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
@@ -360,9 +361,4 @@ class StatisticsContextImpl implements StatisticsContext {
         return itemLifeCycleListener;
     }
 
-
-    @Override
-    public DeviceContext getDeviceContext() {
-        return deviceContext;
-    }
 }
