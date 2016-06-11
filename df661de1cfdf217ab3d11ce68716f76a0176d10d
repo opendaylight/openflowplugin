@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_8268a9bb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-11T00:01:09Z",
+      "side": 1,
+      "message": "just a thought: perhaps the .setValid(false) call can be moved to the method removeSessionContext() instead since it appears that removeSessionContext() is only called from invalidateSessionContext() and invalidateDeadSessionContext(). This also seems to be in step with the addSessionContext() method, which calls setValid(true).",
+      "revId": "df661de1cfdf217ab3d11ce68716f76a0176d10d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_626595e0",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-11T00:01:09Z",
+      "side": 1,
+      "message": "just a thought: perhaps the .setValid(false) call can be moved to the method removeSessionContext() instead since it appears that removeSessionContext() is only called from invalidateSessionContext() and invalidateDeadSessionContext(). This also seems to be in step with the addSessionContext() method, which calls setValid(true).",
+      "revId": "df661de1cfdf217ab3d11ce68716f76a0176d10d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
