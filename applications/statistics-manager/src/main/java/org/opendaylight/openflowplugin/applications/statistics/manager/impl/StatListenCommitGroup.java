@@ -64,7 +64,7 @@ import com.google.common.base.Preconditions;
  * org.opendaylight.openflowplugin.applications.statistics.manager.impl
  *
  * StatListenCommitGroup
- * Class is a NotifyListener for GroupStatistics and DataChangeListener for Config/DataStore for Group node.
+ * Class is a NotifyListener for GroupStatistics and DataTreeChangeListener for Config/DataStore for Group node.
  * All expected (registered) GroupStatistics will be builded and commit to Operational/DataStore.
  * DataChangeEven should call create/delete Group in Operational/DS
  *
