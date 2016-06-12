@@ -20,7 +20,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * StatNodeRegistration
  * Class represents {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode}
- * {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener} in Operational/DataStore for ADD / REMOVE
+ * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener} in Operational/DataStore for ADD / REMOVE
  * actions which are represented connect / disconnect OF actions. Connect functionality are expecting
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>

@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * org.opendaylight.openflowplugin.applications.statistics.manager.impl
  *
  * StatListenCommitFlow
- * Class is a NotifyListener for FlowStatistics and DataChangeListener for Config/DataStore for Flow node.
+ * Class is a NotifyListener for FlowStatistics and DataTreeChangeListener for Config/DataStore for Flow node.
  * All expected (registered) FlowStatistics will be builded and commit to Operational/DataStore.
  * DataChangeEven should call create/delete Flow in Operational/DS create process needs to pair
  * Device Flow HashCode and FlowId from Config/DS
