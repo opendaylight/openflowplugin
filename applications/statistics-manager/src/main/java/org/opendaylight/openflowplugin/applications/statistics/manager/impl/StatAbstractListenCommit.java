@@ -10,25 +10,27 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
+import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+
+import org.opendaylight.controller.md.sal.binding.api.*;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatListeningCommiter;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
 
     private static final Logger LOG = LoggerFactory.getLogger(StatAbstractListenCommit.class);
 
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<StatAbstractListenCommit<T, N>> listenerRegistration;
 
     protected final Map<InstanceIdentifier<Node>, Map<InstanceIdentifier<T>, Integer>> mapNodesForDelete = new ConcurrentHashMap<>();
     protected final Map<InstanceIdentifier<Node>, Integer> mapNodeFeautureRepeater = new ConcurrentHashMap<>();
@@ -62,29 +64,45 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     private ReadOnlyTransaction currentReadTx;
     private volatile boolean currentReadTxStale;
 
+    private static final int STARTUP_LOOP_TICK = 500;
+    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
+
+    private final DataTreeIdentifier<T> treeId =
+            new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardedRegistrationPath());
+
     /* Constructor has to make a registration */
     public StatAbstractListenCommit(final StatisticsManager manager, final DataBroker db,
             final NotificationProviderService nps, final Class<T> clazz, final StatNodeRegistration nodeRegistrationManager) {
         super(manager,nps, nodeRegistrationManager);
         this.clazz = Preconditions.checkNotNull(clazz, "Referenced Class can not be null");
         Preconditions.checkArgument(db != null, "DataBroker can not be null!");
-        listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                getWildCardedRegistrationPath(), this, DataChangeScope.BASE);
         this.dataBroker = db;
         this.nodeRegistrationManager = nodeRegistrationManager;
+
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+        try{
+            listenerRegistration =  looper.loopUntilNoException(new Callable<ListenerRegistration<StatAbstractListenCommit<T, N>>>() {
+                @Override
+                public ListenerRegistration<StatAbstractListenCommit<T, N>> call() throws Exception {
+                    return db.registerDataTreeChangeListener(treeId,StatAbstractListenCommit.this);
+                }
+            });
+        }catch(final Exception ex){
+            LOG.debug(" StatAbstractListenCommit DataChange listener registration failed {}", ex.getMessage());
+            throw new IllegalStateException("Notification supplier startup fail! System needs restart.", ex);
+        }
     }
 
     /**
      * Method returns WildCarded Path which is used for registration as a listening path changes in
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
      * @return
      */
     protected abstract InstanceIdentifier<T> getWildCardedRegistrationPath();
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
-        Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
-
+    public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
+        Preconditions.checkNotNull(changes, "Changes must not be null!");
         /*
          * If we have opened read transaction for configuration data store, we need to mark it as stale.
          *
