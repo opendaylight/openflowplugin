@@ -26,7 +26,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -35,6 +35,9 @@ import org.opendaylight.openflowplugin.applications.statistics.manager.Statistic
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+
+import java.util.ArrayList;
+
 
 /**
  * Unit tests for StatAbstractListenCommit.
@@ -153,7 +156,7 @@ public class StatAbstractListenCommitTest {
                     @Override
                     public CheckedFuture<Optional<DataObject>, ReadFailedException> answer(
                             InvocationOnMock unused) {
-                        statCommit.onDataChanged(mock(AsyncDataChangeEvent.class));
+                        statCommit.onDataTreeChanged(new ArrayList<>());
                         return Futures.immediateCheckedFuture(expected1);
                     }
                 };
