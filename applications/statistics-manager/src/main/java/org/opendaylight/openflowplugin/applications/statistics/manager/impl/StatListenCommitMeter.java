@@ -65,7 +65,7 @@ import com.google.common.base.Preconditions;
  * org.opendaylight.openflowplugin.applications.statistics.manager.impl
  *
  * StatListenCommitMeter
- * Class is a NotifyListener for MeterStatistics and DataChangeListener for Config/DataStore for Meter node.
+ * Class is a NotifyListener for MeterStatistics and DataTreeChangeListener for Config/DataStore for Meter node.
  * All expected (registered) MeterStatistics will be builded and commit to Operational/DataStore.
  * DataChangeEven should call create/delete Meter in Operational/DS
  *
