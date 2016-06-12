@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
  * org.opendaylight.openflowplugin.applications.statistics.manager
  *
  * StatListeningCommiter
- * Definition Interface for {@link DataChangeListener} implementer class rule.
+ * Definition Interface for {@link DataTreeChangeListener} implementer class rule.
  * Interface represent a contract between Config/DataStore changes and
  * Operational/DataStore commits. All Operational/DataStore commit have
  * to by represent as RPC Device response Notification processing. So
@@ -29,7 +29,7 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
  *
  * Created: Aug 27, 2014
  */
-public interface StatListeningCommiter<T extends DataObject, N extends NotificationListener> extends DataChangeListener, StatNotifyCommiter<N> {
+public interface StatListeningCommiter<T extends DataObject, N extends NotificationListener> extends DataTreeChangeListener<T>, StatNotifyCommiter<N> {
 
 
     /**
