@@ -4,13 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
+
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.*;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -64,8 +63,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
         final InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(flow.getTableId()));
 
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                tableII.child(Flow.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                tableII.child(Flow.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -89,8 +88,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
 
         final InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Group.class, getGroup().getKey());
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                groupII.augmentation(NodeGroupStatistics.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                groupII.augmentation(NodeGroupStatistics.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -123,8 +122,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
 
         final InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Group.class, getGroup().getKey());
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                groupII.augmentation(NodeGroupStatistics.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                groupII.augmentation(NodeGroupStatistics.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -157,8 +156,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
 
         final InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Meter.class, getMeter().getKey());
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                meterII.augmentation(NodeMeterStatistics.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                meterII.augmentation(NodeMeterStatistics.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -206,8 +205,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
         writeTx.put(LogicalDatastoreType.OPERATIONAL, queueII, qBuilder.build());
         assertCommit(writeTx.submit());
 
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                queueII.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                queueII.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -238,9 +237,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
         writeTx.put(LogicalDatastoreType.OPERATIONAL, nodeConnectorII, ncBuilder.build());
         assertCommit(writeTx.submit());
 
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                nodeConnectorII.augmentation(FlowCapableNodeConnectorStatisticsData.class),
-                new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                nodeConnectorII.augmentation(FlowCapableNodeConnectorStatisticsData.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -269,8 +267,8 @@ public class StatCollectorTest extends StatisticsManagerTest {
         final InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId.getValue()));
 
-        getDataBroker().registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                tableII.augmentation(FlowTableStatisticsData.class), new ChangeListener(), AsyncDataBroker.DataChangeScope.BASE);
+        getDataBroker().registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                tableII.augmentation(FlowTableStatisticsData.class)), new ChangeListener());
 
         synchronized (waitObject) {
             waitObject.wait();
@@ -286,13 +284,14 @@ public class StatCollectorTest extends StatisticsManagerTest {
                 flowTableStatisticsDataOptional.get().getFlowTableStatistics().getPacketsLookedUp());
     }
 
-    public class ChangeListener implements DataChangeListener {
+    public class ChangeListener<T extends DataObject> implements DataTreeChangeListener<T> {
 
         @Override
-        public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        public void onDataTreeChanged(final Collection<DataTreeModification<T>> changes){
             synchronized (waitObject) {
                 waitObject.notify();
             }
         }
+
     }
 }
