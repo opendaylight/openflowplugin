@@ -128,7 +128,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
-    private final Map<Long, NodeConnectorRef> nodeConnectorCache;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
 
@@ -167,9 +166,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 new TranslatorKey(deviceInfo.getVersion(), PacketIn.class.getName()));
         flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
-
-
-        nodeConnectorCache = new ConcurrentHashMap<>();
 
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
