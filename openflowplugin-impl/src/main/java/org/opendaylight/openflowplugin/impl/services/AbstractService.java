@@ -18,15 +18,12 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -45,7 +42,6 @@ abstract class AbstractService<I, O> {
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
     private final MessageSpy messageSpy;
-    private final NodeId nodeId;
     private EventIdentifier eventIdentifier;
 
     AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
@@ -56,7 +52,6 @@ abstract class AbstractService<I, O> {
         this.datapathId = deviceInfo.getDatapathId();
         this.version = deviceInfo.getVersion();
         this.messageSpy = deviceContext.getMessageSpy();
-        this.nodeId = deviceInfo.getNodeId();
     }
 
     public EventIdentifier getEventIdentifier() {
@@ -73,11 +68,6 @@ abstract class AbstractService<I, O> {
 
     public BigInteger getDatapathId() {
         return datapathId;
-    }
-
-    @Deprecated
-    public NodeId getNodeId() {
-        return nodeId;
     }
 
     public RequestContextStack getRequestContextStack() {
