@@ -38,6 +38,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
@@ -45,13 +47,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener {
+final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleConductorImpl.class);
     private static final int TICKS_PER_WHEEL = 500;
     private static final long TICK_DURATION = 10; // 0.5 sec.
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
+    private ExtensionConverterProvider extensionConverterProvider;
     private DeviceManager deviceManager;
     private StatisticsManager statisticsManager;
     private RpcManager rpcManager;
@@ -60,22 +63,40 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     private NotificationPublishService notificationPublishService;
 
     LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
-        Preconditions.checkNotNull(messageIntelligenceAgency);
-        this.messageIntelligenceAgency = messageIntelligenceAgency;
+        this.messageIntelligenceAgency = Preconditions.checkNotNull(messageIntelligenceAgency);
+    }
+
+    @Override
+    public ExtensionConverterProvider getExtensionConverterProvider() {
+        return extensionConverterProvider;
+    }
+
+    @Override
+    public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     @Override
     public void setSafelyManager(final OFPManager manager){
-        if (manager == null) {
-            LOG.info("Manager {} is already defined in conductor. ", manager);
-        }
         if (manager instanceof RpcManager) {
+            if (rpcManager != null) {
+                LOG.info("RPC manager {} is already defined in conductor. ", manager);
+                return;
+            }
             this.rpcManager = (RpcManager) manager;
         } else {
             if (manager instanceof StatisticsManager) {
+                if (statisticsManager != null) {
+                    LOG.info("Statistics manager {} is already defined in conductor. ", manager);
+                    return;
+                }
                 this.statisticsManager = (StatisticsManager) manager;
             } else {
                 if (manager instanceof DeviceManager) {
+                    if (deviceManager != null) {
+                        LOG.info("Device manager {} is already defined in conductor. ", manager);
+                        return;
+                    }
                     this.deviceManager = (DeviceManager) manager;
                 }
             }
@@ -149,7 +170,8 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                 MdSalRegistrationUtils.registerMasterServices(
                         rpcManager.gainContext(deviceInfo),
                         deviceContext,
-                        OfpRole.BECOMEMASTER);
+                        OfpRole.BECOMEMASTER,
+                        this.extensionConverterProvider);
                 if (((RpcContext)rpcManager.gainContext(deviceInfo)).isStatisticsRpcEnabled()) {
                     MdSalRegistrationUtils.registerStatCompatibilityServices(
                             rpcManager.gainContext(deviceInfo),
@@ -231,7 +253,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     }
 
     @VisibleForTesting
-    public boolean isServiceChangeListenersEmpty() {
+    boolean isServiceChangeListenersEmpty() {
         return this.serviceChangeListeners.isEmpty();
     }
 
