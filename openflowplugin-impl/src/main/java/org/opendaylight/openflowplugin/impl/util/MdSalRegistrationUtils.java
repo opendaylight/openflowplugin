@@ -16,6 +16,8 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
@@ -85,7 +87,9 @@ public class MdSalRegistrationUtils {
      * @param newRole       - role validation for {@link OfpRole#BECOMEMASTER}
      */
     public static void registerMasterServices(@CheckForNull final RpcContext rpcContext,
-                                              @CheckForNull final DeviceContext deviceContext, @CheckForNull final OfpRole newRole) {
+                                              @CheckForNull final DeviceContext deviceContext,
+                                              @CheckForNull final OfpRole newRole,
+                                              final ExtensionConverterProvider extensionConverterProvider) {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(deviceContext != null);
         Preconditions.checkArgument(newRole != null);
@@ -127,7 +131,8 @@ public class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementation(SalFlatBatchService.class, salFlatBatchService);
 
         // TODO: experimenter symmetric and multipart message services
-        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
+                new SalExperimenterMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
     }
 
     /**

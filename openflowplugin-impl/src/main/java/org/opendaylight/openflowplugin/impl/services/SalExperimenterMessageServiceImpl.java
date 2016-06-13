@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
@@ -27,16 +28,20 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendExperimenterInput> implements SalExperimenterMessageService {
 
-    public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    private final ExtensionConverterProvider extensionConverterProvider;
+
+    public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
+                                             final DeviceContext deviceContext,
+                                             final ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext);
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     @Override
     protected OfHeader buildRequest(Xid xid, SendExperimenterInput input) throws ConversionException {
         final TypeVersionKey key = new TypeVersionKey(input.getExperimenterMessageOfChoice().getImplementedInterface(), getVersion());
         final ConvertorMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice> messageConverter =
-                ((ExtensionConverterProviderKeeper) getDeviceContext())
-                        .getExtensionConverterProvider().getMessageConverter(key);
+                extensionConverterProvider.getMessageConverter(key);
 
         if (messageConverter == null) {
             throw new ConverterNotFoundException(key.toString());
