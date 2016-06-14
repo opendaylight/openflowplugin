@@ -50,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -158,7 +159,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(masterTxEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.eq(nodeId), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -167,7 +168,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(slaveEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(Mockito.eq(nodeId), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -216,7 +217,7 @@ public class RoleManagerImplTest {
         inOrder.verify(roleContextSpy, Mockito.atLeastOnce()).isTxCandidateRegistered();
         inOrder.verify(roleContextSpy, Mockito.calls(1)).unregisterCandidate(Mockito.<Entity>any());
         inOrder.verify(roleContextSpy, Mockito.never()).close();
-        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<NodeId>any());
+        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.any(), Mockito.anyInt());
     }
 
     @Test
@@ -234,7 +235,7 @@ public class RoleManagerImplTest {
         Mockito.when(roleContextSpy.isTxCandidateRegistered()).thenReturn(false);
         roleManagerSpy.changeOwnershipForTxEntity(slaveTxEntityLast, roleContextSpy);
         verify(roleContextSpy).close();
-        verify(roleContextSpy).getNodeId();
+        verify(roleContextSpy, times(2)).getNodeId();
         verify(conductor).closeConnection(nodeId);
     }
 
