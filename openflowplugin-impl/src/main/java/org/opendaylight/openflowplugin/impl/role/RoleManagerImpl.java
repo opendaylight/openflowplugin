@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
@@ -68,6 +66,9 @@ import org.slf4j.LoggerFactory;
  */
 public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, ServiceChangeListener {
     private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
+
+    // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
+    private static final int MAX_CLEAN_DS_RETRIES = 3;
 
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
@@ -120,7 +121,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             contexts.remove(roleContext.getNodeId());
             if (roleContext.isTxCandidateRegistered()) {
                 LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
-                removeDeviceFromOperationalDS(roleContext.getNodeId());
+                removeDeviceFromOperationalDS(roleContext.getNodeId(), MAX_CLEAN_DS_RETRIES);
             } else {
                 roleContext.close();
             }
@@ -205,7 +206,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && !ownershipChange.hasOwner()) {
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getNodeId());
+                    removeDeviceFromOperationalDS(roleContext.getNodeId(), MAX_CLEAN_DS_RETRIES);
                 }
             } else {
                 final NodeId nodeId = roleContext.getNodeId();
@@ -239,16 +240,16 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (!ownershipChange.hasOwner()) {
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getNodeId());
+                    removeDeviceFromOperationalDS(roleContext.getNodeId(), MAX_CLEAN_DS_RETRIES);
                 } else {
                     final NodeId nodeId = roleContext.getNodeId();
-                    contexts.remove(nodeId, roleContext);
+                    contexts.remove(roleContext.getNodeId(), roleContext);
                     roleContext.close();
-                    conductor.closeConnection(nodeId);
+                    conductor.closeConnection(roleContext.getNodeId());
                 }
             }
         } else {
-            LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity().getType());
+            LOG.debug("Tx-EntityOwnershipRegistration is not active for entity type {} and node {}", ownershipChange.getEntity().getType(), roleContext.getNodeId());
             watchingEntities.remove(roleContext.getTxEntity(), roleContext);
             final NodeId nodeId = roleContext.getNodeId();
             contexts.remove(nodeId, roleContext);
@@ -307,13 +308,12 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @VisibleForTesting
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final NodeId nodeId) {
-
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final NodeId nodeId, final int numRetries) {
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, DeviceStateUtil.createNodeInstanceIdentifier(nodeId));
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
-        Futures.addCallback(delFuture, new FutureCallback<Void>() {
 
+        Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 LOG.debug("Delete Node {} was successful", nodeId);
@@ -325,14 +325,25 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete Node {} failed. {}", nodeId, t);
-                contexts.remove(nodeId);
+                // If we have any retries left, we will try to clean the datastore again
+                if (numRetries > 0) {
+                    // We "used" one retry here, so decrement it
+                    final int curRetries = numRetries - 1;
+                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", nodeId, t, curRetries);
+                    // Recursive call to this method with "one less" retry
+                    removeDeviceFromOperationalDS(nodeId, curRetries);
+                    return;
+                }
+
+                // No retries left, so we will just close the role context, and ignore datastore cleanup
+                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", nodeId, t);
                 final RoleContext roleContext = contexts.remove(nodeId);
                 if (roleContext != null) {
                     roleContext.close();
                 }
             }
         });
+
         return delFuture;
     }
 
