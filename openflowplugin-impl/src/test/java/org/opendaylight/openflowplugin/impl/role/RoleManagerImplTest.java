@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 
-import java.math.BigInteger;
-
 import com.google.common.base.VerifyException;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -148,7 +147,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(masterTxEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.<NodeId>any(), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -157,7 +156,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(slaveEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(nodeId);
+        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<NodeId>any(), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -205,7 +204,7 @@ public class RoleManagerImplTest {
         inOrder.verify(roleContextSpy, Mockito.atLeastOnce()).isTxCandidateRegistered();
         inOrder.verify(roleContextSpy, Mockito.calls(1)).unregisterCandidate(Mockito.<Entity>any());
         inOrder.verify(roleContextSpy, Mockito.never()).close();
-        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<NodeId>any());
+        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<NodeId>any(), Mockito.anyInt());
     }
 
     @Test
