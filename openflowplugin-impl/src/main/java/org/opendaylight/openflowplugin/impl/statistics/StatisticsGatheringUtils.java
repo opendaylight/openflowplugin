@@ -133,7 +133,7 @@ public final class StatisticsGatheringUtils {
                                                       final MultipartType type,
                                                       final TxFacade txFacade,
                                                       final DeviceRegistry registry,
-                                                      final DeviceState deviceState) {
+                                                      final Boolean initial) {
         EventIdentifier wholeProcessEventIdentifier = null;
         if (MultipartType.OFPMPFLOW.equals(type)) {
             wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
@@ -143,7 +143,7 @@ public final class StatisticsGatheringUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry, deviceState);
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry, initial);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
@@ -152,7 +152,7 @@ public final class StatisticsGatheringUtils {
                                                                              final MultipartType type,
                                                                              final TxFacade txFacade,
                                                                              final DeviceRegistry registry,
-                                                                             final DeviceState deviceState) {
+                                                                             final boolean initial) {
         return Futures.transform(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -197,7 +197,7 @@ public final class StatisticsGatheringUtils {
                             } else if (multipartData instanceof FlowsStatisticsUpdate) {
                                 /* FlowStat Processing is realized by NettyThread only by initPhase, otherwise it is realized
                                  * by MD-SAL thread */
-                                return processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceInfo, txFacade, registry.getDeviceFlowRegistry(), deviceState, eventIdentifier);
+                                return processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceInfo, txFacade, registry.getDeviceFlowRegistry(), initial, eventIdentifier);
 
                             } else if (multipartData instanceof GroupDescStatsUpdated) {
                                 processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceInfo, txFacade, registry.getDeviceGroupRegistry());
@@ -253,11 +253,11 @@ public final class StatisticsGatheringUtils {
                                                                    final DeviceInfo deviceInfo,
                                                                    final TxFacade txFacade,
                                                                    final DeviceFlowRegistry flowRegistry,
-                                                                   final DeviceState deviceState,
+                                                                   final boolean initial,
                                                                    final EventIdentifier eventIdentifier) {
-        final ListenableFuture<Void> deleFuture = deleteAllKnownFlows(deviceInfo,
-                flowRegistry, txFacade, deviceState);
-        return Futures.transform(deleFuture, new Function<Void, Boolean>() {
+        final ListenableFuture<Void> deleteFuture = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo,
+                flowRegistry, txFacade);
+        return Futures.transform(deleteFuture, new Function<Void, Boolean>() {
 
             @Override
             public Boolean apply(final Void input) {
@@ -310,48 +310,42 @@ public final class StatisticsGatheringUtils {
 
     public static ListenableFuture<Void> deleteAllKnownFlows(final DeviceInfo deviceInfo,
                                                              final DeviceFlowRegistry registry,
-                                                             final TxFacade txFacade,
-                                                             final DeviceState deviceState) {
-        //TODO:Make check for phase from enum
-        /* DeviceState.deviceSynchronized is a marker for actual phase - false means initPhase, true means noInitPhase */
-        if (deviceState.deviceSynchronized()) {
-            final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
-            final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
-            final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
-                    LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
+                                                             final TxFacade txFacade) {
+        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+        final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
 
-            /* we wish to close readTx for fallBack */
-            Futures.withFallback(flowCapableNodeFuture, new FutureFallback<Optional<FlowCapableNode>>() {
+        /* we wish to close readTx for fallBack */
+        Futures.withFallback(flowCapableNodeFuture, new FutureFallback<Optional<FlowCapableNode>>() {
 
-                @Override
-                public ListenableFuture<Optional<FlowCapableNode>> create(final Throwable t) throws Exception {
-                    readTx.close();
-                    return Futures.immediateFailedFuture(t);
-                }
-            });
-            /*
-             * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
-             * not applicable for lists
-             */
-            return Futures.transform(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
+            @Override
+            public ListenableFuture<Optional<FlowCapableNode>> create(final Throwable t) throws Exception {
+                readTx.close();
+                return Futures.immediateFailedFuture(t);
+            }
+        });
+        /*
+         * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
+         * not applicable for lists
+         */
+        return Futures.transform(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
 
-                @Override
-                public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
-                    if (flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
-                            final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
-                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
-                        }
+            @Override
+            public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
+                if (flowCapNodeOpt.isPresent()) {
+                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                        final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                        final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
+                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
-                    registry.removeMarked();
-                    readTx.close();
-                    return Futures.immediateFuture(null);
                 }
+                registry.removeMarked();
+                readTx.close();
+                return Futures.immediateFuture(null);
+            }
 
-            });
-        }
-        return Futures.immediateFuture(null);
+        });
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {

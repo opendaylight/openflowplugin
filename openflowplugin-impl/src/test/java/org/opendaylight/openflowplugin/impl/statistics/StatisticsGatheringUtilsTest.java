@@ -500,7 +500,7 @@ public class StatisticsGatheringUtilsTest {
                 type,
                 txFacade,
                 deviceContext,
-                deviceState);
+                false);
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
         verify(txFacade).submitTransaction();
     }
@@ -519,14 +519,6 @@ public class StatisticsGatheringUtilsTest {
     }
 
     @Test
-    public void testDeleteAllKnownFlowsNotSync() throws Exception {
-        when(deviceState.deviceSynchronized()).thenReturn(false);
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo,
-                deviceContext.getDeviceFlowRegistry(), deviceContext, deviceState);
-        Mockito.verifyNoMoreInteractions(deviceFlowRegistry);
-    }
-
-    @Test
     public void testDeleteAllKnownFlows() throws Exception {
         final short tableId = 0;
         when(deviceState.deviceSynchronized()).thenReturn(true);
@@ -542,7 +534,7 @@ public class StatisticsGatheringUtilsTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo,
-                deviceContext.getDeviceFlowRegistry(), txFacade, deviceState);
+                deviceContext.getDeviceFlowRegistry(), txFacade);
 
         verify(txFacade).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,

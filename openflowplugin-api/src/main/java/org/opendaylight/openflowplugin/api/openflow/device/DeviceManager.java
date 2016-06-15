@@ -42,12 +42,37 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
      * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
      *
-     * @param deviceInfo
+     * @param deviceInfo which device
      * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
      * @return RoleChangeTxChainManager future for activation/deactivation
      */
     ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role);
 
+    /**
+     * Register device synchronize listeners
+     * @param deviceSynchronizeListener are notified if device is synchronized or not
+     */
+    void registerDeviceSynchronizeListeners(final DeviceSynchronizeListener deviceSynchronizeListener);
+
+    /**
+     * Notify all registered listeners about synchronized status
+     * @param deviceInfo which device
+     * @param deviceSynchronized true if device is synchronized
+     */
+    void notifyDeviceSynchronizeListeners(final DeviceInfo deviceInfo, final boolean deviceSynchronized);
+
+    /**
+     * Register device valid listeners
+     * @param deviceValidListener are notified if device is valid or not
+     */
+    void registerDeviceValidListeners(final DeviceValidListener deviceValidListener);
+
+    /**
+     * Notify all registered listeners about valid status
+     * @param deviceInfo which device
+     * @param deviceValid true if device is valid
+     */
+    void notifyDeviceValidListeners(final DeviceInfo deviceInfo, final boolean deviceValid);
 
 }
 

@@ -97,7 +97,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
-        deviceContext.getDeviceState().setDeviceSynchronized(true);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
     }
 
