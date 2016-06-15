@@ -102,8 +102,9 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(nodeId, roleContext) == null, "Role context for master Node %s is still not closed.", nodeId);
         makeDeviceRoleChange(OfpRole.BECOMESLAVE, roleContext, true);
-        notifyListenersRoleInitializationDone(roleContext.getNodeId(), roleContext.initialization());
+        /* First start to watch entity so we don't miss any notification, and then try to register in EOS */
         watchingEntities.put(roleContext.getEntity(), roleContext);
+        notifyListenersRoleInitializationDone(roleContext.getNodeId(), roleContext.initialization());
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(nodeId);
     }
 
