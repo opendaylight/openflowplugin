@@ -22,7 +22,17 @@ import java.util.Optional;
  */
 public interface StatisticsContext extends RequestContextStack, AutoCloseable, OFPContext {
 
+    /**
+     * Gather data from device
+     * @return true if gathering was successful
+     */
     ListenableFuture<Boolean> gatherDynamicData();
+
+    /**
+     * Initial data gathering
+     * @return true if gathering was successful
+     */
+    ListenableFuture<Boolean> initialGatherDynamicData();
 
     /**
      * Method has to be called from DeviceInitialization Method, otherwise
