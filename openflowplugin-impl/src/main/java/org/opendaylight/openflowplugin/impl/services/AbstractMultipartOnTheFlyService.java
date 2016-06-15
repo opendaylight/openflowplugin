@@ -25,7 +25,7 @@ public abstract class AbstractMultipartOnTheFlyService<I> extends AbstractServic
     protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType) {
         return new MultipartRequestOnTheFlyCallback(context, requestType,
                 getMessageSpy(), getEventIdentifier(), getDeviceInfo(),
-                getDeviceContext().getDeviceFlowRegistry(), getTxFacade());
+                getDeviceRegistry().getDeviceFlowRegistry(), getTxFacade());
     }
 
 

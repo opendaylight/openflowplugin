@@ -12,6 +12,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -23,17 +24,18 @@ final class MultipartRequestCallback extends AbstractRequestCallback<List<Multip
     private static final Logger LOG = LoggerFactory.getLogger(MultipartRequestCallback.class);
     private final MultiMsgCollector collector;
 
-    public MultipartRequestCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType, final DeviceContext deviceContext) {
-        super(context, requestType, deviceContext.getMessageSpy());
-        collector = deviceContext.getMultiMsgCollector(context);
+    public MultipartRequestCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType, final MessageSpy messageSpy, final MultiMsgCollector collector) {
+        super(context, requestType, messageSpy);
+        this.collector = collector;
     }
 
     public MultipartRequestCallback(final RequestContext<List<MultipartReply>> context,
                                     final Class<?> requestType,
-                                    final DeviceContext deviceContext,
-                                    final EventIdentifier eventIdentifier) {
-        super(context, requestType, deviceContext.getMessageSpy(), eventIdentifier);
-        collector = deviceContext.getMultiMsgCollector(context);
+                                    final MessageSpy messageSpy,
+                                    final EventIdentifier eventIdentifier,
+                                    final MultiMsgCollector collector) {
+        super(context, requestType, messageSpy, eventIdentifier);
+        this.collector = collector;
     }
 
     @Override
