@@ -4,7 +4,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+ */https://git.opendaylight.org/gerrit/static/LF_Collab_footer_gray.png
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
@@ -155,7 +155,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     remove(key, mod.getDataBefore(), nodeIdent);
                     break;
                 case SUBTREE_MODIFIED:
-                    update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    //NO-OP since we donot need to reconciliate on Node-updated
                     break;
                 case WRITE:
                     if (mod.getDataBefore() == null) {
@@ -181,19 +181,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 flowNodeDisconnected(nodeIdent);
             }
 
-        }
-    }
-
-
-    public void update(InstanceIdentifier<FlowCapableNode> identifier,
-                       FlowCapableNode original, FlowCapableNode update, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
-            LOG.warn("Node updated: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
-            //donot need to do anything as we are not considering updates here
-            if (!nodeIdent.isWildcarded()) {
-                // then force registration to local node cache and reconcile
-                flowNodeConnected(nodeIdent, true);
-            }
         }
     }
 
