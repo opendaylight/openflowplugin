@@ -155,6 +155,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     remove(key, mod.getDataBefore(), nodeIdent);
                     break;
                 case SUBTREE_MODIFIED:
+                    //NO-OP since we donot need to reconciliate on Node-updated
                     update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
                     break;
                 case WRITE:
@@ -187,14 +188,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     public void update(InstanceIdentifier<FlowCapableNode> identifier,
                        FlowCapableNode original, FlowCapableNode update, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
-            LOG.warn("Node updated: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
-            //donot need to do anything as we are not considering updates here
-            if (!nodeIdent.isWildcarded()) {
-                // then force registration to local node cache and reconcile
-                flowNodeConnected(nodeIdent, true);
-            }
-        }
+        //NO-OP since we donot need to reconciliate on Node-updated
     }
 
 
