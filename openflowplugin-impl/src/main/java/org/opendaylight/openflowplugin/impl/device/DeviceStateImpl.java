@@ -8,18 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.base.Preconditions;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * openflowplugin-impl
@@ -31,6 +23,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 class DeviceStateImpl implements DeviceState {
 
+    private final DeviceInfo deviceInfo;
     private boolean valid;
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
@@ -41,7 +34,8 @@ class DeviceStateImpl implements DeviceState {
     private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
 
-    DeviceStateImpl() {
+    public DeviceStateImpl(final DeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
         statPollEnabled = false;
         deviceSynchronized = false;
     }
@@ -49,11 +43,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public boolean isValid() {
         return valid;
-    }
-
-    @Override
-    public void setValid(final boolean valid) {
-        this.valid = valid;
     }
 
     @Override
@@ -123,11 +112,6 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void setDeviceSynchronized(final boolean _deviceSynchronized) {
-        deviceSynchronized = _deviceSynchronized;
-    }
-
-    @Override
     public boolean isStatisticsPollingEnabled() {
         return statPollEnabled;
     }
@@ -135,5 +119,19 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
         this.statPollEnabled = statPollEnabled;
+    }
+
+    @Override
+    public void deviceIsSynchronized(final DeviceInfo deviceInfo, final boolean isSynchronized) {
+        if (this.deviceInfo.equals(deviceInfo)) {
+            this.deviceSynchronized = isSynchronized;
+        }
+    }
+
+    @Override
+    public void deviceIsValid(final DeviceInfo deviceInfo, final boolean isValid) {
+        if (this.deviceInfo.equals(deviceInfo)) {
+            this.valid = isValid;
+        }
     }
 }
