@@ -152,16 +152,16 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             switch (mod.getModificationType()) {
                 case DELETE:
-                    remove(key, mod.getDataBefore(), nodeIdent);
+                    if (mod.getDataAfter() == null) {
+                        remove(key, mod.getDataBefore(), nodeIdent);
+                    }
                     break;
                 case SUBTREE_MODIFIED:
-                    update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    //NO-OP since we donot need to reconciliate on Node-updated
                     break;
                 case WRITE:
                     if (mod.getDataBefore() == null) {
                         add(key, mod.getDataAfter(), nodeIdent);
-                    } else {
-                        update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
                     }
                     break;
                 default:
@@ -183,20 +183,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         }
     }
-
-
-    public void update(InstanceIdentifier<FlowCapableNode> identifier,
-                       FlowCapableNode original, FlowCapableNode update, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
-            LOG.warn("Node updated: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
-            //donot need to do anything as we are not considering updates here
-            if (!nodeIdent.isWildcarded()) {
-                // then force registration to local node cache and reconcile
-                flowNodeConnected(nodeIdent, true);
-            }
-        }
-    }
-
 
     public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
                     InstanceIdentifier<FlowCapableNode> nodeIdent) {
