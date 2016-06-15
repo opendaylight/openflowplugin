@@ -39,10 +39,13 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     private final EntityOwnershipService eos;
 
     private final DataBroker dataBroker;
+    private NodeChangeCommiter changeCommiter;
     private BindingTransactionChain txChain;
     private ListenerRegistration<?> listenerRegistration;
     private ListenerRegistration<?> tableFeatureListenerRegistration;
     private Thread thread;
+
+
 
     FlowCapableInventoryProvider(final DataBroker dataBroker, final NotificationProviderService notificationService, EntityOwnershipService eos) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -211,6 +214,16 @@ class FlowCapableInventoryProvider implements AutoCloseable, Runnable, Transacti
     @Override
     public void close() throws InterruptedException {
         LOG.info("Flow Capable Inventory Provider stopped.");
+
+        if (this.changeCommiter != null){
+            try{
+                this.changeCommiter.close();
+            }catch(final Exception e){
+                LOG.error("Failed to stop inventory provider",e);
+            }
+            changeCommiter =null;
+        }
+
         if (this.listenerRegistration != null) {
             try {
                 this.listenerRegistration.close();
