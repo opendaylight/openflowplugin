@@ -43,7 +43,6 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
-    private final DeviceState deviceState;
 
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
@@ -52,14 +51,12 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
                                             final EventIdentifier eventIdentifier,
                                             final DeviceInfo deviceInfo,
                                             final DeviceFlowRegistry registry,
-                                            final TxFacade txFacade,
-                                            final DeviceState deviceState) {
+                                            final TxFacade txFacade) {
         super(context, requestType, messageSpy, eventIdentifier);
 
         this.deviceInfo = deviceInfo;
         this.registry = registry;
         this.txFacade = txFacade;
-        this.deviceState = deviceState;
 
         //TODO: this is focused on flow stats only - need more general approach if used for more than flow stats
         doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceInfo.getNodeId().toString());
@@ -100,7 +97,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
             ListenableFuture<Void> future;
             if (virgin) {
-                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade, deviceState);
+                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade);
                 virgin = false;
             } else {
                 future = Futures.immediateFuture(null);
