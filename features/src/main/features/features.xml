@@ -37,8 +37,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config-he/{{VERSION}}</bundle>
-        <configfile finalname="${config.configfile.directory}/${config.statistics.manager.configfile}">mvn:org.opendaylight.openflowplugin.applications/statistics-manager-config/{{VERSION}}/xml/config</configfile>
-        <configfile finalname="${config.configfile.directory}/${config.inventory.manager.configfile}">mvn:org.opendaylight.openflowplugin.applications/inventory-manager/{{VERSION}}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-He.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/{{VERSION}}/xml/config-He</configfile>
         <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/{{VERSION}}/xml/configmsgspy</configfile>
     </feature>
