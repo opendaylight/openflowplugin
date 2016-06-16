@@ -61,8 +61,10 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * @param identifier - the whole path to new DataObject
      * @param add - new DataObject
      * @param nodeIdent Node InstanceIdentifier
+     * @return A future associated with RPC task. {@code null} is set to the
+     *         future if this method does not invoke RPC.
      */
-    void add(InstanceIdentifier<D> identifier, D add,
+    Future<? extends RpcResult> add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 
