@@ -9,7 +9,9 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map.Entry;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -48,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
@@ -86,6 +89,18 @@ import javax.annotation.Nonnull;
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
+
+    /**
+     * The number of nanoseconds to wait for a single group to be added.
+     */
+    private static final long  ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(3);
+
+    /**
+     * The maximum number of nanoseconds to wait for completion of add-group
+     * RPCs.
+     */
+    private static final long  MAX_ADD_GROUP_TIMEOUT =
+        TimeUnit.SECONDS.toNanos(20);
 
     private final DataBroker dataBroker;
 
@@ -242,9 +257,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         ReadOnlyTransaction trans = provider.getReadTranaction();
         Optional<FlowCapableNode> flowNode = Optional.absent();
 
-        AtomicInteger counter = new AtomicInteger();
         //initialize the counter
-        counter.set(0);
+        int counter = 0;
         try {
             flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
         }
@@ -265,95 +279,109 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             /* Groups - have to be first */
-                List<Group> groups = flowNode.get().getGroup() != null
-                        ? flowNode.get().getGroup() : Collections.<Group>emptyList();
-                List<Group> toBeInstalledGroups = new ArrayList<>();
-                toBeInstalledGroups.addAll(groups);
-                List<Long> alreadyInstalledGroupids = new ArrayList<>();
-                //new list for suspected groups pointing to ports .. when the ports come up late
-                List<Group> suspectedGroups = new ArrayList<>();
+            List<Group> groups = flowNode.get().getGroup() != null
+                ? flowNode.get().getGroup() : Collections.<Group>emptyList();
+            List<Group> toBeInstalledGroups = new ArrayList<>();
+            toBeInstalledGroups.addAll(groups);
+            //new list for suspected groups pointing to ports .. when the ports come up late
+            List<Group> suspectedGroups = new ArrayList<>();
+            Map<Long, Future<?>> groupFutures = new HashMap<>();
 
-                while ((!(toBeInstalledGroups.isEmpty()) || !(suspectedGroups.isEmpty())) &&
-                        (counter.get()<=provider.getConfiguration().getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
+            while ((!(toBeInstalledGroups.isEmpty()) || !(suspectedGroups.isEmpty())) &&
+                   (counter <= provider.getConfiguration().getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
 
-                    if(toBeInstalledGroups.isEmpty() && ! suspectedGroups.isEmpty()){
-                        LOG.error("These Groups are pointing to node-connectors that are not up yet {}",suspectedGroups.toString());
-                        toBeInstalledGroups.addAll(suspectedGroups);
-                        break;
+                if(toBeInstalledGroups.isEmpty() && ! suspectedGroups.isEmpty()){
+                    LOG.error("These Groups are pointing to node-connectors that are not up yet {}",suspectedGroups.toString());
+                    toBeInstalledGroups.addAll(suspectedGroups);
+                    break;
+                }
+
+                ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
+                while (iterator.hasNext()) {
+                    Group group = iterator.next();
+                    boolean okToInstall = true;
+                    Buckets buckets = group.getBuckets();
+                    List<Bucket> bucketList = (buckets == null)
+                        ? null : buckets.getBucket();
+                    if (bucketList == null) {
+                        bucketList = Collections.<Bucket>emptyList();
+                    }
+                    for (Bucket bucket : bucketList) {
+                        List<Action> actions = bucket.getAction();
+                        if (actions == null) {
+                            actions = Collections.<Action>emptyList();
+                        }
+                        for (Action action : actions) {
+                            //chained-port
+                            if (action.getAction().getImplementedInterface().getName()
+                                .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase")){
+                                String nodeConnectorUri = ((OutputActionCase)(action.getAction()))
+                                    .getOutputAction().getOutputNodeConnector().getValue();
+
+                                LOG.warn("Installing the group for node connector {}",nodeConnectorUri);
+
+                                //check if the nodeconnector is there in the multimap
+                                boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
+                                    .isNodeConnectorUpdated(nDpId, nodeConnectorUri);
+                                //if yes set okToInstall = true
+
+                                if(isPresent){
+                                    break;
+                                }//else put it in a different list and still set okToInstall = true
+                                else {
+                                    suspectedGroups.add(group);
+                                    LOG.error("Not yet received the node-connector updated for {} " +
+                                              "for the group with id {}",nodeConnectorUri,group.getGroupId().toString());
+                                    break;
+                                }
+                            }
+                            //chained groups
+                            else if (action.getAction().getImplementedInterface().getName()
+                                     .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase")) {
+                                Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                                Future<?> future = groupFutures.get(groupId);
+                                if (future == null) {
+                                    okToInstall = false;
+                                    break;
+                                }
+
+                                // Need to ensure that the group specified by
+                                // group-action is already installed.
+                                awaitGroup(groupId, future);
+                            }
+                        }
+                        if (!okToInstall){
+                            //increment retry counter value
+                            counter++;
+                            break;
+                        }
                     }
 
-                    ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
-                    while (iterator.hasNext()) {
-                        Group group = iterator.next();
-                        boolean okToInstall = true;
-                        for (Bucket bucket : group.getBuckets().getBucket()) {
-                            for (Action action : bucket.getAction()) {
-                               //chained-port
-                                if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase")){
-                                    String nodeConnectorUri = ((OutputActionCase)(action.getAction()))
-                                            .getOutputAction().getOutputNodeConnector().getValue();
-
-                                    LOG.warn("Installing the group for node connector {}",nodeConnectorUri);
-
-                                    //check if the nodeconnector is there in the multimap
-                                    boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
-                                            .isNodeConnectorUpdated(nDpId, nodeConnectorUri);
-                                    //if yes set okToInstall = true
-
-                                    if(isPresent){
-                                       break;
-                                    }//else put it in a different list and still set okToInstall = true
-                                    else {
-                                        suspectedGroups.add(group);
-                                        LOG.error("Not yet received the node-connector updated for {} " +
-                                                "for the group with id {}",nodeConnectorUri,group.getGroupId().toString());
-                                         break;
-                                    }
-
-
-                                }
-                                //chained groups
-                                else if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase")) {
-                                    Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
-                                    if (!alreadyInstalledGroupids.contains(groupId)) {
-                                        okToInstall = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!okToInstall){
-                                //increment retry counter value
-                                counter.incrementAndGet();
-                                break;
-                            }
-
-
-
-                        }
-
-
-                        if (okToInstall) {
-                            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
-                                    nodeIdent.child(Group.class, group.getKey());
-                            this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
-                            alreadyInstalledGroupids.add(group.getGroupId().getValue());
-                            iterator.remove();
-                            // resetting the counter to zero
-                            counter.set(0);
-                        }
+                    if (okToInstall) {
+                        final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
+                            nodeIdent.child(Group.class, group.getKey());
+                        Long groupId = group.getGroupId().getValue();
+                        Future<?> future = this.provider.getGroupCommiter().add(
+                            groupIdent, group, nodeIdent);
+                        groupFutures.put(groupId, future);
+                        iterator.remove();
+                        // resetting the counter to zero
+                        counter = 0;
                     }
                 }
+            }
 
             /* installation of suspected groups*/
             if(!toBeInstalledGroups.isEmpty()){
                 for(Group group :toBeInstalledGroups){
-                    LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
-                            ,group.getGroupId().toString(),provider.getConfiguration().getReconciliationRetryCount());
+                    Long groupId = group.getGroupId().getValue();
+                    LOG.error("Installing the group {} finally although the port is not up after checking for {} times ",
+                              groupId, provider.getConfiguration().getReconciliationRetryCount());
                     final KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
                             nodeIdent.child(Group.class, group.getKey());
-                    this.provider.getGroupCommiter().add(groupIdent, group, nodeIdent);
+                    Future<?> future = this.provider.getGroupCommiter().add(
+                        groupIdent, group, nodeIdent);
+                    groupFutures.put(groupId, future);
                 }
             }
             /* Meters */
@@ -364,6 +392,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         nodeIdent.child(Meter.class, meter.getKey());
                 this.provider.getMeterCommiter().add(meterIdent, meter, nodeIdent);
             }
+
+            // Need to wait for all groups to be installed before adding flows.
+            awaitGroups(groupFutures);
+
             /* Flows */
             List<Table> tables = flowNode.get().getTable() != null
                     ? flowNode.get().getTable() : Collections.<Table> emptyList();
@@ -571,5 +603,41 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                                   InstanceIdentifier<?> identifier2) {
         return Iterables.getLast(identifier1.getPathArguments()).equals(Iterables.getLast(identifier2.getPathArguments()));
     }
-}
 
+    /**
+     * Wait for completion of add-group RPC.
+     *
+     * @param gid     The target group ID.
+     * @param future  Future associated with add-group RPC that installs the
+     *                target group.
+     */
+    private void awaitGroup(Long gid, Future<?> future) {
+        awaitGroups(Collections.singletonMap(gid, future));
+    }
+
+    /**
+     * Wait for completion of add-group RPCs.
+     *
+     * @param futures  Pairs of group IDs and futures associated with add-group
+     *        RPCs.
+     */
+    private void awaitGroups(Map<Long, Future<?>> futures) {
+        long timeout = Math.min(
+            ADD_GROUP_TIMEOUT * futures.size(), MAX_ADD_GROUP_TIMEOUT);
+        long deadline = System.nanoTime() + timeout;
+        for (Entry<Long, Future<?>> entry: futures.entrySet()) {
+            Future<?> future = entry.getValue();
+            try {
+                future.get(timeout, TimeUnit.NANOSECONDS);
+            } catch (Exception e) {
+                LOG.error("add-group RPC failed: " + entry.getKey(), e);
+            }
+
+            timeout = deadline - System.nanoTime();
+            if (timeout <= 0) {
+                LOG.warn("add-group RPCs did not complete.");
+                break;
+            }
+        }
+    }
+}
