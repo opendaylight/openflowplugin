@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_90881a24",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Actual status for retry in patch 13:\n- operational listener and operational reactor are sending most recent config and operational data to syncup\n- config reactor will not create syncup futures and clean its compression queue (howevere most recent config is still updated in config snapshot DAO, which is used in operational listener)\n- retry decorator will ignore pending config changes until device is unregistered for retry",
+      "parentUuid": "ba51214e_5b5d17e9",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_9b6e8f95",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2016-06-13T07:05:44Z",
       "side": 1,
       "message": "Please write always \"} else {\"",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_3b2b03ed",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_9b6e8f95",
       "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_1b30bf55",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipDecorator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_3b05c3c2",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_db1647f1",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryOperationalDecorator.java",
         "patchSetId": 7
@@ -64,6 +118,24 @@
       "writtenOn": "2016-06-13T07:05:44Z",
       "side": 1,
       "message": "I do not like this pattern. Try to implement all possible logic stateless. There are synchronization problem with stateless logic because data might be obsolete.\n\nJust modify java insterfaces of SyncReactor. Put the information about retry to in the input. You are trying to use global map to get information related to the input. This is ANTIPATTERN.",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_d0b0d2df",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryOperationalDecorator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "As we discussed, it couldn\u0027t be totally stateless. We must store \"in retry\" information somehow as we need to communicate it to different places.",
+      "parentUuid": "ba51214e_db1647f1",
       "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_7b357b45",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryOperationalDecorator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_1b0a7fd2",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_1bd8bf52",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryOperationalDecorator.java",
         "patchSetId": 7
@@ -98,6 +188,24 @@
       "writtenOn": "2016-06-13T07:05:44Z",
       "side": 1,
       "message": "Try to use ElicitRegistry only in one place. I would suggest let\u0027s use ElicitRegistry only in RetryDecorator and I would rename ElicitRegistry to RetryRegistry.",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_5b1197ab",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryOperationalDecorator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Renamed. Actually, unregister() is moved to retry decorator after successful syncup is done. But we still need to call unregister() in operational retry listener when node disconnects. It wouldn\u0027t be possible to centralize all calls in RetryDecorator even so.",
+      "parentUuid": "ba51214e_1bd8bf52",
       "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_c45ad482",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Unregister() moved here. Also ignoring pending config changes added if we are in retry.",
+      "parentUuid": "ba51214e_5be23704",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_dbeda7f1",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
         "patchSetId": 7
@@ -138,6 +264,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_a45fe071",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "As for now, public is needed because method is used in RetryDecorator, OperRetryListener and ZipRetryDecorator.",
+      "parentUuid": "ba51214e_dbeda7f1",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_3bbae3e1",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
         "patchSetId": 7
@@ -149,6 +293,24 @@
       "writtenOn": "2016-06-13T07:05:44Z",
       "side": 1,
       "message": "@VisibleFor testing. Change public to package visibility.",
+      "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_fb486bce",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/SnapshotElicitRegistry.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-16T06:53:32Z",
+      "side": 1,
+      "message": "Since isConsistent() was moved to OperationalRetryListener public needed.",
+      "parentUuid": "ba51214e_3bbae3e1",
       "revId": "360a5d1b4698e49fc43220b1cc073ae9a2f6ffc7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
