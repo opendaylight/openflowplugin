@@ -161,8 +161,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         Preconditions.checkArgument(ownershipChange != null);
         final RoleContext roleContext = watchingEntities.get(ownershipChange.getEntity());
 
-        LOG.debug("Received EOS message: wasOwner:{} isOwner:{} hasOwner:{} for entity type {} and node {}",
-                ownershipChange.wasOwner(), ownershipChange.isOwner(), ownershipChange.hasOwner(),
+        LOG.debug("Received EOS message: wasOwner:{} isOwner:{} hasOwner:{} inJeopardy:{} for entity type {} and node {}",
+                ownershipChange.wasOwner(), ownershipChange.isOwner(), ownershipChange.hasOwner(), ownershipChange.inJeopardy(),
                 ownershipChange.getEntity().getType(),
                 roleContext != null ? roleContext.getNodeId() : "-> no watching entity, disregarding notification <-");
 
@@ -184,14 +184,14 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         if (roleContext.isMainCandidateRegistered()) {
             LOG.debug("Main-EntityOwnershipRegistration is active for entity type {} and node {}",
                     ownershipChange.getEntity().getType(), roleContext.getNodeId());
-            if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
+            if (!ownershipChange.wasOwner() && ownershipChange.isOwner() && !ownershipChange.inJeopardy()) {
                 // SLAVE -> MASTER
                 LOG.debug("SLAVE to MASTER for node {}", roleContext.getNodeId());
                 if (roleContext.registerCandidate(roleContext.getTxEntity())) {
                     LOG.debug("Starting watching tx entity for node {}", roleContext.getNodeId());
                     watchingEntities.putIfAbsent(roleContext.getTxEntity(), roleContext);
                 }
-            } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
+            } else if ((ownershipChange.wasOwner() && !ownershipChange.isOwner()) || (ownershipChange.inJeopardy())) {
                 // MASTER -> SLAVE
                 LOG.debug("MASTER to SLAVE for node {}", roleContext.getNodeId());
                 conductor.addOneTimeListenerWhenServicesChangesDone(this, roleContext.getNodeId());
@@ -225,27 +225,33 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             LOG.debug("Tx-EntityOwnershipRegistration is active for entity type {} and node {}",
                     ownershipChange.getEntity().getType(),
                     roleContext.getNodeId());
-            if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
-                // SLAVE -> MASTER
-                LOG.debug("SLAVE to MASTER for node {}", roleContext.getNodeId());
-                makeDeviceRoleChange(OfpRole.BECOMEMASTER, roleContext,false);
-            } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
-                // MASTER -> SLAVE
-                LOG.debug("MASTER to SLAVE for node {}", roleContext.getNodeId());
-                LOG.warn("Tx-EntityOwnershipRegistration lost leadership entity type {} and node {}",
-                        ownershipChange.getEntity().getType(),roleContext.getNodeId());
-                watchingEntities.remove(roleContext.getTxEntity(), roleContext);
-                watchingEntities.remove(roleContext.getEntity(), roleContext);
-                roleContext.unregisterCandidate(roleContext.getEntity());
+            if (ownershipChange.inJeopardy()) {
+                LOG.warn("Getting 'inJeopardy' flag from EOS. Removing txCandidate and stopping watching txCandidate.");
+                watchingEntities.remove(roleContext.getTxEntity());
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
-                if (!ownershipChange.hasOwner()) {
-                    LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getNodeId());
-                } else {
-                    final NodeId nodeId = roleContext.getNodeId();
-                    contexts.remove(nodeId, roleContext);
-                    roleContext.close();
-                    conductor.closeConnection(nodeId);
+            } else {
+                if (!ownershipChange.wasOwner() && ownershipChange.isOwner()) {
+                    // SLAVE -> MASTER
+                    LOG.debug("SLAVE to MASTER for node {}", roleContext.getNodeId());
+                    makeDeviceRoleChange(OfpRole.BECOMEMASTER, roleContext, false);
+                } else if (ownershipChange.wasOwner() && !ownershipChange.isOwner()) {
+                    // MASTER -> SLAVE
+                    LOG.debug("MASTER to SLAVE for node {}", roleContext.getNodeId());
+                    LOG.warn("Tx-EntityOwnershipRegistration lost leadership entity type {} and node {}",
+                            ownershipChange.getEntity().getType(), roleContext.getNodeId());
+                    watchingEntities.remove(roleContext.getTxEntity(), roleContext);
+                    watchingEntities.remove(roleContext.getEntity(), roleContext);
+                    roleContext.unregisterCandidate(roleContext.getEntity());
+                    roleContext.unregisterCandidate(roleContext.getTxEntity());
+                    if (!ownershipChange.hasOwner()) {
+                        LOG.debug("Trying to remove from operational node: {}", roleContext.getNodeId());
+                        removeDeviceFromOperationalDS(roleContext.getNodeId());
+                    } else {
+                        final NodeId nodeId = roleContext.getNodeId();
+                        contexts.remove(nodeId, roleContext);
+                        roleContext.close();
+                        conductor.closeConnection(nodeId);
+                    }
                 }
             }
         } else {
