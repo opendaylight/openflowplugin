@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -122,9 +123,11 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public void add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
-                    final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        //DO NOthing
+    public Future<? extends RpcResult> add(
+        final InstanceIdentifier<TableFeatures> identifier,
+        final TableFeatures addDataObj,
+        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return Futures.immediateFuture(null);
     }
 
     @Override
