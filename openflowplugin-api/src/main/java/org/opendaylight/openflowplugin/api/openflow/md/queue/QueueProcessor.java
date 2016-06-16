@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.md.queue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 

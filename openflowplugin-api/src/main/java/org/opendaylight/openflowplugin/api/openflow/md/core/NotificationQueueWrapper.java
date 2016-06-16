@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.Notification;
-
-import com.google.common.base.Preconditions;
 
 /**
  * 

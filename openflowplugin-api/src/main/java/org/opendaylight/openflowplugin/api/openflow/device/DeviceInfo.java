@@ -8,12 +8,11 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-
-import java.math.BigInteger;
 
 /**
  * API defining basic device information

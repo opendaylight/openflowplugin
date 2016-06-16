@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
-
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;

@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
+import java.util.Optional;
+import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
@@ -23,9 +25,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
-import java.util.Optional;
-import java.util.concurrent.Future;
 
 /**
  * The Opendaylight direct statistics service.
