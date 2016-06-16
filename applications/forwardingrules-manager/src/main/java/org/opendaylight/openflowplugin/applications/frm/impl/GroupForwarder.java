@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
@@ -145,8 +146,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public void add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
-                    final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<AddGroupOutput>> add(
+        final InstanceIdentifier<Group> identifier, final Group addDataObj,
+        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group group = (addDataObj);
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
@@ -154,7 +156,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalGroupService().addGroup(builder.build());
+        return this.provider.getSalGroupService().addGroup(builder.build());
     }
 
     @Override
