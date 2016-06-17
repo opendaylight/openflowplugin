@@ -107,13 +107,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>inventory-manager</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>lldp-speaker</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -134,22 +127,8 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>topology-lldp-discovery</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>topology-manager</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>topology-manager</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
@@ -180,13 +159,6 @@
 
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>of-switch-config-pusher</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>statistics-manager-config</artifactId>
                 <version>${project.version}</version>
                 <classifier>config</classifier>
@@ -195,13 +167,6 @@
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>table-miss-enforcer</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>lldp-speaker</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>config</classifier>
