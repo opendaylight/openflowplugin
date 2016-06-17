@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_965e47e8",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-17T10:04:20Z",
+      "side": 1,
+      "message": "We need just one instance of compression queue. See suggested solution in SyncReactorFutureZipRetryDecorator.java.",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_db0c6a97",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalRetryListener.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-17T10:04:20Z",
+      "side": 1,
+      "message": "what about not copy pasting super class code? like this:\nInstead of overriding processNodeModification just create in upper class dedicated template method isReconciliationNeeded encapsulating login in if statement. The method should be overriden here like this:\nboolean isReconciliationNeeded() {\n  return super.isReconciliationNeeded() || inRetry();\n}",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_bb11b6ae",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalRetryListener.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-17T10:04:20Z",
+      "side": 1,
+      "message": "what about not copy pasting super class code? like this:\nprotected void updateCache(DataTreeModification\u003cNode\u003e modification) {\n  super.updateCache(modification);\n  if (isDelete(modification) ||   isDeleteLogical(modification)) {            snapshotElicitRegistry.unregisterForNextConsistentOperationalSnapshot(nodeId(modification));\n  }\n  return super.isReconciliationNeeded() || inRetry();\n}",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_76d57342",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryDecorator.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-17T10:04:20Z",
+      "side": 1,
+      "message": "Let\u0027s do this better. This implementation has two problems:\n- bug: it can skip config changes that will com during retry (because of comrepssionQueeu.remove and unregister after retry success)\n- we have two different decorator with retry logic but we can have just one\n\n\nI would suggest this:\n- we need one instance of compressionQueue used by both config and operational listeners\n- create new class ZipQueueEntry with fields:\n-- FlowCapableNode latest //getLeft()...\n-- LogicalDatastoreType latestDsType\n-- FlowCapableNode previous //getRight()...\n-- LogicalDatastoreType previousDsType\n- refactor comppression to stop using Pair\u003cFlowCapableNode,FlowCapableNode\u003e and start using ZipQueueEntry\n- we do not need SyncReactorFutureZipRetryDecorator (remove...)\n- method updateCompressionState would have this logic:\n   if(CONFIG \u003d\u003d latestDsType \u0026\u0026 CONFIG \u003d\u003d previousDsType) {\n      putOptimizedCofigDelta(configTree, previous)\n   } else {\n      putLatestOperattionalDelta(configTree, dsType, operationalTree)\n   }\n\n\n\n- create utility method putOptimizedCofigDelta and document that it is not using operational data but rather both previousDsType and latestDsType are CONFIG\n\n      compressionQueue.put(FlowcapableNodePath, new ZipQueueEntry(configTree, dsType, previousEntry.getRight(),previousEntry.getRightDsType())\n\n\n\n\n- create utility method putLatestOperattionalDelta \n\n      compressionQueue.put(FlowcapableNodePath, new ZipQueueEntry(configTree, dsType, operationalTree, OPERATIONAL) //last constant parameter is still bad small that can be improved\n\n\nThis way implementation would be independent from retries and the bug is fixed. My expectation that thare is rece conndition in future decorator and might happen two cases:\n- optimal new config change is processed after retry\n- unoptimal new config change is processed before retry and may cause one more error but if will be retried",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_b6cf0bb0",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-17T10:04:20Z",
+      "side": 1,
+      "message": "nice",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
