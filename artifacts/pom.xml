@@ -159,13 +159,6 @@
 
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>statistics-manager-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>config</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>table-miss-enforcer</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
