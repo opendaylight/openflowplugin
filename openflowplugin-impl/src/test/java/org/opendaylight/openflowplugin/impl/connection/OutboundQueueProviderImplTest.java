@@ -1,13 +1,13 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class OutboundQueueProviderImplTest extends TestCase {
 

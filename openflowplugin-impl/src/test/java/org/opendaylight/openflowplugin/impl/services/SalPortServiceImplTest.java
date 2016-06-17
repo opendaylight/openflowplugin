@@ -3,6 +3,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -18,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPortBuilder;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SalPortServiceImplTest extends ServiceMocking {

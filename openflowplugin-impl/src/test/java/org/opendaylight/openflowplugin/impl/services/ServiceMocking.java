@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;

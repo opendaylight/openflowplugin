@@ -18,8 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
-import javax.annotation.CheckForNull;
-
 /**
  * This interface is responsible for instantiating DeviceContext and
  * registering transaction chain for each DeviceContext. Each device

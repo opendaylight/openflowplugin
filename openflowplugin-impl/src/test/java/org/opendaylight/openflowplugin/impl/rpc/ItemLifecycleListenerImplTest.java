@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
