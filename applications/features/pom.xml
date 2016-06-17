@@ -80,13 +80,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>statistics-manager-config</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
-
-    <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-base</artifactId>
     </dependency>

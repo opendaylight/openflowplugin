@@ -163,12 +163,6 @@
             <artifactId>statistics-manager</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>statistics-manager-config</artifactId>
-            <classifier>config</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-blueprint-config</artifactId>
             <version>${project.version}</version>

@@ -22,7 +22,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
-        <configfile finalname="${config.configfile.directory}/${config.statistics.manager.configfile}">mvn:org.opendaylight.openflowplugin.applications/statistics-manager-config/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>

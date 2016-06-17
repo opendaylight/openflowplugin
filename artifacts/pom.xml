@@ -83,13 +83,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>forwardingrules-manager-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>config</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>forwardingrules-sync</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -157,13 +150,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>statistics-manager-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>config</classifier>
-                <type>xml</type>
-            </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>table-miss-enforcer</artifactId>
