@@ -22,6 +22,30 @@
       "revId": "70c266f1eef0a823f29c4ad119a1e8f7e6164507",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_76c1f3e3",
+        "filename": "applications/statistics-manager-config/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2016-06-17T11:33:02Z",
+      "side": 0,
+      "message": "Fix: https://git.opendaylight.org/gerrit/40485",
+      "parentUuid": "ba51214e_56fcaf3e",
+      "range": {
+        "startLine": 19,
+        "startChar": 16,
+        "endLine": 19,
+        "endChar": 41
+      },
+      "revId": "70c266f1eef0a823f29c4ad119a1e8f7e6164507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
