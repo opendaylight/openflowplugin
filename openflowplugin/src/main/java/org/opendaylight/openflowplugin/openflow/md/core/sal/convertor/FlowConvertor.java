@@ -261,19 +261,13 @@ public class FlowConvertor {
     }
 
     private static void salToOFFlowCommand(Flow flow, FlowModInputBuilder flowMod) {
-        if (flow instanceof AddFlowInput) {
+        if (flow instanceof AddFlowInput || flow instanceof UpdatedFlow) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
             if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETESTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
-            }
-        } else if (flow instanceof UpdatedFlow) {
-            if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
-                flowMod.setCommand(FlowModCommand.OFPFCMODIFYSTRICT);
-            } else {
-                flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
             }
         }
     }
