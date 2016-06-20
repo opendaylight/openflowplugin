@@ -123,8 +123,8 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
         EventsTimeCounter.markEnd(getEventIdentifier());
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
         spyMessage(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
-        setResult(rpcResult);
         txFacade.submitTransaction();
+        setResult(rpcResult);
         finished = true;
     }
 }
