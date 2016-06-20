@@ -54,7 +54,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
-        connectionContext.createDeviceInfo();
+        connectionContext.handshakeSuccessful();
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
         final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, 0L);
