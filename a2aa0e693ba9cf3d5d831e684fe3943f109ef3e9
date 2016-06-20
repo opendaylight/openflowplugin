@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_a86207d6",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ForwardingRulesSyncProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-20T08:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_965e47e8",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_db0c6a97",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalRetryListener.java",
         "patchSetId": 13
@@ -30,6 +48,24 @@
       "writtenOn": "2016-06-17T10:04:20Z",
       "side": 1,
       "message": "what about not copy pasting super class code? like this:\nInstead of overriding processNodeModification just create in upper class dedicated template method isReconciliationNeeded encapsulating login in if statement. The method should be overriden here like this:\nboolean isReconciliationNeeded() {\n  return super.isReconciliationNeeded() || inRetry();\n}",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_d4d0b855",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalRetryListener.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-20T08:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_db0c6a97",
       "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_54ce6884",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalRetryListener.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-20T08:21:29Z",
+      "side": 1,
+      "message": "Done with edits:\n- removed try-catch block (not needed?)\n- added boolean return value to detect cache update/no-update \u003d removal (for the sake of overridden method simplification)",
+      "parentUuid": "ba51214e_bb11b6ae",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_76d57342",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryDecorator.java",
         "patchSetId": 13
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_48652be0",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureZipRetryDecorator.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-20T08:21:29Z",
+      "side": 1,
+      "message": "done, with some changes",
+      "parentUuid": "ba51214e_76d57342",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_b6cf0bb0",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
         "patchSetId": 13
@@ -81,6 +153,24 @@
       "writtenOn": "2016-06-17T10:04:20Z",
       "side": 1,
       "message": "nice",
+      "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_76cc5336",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorRetryDecorator.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-06-20T08:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_b6cf0bb0",
       "revId": "a2aa0e693ba9cf3d5d831e684fe3943f109ef3e9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
