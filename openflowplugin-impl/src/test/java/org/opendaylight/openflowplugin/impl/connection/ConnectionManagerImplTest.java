@@ -66,12 +66,10 @@ public class ConnectionManagerImplTest {
         connectionManagerImpl = new ConnectionManagerImpl(ECHO_REPLY_TIMEOUT);
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
-        final InetAddress inetAddress = deviceAddress.getAddress();
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
         Mockito.when(connection.isAlive()).thenReturn(true);
         Mockito.when(connection.barrier(Matchers.<BarrierInput>any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
-//        Mockito.when(connection.getRemoteAddress().getAddress()).thenReturn(inetAddress);
     }
 
     /**
