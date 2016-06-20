@@ -27,6 +27,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -64,6 +65,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private Timeout pollTimeout;
 
     private volatile boolean schedulingEnabled;
+    private volatile CONTEXT_STATE contextState;
 
     StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
         this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
@@ -74,6 +76,7 @@ class StatisticsContextImpl implements StatisticsContext {
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
+        contextState = CONTEXT_STATE.WORKING;
     }
 
     @Override
@@ -187,13 +190,20 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() {
-        schedulingEnabled = false;
-        for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
-                iterator.hasNext();) {
-            RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
-        }
-        if (null != pollTimeout && !pollTimeout.isExpired()) {
-            pollTimeout.cancel();
+        if (CONTEXT_STATE.TERMINATION.equals(contextState)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Statistics context is already in state TERMINATION.");
+            }
+        } else {
+            contextState = CONTEXT_STATE.TERMINATION;
+            schedulingEnabled = false;
+            for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
+                 iterator.hasNext(); ) {
+                RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
+            }
+            if (null != pollTimeout && !pollTimeout.isExpired()) {
+                pollTimeout.cancel();
+            }
         }
     }
 
@@ -369,4 +379,8 @@ class StatisticsContextImpl implements StatisticsContext {
         return itemLifeCycleListener;
     }
 
+    @Override
+    public CONTEXT_STATE getState() {
+        return contextState;
+    }
 }

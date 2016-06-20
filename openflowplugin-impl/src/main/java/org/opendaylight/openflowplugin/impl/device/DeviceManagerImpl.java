@@ -374,7 +374,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     @Override
                     public ListenableFuture<Boolean> apply(@Nonnull final Void input) throws Exception {
                         statisticsContext.statListForCollectingInitialization();
-                        return statisticsContext.gatherDynamicData();
+                        return statisticsContext.initialGatherDynamicData();
                     }
                 });
 

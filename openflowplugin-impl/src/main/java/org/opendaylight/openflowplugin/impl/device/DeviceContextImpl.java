@@ -131,7 +131,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private final DeviceInfo deviceInfo;
 
-    private volatile DEVICE_CONTEXT_STATE deviceCtxState;
+    private volatile CONTEXT_STATE contextState;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -168,7 +168,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-        deviceCtxState = DEVICE_CONTEXT_STATE.INITIALIZATION;
+        contextState = CONTEXT_STATE.INITIALIZATION;
     }
 
     /**
@@ -448,8 +448,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
-        Verify.verify(DEVICE_CONTEXT_STATE.INITIALIZATION.equals(deviceCtxState));
-        deviceCtxState = DEVICE_CONTEXT_STATE.WORKING;
+        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(contextState));
+        contextState = CONTEXT_STATE.WORKING;
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
@@ -484,11 +484,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public synchronized void shutdownConnection() {
         LOG.debug("Shutdown method for node {}", deviceInfo.getNodeId());
-        if (DEVICE_CONTEXT_STATE.TERMINATION.equals(deviceCtxState)) {
+        if (CONTEXT_STATE.TERMINATION.equals(contextState)) {
             LOG.debug("DeviceCtx for Node {} is in termination process.", deviceInfo.getNodeId());
             return;
         }
-        deviceCtxState = DEVICE_CONTEXT_STATE.TERMINATION;
+        contextState = CONTEXT_STATE.TERMINATION;
 
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
             LOG.debug("ConnectionCtx for Node {} is in RIP state.", deviceInfo.getNodeId());
@@ -508,11 +508,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public DEVICE_CONTEXT_STATE getDeviceContextState() {
-        return deviceCtxState;
-    }
-
-    @Override
     public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
         return transactionChainManager.shuttingDown();
     }
@@ -520,5 +515,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @VisibleForTesting
     TransactionChainManager getTransactionChainManager() {
         return this.transactionChainManager;
+    }
+
+    @Override
+    public CONTEXT_STATE getState() {
+        return this.contextState;
     }
 }

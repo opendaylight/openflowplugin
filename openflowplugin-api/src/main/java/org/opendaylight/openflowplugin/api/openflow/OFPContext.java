@@ -11,4 +11,25 @@ package org.opendaylight.openflowplugin.api.openflow;
  * General API for all OFP Context
  */
 public interface OFPContext {
+
+    /**
+     * distinguished device context states
+     */
+    enum CONTEXT_STATE {
+        /**
+         * initial phase
+         */
+        INITIALIZATION,
+        /**
+         * standard phase
+         */
+        WORKING,
+        /**
+         * termination phase
+         */
+        TERMINATION
+    }
+
+    CONTEXT_STATE getState();
+
 }

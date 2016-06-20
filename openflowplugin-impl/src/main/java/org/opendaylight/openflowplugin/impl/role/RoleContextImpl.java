@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlready
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -47,6 +48,7 @@ class RoleContextImpl implements RoleContext {
     private final Semaphore roleChangeGuard = new Semaphore(1, true);
 
     private final LifecycleConductor conductor;
+    private volatile CONTEXT_STATE contextState;
 
     RoleContextImpl(final DeviceInfo deviceInfo, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity, final LifecycleConductor lifecycleConductor) {
         this.entityOwnershipService = entityOwnershipService;
@@ -54,11 +56,13 @@ class RoleContextImpl implements RoleContext {
         this.txEntity = txEntity;
         this.deviceInfo = deviceInfo;
         this.conductor = lifecycleConductor;
+        contextState = CONTEXT_STATE.INITIALIZATION;
     }
 
     @Override
     public boolean initialization() {
         LOG.info("Initialization main candidate for node {}", deviceInfo.getNodeId());
+        contextState = CONTEXT_STATE.WORKING;
         return registerCandidate(this.entity);
     }
 
@@ -183,10 +187,16 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public void close() {
+        contextState = CONTEXT_STATE.TERMINATION;
         unregisterAllCandidates();
     }
 
     public boolean isMaster(){
         return (txEntityOwnershipCandidateRegistration != null && entityOwnershipCandidateRegistration != null);
+    }
+
+    @Override
+    public CONTEXT_STATE getState() {
+        return contextState;
     }
 }

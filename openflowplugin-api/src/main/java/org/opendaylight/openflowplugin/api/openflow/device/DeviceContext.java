@@ -45,31 +45,6 @@ public interface DeviceContext extends AutoCloseable,
         DeviceRegistry{
 
     /**
-     * distinguished device context states
-     */
-    enum DEVICE_CONTEXT_STATE {
-        /**
-         * initial phase of talking to switch
-         */
-        INITIALIZATION,
-        /**
-         * standard phase - interacting with switch
-         */
-        WORKING,
-        /**
-         * termination phase of talking to switch
-         */
-        TERMINATION
-    }
-
-    /**
-     * Method returns current device context state.
-     *
-     * @return {@link DeviceContext.DEVICE_CONTEXT_STATE}
-     */
-    DEVICE_CONTEXT_STATE getDeviceContextState();
-
-    /**
      * Method close all auxiliary connections and primary connection.
      */
     void shutdownConnection();
