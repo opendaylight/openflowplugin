@@ -45,20 +45,16 @@ public class UdpDstCodec extends AbstractMatchCodec {
         serializeHeader(input, outBuffer);
         UdpDstCaseValue udpDstCase = ((UdpDstCaseValue) input.getMatchEntryValue());
         outBuffer.writeShort(udpDstCase.getUdpDstValues().getPort().getValue());
-        outBuffer.writeShort(udpDstCase.getUdpDstValues().getMask());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        matchEntryBuilder.setHasMask(true);
+        matchEntryBuilder.setHasMask(false);
         int portNo = message.readUnsignedShort();
-        int mask = message.readUnsignedShort();
-        message.readBytes(mask);
         UdpDstCaseValueBuilder caseBuilder = new UdpDstCaseValueBuilder();
         UdpDstValuesBuilder udpDstValuesBuilder = new UdpDstValuesBuilder();
         udpDstValuesBuilder.setPort(new PortNumber(portNo));
-        udpDstValuesBuilder.setMask(portNo);
         caseBuilder.setUdpDstValues(udpDstValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();

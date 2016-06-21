@@ -44,20 +44,15 @@ public class TcpDstCodec extends AbstractMatchCodec {
         serializeHeader(input, outBuffer);
         TcpDstCaseValue tcpDstCase = ((TcpDstCaseValue) input.getMatchEntryValue());
         outBuffer.writeShort(tcpDstCase.getTcpDstValues().getPort().getValue());
-        outBuffer.writeShort(tcpDstCase.getTcpDstValues().getMask());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        matchEntryBuilder.setHasMask(true);
         int portNo = message.readUnsignedShort();
-        int mask = message.readUnsignedShort();
-        message.readBytes(mask);
         TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
         TcpDstValuesBuilder tcpDstValuesBuilder = new TcpDstValuesBuilder();
         tcpDstValuesBuilder.setPort(new PortNumber(portNo));
-        tcpDstValuesBuilder.setMask(portNo);
         caseBuilder.setTcpDstValues(tcpDstValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
@@ -79,9 +74,7 @@ public class TcpDstCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfTcpDst.class;
-    }
+    public Class<? extends MatchField> getNxmField() { return NxmOfTcpDst.class; }
 
     @Override
     public Class<? extends OxmClassBase> getOxmClass() {
