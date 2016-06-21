@@ -66,7 +66,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private volatile boolean schedulingEnabled;
 
     StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
-        this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo.getNodeId()));
+        this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
         emptyFuture = Futures.immediateFuture(false);
@@ -108,7 +108,7 @@ class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
         if (shuttingDownStatisticsPolling) {
-            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceState().getNodeId());
+            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceInfo().getNodeId());
             return Futures.immediateFuture(Boolean.TRUE);
         }
         final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
@@ -211,19 +211,19 @@ class StatisticsContextImpl implements StatisticsContext {
     private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
-                    deviceContext.getDeviceState().getNodeId());
+                    deviceContext.getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
             resultFuture.setException(new IllegalStateException(errMsg));
             return;
         }
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
-            LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceState().getNodeId());
+            LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceInfo().getNodeId());
             return;
         }
 
         final MultipartType nextType = iterator.next();
-        LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceState().getNodeId(), nextType);
+        LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceInfo().getNodeId(), nextType);
 
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType);
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {

@@ -23,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -77,6 +78,9 @@ public class SalRoleServiceImplTest {
     private DeviceState mockDeviceState;
 
     @Mock
+    private DeviceInfo mockDeviceInfo;
+
+    @Mock
     private GetFeaturesOutput mockFeaturesOutput;
 
     @Mock
@@ -93,10 +97,11 @@ public class SalRoleServiceImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(mockDeviceState.getNodeId()).thenReturn(testNodeId);
-        Mockito.when(mockDeviceState.getFeatures()).thenReturn(mockFeaturesOutput);
+        Mockito.when(mockDeviceInfo.getNodeId()).thenReturn(testNodeId);
+        Mockito.when(mockDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(mockFeaturesOutput.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getDeviceState()).thenReturn(mockDeviceState);
+        Mockito.when(mockDeviceContext.getDeviceInfo()).thenReturn(mockDeviceInfo);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
         Mockito.when(mockConnectionContext.getFeatures()).thenReturn(mockFeaturesReply);
         Mockito.when(mockConnectionContext.getNodeId()).thenReturn(testNodeId);

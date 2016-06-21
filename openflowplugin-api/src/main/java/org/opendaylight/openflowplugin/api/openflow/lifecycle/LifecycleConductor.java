@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -27,24 +28,24 @@ public interface LifecycleConductor {
 
     /**
      * Returns device context from device manager device contexts maps
-     * @param nodeId node identification
-     * @return null if context doesn't exists
+     *
+     * @param deviceInfo@return null if context doesn't exists
      */
-    DeviceContext getDeviceContext(final NodeId nodeId);
+    DeviceContext getDeviceContext(DeviceInfo deviceInfo);
 
     /**
      * Registers ont time listener for notify when services rpc, statistics are done stop or start
      * @param manager service change listener
-     * @param nodeId node identification
+     * @param deviceInfo node identification
      */
-    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final NodeId nodeId);
+    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo);
 
     /**
      * Returns device of version
-     * @param nodeId node identification
+     * @param deviceInfo node identification
      * @return null if device context doesn't exists
      */
-    Short gainVersionSafely(final NodeId nodeId);
+    Short gainVersionSafely(final DeviceInfo deviceInfo);
 
     /**
      * Set new timeout for {@link io.netty.util.HashedWheelTimer}
@@ -63,9 +64,9 @@ public interface LifecycleConductor {
 
     /**
      * Interrupt connection for the node
-     * @param nodeId node identification
+     * @param deviceInfo node identification
      */
-    void closeConnection(final NodeId nodeId);
+    void closeConnection(final DeviceInfo deviceInfo);
 
     /**
      * Setter for device manager once set it cant be unset or overwritten
@@ -81,8 +82,8 @@ public interface LifecycleConductor {
 
     /**
      * Xid from outboundqueue
-     * @param nodeId
+     * @param deviceInfo
      * @return
      */
-    Long reserveXidForDeviceMessage(final NodeId nodeId);
+    Long reserveXidForDeviceMessage(final DeviceInfo deviceInfo);
 }

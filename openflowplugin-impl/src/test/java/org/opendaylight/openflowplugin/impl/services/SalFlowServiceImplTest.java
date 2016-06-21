@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -95,6 +96,8 @@ public class SalFlowServiceImplTest extends TestCase {
     @Mock
     private DeviceState mockedDeviceState;
     @Mock
+    private DeviceInfo mockedDeviceInfo;
+    @Mock
     private DeviceFlowRegistry deviceFlowRegistry;
     @Mock
     private GetFeaturesOutput mockedFeaturesOutput;
@@ -119,9 +122,11 @@ public class SalFlowServiceImplTest extends TestCase {
         when(requestContext.getXid()).thenReturn(new Xid(84L));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
 
-        when(mockedDeviceState.getNodeInstanceIdentifier()).thenReturn(NODE_II);
-        when(mockedDeviceState.getFeatures()).thenReturn(mockedFeaturesOutput);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
 
         salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext);
     }

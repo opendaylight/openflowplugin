@@ -58,7 +58,7 @@ final class GroupDescriptionService
     @Override
     public GroupDescStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
         GroupDescStatsUpdatedBuilder notification = new GroupDescStatsUpdatedBuilder();
-        notification.setId(getDeviceContext().getDeviceState().getNodeId());
+        notification.setId(getDeviceContext().getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 

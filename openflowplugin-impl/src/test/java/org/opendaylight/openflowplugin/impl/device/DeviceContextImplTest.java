@@ -103,6 +103,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -179,8 +180,9 @@ public class DeviceContextImplTest {
         Mockito.when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
-        Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -203,12 +205,11 @@ public class DeviceContextImplTest {
         when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
         when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));
 
-        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceState.getFeatures()).thenReturn(featuresOutput);
-        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceState.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceState.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
+        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceInfo.class), any(Object.class))).thenReturn(mock(PacketReceived.class));
+        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceInfo.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -414,7 +415,7 @@ public class DeviceContextImplTest {
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
         final NodeId dummyNodeId = new NodeId("dummyNodeId");
-        when(deviceState.getNodeId()).thenReturn(dummyNodeId);
+        when(deviceInfo.getNodeId()).thenReturn(dummyNodeId);
 
         final ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
         deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
@@ -463,7 +464,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testPortStatusMessage() {
+    public void testPortStatusMessage() throws Exception{
         final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
         final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
@@ -471,10 +472,10 @@ public class DeviceContextImplTest {
 
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
         when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(deviceState.getFeatures()).thenReturn(mockedFeature);
 
         when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
+        when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
 
         OpenflowPortsUtil.init();
         deviceContext.processPortStatusMessage(mockedPortStatusMessage);
@@ -491,7 +492,7 @@ public class DeviceContextImplTest {
                 .setMatch(new MatchBuilder().build());
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
-        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceState.class), any(Object.class)))
+        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceInfo.class), any(Object.class)))
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry

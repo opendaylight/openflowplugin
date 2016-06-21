@@ -25,7 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -55,6 +55,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private final Object txLock = new Object();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+    private final DeviceInfo deviceInfo;
     private final DataBroker dataBroker;
     private final LifecycleConductor conductor;
 
@@ -77,14 +78,15 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final DeviceState deviceState,
+                            @Nonnull final DeviceInfo deviceInfo,
                             @Nonnull final LifecycleConductor conductor) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.conductor = Preconditions.checkNotNull(conductor);
-        this.nodeII = Preconditions.checkNotNull(deviceState.getNodeInstanceIdentifier());
+        this.deviceInfo = deviceInfo;
+        this.nodeII = deviceInfo.getNodeInstanceIdentifier();
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
         lastSubmittedFuture = Futures.immediateFuture(null);
-        LOG.debug("created txChainManager for {}", nodeII);
+        LOG.debug("created txChainManager for {}", this.nodeII);
     }
 
     private NodeId nodeId() {
@@ -192,7 +194,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
                     if (initCommit) {
                         LOG.error("Initial commit failed. {}", t);
-                        conductor.closeConnection(nodeId());
+                        conductor.closeConnection(deviceInfo);
                     }
                 }
             });

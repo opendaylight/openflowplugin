@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
@@ -30,18 +30,16 @@ public class GroupStatisticsToNotificationTransformer {
 
     /**
      * @param mpReplyList   raw multipart response from device
-     * @param deviceState   device state
-     * @param ofVersion     device version
+     * @param deviceInfo   device state
      * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static GroupStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,
-                                                                 final DeviceState deviceState,
-                                                                 final OpenflowVersion ofVersion,
+                                                                 final DeviceInfo deviceInfo,
                                                                  final TransactionId emulatedTxId) {
 
         GroupStatisticsUpdatedBuilder notification = new GroupStatisticsUpdatedBuilder();
-        notification.setId(deviceState.getNodeId());
+        notification.setId(deviceInfo.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 

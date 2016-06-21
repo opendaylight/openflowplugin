@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -20,9 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
     @Override
-    protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceState deviceState) {
+    protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
         return MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowRemoved.getMatchV10(),
-                deviceState.getFeatures().getDatapathId(), OpenflowVersion.OF10);
+                deviceInfo.getDatapathId(), OpenflowVersion.OF10);
     }
 
     /**
