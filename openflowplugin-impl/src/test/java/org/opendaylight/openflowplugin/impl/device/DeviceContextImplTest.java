@@ -53,6 +53,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -163,6 +164,8 @@ public class DeviceContextImplTest {
     private MessageTranslator<Object, Object> messageTranslatorFlowRemoved;
     @Mock
     private LifecycleConductor lifecycleConductor;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     private InOrder inOrderDevState;
 
@@ -178,32 +181,24 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
         Mockito.when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceState.getNodeId()).thenReturn(nodeId);
-//        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
-        Mockito.doAnswer(new Answer<Object>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) {
-                settableFuture.set((RpcResult<GetAsyncReply>) invocation.getArguments()[0]);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            settableFuture.set((RpcResult<GetAsyncReply>) invocation.getArguments()[0]);
+            return null;
         }).when(requestContext).setResult(any(RpcResult.class));
 
         Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
-        Mockito.doAnswer(new Answer<Object>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(final InvocationOnMock invocation) {
-                settableFutureMultiReply.set((RpcResult<MultipartReply>) invocation.getArguments()[0]);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            settableFutureMultiReply.set((RpcResult<MultipartReply>) invocation.getArguments()[0]);
+            return null;
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
+        Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
         when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));
