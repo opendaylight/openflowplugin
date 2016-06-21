@@ -433,8 +433,7 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceInfo deviceInfo, final TxFacade txFacade, final DeviceGroupRegistry groupRegistry) throws Exception {
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent =
-                deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         deleteAllKnownGroups(txFacade, fNodeIdent, groupRegistry);
 
         for (final GroupDescStatsUpdated groupDescStatsUpdated : data) {

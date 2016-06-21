@@ -143,5 +143,8 @@ public interface ConnectionContext {
      */
     DeviceInfo getDeviceInfo();
 
-    void createDeviceInfo();
+    /**
+     * This method creates a basic device information. Should be called after nodeId and features are set in connection context
+     */
+    void handshakeSuccessful();
 }

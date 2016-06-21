@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Callable;
@@ -230,7 +231,9 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void createDeviceInfo() {
+    public void handshakeSuccessful() {
+        Preconditions.checkNotNull(nodeId, "Cannot create DeviceInfo if 'NodeId' is not set!");
+        Preconditions.checkNotNull(featuresReply, "Cannot create DeviceInfo if 'features' is not set!");
         this.deviceInfo = new DeviceInfoImpl(
                 nodeId,
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),

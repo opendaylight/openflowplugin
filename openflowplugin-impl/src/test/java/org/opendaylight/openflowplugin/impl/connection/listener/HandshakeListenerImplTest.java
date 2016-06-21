@@ -63,7 +63,7 @@ public class HandshakeListenerImplTest {
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.TEN);
-        Mockito.doNothing().when(connectionContextSpy).createDeviceInfo();
+        Mockito.doNothing().when(connectionContextSpy).handshakeSuccessful();
         handshakeListener = new HandshakeListenerImpl(connectionContextSpy, deviceConnectedHandler);
         handshakeListener.setHandshakeContext(handshakeContext);
     }
@@ -79,7 +79,7 @@ public class HandshakeListenerImplTest {
         Mockito.verify(connectionContextSpy).changeStateToWorking();
         Mockito.verify(connectionContextSpy).setFeatures(Matchers.any(FeaturesReply.class));
         Mockito.verify(connectionContextSpy).setNodeId(nodeIdCaptor.capture());
-        Mockito.verify(connectionContextSpy).createDeviceInfo();
+        Mockito.verify(connectionContextSpy).handshakeSuccessful();
         Mockito.verify(deviceConnectedHandler).deviceConnected(connectionContextSpy);
         Mockito.verify(handshakeContext).close();
 
