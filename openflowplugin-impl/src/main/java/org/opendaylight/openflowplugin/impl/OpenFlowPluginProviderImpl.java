@@ -200,13 +200,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 conductor);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
-        conductor.setSafelyDeviceManager(deviceManager);
+        conductor.setSafelyManager(deviceManager);
 
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
-        conductor.setSafelyStatisticsManager(statisticsManager);
+        conductor.setSafelyManager(statisticsManager);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
-
+        conductor.setSafelyManager(rpcManager);
         roleManager.addRoleChangeListener((RoleChangeListener) conductor);
 
         /* Initialization Phase ordering - OFP Device Context suite */

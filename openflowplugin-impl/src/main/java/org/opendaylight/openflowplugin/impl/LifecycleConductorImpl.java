@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -29,6 +31,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChang
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-public final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener {
+final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleConductorImpl.class);
     private static final int TICKS_PER_WHEEL = 500;
@@ -46,9 +49,10 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
     private DeviceManager deviceManager;
+    private StatisticsManager statisticsManager;
+    private RpcManager rpcManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
     private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
-    private StatisticsManager statisticsManager;
 
     LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
         Preconditions.checkNotNull(messageIntelligenceAgency);
@@ -56,16 +60,20 @@ public final class LifecycleConductorImpl implements LifecycleConductor, RoleCha
     }
 
     @Override
-    public void setSafelyDeviceManager(final DeviceManager deviceManager) {
-        if (this.deviceManager == null) {
-            this.deviceManager = deviceManager;
+    public void setSafelyManager(final OFPManager manager){
+        if (manager == null) {
+            LOG.info("Manager {} is already defined in conductor. ", manager);
         }
-    }
-
-    @Override
-    public void setSafelyStatisticsManager(final StatisticsManager statisticsManager) {
-        if (this.statisticsManager == null) {
-            this.statisticsManager = statisticsManager;
+        if (manager instanceof RpcManager) {
+            this.rpcManager = (RpcManager) manager;
+        } else {
+            if (manager instanceof StatisticsManager) {
+                this.statisticsManager = (StatisticsManager) manager;
+            } else {
+                if (manager instanceof DeviceManager) {
+                    this.deviceManager = (DeviceManager) manager;
+                }
+            }
         }
     }
 
