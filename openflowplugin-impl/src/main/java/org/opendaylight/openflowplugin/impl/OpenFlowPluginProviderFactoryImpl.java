@@ -39,8 +39,12 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         LOG.info("Initializing new OFP southbound.");
 
         OpenflowPortsUtil.init();
-        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(providerConfig.getRpcRequestsQuota(),
-                providerConfig.getGlobalNotificationQuota());
+        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
+                providerConfig.getRpcRequestsQuota(),
+                providerConfig.getGlobalNotificationQuota(),
+                providerConfig.getThreadPoolMinThreads(),
+                providerConfig.getThreadPoolMaxThreads().getValue(),
+                providerConfig.getThreadPoolTimeout());
 
         openflowPluginProvider.setSwitchConnectionProviders(switchConnectionProviders);
         openflowPluginProvider.setDataBroker(dataBroker);
@@ -57,10 +61,23 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
 
         openflowPluginProvider.initialize();
 
-        LOG.info("Configured values, StatisticsPollingOff:{}, SwitchFeaturesMandatory:{}, BarrierCountLimit:{}, BarrierTimeoutLimit:{}, EchoReplyTimeout:{}",
-                providerConfig.isIsStatisticsPollingOff(), providerConfig.isSwitchFeaturesMandatory(),
+        LOG.info("Configured values, " +
+                "StatisticsPollingOff:{}, " +
+                "SwitchFeaturesMandatory:{}, " +
+                "BarrierCountLimit:{}, " +
+                "BarrierTimeoutLimit:{}, " +
+                "EchoReplyTimeout:{}, " +
+                "ThreadPoolMinThreads:{}, " +
+                "ThreadPoolMaxThreads:{}, " +
+                "ThreadPoolTimeout:{}",
+                providerConfig.isIsStatisticsPollingOff(),
+                providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
-                providerConfig.getBarrierIntervalTimeoutLimit().getValue(), providerConfig.getEchoReplyTimeout().getValue());
+                providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
+                providerConfig.getEchoReplyTimeout().getValue(),
+                providerConfig.getThreadPoolMinThreads(),
+                providerConfig.getThreadPoolMaxThreads().getValue(),
+                providerConfig.getThreadPoolTimeout());
 
         return openflowPluginProvider;
     }
