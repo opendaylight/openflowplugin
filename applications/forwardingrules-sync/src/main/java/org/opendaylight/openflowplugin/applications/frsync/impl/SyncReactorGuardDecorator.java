@@ -91,7 +91,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 }
             });
             return endResult;
-        } catch (InterruptedException e) {
+        } catch(InterruptedException e) {
             releaseGuardForNodeId(guard);
             throw e;
         }
