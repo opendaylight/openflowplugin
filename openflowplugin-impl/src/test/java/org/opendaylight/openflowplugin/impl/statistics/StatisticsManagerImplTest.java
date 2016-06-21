@@ -182,7 +182,6 @@ public class StatisticsManagerImplTest {
 
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
-        when(deviceManager.getDeviceContextFromNodeId(deviceInfo)).thenReturn(mockedDeviceContext);
         when(conductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
     }
 
