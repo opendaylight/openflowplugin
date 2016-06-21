@@ -198,6 +198,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierInterval,
                 barrierCountLimit,
                 conductor);
+        ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         conductor.setSafelyManager(deviceManager);
@@ -206,8 +207,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
         conductor.setSafelyManager(statisticsManager);
+
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
         conductor.setSafelyManager(rpcManager);
+
         roleManager.addRoleChangeListener((RoleChangeListener) conductor);
 
         /* Initialization Phase ordering - OFP Device Context suite */
