@@ -160,7 +160,6 @@ public class RoleManagerImplTest {
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(deviceInfo));
         Mockito.when(roleContextSpy.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(roleContextSpy.getDeviceInfo().getNodeId()).thenReturn(nodeId);
-//        Mockito.when(roleManagerSpy.sendRoleChangeToDevice(Mockito.<OfpRole>any(), Mockito.<RoleContext>any())).thenReturn(rpcFuture);
         inOrder = Mockito.inOrder(entityOwnershipListenerRegistration, roleManagerSpy, roleContextSpy);
     }
 

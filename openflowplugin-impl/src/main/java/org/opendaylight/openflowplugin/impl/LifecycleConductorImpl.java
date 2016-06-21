@@ -197,7 +197,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    LOG.warn("ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
+                    LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
                     closeConnection(deviceInfo);
                 }
             });

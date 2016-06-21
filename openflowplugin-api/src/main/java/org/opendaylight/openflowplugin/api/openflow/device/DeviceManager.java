@@ -50,7 +50,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * Register device synchronize listeners
      * @param deviceSynchronizeListener are notified if device is synchronized or not
      */
-    void registerDeviceSynchronizeListeners(final DeviceSynchronizeListener deviceSynchronizeListener);
+    void addDeviceSynchronizeListener(final DeviceSynchronizeListener deviceSynchronizeListener);
 
     /**
      * Notify all registered listeners about synchronized status
@@ -63,7 +63,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * Register device valid listeners
      * @param deviceValidListener are notified if device is valid or not
      */
-    void registerDeviceValidListeners(final DeviceValidListener deviceValidListener);
+    void addDeviceValidListener(final DeviceValidListener deviceValidListener);
 
     /**
      * Notify all registered listeners about valid status
