@@ -355,13 +355,6 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testGetRpcContext() {
-        final RpcContext rpcContext = mock(RpcContext.class);
-        deviceContext.setRpcContext(rpcContext);
-        assertNotNull(deviceContext.getRpcContext());
-    }
-
-    @Test
     public void testProcessReply() {
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
@@ -558,9 +551,6 @@ public class DeviceContextImplTest {
         // test call transactionChainManager.deactivateTransactionManager()
         Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
-        // test call MdSalRegistrationUtils.unregisterServices(rpcContext)
-        final RpcContext rpcContext = mock(RpcContext.class);
-        deviceContextSpy.setRpcContext(rpcContext);
         Assert.assertNull(deviceContextSpy.onClusterRoleChange(OfpRole.NOCHANGE).get());
 
         final StatisticsContext statisticsContext = mock(StatisticsContext.class);
