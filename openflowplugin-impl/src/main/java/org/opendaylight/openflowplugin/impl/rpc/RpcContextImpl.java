@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -37,6 +38,8 @@ class RpcContextImpl implements RpcContext {
     private final XidSequencer xidSequencer;
     private boolean isStatisticsRpcEnabled;
 
+    private volatile CONTEXT_STATE contextState;
+
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
@@ -52,6 +55,7 @@ class RpcContextImpl implements RpcContext {
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
 
         tracker = new Semaphore(maxRequests, true);
+        contextState = CONTEXT_STATE.WORKING;
     }
 
     /**
@@ -84,13 +88,20 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
-                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext();) {
-            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
-            rpcRegistration.close();
-            LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
-                    nodeInstanceIdentifier);
+        if (CONTEXT_STATE.TERMINATION.equals(contextState)){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RpcContext is already in TERMINATION state.");
+            }
+        } else {
+            contextState = CONTEXT_STATE.TERMINATION;
+            for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                    .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+                final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
+                rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+                rpcRegistration.close();
+                LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
+                        nodeInstanceIdentifier);
+            }
         }
     }
 
@@ -145,5 +156,10 @@ class RpcContextImpl implements RpcContext {
     @Override
     public boolean isStatisticsRpcEnabled() {
         return isStatisticsRpcEnabled;
+    }
+
+    @Override
+    public CONTEXT_STATE getState() {
+        return contextState;
     }
 }
