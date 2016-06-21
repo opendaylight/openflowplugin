@@ -263,15 +263,14 @@ class StatisticsContextImpl implements StatisticsContext {
         return null;
     }
 
+    //TODO: Refactor twice sending deviceContext into gatheringStatistics
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringOnTheFlyService,
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPFLOW*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -281,9 +280,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPTABLE*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -293,9 +290,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPPORTSTATS*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -305,9 +300,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPQUEUE*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState);
     }
 
@@ -317,9 +310,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPGROUPDESC*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -329,9 +320,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPGROUP*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -341,9 +330,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
@@ -353,9 +340,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 deviceContext.getDeviceInfo(),
                 /*MultipartType.OFPMPMETER*/ multipartType,
                 deviceContext,
-                deviceContext.getDeviceFlowRegistry(),
-                deviceContext.getDeviceGroupRegistry(),
-                deviceContext.getDeviceMeterRegistry(),
+                deviceContext,
                 devState) : emptyFuture;
     }
 
