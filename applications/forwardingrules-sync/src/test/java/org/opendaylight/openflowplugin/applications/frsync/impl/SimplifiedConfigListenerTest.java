@@ -43,32 +43,44 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class SimplifiedConfigListenerTest {
 
+    private static final NodeId NODE_ID = new NodeId("testNode");
+    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+    private SimplifiedConfigListener nodeListenerConfig;
+    private LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
+
     @Mock
     private SyncReactor reactor;
     @Mock
-    private DataBroker db;
+    private ReadOnlyTransaction roTx;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
-    private ReadOnlyTransaction roTx;
-    @Mock
     private DataObjectModification<FlowCapableNode> configModification;
-
-    private InstanceIdentifier<FlowCapableNode> nodePath;
-    private SimplifiedConfigListener nodeListenerConfig;
+    @Mock
+    private FlowCapableNode dataBefore;
+    @Mock
+    private FlowCapableNode dataAfter;
 
     @Before
     public void setUp() throws Exception {
-        final FlowCapableNodeSnapshotDao configSnaphot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeSnapshotDao operationalSnaphot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnaphot,
+        final DataBroker db = Mockito.mock(DataBroker.class);
+        final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
+        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
 
-        
-        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnaphot, operationalDao);
-        nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("testNode")))
+        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+        fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
+
+        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
+                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, fcNodePath);
+
+        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
+        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
+                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
     }
 
     @Test
@@ -77,24 +89,53 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChanged() throws Exception {
-        final FlowCapableNode configTree = Mockito.mock(FlowCapableNode.class);
-        final FlowCapableNode operationalTree = Mockito.mock(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
-                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, nodePath);
-
-        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
-        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
-        Mockito.when(configModification.getDataAfter()).thenReturn(configTree);
-        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
-        Mockito.doReturn(Futures.immediateCheckedFuture(Optional.of(operationalTree))).when(
-                roTx).read(LogicalDatastoreType.OPERATIONAL, nodePath);
-        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(),Matchers.<FlowCapableNode>any(),Matchers.<FlowCapableNode>any()))
-                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
+    public void testOnDataTreeChangedSyncupAdd() throws InterruptedException {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(nodePath, configTree, operationalTree);
+        Mockito.verify(reactor).syncup(fcNodePath, dataAfter, dataBefore, dsType);
+        Mockito.verifyNoMoreInteractions(reactor);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedSyncupUpdate() throws InterruptedException {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
+        Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reactor).syncup(fcNodePath, dataAfter, dataBefore, dsType);
+        Mockito.verifyNoMoreInteractions(reactor);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedSyncupDelete() throws InterruptedException {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reactor).syncup(fcNodePath, null, dataBefore, dsType);
+        Mockito.verifyNoMoreInteractions(reactor);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedSkip() {
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath)).
+                thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verifyZeroInteractions(reactor);
         Mockito.verify(roTx).close();
     }
 }
