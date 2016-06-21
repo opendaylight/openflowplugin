@@ -83,16 +83,21 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionSerializer(SetNspCodec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSP_CODEC);
         registrator.registerActionDeserializer(SetNshc1Codec.DESERIALIZER_KEY, NiciraActionCodecs.SET_NSC1_CODEC);
         registrator.registerActionSerializer(SetNshc1Codec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSC1_CODEC);
+        //BUG nshc2 codec is registered with same subtype as Conntrack codec
         registrator.registerActionDeserializer(SetNshc2Codec.DESERIALIZER_KEY, NiciraActionCodecs.SET_NSC2_CODEC);
         registrator.registerActionSerializer(SetNshc2Codec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSC2_CODEC);
+        //Continue
         registrator.registerActionDeserializer(SetNshc3Codec.DESERIALIZER_KEY, NiciraActionCodecs.SET_NSC3_CODEC);
         registrator.registerActionSerializer(SetNshc3Codec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSC3_CODEC);
         registrator.registerActionDeserializer(SetNshc4Codec.DESERIALIZER_KEY, NiciraActionCodecs.SET_NSC4_CODEC);
         registrator.registerActionSerializer(SetNshc4Codec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSC4_CODEC);
         registrator.registerActionDeserializer(SetNsiCodec.DESERIALIZER_KEY, NiciraActionCodecs.SET_NSI_CODEC);
         registrator.registerActionSerializer(SetNsiCodec.SERIALIZER_KEY, NiciraActionCodecs.SET_NSI_CODEC);
+        //BUG Conntrack codec is registered with same subtype as Nshc2 codec
         registrator.registerActionSerializer(ConntrackCodec.SERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
         registrator.registerActionDeserializer(ConntrackCodec.DESERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
+        //Continue
+
 
         registrator.registerMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY, NiciraMatchCodecs.REG0_CODEC);
         registrator.registerMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY, NiciraMatchCodecs.REG0_CODEC);
@@ -174,6 +179,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionSerializer(SetNsiCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(SetNspCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(SetNspCodec.SERIALIZER_KEY);
+        //Added this line (unregisterDeserialize was missing)
+        registrator.unregisterActionDeserializer(SetNshc1Codec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(SetNshc1Codec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(SetNshc2Codec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(SetNshc2Codec.SERIALIZER_KEY);
@@ -181,9 +188,10 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionSerializer(SetNshc3Codec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(SetNshc4Codec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(SetNshc4Codec.SERIALIZER_KEY);
+        //BUG unregistering with same subtype as Nshc2
         registrator.unregisterActionSerializer(ConntrackCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ConntrackCodec.DESERIALIZER_KEY);
-
+        //CONTINUE
         registrator.unregisterMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(Reg1Codec.SERIALIZER_KEY);
