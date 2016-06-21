@@ -202,13 +202,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        final StatisticsContext statisticsContext = contexts.remove(deviceContext.getDeviceState().getNodeId());
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
+        final StatisticsContext statisticsContext = contexts.remove(deviceInfo.getNodeId());
         if (null != statisticsContext) {
-            LOG.trace("Removing device context from stack. No more statistics gathering for device: {}", deviceContext.getDeviceState().getNodeId());
+            LOG.trace("Removing device context from stack. No more statistics gathering for device: {}", deviceInfo.getNodeId());
             statisticsContext.close();
         }
-        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceContext);
+        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
 
     @Override

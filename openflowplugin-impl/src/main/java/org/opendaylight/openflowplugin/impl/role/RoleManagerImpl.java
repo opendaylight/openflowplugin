@@ -130,20 +130,19 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceContext deviceContext) {
-        final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
-        LOG.trace("onDeviceContextLevelDown for node {}", nodeId);
-        final RoleContext roleContext = contexts.get(nodeId);
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
+        LOG.trace("onDeviceContextLevelDown for node {}", deviceInfo.getNodeId());
+        final RoleContext roleContext = contexts.get(deviceInfo.getNodeId());
         if (roleContext != null) {
-            LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", nodeId);
+            LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", deviceInfo.getNodeId());
             if (roleContext.isMainCandidateRegistered()) {
                 roleContext.unregisterCandidate(roleContext.getEntity());
             } else {
-                contexts.remove(nodeId, roleContext);
+                contexts.remove(deviceInfo.getNodeId(), roleContext);
                 roleContext.close();
             }
         }
-        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceContext);
+        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
 
     @VisibleForTesting
