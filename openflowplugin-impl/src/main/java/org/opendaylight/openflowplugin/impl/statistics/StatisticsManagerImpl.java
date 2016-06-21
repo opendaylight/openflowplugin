@@ -92,7 +92,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo.getNodeId()));
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo.getNodeId(), shuttingDownStatisticsPolling, conductor);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
         deviceContext.getDeviceState().setDeviceSynchronized(true);
@@ -253,29 +253,29 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void startScheduling(final NodeId nodeId) {
+    public void startScheduling(final DeviceInfo deviceInfo) {
         if (shuttingDownStatisticsPolling) {
-            LOG.info("Statistics are shut down for device: {}", nodeId);
+            LOG.info("Statistics are shut down for device: {}", deviceInfo.getNodeId());
             return;
         }
 
-        final StatisticsContext statisticsContext = contexts.get(nodeId);
+        final StatisticsContext statisticsContext = contexts.get(deviceInfo);
 
         if (statisticsContext == null) {
-            LOG.warn("Statistics context not found for device: {}", nodeId);
+            LOG.warn("Statistics context not found for device: {}", deviceInfo.getNodeId());
             return;
         }
 
         if (statisticsContext.isSchedulingEnabled()) {
-            LOG.debug("Statistics scheduling is already enabled for device: {}", nodeId);
+            LOG.debug("Statistics scheduling is already enabled for device: {}", deviceInfo.getNodeId());
             return;
         }
 
-        LOG.info("Scheduling statistics poll for device: {}", nodeId);
-        final DeviceContext deviceContext = conductor.getDeviceContext(nodeId);
+        LOG.info("Scheduling statistics poll for device: {}", deviceInfo.getNodeId());
+        final DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo.getNodeId());
 
         if (deviceContext == null) {
-            LOG.warn("Device context not found for device: {}", nodeId);
+            LOG.warn("Device context not found for device: {}", deviceInfo.getNodeId());
             return;
         }
 
@@ -284,12 +284,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void stopScheduling(final NodeId nodeId) {
-        LOG.debug("Stopping statistics scheduling for device: {}", nodeId);
-        final StatisticsContext statisticsContext = contexts.get(nodeId);
+    public void stopScheduling(final DeviceInfo deviceInfo) {
+        LOG.debug("Stopping statistics scheduling for device: {}", deviceInfo.getNodeId());
+        final StatisticsContext statisticsContext = contexts.get(deviceInfo);
 
         if (statisticsContext == null) {
-            LOG.warn("Statistics context not found for device: {}", nodeId);
+            LOG.warn("Statistics context not found for device: {}", deviceInfo.getNodeId());
             return;
         }
 
