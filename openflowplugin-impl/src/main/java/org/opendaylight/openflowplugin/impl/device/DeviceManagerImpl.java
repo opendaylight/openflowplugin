@@ -17,10 +17,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.TimerTask;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -83,8 +83,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final int barrierCountLimit;
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
-    private List<DeviceSynchronizeListener> deviceSynchronizedListeners;
-    private List<DeviceValidListener> deviceValidListeners;
+    private Set<DeviceSynchronizeListener> deviceSynchronizedListeners;
+    private Set<DeviceValidListener> deviceValidListeners;
 
     private final LifecycleConductor conductor;
 
@@ -113,8 +113,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         this.conductor = lifecycleConductor;
         spyPool = new ScheduledThreadPoolExecutor(1);
-        this.deviceSynchronizedListeners = new ArrayList<>();
-        this.deviceValidListeners = new ArrayList<>();
+        this.deviceSynchronizedListeners = new HashSet<>();
+        this.deviceValidListeners = new HashSet<>();
     }
 
 
@@ -166,8 +166,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final DeviceState deviceState = new DeviceStateImpl(deviceInfo);
-        this.registerDeviceSynchronizeListeners(deviceState);
-        this.registerDeviceValidListeners(deviceState);
+        this.addDeviceSynchronizeListener(deviceState);
+        this.addDeviceValidListener(deviceState);
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext,
                 deviceState,
@@ -328,7 +328,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void registerDeviceSynchronizeListeners(final DeviceSynchronizeListener deviceSynchronizeListener) {
+    public void addDeviceSynchronizeListener(final DeviceSynchronizeListener deviceSynchronizeListener) {
         this.deviceSynchronizedListeners.add(deviceSynchronizeListener);
     }
 
@@ -340,7 +340,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void registerDeviceValidListeners(final DeviceValidListener deviceValidListener) {
+    public void addDeviceValidListener(final DeviceValidListener deviceValidListener) {
         this.deviceValidListeners.add(deviceValidListener);
     }
 

@@ -325,7 +325,6 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             @Override
             public void onFailure(@Nonnull final Throwable t) {
                 LOG.warn("Delete Node {} failed. {}", deviceInfo, t);
-                contexts.remove(deviceInfo);
                 final RoleContext roleContext = contexts.remove(deviceInfo);
                 if (roleContext != null) {
                     roleContext.close();
