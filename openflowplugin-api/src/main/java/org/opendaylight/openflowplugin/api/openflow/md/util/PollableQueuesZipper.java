@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
+import com.google.common.collect.Iterators;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
-
-import com.google.common.collect.Iterators;
 
 /**
  * Zipper groups together a list of queues and exposes one poll method. Polling iterates through

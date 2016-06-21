@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
 import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;

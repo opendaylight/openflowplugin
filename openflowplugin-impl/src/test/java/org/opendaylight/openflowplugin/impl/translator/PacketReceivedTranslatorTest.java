@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

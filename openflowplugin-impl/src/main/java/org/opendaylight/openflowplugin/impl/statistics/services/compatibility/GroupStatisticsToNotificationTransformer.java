@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;

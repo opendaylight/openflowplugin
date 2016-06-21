@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.junit.Assert.assertNotNull;
+
 import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;

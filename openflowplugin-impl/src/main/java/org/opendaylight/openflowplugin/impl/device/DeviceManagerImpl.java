@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.TimerTask;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

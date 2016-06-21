@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * openflowplugin-api

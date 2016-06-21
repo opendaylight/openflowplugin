@@ -8,16 +8,14 @@
 
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
-import com.google.common.collect.Lists;
 
 
 /**
