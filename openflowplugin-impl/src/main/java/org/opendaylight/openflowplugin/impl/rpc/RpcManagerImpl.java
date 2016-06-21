@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ public class RpcManagerImpl implements RpcManager {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
     private final int maxRequestsQuota;
-    private final ConcurrentMap<NodeId, RpcContext> contexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
 
     private final LifecycleConductor conductor;
 
@@ -64,7 +63,7 @@ public class RpcManagerImpl implements RpcManager {
 
         deviceContext.setRpcContext(rpcContext);
 
-        Verify.verify(contexts.putIfAbsent(deviceInfo.getNodeId(), rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
+        Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
 
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
@@ -80,7 +79,7 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        final RpcContext removedContext = contexts.remove(deviceInfo.getNodeId());
+        final RpcContext removedContext = contexts.remove(deviceInfo);
         if (removedContext != null) {
             LOG.info("Unregister RPCs services for device context closure");
             removedContext.close();
@@ -97,9 +96,9 @@ public class RpcManagerImpl implements RpcManager {
      * This method is only for testing
      */
     @VisibleForTesting
-    void addRecordToContexts(NodeId nodeId, RpcContext rpcContexts) {
-        if(!contexts.containsKey(nodeId)) {
-            this.contexts.put(nodeId,rpcContexts);
+    void addRecordToContexts(DeviceInfo deviceInfo, RpcContext rpcContexts) {
+        if(!contexts.containsKey(deviceInfo)) {
+            this.contexts.put(deviceInfo,rpcContexts);
         }
     }
 }
