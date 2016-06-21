@@ -30,7 +30,7 @@ public final class FrmExecutors {
     }
 
     /**
-     * This will be rewritten in JUnits using SynchronousExecutorService.
+     * This will be rewritten in JUnits using SynchronousExecutorService
      */
     @VisibleForTesting // should not be private and final
     static PceExecutorsFactory DEFAULT_EXECUTORS = new PceExecutorsFactory() {

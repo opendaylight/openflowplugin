@@ -45,7 +45,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                             final FlowCapableNode configTree, final FlowCapableNode operationalTree,
                                             final LogicalDatastoreType dsType) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup guard {}", nodeId.getValue());
+        LOG.trace("syncup {}", nodeId.getValue());
 
         final long stampBeforeGuard = System.nanoTime();
         final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);//TODO handle InteruptedException
@@ -66,47 +66,48 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 public void onSuccess(@Nullable final Boolean result) {
                     if (LOG.isDebugEnabled()) {
                         final long stampFinished = System.nanoTime();
-                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{}, thread:{}", nodeId.getValue(),
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard.availablePermits(), threadName());
+                                guard, threadName());
                     }
 
-                    releaseGuardForNodeId(guard);
+                    releaseGuardForNodeId(nodeId, guard);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
                     if (LOG.isDebugEnabled()) {
                         final long stampFinished = System.nanoTime();
-                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} thread:{}", nodeId.getValue(),
                                 formatNanos(stampFinished - stampBeforeGuard),
                                 formatNanos(stampFinished - stampAfterGuard),
                                 formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard.availablePermits(), threadName());
+                                guard, threadName());
                     }
 
-                    releaseGuardForNodeId(guard);
+                    releaseGuardForNodeId(nodeId, guard);
                 }
             });
             return endResult;
-        } catch (InterruptedException e) {
-            releaseGuardForNodeId(guard);
+        } catch(InterruptedException e) {
+            releaseGuardForNodeId(nodeId, guard);
             throw e;
         }
     }
 
-    private String formatNanos(long nanos) {
+    protected String formatNanos(long nanos) {
         return "'" + TimeUnit.NANOSECONDS.toMillis(nanos) + " ms'";
     }
 
     /**
-     * Get guard and lock for node.
+     * get guard
+     *
      * @param flowcapableNodePath II of node for which guard should be acquired
      * @return semaphore guard
      */
-    private Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
+    protected Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath)
             throws InterruptedException {
         final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath),
                 "no guard for " + flowcapableNodePath);
@@ -125,17 +126,19 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     }
 
     /**
-     * Unlock and release guard.
-     * @param guard semaphore guard which should be unlocked
+     * unlock per node
+     *
+     * @param nodeId NodeId of node which should be unlocked
+     * @param guard semaphore guard
      */
-    private void releaseGuardForNodeId(final Semaphore guard) {
+    protected void releaseGuardForNodeId(final NodeId nodeId, final Semaphore guard) {
         if (guard == null) {
             return;
         }
         guard.release();
     }
 
-    private static String threadName() {
+    static String threadName() {
         final Thread currentThread = Thread.currentThread();
         return currentThread.getName();
     }
