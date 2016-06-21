@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -23,7 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnectedHandler, DeviceLifecycleSupervisor,
-        DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler, TranslatorLibrarian, AutoCloseable {
+        DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler, TranslatorLibrarian, AutoCloseable, OFPManager {
 
     /**
      * Sets notification publish service
