@@ -50,6 +50,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -98,6 +99,8 @@ public class DeviceManagerImplTest {
     private LifecycleConductor lifecycleConductor;
     @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     @Before
     public void setUp() throws Exception {
@@ -157,13 +160,13 @@ public class DeviceManagerImplTest {
         final DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
         final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceState.getNodeId()).thenReturn(mockedNodeId);
+        when(deviceInfo.getNodeId()).thenReturn(mockedNodeId);
 
         if (withException) {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
         }
         deviceManager.addDeviceContextToMap(mockedNodeId, mockedDeviceContext);
-        deviceManager.onDeviceContextLevelUp(mockedDeviceContext.getDeviceState().getNodeId());
+        deviceManager.onDeviceContextLevelUp(deviceInfo);
         if (withException) {
             verify(mockedDeviceContext).close();
         } else {
@@ -186,7 +189,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
     @Test
@@ -211,7 +214,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
         order.verify(mockConnectionContext).getNodeId();
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<NodeId>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
     }
 
     @Test
