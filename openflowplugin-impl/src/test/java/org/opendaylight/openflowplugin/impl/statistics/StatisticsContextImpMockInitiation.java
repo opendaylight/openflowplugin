@@ -71,9 +71,13 @@ class StatisticsContextImpMockInitiation {
         final MessageSpy mockedMessageSpy = mock(MessageSpy.class);
         final OutboundQueue mockedOutboundQueue = mock(OutboundQueue.class);
         final DeviceManager mockedDeviceManager = mock(DeviceManager.class);
-        final GetFeaturesOutput mockedFeaturesOutput = mock(GetFeaturesOutput.class);
 
         mockConductor = mock(LifecycleConductor.class);
+
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
+        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
+        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(isTable);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(isFlow);
@@ -88,6 +92,7 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
+        when(mockedDeviceInfo.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
 
         when(mockedConnectionContext.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
