@@ -69,6 +69,8 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected DeviceState deviceState;
     @Mock
     protected DeviceInfo deviceInfo;
+    @Mock
+    protected GetFeaturesOutput getFeaturesOutput;
 
     protected NodeConnectorId nodeConnectorId;
     protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
@@ -101,6 +103,8 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(deviceInfo.getNodeId()).thenReturn(new NodeId(NODE_ID));
         when(deviceInfo.getVersion()).thenReturn(OF_VERSION);
         when(deviceInfo.getDatapathId()).thenReturn(DATAPATH_ID);
+        when(getFeaturesOutput.getVersion()).thenReturn(OF_VERSION);
+        when(getFeaturesOutput.getDatapathId()).thenReturn(DATAPATH_ID);
         when(connectionContext.getFeatures()).thenReturn(features);
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(features.getVersion()).thenReturn(OF_VERSION);

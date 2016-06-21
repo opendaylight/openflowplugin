@@ -101,6 +101,8 @@ public class StatisticsManagerImplTest {
     @Mock
     DeviceState mockedDeviceState;
     @Mock
+    DeviceInfo mockedDeviceInfo;
+    @Mock
     DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
     @Mock
     DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
