@@ -8,21 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import java.util.Arrays;
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * openflowplugin-impl
@@ -33,11 +25,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceStateImplTest {
 
+    @Mock
+    private DeviceInfo deviceInfo;
+
     private DeviceStateImpl deviceState;
 
     @Before
     public void initialization() {
-        deviceState = new DeviceStateImpl();
+        deviceState = new DeviceStateImpl(deviceInfo);
     }
 
     @Test

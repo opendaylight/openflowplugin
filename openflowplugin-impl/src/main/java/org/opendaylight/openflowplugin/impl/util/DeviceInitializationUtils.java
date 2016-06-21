@@ -118,7 +118,7 @@ public class DeviceInitializationUtils {
             final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
             final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook()
                     .lookupTranslator(translatorKey);
-            final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
+            final BigInteger dataPathId = deviceContext.getDeviceInfo().getDatapathId();
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
                 final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext.getDeviceInfo(), null);

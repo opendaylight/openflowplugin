@@ -486,7 +486,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public synchronized void shutdownConnection() {
         LOG.debug("Shutdown method for node {}", deviceInfo.getNodeId());
-        deviceState.setValid(false);
         if (DEVICE_CONTEXT_STATE.TERMINATION.equals(deviceCtxState)) {
             LOG.debug("DeviceCtx for Node {} is in termination process.", deviceInfo.getNodeId());
             return;
@@ -517,7 +516,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
-        deviceState.setValid(false);
         return transactionChainManager.shuttingDown();
     }
 

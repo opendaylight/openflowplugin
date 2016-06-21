@@ -142,7 +142,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         };
         multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
                 mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceInfo,
-                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext, mockedDeviceState);
+                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext);
     }
 
 

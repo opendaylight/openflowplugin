@@ -138,6 +138,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         LOG.debug("Close connection called for node {}", deviceInfo);
         final DeviceContext deviceContext = getDeviceContext(deviceInfo);
         if (null != deviceContext) {
+            deviceManager.notifyDeviceValidListeners(deviceInfo, false);
             deviceContext.shutdownConnection();
         }
     }
