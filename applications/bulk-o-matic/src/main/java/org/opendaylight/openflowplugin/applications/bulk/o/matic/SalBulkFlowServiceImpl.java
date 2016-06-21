@@ -100,7 +100,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return ((InstanceIdentifier<Node>) nodeRef.getValue())
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(bulkFlow.getTableId()))
-                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow.class,
+                .child(Flow.class,
                         new FlowKey(new FlowId(bulkFlow.getFlowId())));
     }
 
@@ -160,7 +160,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         List<ListenableFuture<RpcResult<AddFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
-            AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder((Flow) bulkFlow);
+            AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
@@ -221,7 +221,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         List<ListenableFuture<RpcResult<RemoveFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
-            RemoveFlowInputBuilder flowInputBuilder = new RemoveFlowInputBuilder((Flow) bulkFlow);
+            RemoveFlowInputBuilder flowInputBuilder = new RemoveFlowInputBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
