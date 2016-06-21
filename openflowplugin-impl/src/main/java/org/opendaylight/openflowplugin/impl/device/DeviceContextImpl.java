@@ -238,58 +238,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onDeviceTakeClusterLeadership() {
-        LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceInfo.getNodeId());
-        /* validation */
-        if (statisticsContext == null) {
-            final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceInfo.getDatapathId());
-            LOG.warn(errMsg);
-            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
-        }
-
-        /* Prepare init info collecting */
-        getDeviceState().setDeviceSynchronized(false);
-        transactionChainManager.activateTransactionManager();
-        /* Init Collecting NodeInfo */
-        final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
-                DeviceContextImpl.this, switchFeaturesMandatory);
-        /* Init Collecting StatInfo */
-        final ListenableFuture<Boolean> statPollFuture = Futures.transform(initCollectingDeviceInfo,
-                new AsyncFunction<Void, Boolean>() {
-
-                    @Override
-                    public ListenableFuture<Boolean> apply(@Nonnull final Void input) throws Exception {
-                        getStatisticsContext().statListForCollectingInitialization();
-                        return getStatisticsContext().gatherDynamicData();
-                    }
-                });
-
-        return Futures.transform(statPollFuture, new Function<Boolean, Void>() {
-
-            @Override
-            public Void apply(final Boolean input) {
-                if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
-                    final String errMsg = String.format("We lost connection for Device %s, context has to be closed.",
-                            getDeviceInfo().getNodeId());
-                    LOG.warn(errMsg);
-                    throw new IllegalStateException(errMsg);
-                }
-                if (!input) {
-                    final String errMsg = String.format("Get Initial Device %s information fails",
-                            getDeviceInfo().getNodeId());
-                    LOG.warn(errMsg);
-                    throw new IllegalStateException(errMsg);
-                }
-                LOG.debug("Get Initial Device {} information is successful", deviceInfo.getNodeId());
-                getDeviceState().setDeviceSynchronized(true);
-                initialSubmitTransaction();
-                getDeviceState().setStatisticsPollingEnabledProp(true);
-                return null;
-            }
-        });
-    }
-
-    @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path, final T data) throws Exception {
         transactionChainManager.writeToTransaction(store, path, data, false);
