@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_3e3aaacd",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/NiciraExtensionsRegistratorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-21T09:22:03Z",
+      "side": 1,
+      "message": "remove instead of use comments",
+      "range": {
+        "startLine": 143,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 197
+      },
+      "revId": "4050e458497e7b86e98122fe6d0c9ef26228d19c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_de256eac",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/NiciraExtensionsRegistratorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-21T09:22:03Z",
+      "side": 1,
+      "message": "remove instead of use comments",
+      "range": {
+        "startLine": 154,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 199
+      },
+      "revId": "4050e458497e7b86e98122fe6d0c9ef26228d19c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_9e2bf681",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/NiciraExtensionsRegistratorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-21T09:22:03Z",
+      "side": 1,
+      "message": "remove instead of use comments",
+      "range": {
+        "startLine": 243,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 151
+      },
+      "revId": "4050e458497e7b86e98122fe6d0c9ef26228d19c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_be26bab8",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/NiciraExtensionsRegistratorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-21T09:22:03Z",
+      "side": 1,
+      "message": "remove instead of use comments",
+      "range": {
+        "startLine": 250,
+        "startChar": 0,
+        "endLine": 252,
+        "endChar": 152
+      },
+      "revId": "4050e458497e7b86e98122fe6d0c9ef26228d19c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
