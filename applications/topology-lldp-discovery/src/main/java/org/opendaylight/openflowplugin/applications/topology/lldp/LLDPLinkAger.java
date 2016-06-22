@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
@@ -68,5 +70,11 @@ public class LLDPLinkAger implements AutoCloseable {
         }
 
     }
+
+    @VisibleForTesting
+    public boolean isLinkToDateEmpty() {
+        return linkToDate.isEmpty();
+    }
+
 }
 
