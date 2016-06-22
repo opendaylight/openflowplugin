@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-6p %d{HH:mm:ss.SSS} [%10.10t] %30.30c %x - %m%n" />
+        </layout>
+        <!--         <param name="Threshold" value="DEBUG" /> -->
+    </appender>
+
+    <logger name="org.opendaylight.openflowplugin" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.opendaylight.openflowplugin.impl" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.opendaylight.openflowplugin.impl.connection" additivity="false">
+        <level value="TRACE" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.opendaylight.openflowplugin.impl.device" additivity="false">
+        <level value="TRACE" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl" additivity="false">
+        <level value="TRACE" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <root>
+        <priority value="INFO" />
+        <appender-ref ref="console" />
+    </root>
+</log4j:configuration>
