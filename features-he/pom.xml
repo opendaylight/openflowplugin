@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>features-openflowplugin-li</artifactId>
+    <artifactId>features-openflowplugin-he</artifactId>
     <packaging>jar</packaging>
     <version>0.3.0-SNAPSHOT</version>
 
@@ -22,7 +22,6 @@
         <openflowplugin.version>0.3.0-SNAPSHOT</openflowplugin.version>
         <dlux.version>0.4.0-SNAPSHOT</dlux.version>
         <lldp.version>0.11.0-SNAPSHOT</lldp.version>
-
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
         <restconf.version>1.4.0-SNAPSHOT</restconf.version>
         <mdsal.model.version>0.9.0-SNAPSHOT</mdsal.model.version>
@@ -148,10 +147,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>forwardingrules-sync</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
         </dependency>
         <dependency>
@@ -161,11 +156,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>statistics-manager</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-blueprint-config</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -192,6 +182,11 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config-he</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -225,7 +220,7 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-controller-config</artifactId>
             <type>xml</type>
-            <classifier>config-Li</classifier>
+            <classifier>config-He</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
@@ -251,16 +246,6 @@
             <artifactId>bulk-o-matic</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>notification-supplier</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>notification-supplier</artifactId>
         </dependency>
     </dependencies>
 </project>
