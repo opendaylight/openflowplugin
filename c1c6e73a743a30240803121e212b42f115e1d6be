@@ -1,0 +1,100 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_8c6aa918",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-22T21:34:29Z",
+      "side": 1,
+      "message": "done. logic now separates this check into the first branch of the if statement.",
+      "parentUuid": "ba51214e_b839d9da",
+      "range": {
+        "startLine": 353,
+        "startChar": 21,
+        "endLine": 353,
+        "endChar": 46
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_cc74a1ff",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-22T21:34:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_58251daa",
+      "range": {
+        "startLine": 424,
+        "startChar": 68,
+        "endLine": 424,
+        "endChar": 71
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_2c61dd39",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-22T21:34:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_384dc973",
+      "range": {
+        "startLine": 431,
+        "startChar": 24,
+        "endLine": 431,
+        "endChar": 29
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_0c669951",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-22T21:34:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_983695e6",
+      "range": {
+        "startLine": 445,
+        "startChar": 16,
+        "endLine": 445,
+        "endChar": 17
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
