@@ -180,7 +180,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(masterTxEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(deviceInfo);
+        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.eq(deviceInfo), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -189,7 +189,7 @@ public class RoleManagerImplTest {
         roleManagerSpy.ownershipChanged(slaveEntity);
         roleManagerSpy.close();
         inOrder.verify(entityOwnershipListenerRegistration, Mockito.calls(2)).close();
-        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(deviceInfo);
+        inOrder.verify(roleManagerSpy, Mockito.never()).removeDeviceFromOperationalDS(Mockito.eq(deviceInfo), Mockito.anyInt());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -238,7 +238,7 @@ public class RoleManagerImplTest {
         inOrder.verify(roleContextSpy, Mockito.atLeastOnce()).isTxCandidateRegistered();
         inOrder.verify(roleContextSpy, Mockito.calls(1)).unregisterCandidate(Mockito.<Entity>any());
         inOrder.verify(roleContextSpy, Mockito.never()).close();
-        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
+        inOrder.verify(roleManagerSpy, Mockito.calls(1)).removeDeviceFromOperationalDS(Mockito.any(), Mockito.anyInt());
     }
 
     @Test

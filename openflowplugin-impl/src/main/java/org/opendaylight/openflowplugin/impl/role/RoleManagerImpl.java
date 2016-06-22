@@ -68,6 +68,9 @@ import org.slf4j.LoggerFactory;
 public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, ServiceChangeListener {
     private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
 
+    // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
+    private static final int MAX_CLEAN_DS_RETRIES = 3;
+
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private final DataBroker dataBroker;
@@ -120,7 +123,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             contexts.remove(roleContext.getDeviceInfo());
             if (roleContext.isTxCandidateRegistered()) {
                 LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
-                removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
+                removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
             } else {
                 roleContext.close();
             }
@@ -204,7 +207,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 roleContext.unregisterCandidate(roleContext.getTxEntity());
                 if (ownershipChange.wasOwner() && !ownershipChange.isOwner() && !ownershipChange.hasOwner()) {
                     LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
-                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
+                    removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
                 }
             } else {
                 contexts.remove(roleContext.getDeviceInfo(), roleContext);
@@ -242,7 +245,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                     roleContext.unregisterCandidate(roleContext.getTxEntity());
                     if (!ownershipChange.hasOwner()) {
                         LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
-                        removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
+                        removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
                     } else {
                         final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
                         contexts.remove(roleContext.getDeviceInfo(), roleContext);
@@ -252,7 +255,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                 }
             }
         } else {
-            LOG.debug("Tx-EntityOwnershipRegistration is not active for entity {}", ownershipChange.getEntity().getType());
+            LOG.debug("Tx-EntityOwnershipRegistration is not active for entity type {} and node {}", ownershipChange.getEntity().getType(), roleContext.getDeviceInfo().getNodeId());
             watchingEntities.remove(roleContext.getTxEntity(), roleContext);
             contexts.remove(roleContext.getDeviceInfo(), roleContext);
             roleContext.close();
@@ -306,13 +309,12 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @VisibleForTesting
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
-
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo, final int numRetries) {
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()));
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
-        Futures.addCallback(delFuture, new FutureCallback<Void>() {
 
+        Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 LOG.debug("Delete Node {} was successful", deviceInfo);
@@ -324,13 +326,25 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete Node {} failed. {}", deviceInfo, t);
+                // If we have any retries left, we will try to clean the datastore again
+                if (numRetries > 0) {
+                    // We "used" one retry here, so decrement it
+                    final int curRetries = numRetries - 1;
+                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getNodeId(), t, curRetries);
+                    // Recursive call to this method with "one less" retry
+                    removeDeviceFromOperationalDS(deviceInfo, curRetries);
+                    return;
+                }
+
+                // No retries left, so we will just close the role context, and ignore datastore cleanup
+                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getNodeId(), t);
                 final RoleContext roleContext = contexts.remove(deviceInfo);
                 if (roleContext != null) {
                     roleContext.close();
                 }
             }
         });
+
         return delFuture;
     }
 
