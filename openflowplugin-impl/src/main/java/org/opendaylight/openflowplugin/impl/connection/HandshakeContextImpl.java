@@ -8,19 +8,13 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class HandshakeContextImpl implements HandshakeContext {
-
-    private static final Logger LOG = LoggerFactory.getLogger(HandshakeContextImpl.class);
-
     private ThreadPoolExecutor handshakePool;
     private HandshakeManager handshakeManager;
 
@@ -44,23 +38,6 @@ public class HandshakeContextImpl implements HandshakeContext {
     }
 
     @Override
-    public void close() throws Exception {
-        shutdownPoolPolitely();
-    }
-
-    private void shutdownPoolPolitely() {
-        LOG.debug("terminating handshake pool");
-        handshakePool.shutdown();
-        try {
-            handshakePool.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            LOG.error("Error while awaiting termination on pool. Will use shutdownNow method.");
-        } finally {
-            handshakePool.purge();
-            if (! handshakePool.isTerminated()) {
-                handshakePool.shutdownNow();
-            }
-            LOG.debug("pool is terminated: {}", handshakePool.isTerminated());
-        }
+    public void close() {
     }
 }
