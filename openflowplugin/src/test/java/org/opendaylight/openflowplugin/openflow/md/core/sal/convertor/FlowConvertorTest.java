@@ -108,7 +108,7 @@ public class FlowConvertorTest {
                 .toFlowModInputs(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42"));
 
         Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCMODIFYSTRICT, flowMod.get(0).getCommand());
+        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
     }
 
     /**
