@@ -2,7 +2,7 @@ module opendaylight-arbitrary-bitmask-fields {
     namespace "urn:opendaylight:arbitrary:bitmask:fields";
     prefix "mask";
 
-    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
 
     revision "2016-01-30" {
