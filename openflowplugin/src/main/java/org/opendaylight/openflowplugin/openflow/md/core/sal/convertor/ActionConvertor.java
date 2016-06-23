@@ -28,8 +28,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCase;
@@ -747,7 +747,7 @@ public final class ActionConvertor {
                     matchBuilder.setOxmMatchField(TcpSrc.class);
                     TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
                     TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
-                    tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
+                    tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
                     tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
                     matchBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
                     break;
@@ -755,7 +755,7 @@ public final class ActionConvertor {
                     matchBuilder.setOxmMatchField(UdpSrc.class);
                     UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
                     UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
-                    udpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
+                    udpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
                     udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
                     matchBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
                     break;
@@ -818,7 +818,7 @@ public final class ActionConvertor {
                     matchBuilder.setOxmMatchField(TcpDst.class);
                     TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
                     TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
-                    tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
+                    tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
                     tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
                     matchBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
                     break;
@@ -826,7 +826,7 @@ public final class ActionConvertor {
                     matchBuilder.setOxmMatchField(UdpDst.class);
                     UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
                     UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
-                    udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
+                    udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
                     udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
                     matchBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
                     break;

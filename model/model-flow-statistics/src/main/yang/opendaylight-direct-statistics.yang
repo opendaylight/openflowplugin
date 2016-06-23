@@ -3,7 +3,7 @@ module opendaylight-direct-statistics {
     prefix directstat;
 
     import yang-ext { prefix ext; revision-date "2013-07-09"; }
-    import ietf-inet-types { prefix inet; revision-date "2010-09-24"; }
+    import ietf-inet-types { prefix inet; revision-date "2013-07-15"; }
     import opendaylight-inventory { prefix inv; revision-date "2013-08-19"; }
     import opendaylight-statistics-types { prefix stat-types; revision-date "2013-09-25"; }
 

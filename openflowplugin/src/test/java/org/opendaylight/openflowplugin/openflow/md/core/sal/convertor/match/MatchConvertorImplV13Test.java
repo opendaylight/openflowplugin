@@ -17,11 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
@@ -377,7 +377,7 @@ public class MatchConvertorImplV13Test {
         final TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
         final TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
         tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(9));
+                .inet.types.rev130715.PortNumber(9));
         tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
         entriesBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -389,7 +389,7 @@ public class MatchConvertorImplV13Test {
         final TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
         final TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
         tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(10));
+                .inet.types.rev130715.PortNumber(10));
         tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -952,7 +952,7 @@ public class MatchConvertorImplV13Test {
         final UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
         final UdpSrcBuilder portBuilder = new UdpSrcBuilder();
         portBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(11));
+                .inet.types.rev130715.PortNumber(11));
         udpSrcCaseBuilder.setUdpSrc(portBuilder.build());
         entriesBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -965,7 +965,7 @@ public class MatchConvertorImplV13Test {
         final UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
         final UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
         udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(12));
+                .inet.types.rev130715.PortNumber(12));
         udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -997,7 +997,7 @@ public class MatchConvertorImplV13Test {
         final SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
         final SctpSrcBuilder portBuilder = new SctpSrcBuilder();
         portBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(13));
+                .inet.types.rev130715.PortNumber(13));
         sctpSrcCaseBuilder.setSctpSrc(portBuilder.build());
         entriesBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1010,7 +1010,7 @@ public class MatchConvertorImplV13Test {
         final SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
         final SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
         sctpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev100924.PortNumber(14));
+                .inet.types.rev130715.PortNumber(14));
         sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
