@@ -99,13 +99,18 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
             LOG.info("context for invalidation not found");
         } else {
             synchronized (context) {
-                for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
-                    invalidateAuxiliary(sessionKey, auxEntry.getKey());
+                if (context.isValid()) {
+                    for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
+                        invalidateAuxiliary(sessionKey, auxEntry.getKey());
+                    }
+                    context.getPrimaryConductor().disconnect();
+                    context.setValid(false);
+                    removeSessionContext(context);
+                    // TODO:: notify listeners
+                } else {
+                    LOG.warn("Ignore invalid session context: {}",
+                             Arrays.toString(sessionKey.getId()));
                 }
-                context.getPrimaryConductor().disconnect();
-                context.setValid(false);
-                removeSessionContext(context);
-                // TODO:: notify listeners
             }
         }
     }
@@ -115,13 +120,19 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
             LOG.info("context for invalidation not found");
         } else {
             synchronized (sessionContext) {
-                for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : sessionContext
-                        .getAuxiliaryConductors()) {
-                    invalidateAuxiliary(sessionContext, auxEntry.getKey(), true);
+                if (sessionContext.isValid()) {
+                    for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : sessionContext
+                             .getAuxiliaryConductors()) {
+                        invalidateAuxiliary(sessionContext, auxEntry.getKey(), true);
+                    }
+                    sessionContext.setValid(false);
+                    removeSessionContext(sessionContext);
+                    // TODO:: notify listeners
+                } else {
+                    LOG.warn("Ignore invalid dead session context: {}",
+                             Arrays.toString(
+                                 sessionContext.getSessionKey().getId()));
                 }
-                sessionContext.setValid(false);
-                removeSessionContext(sessionContext);
-                // TODO:: notify listeners
             }
         }
     }
@@ -130,8 +141,13 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
         if (LOG.isDebugEnabled()) {
             LOG.debug("removing session: {}", Arrays.toString(sessionContext.getSessionKey().getId()));
         }
-        sessionLot.remove(sessionContext.getSessionKey(), sessionContext);
-        sessionNotifier.onSessionRemoved(sessionContext);
+        if (sessionLot.remove(sessionContext.getSessionKey(), sessionContext)) {
+            sessionNotifier.onSessionRemoved(sessionContext);
+        } else {
+            // This should never happen.
+            LOG.warn("Ignore session context that was already removed: {}",
+                     Arrays.toString(sessionContext.getSessionKey().getId()));
+        }
     }
 
     @Override
