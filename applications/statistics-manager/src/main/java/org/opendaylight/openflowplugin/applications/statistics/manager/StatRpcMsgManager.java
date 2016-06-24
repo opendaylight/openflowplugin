@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
@@ -38,10 +37,7 @@ import com.google.common.util.concurrent.SettableFuture;
  *
  * Created: Aug 29, 2014
  */
-public interface StatRpcMsgManager extends Runnable, AutoCloseable {
-
-    interface RpcJobsQueue extends Callable<Void> {}
-
+public interface StatRpcMsgManager {
     /**
      * Transaction container is definition for Multipart transaction
      * join container for all Multipart msg with same TransactionId
