@@ -65,12 +65,10 @@ public final class GroupConvertor {
     org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version,BigInteger datapathid) {
         List<BucketsList> bucketLists = null;
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
-        if (source instanceof AddGroupInput) {
+        if (source instanceof AddGroupInput || source instanceof UpdatedGroup) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
         } else if (source instanceof RemoveGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
-        } else if (source instanceof UpdatedGroup) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
         }
 
         if (GroupTypes.GroupAll.equals(source.getGroupType())) {

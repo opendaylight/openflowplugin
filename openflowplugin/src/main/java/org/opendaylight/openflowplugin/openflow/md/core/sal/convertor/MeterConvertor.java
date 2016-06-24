@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-/****
+/**
  *
  * This class is used for converting the data from SAL layer to OF Library Layer for Meter Mod Command.
  *
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
@@ -63,12 +65,10 @@ public final class MeterConvertor {
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
         List<Bands> bands = new ArrayList<Bands>();
 
-        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
+        if (source instanceof AddMeterInput || source instanceof UpdatedMeter) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
-        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
+        } else if (source instanceof RemoveMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCDELETE);
-        } else if (source instanceof UpdatedMeter) {
-            meterModInputBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
         }
 
         meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
