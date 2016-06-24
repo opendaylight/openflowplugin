@@ -80,7 +80,6 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
 
 
     private final DataBroker dataBroker;
-   private final ExecutorService statRpcMsgManagerExecutor;
    private final ExecutorService statDataStoreOperationServ;
    private EntityOwnershipService ownershipService;
    private StatRpcMsgManager rpcMsgManager;
@@ -104,7 +103,6 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        this.dataBroker = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
        ThreadFactory threadFact;
        threadFact = new ThreadFactoryBuilder().setNameFormat("odl-stat-rpc-oper-thread-%d").build();
-       statRpcMsgManagerExecutor = Executors.newSingleThreadExecutor(threadFact);
        threadFact = new ThreadFactoryBuilder().setNameFormat("odl-stat-ds-oper-thread-%d").build();
        statDataStoreOperationServ = Executors.newSingleThreadExecutor(threadFact);
        txChain =  dataBroker.createTransactionChain(this);
@@ -124,7 +122,6 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        portNotifyCommiter = new StatNotifyCommitPort(this, notifService, nodeRegistrator);
        queueNotifyCommiter = new StatListenCommitQueue(this, dataBroker, notifService, nodeRegistrator);
 
-       statRpcMsgManagerExecutor.execute(rpcMsgManager);
        statDataStoreOperationServ.execute(this);
        LOG.info("Statistics Manager started successfully!");
    }
@@ -153,8 +150,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
            }
            statCollectors = null;
        }
-       rpcMsgManager = close(rpcMsgManager);
-       statRpcMsgManagerExecutor.shutdown();
+       rpcMsgManager = null;
        statDataStoreOperationServ.shutdown();
        txChain = close(txChain);
    }
