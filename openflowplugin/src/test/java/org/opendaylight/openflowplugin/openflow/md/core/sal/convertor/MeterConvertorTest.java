@@ -15,10 +15,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
@@ -42,12 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 
 public class MeterConvertorTest {
-
-
-
     @Test
     public void testMeterModCommandConvertorwithAllParameters() {
-
         long BURST_SIZE = 10L;
         long DROP_RATE = 20L;
         // / DROP Band
@@ -118,8 +116,8 @@ public class MeterConvertorTest {
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
         addMeterFromSAL.setMeterBandHeaders(meterBandHeaders); // MeterBands
-                                                               // added to the
-                                                               // meter command.
+        // added to the
+        // meter command.
         Long temp = 10L;
 
         // NodeKey key = new NodeKey(new NodeId("24"));
@@ -133,7 +131,7 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
@@ -176,9 +174,9 @@ public class MeterConvertorTest {
         }
 
     }
+
     @Test
     public void testMeterModCommandConvertorwithNoFlags() {
-
         long BURST_SIZE = 10L;
         long DROP_RATE = 20L;
         // / DROP Band
@@ -251,8 +249,8 @@ public class MeterConvertorTest {
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
         addMeterFromSAL.setMeterBandHeaders(meterBandHeaders); // MeterBands
-                                                               // added to the
-                                                               // meter command.
+        // added to the
+        // meter command.
         Long temp = 10L;
 
         // NodeKey key = new NodeKey(new NodeId("24"));
@@ -265,7 +263,7 @@ public class MeterConvertorTest {
 
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertFalse(outMeterModInput.getFlags().isOFPMFBURST());
@@ -309,10 +307,9 @@ public class MeterConvertorTest {
         }
 
     }
+
     @Test
     public void testMeterModCommandConvertorBandDataisNULL() {
-
-
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
         Long temp = 10L;
@@ -328,12 +325,12 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
         assertEquals(temp, outMeterModInput.getMeterId().getValue());
-       }
+    }
 
     @Test
     public void testMeterModCommandConvertorNoValidBandData() {
@@ -394,8 +391,8 @@ public class MeterConvertorTest {
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
         addMeterFromSAL.setMeterBandHeaders(meterBandHeaders); // MeterBands
-                                                               // added to the
-                                                               // meter command.
+        // added to the
+        // meter command.
         Long temp = 10L;
 
         // NodeKey key = new NodeKey(new NodeId("24"));
@@ -409,7 +406,7 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
@@ -453,4 +450,8 @@ public class MeterConvertorTest {
 
     }
 
+    private MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
+        Optional<MeterModInputBuilder> outMeterModInputOptional = ConvertorManager.getInstance().convert(source, data);
+        return outMeterModInputOptional.orElse(MeterConvertor.defaultResult(data.getVersion()));
+    }
 }
