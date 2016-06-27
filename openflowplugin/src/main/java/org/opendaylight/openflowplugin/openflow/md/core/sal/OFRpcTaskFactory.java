@@ -30,7 +30,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
@@ -2099,16 +2098,19 @@ public abstract class OFRpcTaskFactory {
                 ListenableFuture<RpcResult<UpdatePortOutput>> result = SettableFuture.create();
                 final Long xid = taskContext.getSession().getNextXid();
                 Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
+                final VersionConvertorData data = new VersionConvertorData(taskContext.getSession().getPrimaryConductor().getVersion());
 
-                PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort,
-                        taskContext.getSession().getPrimaryConductor().getVersion());
+                final java.util.Optional<PortModInput> ofPortModInput =
+                        ConvertorManager.getInstance().convert(inputPort, data);
 
-                PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
-                mdInput.setXid(xid);
+                if (ofPortModInput.isPresent()) {
+                    PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput.get());
+                    mdInput.setXid(xid);
 
-                Future<RpcResult<UpdatePortOutput>> resultFromOFLib = getMessageService()
-                        .portMod(mdInput.build(), cookie);
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    Future<RpcResult<UpdatePortOutput>> resultFromOFLib = getMessageService()
+                            .portMod(mdInput.build(), cookie);
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 return result;
             }
