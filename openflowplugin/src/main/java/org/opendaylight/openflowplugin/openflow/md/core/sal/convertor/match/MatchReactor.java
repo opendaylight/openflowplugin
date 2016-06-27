@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.Map;
-
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
@@ -35,8 +34,8 @@ public class MatchReactor extends ConvertReactor<Match> {
     }
 
     @Override
-    protected void initMappings(final Map<Short, Convertor<Match,?>> conversions,
-            final Map<InjectionKey, ResultInjector<?,?>> injections) {
+    protected void initMappings(final Map<Short, Convertor<Match, ?>> conversions,
+                                final Map<InjectionKey, ResultInjector<?, ?>> injections) {
         MatchReactorMappingFactory.addMatchConvertors(conversions);
         MatchReactorMappingFactory.addMatchIjectors(injections);
     }

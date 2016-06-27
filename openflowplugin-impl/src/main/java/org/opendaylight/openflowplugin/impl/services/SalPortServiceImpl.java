@@ -7,11 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.util.Optional;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -34,9 +37,13 @@ public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortIn
     @Override
     protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) {
         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-        final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, getVersion());
-        final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
-        mdInput.setXid(xid.getValue());
+        final Optional<PortModInput> ofPortModInput = ConvertorManager
+                .getInstance()
+                .convert(inputPort, new VersionConvertorData(getVersion()));
+
+        final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
+                .orElse(PortConvertor.defaultResult(getVersion())))
+                .setXid(xid.getValue());
 
         return mdInput.build();
     }

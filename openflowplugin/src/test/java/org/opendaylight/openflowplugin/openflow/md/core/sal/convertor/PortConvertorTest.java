@@ -7,10 +7,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
@@ -45,7 +48,7 @@ public class PortConvertorTest {
                     false, false, false, false);
 
     /**
-     * test of {@link PortConvertor#toPortModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port, short)}
+     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData)} }
      */
     @Test
     public void testtoPortModInputwithAllParameters()
@@ -57,7 +60,9 @@ public class PortConvertorTest {
         portBld.setPortNumber(new PortNumberUni(42L));
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
 
-        PortModInput portOut = PortConvertor.toPortModInput(portBld.build(), EncodeConstants.OF13_VERSION_ID);
+        VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
+        Optional<PortModInput> portOutOptional = ConvertorManager.getInstance().convert(portBld.build(), data);
+        PortModInput portOut = portOutOptional.orElse(PortConvertor.defaultResult(OFConstants.OFP_VERSION_1_3));
 
         PortConfigV10 portConfV10 = new PortConfigV10(false, false, false, false, true, true, false);
 
