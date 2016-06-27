@@ -33,6 +33,7 @@ public class ConvertorManager {
         INSTANCE = new ConvertorManager();
         // All convertors are registered here
         INSTANCE.registerConvertor(new TableFeaturesConvertor());
+        INSTANCE.registerConvertor(new TableFeaturesResponseConvertor());
     }
 
     // Actual convertor keys
