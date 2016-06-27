@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class ActionSetNwDstReactorTest {
         for (final Address address : addresses) {
             final SetNwDstActionCase action = prepareSetNwDstActionCase(address);
             ActionSetNwDstReactor.getInstance().convert(action,
-                    OFConstants.OFP_VERSION_1_3, target, BigInteger.ONE);
+                    OFConstants.OFP_VERSION_1_3, target);
             final Object mEntry = target.getActionChoice();
 /*
             Assert.assertNotNull(mEntry);
@@ -89,12 +88,12 @@ public class ActionSetNwDstReactorTest {
 
             if (address instanceof Ipv4) {
                 ActionSetNwDstReactor.getInstance().convert(action,
-                        OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
+                        OFConstants.OFP_VERSION_1_0, target);
 //                Assert.assertNotNull(target.getAugmentation(IpAddressAction.class).getIpAddress());
             } else {
                 try {
                     ActionSetNwDstReactor.getInstance().convert(action,
-                            OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
+                            OFConstants.OFP_VERSION_1_0, target);
                     Assert.fail("address of this type must not pass the reactor: " + address.getClass().getName());
                 } catch (final Exception e) {
                     //expected
