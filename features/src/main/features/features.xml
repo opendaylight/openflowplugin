@@ -6,11 +6,12 @@
   ~ This program and the accompanying materials are made available under the
   ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
   ~ and is available at http://www.eclipse.org/legal/epl-v10.html
-  -->
+-->
 
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
@@ -18,18 +19,28 @@
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
 
-
-    <feature name='odl-openflowplugin-all' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+    <feature name='odl-openflowplugin-flow-services-ui' description="OpenDaylight :: Openflow Plugin :: Flow Services :: UI" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-ui</feature>
+        <feature version="${dlux.version}">odl-dlux-core</feature>
+        <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
-    <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: Li southBound API implementation " version='${project.version}'>
+    <feature name='odl-openflowplugin-flow-services-rest' description="OpenDaylight :: Openflow Plugin :: Flow Services :: REST" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+        <feature version="${restconf.version}">odl-restconf</feature>
+    </feature>
+
+    <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
+        <feature version="${project.version}">odl-openflowplugin-app-topology</feature>
+        <feature version="${project.version}">odl-openflowplugin-app-forwardingrules-manager</feature>
+    </feature>
+
+    <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: Li southbound API implementation " version='${project.version}'>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
-        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/{{VERSION}}</bundle>
         <!-- TODO : remove dependency on openflowplugin in the future -->
@@ -41,46 +52,15 @@
         <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/{{VERSION}}/xml/config-Li</configfile>
     </feature>
 
-    <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
-        <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
-        <feature version="${project.version}">odl-openflowplugin-app-lldp-speaker</feature>
-        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
-
-    </feature>
-
-    <feature name='odl-openflowplugin-nsf-services' version='${project.version}'
-             description="OpenDaylight :: OpenflowPlugin :: NSF :: Services">
-        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-        <feature version='${project.version}'>odl-openflowplugin-nsf-model</feature>
-        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
-    </feature>
-
-    <feature name='odl-openflowplugin-nsf-model' version='${project.version}'
-             description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
+    <feature name='odl-openflowplugin-nsf-model' version='${project.version}' description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
         <!-- general models -->
         <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
-	<bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
-	<bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
         <!-- openflow specific models -->
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-base/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-statistics/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-service/{{VERSION}}</bundle>
-    </feature>
-
-    <feature name='odl-openflowplugin-flow-services-rest' description="OpenDaylight :: Openflow Plugin :: Flow Services :: REST" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
-        <feature version="${restconf.version}">odl-restconf</feature>
-    </feature>
-    <feature name='odl-openflowplugin-flow-services-ui' description="OpenDaylight :: Openflow Plugin :: Flow Services :: UI" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
-        <feature version="${dlux.version}">odl-dlux-core</feature>
-        <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
-        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
     <!-- CBENCH TESTING -->
@@ -95,26 +75,33 @@
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/{{VERSION}}</bundle>
     </feature>
-    <feature name='odl-openflowplugin-app-config-pusher' description="OpenDaylight :: Openflow Plugin :: app - default config-pusher" version='${project.version}'>
+
+    <feature name='odl-openflowplugin-app-config-pusher' description="OpenDaylight :: Openflow Plugin :: Application - default config-pusher" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/{{VERSION}}</bundle>
     </feature>
 
-    <feature name='odl-openflowplugin-app-lldp-speaker' description="OpenDaylight :: Openflow Plugin :: app lldp-speaker" version='${project.version}'>
+    <feature name='odl-openflowplugin-app-topology' description="OpenDaylight :: Openflow Plugin :: Application - topology" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/{{VERSION}}</bundle>
     </feature>
 
-    <feature name='odl-openflowplugin-app-bulk-o-matic' description="OpenDaylight :: Openflow Plugin :: app bulk flow operations support" version='${project.version}'>
+    <feature name='odl-openflowplugin-app-bulk-o-matic' description="OpenDaylight :: Openflow Plugin :: Application -  bulk flow operations support" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/bulk-o-matic/${project.version}</bundle>
     </feature>
 
-    <feature name='odl-openflowplugin-notifications' description="OpenDaylight :: Openflow Plugin :: app notifications supplier" version='${project.version}'>
-        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-        <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
+    <feature name='odl-openflowplugin-app-notifications' description="OpenDaylight :: Openflow Plugin :: Application - notifications supplier" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/notification-supplier/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/73-notification-supplier.xml">mvn:org.opendaylight.openflowplugin.applications/notification-supplier/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name='odl-openflowplugin-app-forwardingrules-manager' description="OpenDaylight :: Openflow Plugin :: Application - FRM" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
     </feature>
 
 </features>
