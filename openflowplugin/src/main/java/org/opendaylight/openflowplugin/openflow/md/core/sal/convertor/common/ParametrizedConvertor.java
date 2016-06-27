@@ -13,8 +13,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
  *
  * @param <FROM> type of source
  * @param <TO>   type of result
+ * @param <DATA>   type of convertor data
  */
-public interface Convertor<FROM, TO> {
+public interface ParametrizedConvertor<FROM, TO, DATA> {
 
     /**
      * Gets type of convertor, used in
@@ -28,7 +29,8 @@ public interface Convertor<FROM, TO> {
      * Converts source to result
      *
      * @param source source
+     * @param data   convertor data
      * @return converted source
      */
-    TO convert(FROM source);
+    TO convert(FROM source, DATA data);
 }

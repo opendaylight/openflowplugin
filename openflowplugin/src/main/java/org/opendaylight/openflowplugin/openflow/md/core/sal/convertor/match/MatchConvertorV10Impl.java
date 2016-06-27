@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
 import java.util.Iterator;
-
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -48,6 +46,11 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      */
     private static final Integer OFP_VLAN_NONE = 0xffff;
 
+    @Override
+    public Class<?> getType() {
+        return Match.class;
+    }
+
     /**
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
      * @param match MD-SAL match
@@ -55,7 +58,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @author avishnoi@in.ibm.com
      */
     @Override
-    public MatchV10 convert(final Match match,final BigInteger datapathid) {
+    public MatchV10 convert(final Match match) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         boolean _dLDST = true;
         boolean _dLSRC = true;
