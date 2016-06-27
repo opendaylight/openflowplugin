@@ -1644,8 +1644,7 @@ public abstract class OFRpcTaskFactory {
 
                 // convert and inject match
                 MatchReactor.getInstance().convert(input.getMatch(), taskContext.getSession()
-                                .getPrimaryConductor().getVersion(), mprFlowRequestBuilder,
-                        taskContext.getSession().getFeatures().getDatapathId());
+                                .getPrimaryConductor().getVersion(), mprFlowRequestBuilder);
 
                 // Set request body to main multipart request
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
@@ -1772,8 +1771,7 @@ public abstract class OFRpcTaskFactory {
                 }
 
                 MatchReactor.getInstance().convert(input.getMatch(), taskContext.getSession()
-                                .getPrimaryConductor().getVersion(), mprAggregateRequestBuilder,
-                        taskContext.getSession().getFeatures().getDatapathId());
+                                .getPrimaryConductor().getVersion(), mprAggregateRequestBuilder);
 
                 FlowCreatorUtil.setWildcardedFlowMatch(taskContext.getSession()
                         .getPrimaryConductor().getVersion(), mprAggregateRequestBuilder);
