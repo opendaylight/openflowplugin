@@ -34,6 +34,7 @@ public class ConvertorManager {
         // All convertors are registered here
         INSTANCE.registerConvertor(new TableFeaturesConvertor());
         INSTANCE.registerConvertor(new TableFeaturesResponseConvertor());
+        INSTANCE.registerConvertor(new MeterConvertor());
     }
 
     // Actual convertor keys

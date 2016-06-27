@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -8,17 +8,12 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-/****
- *
- * This class is used for converting the data from SAL layer to OF Library Layer for Meter Mod Command.
- *
- */
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
@@ -44,71 +39,35 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MeterConvertor {
+/**
+ * Converts a MD-SAL meter mod command into the OF library meter mod command.
+ * <p>
+ * Example usage:
+ * <pre>
+ * {@code
+ * VersionConvertorData data = new VersionConvertorData(version);
+ * Optional<MeterModInputBuilder> ofMeter = ConvertorManager.getInstance().convert(salMeter, data);
+ * }
+ * </pre>
+ */
+public class MeterConvertor implements ParametrizedConvertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
 
-    private MeterConvertor() {
-
-    }
-
-    // Get all the data for the meter from the Yang/SAL-Layer
     /**
-     * @param version of version
-     * @param source Data source
-     * @return MeterModInput required by OF Library
+     * Create default empty meter mot input builder.
+     * Use this method, if result from convertor is empty.
+     *
+     * @param version Openflow version
+     * @return default empty meter mod input builder
      */
-    public static MeterModInputBuilder toMeterModInput(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source, short version) {
-
-        MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
-        List<Bands> bands = new ArrayList<Bands>();
-
-        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
-            meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
-        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
-            meterModInputBuilder.setCommand(MeterModCommand.OFPMCDELETE);
-        } else if (source instanceof UpdatedMeter) {
-            meterModInputBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
-        }
-
-        meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
-
-        if (null != source.getFlags()) {
-            meterModInputBuilder.setFlags(new MeterFlags(source.getFlags().isMeterBurst(), source.getFlags()
-                .isMeterKbps(), source.getFlags().isMeterPktps(), source.getFlags().isMeterStats()));
-        } else {
-
-            /*
-             * As per 0F1.3.1,The rate field indicates the rate value above
-             * which the corresponding band may apply to packets (see 5.7.1).
-             * The rate value is in kilobit per seconds, unless the flags eld
-             * includes OFPMF_PKTPS, in which case the rate is in packets per
-             * seconds.
-             */
-
-            meterModInputBuilder.setFlags(new MeterFlags(false, false, true, false));
-        }
-        if (source.getMeterBandHeaders() != null) {
-            getBandsFromSAL(source.getMeterBandHeaders(), bands);
-            meterModInputBuilder.setBands(bands);
-        } else {
-            LOG.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
-        }
-
-        meterModInputBuilder.setVersion(version);
-        return meterModInputBuilder;
+    public static MeterModInputBuilder defaultResult(short version) {
+        return new MeterModInputBuilder()
+                .setVersion(version)
+                .setFlags(new MeterFlags(false, false, true, false));
     }
 
     private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
-
-        Iterator<MeterBandHeader> bandHeadersIterator = meterBandHeaders.getMeterBandHeader().iterator();
-        MeterBandHeader meterBandHeader;
-
-        BandsBuilder bandsB = null;
-
-        while (bandHeadersIterator.hasNext()) {
-            meterBandHeader = bandHeadersIterator.next();
-            MeterBand meterBandItem = null;
+        for (MeterBandHeader meterBandHeader : meterBandHeaders.getMeterBandHeader()) {
             // The band types :drop,DSCP_Remark or experimenter.
             if (null != meterBandHeader.getMeterBandTypes() &&
                     null != meterBandHeader.getMeterBandTypes().getFlags()) {
@@ -122,8 +81,8 @@ public final class MeterConvertor {
                         meterBandDropBuilder.setBurstSize(drop.getDropBurstSize());
                         meterBandDropBuilder.setRate(drop.getDropRate());
                         dropCaseBuilder.setMeterBandDrop(meterBandDropBuilder.build());
-                        meterBandItem = dropCaseBuilder.build();
-                        bandsB = new BandsBuilder();
+                        MeterBand meterBandItem = dropCaseBuilder.build();
+                        BandsBuilder bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         // Bands list
                         bands.add(bandsB.build());
@@ -140,8 +99,8 @@ public final class MeterConvertor {
                         meterBandDscpRemarkBuilder.setRate(dscpRemark.getDscpRemarkRate());
                         meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPrecLevel());
                         dscpCaseBuilder.setMeterBandDscpRemark(meterBandDscpRemarkBuilder.build());
-                        meterBandItem = dscpCaseBuilder.build();
-                        bandsB = new BandsBuilder();
+                        MeterBand meterBandItem = dscpCaseBuilder.build();
+                        BandsBuilder bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         // Bands list
                         bands.add(bandsB.build());
@@ -161,8 +120,8 @@ public final class MeterConvertor {
                         meterBandExperimenterBuilder.addAugmentation(ExperimenterIdMeterBand.class, expBuilder.build());
                         // TODO - implement / finish experimenter meter band translation
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
-                        meterBandItem = experimenterCaseBuilder.build();
-                        bandsB = new BandsBuilder();
+                        MeterBand meterBandItem = experimenterCaseBuilder.build();
+                        BandsBuilder bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         // Bands list
                         bands.add(bandsB.build());
@@ -170,7 +129,6 @@ public final class MeterConvertor {
                         logBandTypeMissing(MeterBandType.OFPMBTEXPERIMENTER);
                     }
                 }
-
             } else {
                 LOG.error("Invalid meter band data found.");
             }
@@ -182,4 +140,50 @@ public final class MeterConvertor {
         LOG.error("BandType: {} No Band Data found", meterBandType);
     }
 
+    @Override
+    public Class<?> getType() {
+        return Meter.class;
+    }
+
+    @Override
+    public MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
+        MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
+        List<Bands> bands = new ArrayList<>();
+
+        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
+            meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
+        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
+            meterModInputBuilder.setCommand(MeterModCommand.OFPMCDELETE);
+        } else if (source instanceof UpdatedMeter) {
+            meterModInputBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
+        }
+
+        meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
+
+        if (null != source.getFlags()) {
+            meterModInputBuilder.setFlags(new MeterFlags(source.getFlags().isMeterBurst(), source.getFlags()
+                    .isMeterKbps(), source.getFlags().isMeterPktps(), source.getFlags().isMeterStats()));
+        } else {
+
+            /*
+             * As per 0F1.3.1,The rate field indicates the rate value above
+             * which the corresponding band may apply to packets (see 5.7.1).
+             * The rate value is in kilobit per seconds, unless the flags eld
+             * includes OFPMF_PKTPS, in which case the rate is in packets per
+             * seconds.
+             */
+
+            meterModInputBuilder.setFlags(new MeterFlags(false, false, true, false));
+        }
+
+        if (source.getMeterBandHeaders() != null) {
+            getBandsFromSAL(source.getMeterBandHeaders(), bands);
+            meterModInputBuilder.setBands(bands);
+        } else {
+            LOG.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
+        }
+
+        meterModInputBuilder.setVersion(data.getVersion());
+        return meterModInputBuilder;
+    }
 }
