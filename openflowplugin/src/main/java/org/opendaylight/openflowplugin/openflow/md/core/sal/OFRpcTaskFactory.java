@@ -2088,14 +2088,16 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdatePortOutput>> call() {
                 ListenableFuture<RpcResult<UpdatePortOutput>> result = SettableFuture.create();
-                final Long xid = taskContext.getSession().getNextXid();
-                Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
+                final short version = taskContext.getSession().getPrimaryConductor().getVersion();
+                final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
 
-                PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort,
-                        taskContext.getSession().getPrimaryConductor().getVersion());
+                final java.util.Optional<PortModInput> ofPortModInput = ConvertorManager
+                        .getInstance()
+                        .convert(inputPort, new VersionConvertorData(version));
 
-                PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
-                mdInput.setXid(xid);
+                PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
+                        .orElse(PortConvertor.defaultResult(version)))
+                        .setXid(taskContext.getSession().getNextXid());
 
                 Future<RpcResult<UpdatePortOutput>> resultFromOFLib = getMessageService()
                         .portMod(mdInput.build(), cookie);
