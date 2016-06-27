@@ -27,11 +27,11 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -2123,9 +2123,15 @@ public abstract class OFRpcTaskFactory {
 
                 MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
                 MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
-                List<TableFeatures> ofTableFeatureList = TableFeaturesConvertor
-                        .toTableFeaturesRequest(input.getUpdatedTable());
-                requestBuilder.setTableFeatures(ofTableFeatureList);
+
+                final java.util.Optional<List<TableFeatures>> ofTableFeatureList = ConvertorManager.getInstance().convert(
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class,
+                        input.getUpdatedTable());
+
+                if (ofTableFeatureList.isPresent()) {
+                    requestBuilder.setTableFeatures(ofTableFeatureList.get());
+                }
+
                 caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 
                 // Set request body to main multipart request

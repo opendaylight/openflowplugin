@@ -25,6 +25,9 @@ public class ConvertorManager {
 
     static {
         INSTANCE = new ConvertorManager();
+
+        // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class
+        INSTANCE.registerConvertor(new TableFeaturesConvertor());
     }
 
     private Map<Class<?>, Convertor> convertors = new HashMap<>();

@@ -9,12 +9,14 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WildcardsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActionsMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActionsMissBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldBuilder;
@@ -277,10 +280,10 @@ public class TableFeaturesConvertorTest extends TestCase {
         augmentationsMap.put(NextTableMiss.class, nextTableMissBuilder.build());
 
         WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-        augmentationsMap.put(NextTableMiss.class, writeActionsBuilder.build());
+        augmentationsMap.put(WriteActions.class, writeActionsBuilder.build());
 
         WriteActionsMissBuilder writeActionsMissBuilder = new WriteActionsMissBuilder();
-        augmentationsMap.put(WriteActions.class, writeActionsMissBuilder.build());
+        augmentationsMap.put(WriteActionsMiss.class, writeActionsMissBuilder.build());
 
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
         augmentationsMap.put(ApplyActions.class, applyActionsBuilder.build());
@@ -315,7 +318,7 @@ public class TableFeaturesConvertorTest extends TestCase {
 
     @Test
     /**
-     * Basic functionality test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor#toTableFeaturesRequest(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures)}
+     * Basic functionality test method for {@link TableFeaturesConvertor#toTableFeaturesRequest(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures)}
      */
     public void testToTableFeaturesRequest() throws Exception {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> tableFeaturesList = new ArrayList<>();
@@ -331,7 +334,11 @@ public class TableFeaturesConvertorTest extends TestCase {
             tableFeaturesList.add(tableFeaturesBuilder.build());
         }
         when(tableFeatures.getTableFeatures()).thenReturn(tableFeaturesList);
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures> tableFeatureses = TableFeaturesConvertor.toTableFeaturesRequest(tableFeatures);
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures>> tableFeaturesesOptional =
+                ConvertorManager.getInstance().convert(TableFeatures.class, tableFeatures);
+
+        assertTrue("Table features convertor not found", tableFeaturesesOptional.isPresent());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures> tableFeatureses = tableFeaturesesOptional.get();
         assertNotNull(tableFeatures);
         assertEquals(10, tableFeatures.getTableFeatures().size());
         List<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.getTableFeatures().get(0).getTableProperties().getTableFeatureProperties();
