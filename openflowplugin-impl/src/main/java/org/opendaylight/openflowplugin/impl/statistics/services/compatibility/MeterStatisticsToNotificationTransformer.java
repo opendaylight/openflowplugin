@@ -10,8 +10,10 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
@@ -49,7 +51,11 @@ public class MeterStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-            notification.getMeterStats().addAll(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
+            final Optional<List<MeterStats>> meterStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+
+            if (meterStatsList.isPresent()) {
+                notification.getMeterStats().addAll(meterStatsList.get());
+            }
         }
 
         return notification.build();
