@@ -28,6 +28,9 @@ public class ConvertorManager {
 
         // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class
         INSTANCE.registerConvertor(new TableFeaturesConvertor());
+
+        // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures.class
+        INSTANCE.registerConvertor(new TableFeaturesResponseConvertor());
     }
 
     private Map<Class<?>, Convertor> convertors = new HashMap<>();

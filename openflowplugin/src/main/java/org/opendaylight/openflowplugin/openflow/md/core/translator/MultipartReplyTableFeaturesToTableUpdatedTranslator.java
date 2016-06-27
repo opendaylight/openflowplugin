@@ -11,11 +11,12 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -26,26 +27,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
-		IMDMessageTranslator<OfHeader, List<DataObject>> {
+        IMDMessageTranslator<OfHeader, List<DataObject>> {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTableFeaturesToTableUpdatedTranslator.class);
 
-	@Override
-	public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
-			SessionContext sc, OfHeader msg) {
-
-
+    @Override
+    public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
         if (msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPTABLEFEATURES) {
             LOG.debug("MultipartReply Being translated to TableUpdated ");
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
 
-            List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
+            List<DataObject> listDataObject = new CopyOnWriteArrayList<>();
 
             TableUpdatedBuilder message = new TableUpdatedBuilder() ;
             message.setNode((new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
@@ -54,7 +53,14 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
             message.setTransactionId(new TransactionId(BigInteger.valueOf(mpReply.getXid())));
             MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) mpReply.getMultipartReplyBody();
             MultipartReplyTableFeatures body = caseBody.getMultipartReplyTableFeatures();
-            message.setTableFeatures(TableFeaturesReplyConvertor.toTableFeaturesReply(body)) ;
+
+            final Optional<List<TableFeatures>> tableFeaturesList = ConvertorManager.getInstance().convert(
+                    MultipartReplyTableFeatures.class, body);
+
+            if (tableFeaturesList.isPresent()) {
+                message.setTableFeatures(tableFeaturesList.get());
+            }
+
             listDataObject.add( message.build()) ;
 
             return listDataObject ;
@@ -65,4 +71,3 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
     }
 
 }
-

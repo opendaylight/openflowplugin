@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -83,6 +84,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
@@ -103,14 +105,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 /**
  * @author michal.polkorab
  */
-public class TableFeaturesReplyConvertorTest {
+public class TableFeaturesResponseConvertorTest {
 
     /**
      * Incorrect / empty input test
      */
     @Test
     public void test() {
-        List<TableFeatures> list = TableFeaturesReplyConvertor.toTableFeaturesReply(null);
+        Optional<List<TableFeatures>> listOptional = ConvertorManager.getInstance().convert(MultipartReplyTableFeatures.class, null);
+        Assert.assertTrue("Table features convertor not found", listOptional.isPresent());
+        List<TableFeatures> list = listOptional.get();
+
         Assert.assertEquals("Returned list is not empty", 0, list.size());
     }
 
@@ -120,7 +125,9 @@ public class TableFeaturesReplyConvertorTest {
     @Test
     public void test2() {
         MultipartReplyTableFeaturesBuilder builder = new MultipartReplyTableFeaturesBuilder();
-        List<TableFeatures> list = TableFeaturesReplyConvertor.toTableFeaturesReply(builder.build());
+        Optional<List<TableFeatures>> listOptional = ConvertorManager.getInstance().convert(MultipartReplyTableFeatures.class, builder.build());
+        Assert.assertTrue("Table features convertor not found", listOptional.isPresent());
+        List<TableFeatures> list = listOptional.get();
         Assert.assertEquals("Returned list is not empty", 0, list.size());
     }
 
@@ -144,7 +151,9 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMaxEntries(42L);
         features.add(featuresBuilder.build());
         builder.setTableFeatures(features);
-        List<TableFeatures> list = TableFeaturesReplyConvertor.toTableFeaturesReply(builder.build());
+        Optional<List<TableFeatures>> listOptional = ConvertorManager.getInstance().convert(MultipartReplyTableFeatures.class, builder.build());
+        Assert.assertTrue("Table features convertor not found", listOptional.isPresent());
+        List<TableFeatures> list = listOptional.get();
         Assert.assertEquals("Returned empty list", 1, list.size());
         TableFeatures feature = list.get(0);
         Assert.assertEquals("Wrong table-id", 5, feature.getTableId().intValue());
@@ -500,11 +509,32 @@ public class TableFeaturesReplyConvertorTest {
 
         propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
         properties.add(propBuilder.build());
+
+        /* -------------------------------------------------- */
+
+        propBuilder = new TableFeaturePropertiesBuilder();
+        propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTER);
+        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
+        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        properties.add(propBuilder.build());
+
+        /* -------------------------------------------------- */
+
+        propBuilder = new TableFeaturePropertiesBuilder();
+        propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS);
+        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
+        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        properties.add(propBuilder.build());
+
+        /* -------------------------------------------------- */
+
         featuresBuilder.setTableFeatureProperties(properties);
         features.add(featuresBuilder.build());
         builder.setTableFeatures(features);
 
-        List<TableFeatures> list = TableFeaturesReplyConvertor.toTableFeaturesReply(builder.build());
+        Optional<List<TableFeatures>> listOptional = ConvertorManager.getInstance().convert(MultipartReplyTableFeatures.class, builder.build());
+        Assert.assertTrue("Table features convertor not found", listOptional.isPresent());
+        List<TableFeatures> list = listOptional.get();
 
         Assert.assertEquals("Returned empty list", 2, list.size());
         TableFeatures feature = list.get(0);
@@ -567,7 +597,7 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite2), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 24, feature.getMaxEntries().intValue());
-        Assert.assertEquals("Wrong properties", 10, feature.getTableProperties().getTableFeatureProperties().size());
+        Assert.assertEquals("Wrong properties", 12, feature.getTableProperties().getTableFeatureProperties().size());
         property = feature.getTableProperties().getTableFeatureProperties().get(0);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Match",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
