@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -16,7 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
@@ -40,7 +41,6 @@ final class AllMeterConfigStatsService
         extends AbstractCompatibleStatService<GetAllMeterConfigStatisticsInput, GetAllMeterConfigStatisticsOutput, MeterConfigStatsUpdated> {
 
     private static final MultipartRequestMeterConfigCase METER_CONFIG_CASE;
-    private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
 
     static {
@@ -81,8 +81,12 @@ final class AllMeterConfigStatsService
         for (MultipartReply mpReply : result) {
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
-            message.getMeterConfigStats().addAll(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
 
+            final Optional<List<MeterConfigStats>> meterConfigStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterConfig());
+
+            if (meterConfigStatsList.isPresent()) {
+                message.getMeterConfigStats().addAll(meterConfigStatsList.get());
+            }
         }
 
         return message.build();
