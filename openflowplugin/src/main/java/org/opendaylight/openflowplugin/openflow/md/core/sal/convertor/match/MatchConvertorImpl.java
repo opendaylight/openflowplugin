@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -297,7 +297,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
     @Override
     public List<MatchEntry> convert(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, final BigInteger datapathid) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
         List<MatchEntry> matchEntryList = new ArrayList<>();
         if (match == null) {
             return matchEntryList;

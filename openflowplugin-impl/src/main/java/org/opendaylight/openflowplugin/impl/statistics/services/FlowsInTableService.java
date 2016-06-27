@@ -73,8 +73,7 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
         // convert and inject match
         final short version = getVersion();
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder,
-                getDeviceInfo().getDatapathId());
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder);
 
         // Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
