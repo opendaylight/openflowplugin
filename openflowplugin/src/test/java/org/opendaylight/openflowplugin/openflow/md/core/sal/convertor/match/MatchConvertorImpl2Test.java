@@ -147,22 +147,22 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testEmptyAndNullInput() {
         MatchBuilder builder = new MatchBuilder();
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(null, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(null);
         Assert.assertEquals("Wrong entries size", 0, entries.size());
 
-        entries = convertor.convert(match, new BigInteger("42"));
+        entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 0, entries.size());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testConversion() {
@@ -224,7 +224,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 24, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, InPort.class, false);
@@ -334,7 +334,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithNoMask(){
@@ -345,7 +345,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -357,7 +357,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithMask(){
@@ -370,7 +370,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -382,7 +382,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testUdpMatchConversion() {
@@ -393,7 +393,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(udpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, UdpSrc.class, false);
@@ -406,7 +406,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testSctpMatchConversion() {
@@ -417,7 +417,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(sctpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, SctpSrc.class, false);
@@ -430,7 +430,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testArpMatchConversion() {
@@ -448,7 +448,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 5, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, ArpOp.class, false);
@@ -473,7 +473,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testArpMatchConversionWithMasks() {
@@ -493,7 +493,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 4, entries.size());
         MatchEntry entry = entries.get(0);
         entry = entries.get(0);
@@ -523,7 +523,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testIpv6MatchConversion() {
@@ -543,7 +543,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 7, entries.size());
         MatchEntry entry = entries.get(0);
         /* Due to conversion ambiguities, we always get "has mask" because 
@@ -579,7 +579,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testIpv6MatchConversionWithMasks() {
@@ -590,7 +590,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
@@ -608,7 +608,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testIpv6ExtHeaderConversion() {
@@ -621,7 +621,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Exthdr.class, true);
@@ -632,7 +632,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
      */
     @Test
     public void testConversionWithMasks() {
@@ -673,7 +673,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match);
         Assert.assertEquals("Wrong entries size", 8, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Metadata.class, true);
