@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwDstReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwSrcReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
@@ -345,7 +346,7 @@ public final class ActionConvertor {
         } else {
             SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
             SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-            MatchReactor.getInstance().convert(match, version, setFieldBuilder, datapathid);
+            MatchReactor.getInstance().convert(match, version, setFieldBuilder);
             setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
             actionBuilder.setActionChoice(setFieldCaseBuilder.build());
 
@@ -643,7 +644,7 @@ public final class ActionConvertor {
             final ActionBuilder actionBuilder, final short version) {
 
         try {
-            ActionSetNwSrcReactor.getInstance().convert((SetNwSrcActionCase) action, version, actionBuilder, null);
+            ActionSetNwSrcReactor.getInstance().convert((SetNwSrcActionCase) action, version, actionBuilder);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return null;
@@ -657,7 +658,7 @@ public final class ActionConvertor {
             final ActionBuilder actionBuilder, final short version) {
 
         try {
-            ActionSetNwDstReactor.getInstance().convert((SetNwDstActionCase) action, version, actionBuilder, null);
+            ActionSetNwDstReactor.getInstance().convert((SetNwDstActionCase) action, version, actionBuilder);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return null;
