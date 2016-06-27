@@ -1,0 +1,303 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_b72448c7",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/BulkOMaticUtilsTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Why not constant ?",
+      "range": {
+        "startLine": 42,
+        "startChar": 61,
+        "endLine": 42,
+        "endChar": 68
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_972144b7",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/BulkOMaticUtilsTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Why cast here from string to short ? Can we use short instead ?",
+      "range": {
+        "startLine": 44,
+        "startChar": 28,
+        "endLine": 44,
+        "endChar": 46
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_f72ec0a4",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReaderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Shouldn\u0027t be FlowReaderTest ?",
+      "range": {
+        "startLine": 35,
+        "startChar": 62,
+        "endLine": 35,
+        "endChar": 88
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_d72bbc92",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReaderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "What are we testing here ?",
+      "range": {
+        "startLine": 56,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 25
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_171d3474",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrentTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Use constant",
+      "range": {
+        "startLine": 70,
+        "startChar": 41,
+        "endLine": 70,
+        "endChar": 44
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_7712b063",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrentTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Here",
+      "range": {
+        "startLine": 71,
+        "startChar": 42,
+        "endLine": 71,
+        "endChar": 45
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_5717ac51",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrentTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "here",
+      "range": {
+        "startLine": 76,
+        "startChar": 44,
+        "endLine": 76,
+        "endChar": 48
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_b70ba82a",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrentTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "and here",
+      "range": {
+        "startLine": 77,
+        "startChar": 42,
+        "endLine": 77,
+        "endChar": 45
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9708242f",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterDirectOFRpcTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "constants",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 97,
+        "endChar": 5
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_f7052015",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterSequentialTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "and again constants",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 5
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_d7029c0a",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterTxChainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "here too",
+      "range": {
+        "startLine": 72,
+        "startChar": 1,
+        "endLine": 82,
+        "endChar": 5
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_3aff7d03",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "why we cast from string ?",
+      "range": {
+        "startLine": 130,
+        "startChar": 28,
+        "endLine": 130,
+        "endChar": 46
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_7a09f52b",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T06:21:57Z",
+      "side": 1,
+      "message": "Use big L when long type.",
+      "range": {
+        "startLine": 178,
+        "startChar": 1,
+        "endLine": 183,
+        "endChar": 30
+      },
+      "revId": "a50ea0edbc3623d5ca07e09e00caf50e165da102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
