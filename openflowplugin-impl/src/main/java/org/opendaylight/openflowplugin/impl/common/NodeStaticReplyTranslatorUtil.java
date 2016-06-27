@@ -12,9 +12,10 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
@@ -212,7 +213,8 @@ public class NodeStaticReplyTranslatorUtil {
      */
     public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply) {
         Preconditions.checkArgument(reply != null);
-        return TableFeaturesReplyConvertor.toTableFeaturesReply(reply);
+        final Optional<List<TableFeatures>> tableFeaturesList = ConvertorManager.getInstance().convert(reply);
+        return tableFeaturesList.orElse(Collections.emptyList());
     }
 
     /**
