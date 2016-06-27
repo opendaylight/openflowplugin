@@ -10,15 +10,17 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
@@ -54,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterKbps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.BytesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.PacketsBuilder;
@@ -110,7 +113,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
     private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
     private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
-    private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
 
     @Override
@@ -302,8 +304,11 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                message.setMeterStats(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
 
+                final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>> meterStatsList =
+                        ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+
+                message.setMeterStats(meterStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());
                 return listDataObject;
             }
@@ -317,8 +322,10 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
-                message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
 
+                final Optional<List<MeterConfigStats>> meterConfigStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterConfig());
+
+                message.setMeterConfigStats(meterConfigStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());
                 return listDataObject;
             }
