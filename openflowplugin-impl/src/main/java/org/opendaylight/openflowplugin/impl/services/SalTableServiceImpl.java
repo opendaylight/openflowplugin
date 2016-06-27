@@ -23,7 +23,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -145,9 +144,14 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
                     final MultipartReplyTableFeaturesCase tableFeaturesCase = ((MultipartReplyTableFeaturesCase) multipartReplyBody);
                     final MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
                             .getMultipartReplyTableFeatures();
-                    final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesPartial = TableFeaturesReplyConvertor
-                            .toTableFeaturesReply(salTableFeatures);
-                    salTableFeaturesAll.addAll(salTableFeaturesPartial);
+
+                    final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>> salTableFeaturesPartial =
+                            ConvertorManager.getInstance().convert(salTableFeatures);
+
+                    if (salTableFeaturesPartial.isPresent()) {
+                        salTableFeaturesAll.addAll(salTableFeaturesPartial.get());
+                    }
+
                     LOG.debug("TableFeature {} for xid {}.", salTableFeatures, multipartReply.getXid());
                 }
             }
