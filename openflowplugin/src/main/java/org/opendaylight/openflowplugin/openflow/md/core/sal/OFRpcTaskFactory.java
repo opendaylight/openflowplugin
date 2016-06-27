@@ -30,8 +30,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -526,14 +526,20 @@ public abstract class OFRpcTaskFactory {
             public ListenableFuture<RpcResult<UpdateMeterOutput>> call() {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = SettableFuture.create();
 
-                // Convert the AddGroupInput to GroupModInput
-                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
+                // Convert the AddMeterInput to UpdateMeterOutput
+                final VersionConvertorData data = new VersionConvertorData(getVersion());
+                final java.util.Optional<MeterModInputBuilder> ofMeterModInput =
+                        ConvertorManager.getInstance().convert(getInput(), data);
                 final Long xId = getSession().getNextXid();
-                ofMeterModInput.setXid(xId);
 
-                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
-                        .meterMod(ofMeterModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                if (ofMeterModInput.isPresent()) {
+                    MeterModInputBuilder meterModInputBuilder = ofMeterModInput.get();
+                    meterModInputBuilder.setXid(xId);
+
+                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
+                            .meterMod(meterModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
@@ -653,14 +659,20 @@ public abstract class OFRpcTaskFactory {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = null;
 
                 // Convert the UpdateMeterInput to MeterModInput
-                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(
-                        getInput().getUpdatedMeter(), getVersion());
-                final Long xId = getSession().getNextXid();
-                ofMeterModInput.setXid(xId);
+                final VersionConvertorData data = new VersionConvertorData(getVersion());
+                final java.util.Optional<MeterModInputBuilder> ofMeterModInput =
+                        ConvertorManager.getInstance().convert(getInput().getUpdatedMeter(), data);
 
-                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib =
-                        getMessageService().meterMod(ofMeterModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                final Long xId = getSession().getNextXid();
+
+                if (ofMeterModInput.isPresent()) {
+                    MeterModInputBuilder meterModInputBuilder = ofMeterModInput.get();
+                    meterModInputBuilder.setXid(xId);
+
+                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib =
+                            getMessageService().meterMod(meterModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
@@ -839,14 +851,21 @@ public abstract class OFRpcTaskFactory {
             public ListenableFuture<RpcResult<UpdateMeterOutput>> call() {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = SettableFuture.create();
 
-                // Convert the AddGroupInput to GroupModInput
-                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
-                final Long xId = getSession().getNextXid();
-                ofMeterModInput.setXid(xId);
+                // Convert the RemoveMeterInput to UpdateMeterOutput
+                final VersionConvertorData data = new VersionConvertorData(getVersion());
+                final java.util.Optional<MeterModInputBuilder> ofMeterModInput =
+                        ConvertorManager.getInstance().convert(getInput(), data);
 
-                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
-                        .meterMod(ofMeterModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                final Long xId = getSession().getNextXid();
+
+                if (ofMeterModInput.isPresent()) {
+                    MeterModInputBuilder meterModInputBuilder = ofMeterModInput.get();
+                    meterModInputBuilder.setXid(xId);
+
+                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
+                            .meterMod(meterModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
