@@ -37,6 +37,7 @@ public class ConvertorManager {
         INSTANCE.registerConvertor(new MeterConvertor());
         INSTANCE.registerConvertor(new MeterStatsResponseConvertor());
         INSTANCE.registerConvertor(new MeterConfigStatsResponseConvertor());
+        INSTANCE.registerConvertor(new PortConvertor());
     }
 
     // Actual convertor keys
