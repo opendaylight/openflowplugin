@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_7af3b50a",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodecTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T07:13:56Z",
+      "side": 1,
+      "message": "private ...",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 27
+      },
+      "revId": "9b193962310c62b61897165f1aa8602e57bf1141",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_badc2d76",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodecTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T07:13:56Z",
+      "side": 1,
+      "message": "constant",
+      "range": {
+        "startLine": 55,
+        "startChar": 57,
+        "endLine": 55,
+        "endChar": 59
+      },
+      "revId": "9b193962310c62b61897165f1aa8602e57bf1141",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9ad96986",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodecTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T07:13:56Z",
+      "side": 1,
+      "message": "private ?",
+      "range": {
+        "startLine": 27,
+        "startChar": 3,
+        "endLine": 30,
+        "endChar": 18
+      },
+      "revId": "9b193962310c62b61897165f1aa8602e57bf1141",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
