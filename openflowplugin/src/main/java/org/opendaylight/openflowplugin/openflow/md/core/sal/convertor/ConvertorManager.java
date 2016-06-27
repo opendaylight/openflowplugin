@@ -34,6 +34,12 @@ public class ConvertorManager {
 
         // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter.class
         INSTANCE.registerConvertor(new MeterConvertor());
+
+        // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats.class
+        INSTANCE.registerConvertor(new MeterStatsResponseConvertor());
+
+        // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfig.class
+        INSTANCE.registerConvertor(new MeterConfigStatsResponseConvertor());
     }
 
     private Map<Class<?>, Convertor> convertors = new HashMap<>();

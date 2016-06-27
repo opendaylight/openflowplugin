@@ -10,10 +10,12 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
@@ -74,7 +76,13 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                meterStats.addAll(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
+                final Optional<List<MeterStats>> meterStatsList = ConvertorManager.getInstance().convert(
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats.class,
+                        replyBody.getMeterStats());
+
+                if (meterStatsList.isPresent()) {
+                    meterStats.addAll(meterStatsList.get());
+                }
             }
         }
 
