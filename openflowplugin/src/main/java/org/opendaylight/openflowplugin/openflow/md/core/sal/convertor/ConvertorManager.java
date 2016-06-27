@@ -31,6 +31,9 @@ public class ConvertorManager {
 
         // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures.class
         INSTANCE.registerConvertor(new TableFeaturesResponseConvertor());
+
+        // Type: org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter.class
+        INSTANCE.registerConvertor(new MeterConvertor());
     }
 
     private Map<Class<?>, Convertor> convertors = new HashMap<>();
