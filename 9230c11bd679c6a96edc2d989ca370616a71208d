@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_9a3de9be",
+        "filename": "extension/openflowplugin-extension-nicira/src/test/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ResubmitConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-27T07:03:36Z",
+      "side": 1,
+      "message": "too complicated, why not use .intValue() on getTable result.",
+      "range": {
+        "startLine": 93,
+        "startChar": 28,
+        "endLine": 93,
+        "endChar": 51
+      },
+      "revId": "9230c11bd679c6a96edc2d989ca370616a71208d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
