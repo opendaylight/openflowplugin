@@ -14,13 +14,14 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -166,9 +167,9 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
     protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) {
         final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         final MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
-        final List<TableFeatures> ofTableFeatureList = TableFeaturesConvertor.toTableFeaturesRequest(input
-            .getUpdatedTable());
-        requestBuilder.setTableFeatures(ofTableFeatureList);
+
+        final Optional<List<TableFeatures>> ofTableFeatureList = ConvertorManager.getInstance().convert(input.getUpdatedTable());
+        requestBuilder.setTableFeatures(ofTableFeatureList.orElse(new ArrayList<>()));
         caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 
         // Set request body to main multipart request
