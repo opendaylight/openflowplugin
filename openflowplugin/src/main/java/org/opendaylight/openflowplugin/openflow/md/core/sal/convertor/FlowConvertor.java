@@ -198,10 +198,10 @@ public class FlowConvertor {
         salToOFFlowOutGroup(flow, flowMod);
 
         // convert and inject flowFlags
-        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod, datapathid);
+        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod);
 
         // convert and inject match
-        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod, datapathid);
+        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod);
 
         if (flow.getInstructions() != null) {
             flowMod.setInstruction(toInstructions(flow, version, datapathid));

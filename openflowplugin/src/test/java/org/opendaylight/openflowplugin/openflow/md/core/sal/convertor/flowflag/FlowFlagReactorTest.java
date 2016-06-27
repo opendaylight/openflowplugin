@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
 
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class FlowFlagReactorTest {
         for (FlowModFlags fFlag : flowFlags) {
             target.setFlags(null);
             FlowFlagReactor.getInstance().convert(fFlag,
-                    OFConstants.OFP_VERSION_1_3, target,BigInteger.valueOf(1));
+                    OFConstants.OFP_VERSION_1_3, target);
             Assert.assertNotNull(target.getFlags());
         }
     }
@@ -57,7 +56,7 @@ public class FlowFlagReactorTest {
         for (FlowModFlags fFlag : flowFlags) {
             target.setFlagsV10(null);
             FlowFlagReactor.getInstance().convert(fFlag,
-                    OFConstants.OFP_VERSION_1_0, target,BigInteger.valueOf(1));
+                    OFConstants.OFP_VERSION_1_0, target);
             Assert.assertNotNull(target.getFlagsV10());
         }
     }

@@ -60,7 +60,7 @@ final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggr
             mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, getDatapathId());
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder);
 
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 

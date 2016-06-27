@@ -93,7 +93,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder, getDatapathId());
+        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder);
 
         return new MultipartRequestFlowCaseBuilder()
                 .setMultipartRequestFlow(mprFlowRequestBuilder.build())

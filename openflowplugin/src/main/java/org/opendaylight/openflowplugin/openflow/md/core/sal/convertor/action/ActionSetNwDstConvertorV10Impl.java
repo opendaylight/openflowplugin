@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCase;
@@ -21,7 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 public class ActionSetNwDstConvertorV10Impl implements Convertor<SetNwDstActionCase, Object> {
 
     @Override
-    public Object convert(SetNwDstActionCase source, BigInteger datapathid) {
+    public Class<?> getType() {
+        return SetNwDstActionCase.class;
+    }
+
+    @Override
+    public Object convert(SetNwDstActionCase source) {
         Address address = source.getSetNwDstAction().getAddress();
         if (address instanceof Ipv4) {
             //FIXME use of substring should be removed and OF models should distinguish where

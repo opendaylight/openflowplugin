@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
 import java.util.Iterator;
-
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -55,7 +53,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @author avishnoi@in.ibm.com
      */
     @Override
-    public MatchV10 convert(final Match match,final BigInteger datapathid) {
+    public MatchV10 convert(final Match match) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         boolean _dLDST = true;
         boolean _dLSRC = true;
