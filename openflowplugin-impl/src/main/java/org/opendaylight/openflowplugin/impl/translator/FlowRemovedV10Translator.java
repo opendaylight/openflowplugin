@@ -8,9 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 
@@ -21,8 +22,14 @@ public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
     @Override
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        return MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowRemoved.getMatchV10(),
-                deviceInfo.getDatapathId(), OpenflowVersion.OF10);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
+        datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
+
+        final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(
+                flowRemoved.getMatchV10(),
+                datapathIdConvertorData);
+
+        return matchBuilderOptional.orElse(new MatchBuilder());
     }
 
     /**
@@ -33,6 +40,6 @@ public class FlowRemovedV10Translator extends FlowRemovedTranslator {
      */
     @Override
     protected Short translateTableId(FlowRemoved flowRemoved) {
-        return Short.valueOf((short)0);
+        return (short) 0;
     }
 }
