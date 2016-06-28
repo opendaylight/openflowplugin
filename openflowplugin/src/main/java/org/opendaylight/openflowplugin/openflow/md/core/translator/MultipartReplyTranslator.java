@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionConte
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -44,6 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdatedBuilder;
@@ -112,7 +114,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             .getLogger(MultipartReplyTranslator.class);
 
     private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
-    private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
 
 
     @Override
@@ -224,8 +225,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
-
+                final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(replyBody.getGroupStats());
+                message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -240,8 +241,9 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-                message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
-
+                final VersionConvertorData data = new VersionConvertorData(sc.getPrimaryConductor().getVersion());
+                final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(replyBody.getGroupDesc(), data);
+                message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
