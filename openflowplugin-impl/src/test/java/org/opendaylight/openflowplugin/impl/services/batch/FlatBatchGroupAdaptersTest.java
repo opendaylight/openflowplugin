@@ -126,49 +126,35 @@ public class FlatBatchGroupAdaptersTest {
 
     @Test
     public void testCreateBatchGroupChainingFunction_failures() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
-                .withResult(new ProcessFlatBatchOutputBuilder()
-                        .setBatchFailure(Lists.newArrayList(
-                                createChainFailure(0, 1L),
-                                createChainFailure(1, 2L)))
-                        .build())
-                .build();
-
         final RpcResult<BatchGroupOutputListGrouping> input = RpcResultBuilder.<BatchGroupOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-groupError")
                 .withResult(new AddGroupsBatchOutputBuilder()
                         .setBatchFailedGroupsOutput(Lists.newArrayList(
-                                createBatchFailedGroupsOutput(0, 3L),
-                                createBatchFailedGroupsOutput(1, 4L)
+                                createBatchFailedGroupsOutput(0, 1L),
+                                createBatchFailedGroupsOutput(1, 2L)
                         ))
                         .build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchGroupAdapters
-                .createBatchGroupChainingFunction(chainInput, 2).apply(input);
+                .createBatchGroupChainingFunction(3).apply(input);
 
         Assert.assertFalse(rpcResult.isSuccessful());
-        Assert.assertEquals(2, rpcResult.getErrors().size());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(1, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().get(2).getBatchOrder().intValue());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(3).getBatchOrder().intValue());
-        Assert.assertEquals(4L, ((FlatBatchFailureGroupIdCase) rpcResult.getResult().getBatchFailure().get(3).getBatchItemIdChoice()).getGroupId().getValue().longValue());
+        Assert.assertEquals(1, rpcResult.getErrors().size());
+        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
+        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureGroupIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getGroupId().getValue().longValue());
     }
 
     @Test
     public void testCreateBatchGroupChainingFunction_successes() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder
-                .success(new ProcessFlatBatchOutputBuilder().build())
-                .build();
         final RpcResult<BatchGroupOutputListGrouping> input = RpcResultBuilder
                 .<BatchGroupOutputListGrouping>success(new AddGroupsBatchOutputBuilder().build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchGroupAdapters
-                .createBatchGroupChainingFunction(chainInput, 0).apply(input);
+                .createBatchGroupChainingFunction(0).apply(input);
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
