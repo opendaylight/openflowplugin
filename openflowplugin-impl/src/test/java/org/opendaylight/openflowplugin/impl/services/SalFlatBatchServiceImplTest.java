@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
+import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInputBuilder;
@@ -488,8 +490,7 @@ public class SalFlatBatchServiceImplTest {
                 new BatchPlanStep(BatchStepType.FLOW_ADD);
         final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep);
 
-        final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>> batchChain =
-                salFlatBatchService.prepareBatchChain(batchPlan, NODE_REF, true);
+        final List<BatchStepJob> batchChain = salFlatBatchService.prepareBatchChain(batchPlan, NODE_REF);
 
         Assert.assertEquals(1, batchChain.size());
 
@@ -498,7 +499,7 @@ public class SalFlatBatchServiceImplTest {
                         .success(new AddFlowsBatchOutputBuilder().build())
                         .buildFuture());
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlan(batchChain);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlanBarrier(batchChain, true);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
@@ -521,8 +522,7 @@ public class SalFlatBatchServiceImplTest {
 
         final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep, batchPlanStep);
 
-        final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>> batchChain =
-                salFlatBatchService.prepareBatchChain(batchPlan, NODE_REF, true);
+        final List<BatchStepJob> batchChain = salFlatBatchService.prepareBatchChain(batchPlan, NODE_REF);
 
         Assert.assertEquals(2, batchChain.size());
 
@@ -543,7 +543,7 @@ public class SalFlatBatchServiceImplTest {
                         .withError(RpcError.ErrorType.APPLICATION, "ut-addFlowBatchError")
                         .buildFuture());
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlan(batchChain);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlanBarrier(batchChain, true);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());

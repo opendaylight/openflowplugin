@@ -139,7 +139,7 @@ public class FlatBatchFlowAdaptersTest {
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchFlowAdapters
-                .createBatchFlowChainingFunction(chainInput, 2).apply(input);
+                .createBatchFlowChainingFunction(2).apply(input);
 
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(2, rpcResult.getErrors().size());
@@ -161,7 +161,7 @@ public class FlatBatchFlowAdaptersTest {
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchFlowAdapters
-                .createBatchFlowChainingFunction(chainInput, 0).apply(input);
+                .createBatchFlowChainingFunction(0).apply(input);
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());

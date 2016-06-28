@@ -146,7 +146,7 @@ public class FlatBatchGroupAdaptersTest {
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchGroupAdapters
-                .createBatchGroupChainingFunction(chainInput, 2).apply(input);
+                .createBatchGroupChainingFunction(2).apply(input);
 
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(2, rpcResult.getErrors().size());
@@ -168,7 +168,7 @@ public class FlatBatchGroupAdaptersTest {
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchGroupAdapters
-                .createBatchGroupChainingFunction(chainInput, 0).apply(input);
+                .createBatchGroupChainingFunction(0).apply(input);
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
