@@ -29,8 +29,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComp
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -461,16 +461,20 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = SettableFuture.create();
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 // Convert the AddGroupInput to GroupModInput
-                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(),
-                        getVersion(), getSession().getFeatures().getDatapathId());
+                final java.util.Optional<GroupModInputBuilder> ofGroupModInput = ConvertorManager.getInstance().convert(getInput(), data);
                 final Long xId = getSession().getNextXid();
-                ofGroupModInput.setXid(xId);
 
-                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
-                        .groupMod(ofGroupModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                if (ofGroupModInput.isPresent()) {
+                    GroupModInputBuilder groupModInputBuilder = ofGroupModInput.get();
+                    groupModInputBuilder.setXid(xId);
+                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
+                            .groupMod(groupModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
@@ -592,17 +596,21 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = null;
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 // Convert the UpdateGroupInput to GroupModInput
-                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(
-                        getInput().getUpdatedGroup(), getVersion(),
-                        getSession().getFeatures().getDatapathId());
+                final java.util.Optional<GroupModInputBuilder> ofGroupModInput =
+                        ConvertorManager.getInstance().convert(getInput().getUpdatedGroup(), data);
                 final Long xId = getSession().getNextXid();
-                ofGroupModInput.setXid(xId);
 
-                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib =
-                        getMessageService().groupMod(ofGroupModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                if (ofGroupModInput.isPresent()) {
+                    GroupModInputBuilder groupModInputBuilder = ofGroupModInput.get();
+                    groupModInputBuilder.setXid(xId);
+                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib =
+                            getMessageService().groupMod(groupModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
@@ -785,16 +793,23 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = SettableFuture.create();
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 // Convert the AddGroupInput to GroupModInput
-                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(),
-                        getVersion(), getSession().getFeatures().getDatapathId());
-                final Long xId = getSession().getNextXid();
-                ofGroupModInput.setXid(xId);
+                final java.util.Optional<GroupModInputBuilder> ofGroupModInput =
+                        ConvertorManager.getInstance().convert(getInput(), data);
 
-                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
-                        .groupMod(ofGroupModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                final Long xId = getSession().getNextXid();
+
+                if (ofGroupModInput.isPresent()) {
+                    GroupModInputBuilder groupModInputBuilder = ofGroupModInput.get();
+                    groupModInputBuilder.setXid(xId);
+
+                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
+                            .groupMod(groupModInputBuilder.build(), getCookie());
+                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                }
 
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
