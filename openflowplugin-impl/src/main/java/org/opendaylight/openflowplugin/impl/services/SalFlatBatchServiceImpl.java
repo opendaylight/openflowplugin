@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
+import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchFlowAdapters;
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchGroupAdapters;
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchMeterAdapters;
@@ -81,37 +82,46 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
         // add barriers where needed
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
         // prepare chain elements
-        final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>> batchChainElements =
-                prepareBatchChain(batchPlan, input.getNode(), input.isExitOnFirstError());
+        final List<BatchStepJob> batchChainElements = prepareBatchChain(batchPlan, input.getNode(), input.isExitOnFirstError());
         // execute plan with barriers and collect outputs chain correspondingly, collect results
         return executeBatchPlan(batchChainElements);
     }
 
     @VisibleForTesting
-    Future<RpcResult<ProcessFlatBatchOutput>> executeBatchPlan(final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>,
-            RpcResult<ProcessFlatBatchOutput>>> batchChainElements) {
+    Future<RpcResult<ProcessFlatBatchOutput>> executeBatchPlan(final List<BatchStepJob> batchChainElements) {
         ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainSummaryResult =
                 RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture();
 
-        for (AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> chainElement : batchChainElements) {
-            chainSummaryResult = Futures.transform(chainSummaryResult, chainElement);
+        for (BatchStepJob chainElement : batchChainElements) {
+            chainSummaryResult = Futures.transform(chainSummaryResult, chainElement.getStepFunction());
         }
 
         return chainSummaryResult;
     }
 
     @VisibleForTesting
-    List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>> prepareBatchChain(
-            final List<BatchPlanStep> batchPlan,
-            final NodeRef node,
-            final boolean exitOnFirstError) {
+    Future<RpcResult<ProcessFlatBatchOutput>> executeBatchPlanBarrier(final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>,
+            RpcResult<ProcessFlatBatchOutput>>> batchChainElements) {
 
+        ListenableFuture<RpcResult<ProcessFlatBatchOutput>> bootstrapFuture =
+                RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture();
+
+
+        for (AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> chainElement : batchChainElements) {
+            bootstrapFuture = Futures.transform(bootstrapFuture, chainElement);
+        }
+
+        return bootstrapFuture;
+    }
+
+    @VisibleForTesting
+    List<BatchStepJob> prepareBatchChain(final List<BatchPlanStep> batchPlan, final NodeRef node, final boolean exitOnFirstError) {
         // create batch API calls based on plan steps
-        final List<AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>> chainJobs = new ArrayList<>();
+        final List<BatchStepJob> chainJobs = new ArrayList<>();
         int stepOffset = 0;
         for (final BatchPlanStep planStep : batchPlan) {
             final int currentOffset = stepOffset;
-            chainJobs.add(new AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>() {
+            chainJobs.add(new BatchStepJob(planStep, new AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>() {
                 @Override
                 public ListenableFuture<RpcResult<ProcessFlatBatchOutput>> apply(final RpcResult<ProcessFlatBatchOutput> chainInput) {
                     if (exitOnFirstError && !chainInput.isSuccessful()) {
@@ -175,7 +185,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                     }
                     return chainOutput;
                 }
-            });
+            }));
             stepOffset += planStep.getTaskBag().size();
         }
 
