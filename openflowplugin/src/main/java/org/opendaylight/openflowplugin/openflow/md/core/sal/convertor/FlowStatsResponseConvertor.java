@@ -11,11 +11,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -79,23 +81,39 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setPriority(flowStats.getPriority());
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(), datapathid, OpenflowVersion.OF10).build());
+            VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+            data.setDatapathId(datapathid);
+
+            Optional<MatchBuilder> matchBuilder = ConvertorManager.getInstance().convert(flowStats.getMatchV10(), data);
+
+            if (matchBuilder.isPresent()) {
+                salFlowStatsBuilder.setMatch(matchBuilder.get().build());
+            }
+
             if(flowStats.getAction() != null && flowStats.getAction().size()!=0){
                 salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getAction(), ofVersion));
             }
         }
         if(flowStats.getMatch() != null){
-            MatchBuilder matchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid, ofVersion);
+            VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(ofVersion.getVersion());
+            data.setDatapathId(datapathid);
 
-            AugmentTuple<Match> matchExtensionWrap =
-                    MatchExtensionHelper.processAllExtensions(
-                            flowStats.getMatch().getMatchEntry(), ofVersion, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-            if (matchExtensionWrap != null) {
-                matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+            Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(flowStats.getMatch(), data);
+
+            if (matchBuilderOptional.isPresent()) {
+                MatchBuilder matchBuilder = matchBuilderOptional.get();
+
+                AugmentTuple<Match> matchExtensionWrap =
+                        MatchExtensionHelper.processAllExtensions(
+                                flowStats.getMatch().getMatchEntry(), ofVersion, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+
+                if (matchExtensionWrap != null) {
+                    matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+                }
+
+                salFlowStatsBuilder.setMatch(matchBuilder.build());
             }
 
-
-            salFlowStatsBuilder.setMatch(matchBuilder.build());
             salFlowStatsBuilder.setFlags(
                     new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
                             flowStats.getFlags().isOFPFFRESETCOUNTS(),
