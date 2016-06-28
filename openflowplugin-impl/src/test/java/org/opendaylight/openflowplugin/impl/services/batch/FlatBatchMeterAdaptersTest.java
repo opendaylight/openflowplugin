@@ -126,49 +126,35 @@ public class FlatBatchMeterAdaptersTest {
 
     @Test
     public void testCreateBatchMeterChainingFunction_failures() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
-                .withResult(new ProcessFlatBatchOutputBuilder()
-                        .setBatchFailure(Lists.newArrayList(
-                                createChainFailure(0, 1L),
-                                createChainFailure(1, 2L)))
-                        .build())
-                .build();
-
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder.<BatchMeterOutputListGrouping>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-groupError")
+                .withError(RpcError.ErrorType.APPLICATION, "ut-meterError")
                 .withResult(new AddMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(Lists.newArrayList(
-                                createBatchFailedMetersOutput(0, 3L),
-                                createBatchFailedMetersOutput(1, 4L)
+                                createBatchFailedMetersOutput(0, 1L),
+                                createBatchFailedMetersOutput(1, 2L)
                         ))
                         .build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchMeterAdapters
-                .createBatchMeterChainingFunction(chainInput, 2).apply(input);
+                .createBatchMeterChainingFunction(3).apply(input);
 
         Assert.assertFalse(rpcResult.isSuccessful());
-        Assert.assertEquals(2, rpcResult.getErrors().size());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(1, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().get(2).getBatchOrder().intValue());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(3).getBatchOrder().intValue());
-        Assert.assertEquals(4L, ((FlatBatchFailureMeterIdCase) rpcResult.getResult().getBatchFailure().get(3).getBatchItemIdChoice()).getMeterId().getValue().longValue());
+        Assert.assertEquals(1, rpcResult.getErrors().size());
+        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
+        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureMeterIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getMeterId().getValue().longValue());
     }
 
     @Test
     public void testCreateBatchMeterChainingFunction_successes() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder
-                .success(new ProcessFlatBatchOutputBuilder().build())
-                .build();
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder
                 .<BatchMeterOutputListGrouping>success(new AddMetersBatchOutputBuilder().build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchMeterAdapters
-                .createBatchMeterChainingFunction(chainInput, 0).apply(input);
+                .createBatchMeterChainingFunction(0).apply(input);
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
