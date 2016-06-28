@@ -46,6 +46,9 @@ public class ConvertorManager {
         INSTANCE.registerConvertor(new MatchV10ResponseConvertor());
         INSTANCE.registerConvertor(new ActionConvertor());
         INSTANCE.registerConvertor(new ActionResponseConvertor());
+        INSTANCE.registerConvertor(new GroupConvertor());
+        INSTANCE.registerConvertor(new GroupDescStatsResponseConvertor());
+        INSTANCE.registerConvertor(new GroupStatsResponseConvertor());
     }
 
     // Actual convertor keys
