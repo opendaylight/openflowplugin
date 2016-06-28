@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor;
@@ -42,6 +44,8 @@ public class ConvertorManager {
         // TODO: Add MatchConvertor
         INSTANCE.registerConvertor(new MatchResponseConvertor());
         INSTANCE.registerConvertor(new MatchV10ResponseConvertor());
+        INSTANCE.registerConvertor(new ActionConvertor());
+        INSTANCE.registerConvertor(new ActionResponseConvertor());
     }
 
     // Actual convertor keys
