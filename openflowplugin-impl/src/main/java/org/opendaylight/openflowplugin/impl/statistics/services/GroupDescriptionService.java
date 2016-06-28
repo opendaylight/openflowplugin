@@ -9,13 +9,16 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionOutput;
@@ -63,11 +66,17 @@ final class GroupDescriptionService
         notification.setTransactionId(emulatedTxId);
 
         notification.setGroupDescStats(new ArrayList<GroupDescStats>());
+        final VersionConvertorData data = new VersionConvertorData(getVersion());
+
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
-            notification.getGroupDescStats().addAll(
-                    groupStatsResponseConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), getOfVersion()));
+            final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(
+                    replyBody.getGroupDesc(), data);
+
+            if (groupDescStatsList.isPresent()) {
+                notification.getGroupDescStats().addAll(groupDescStatsList.get());
+            }
         }
 
         return notification.build();
