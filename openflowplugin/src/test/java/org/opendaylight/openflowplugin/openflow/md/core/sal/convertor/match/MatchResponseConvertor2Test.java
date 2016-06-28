@@ -11,11 +11,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -156,7 +158,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * @author michal.polkorab
  */
-public class MatchConvertorImplV13Test {
+public class MatchResponseConvertor2Test {
 
     /**
      * Initializes OpenflowPortsUtil
@@ -167,21 +169,17 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test(expected = NullPointerException.class)
     public void testEmptyMatch() {
-        final MatchBuilder builder = new MatchBuilder();
-
-        MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF10);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        ConvertorManager.getInstance().convert(new MatchBuilder().build(), datapathIdConvertorData);
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testEmptyMatchEntry() {
@@ -192,8 +190,16 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                        .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+                .MatchBuilder salMatch = salMatchOptional.get();
+
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         Assert.assertEquals("Wrong match entries", null, builtMatch.getEthernetMatch());
@@ -212,9 +218,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryNoMasks() {
@@ -499,8 +503,15 @@ public class MatchConvertorImplV13Test {
 
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         Assert.assertEquals("Wrong in port", "openflow:42:1", builtMatch.getInPort().getValue());
@@ -537,9 +548,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithMasks() {
@@ -648,8 +657,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF10);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         Assert.assertEquals("Wrong metadata", new BigInteger(1, new byte[]{0, 1, 2, 3, 4, 5, 6, 7}), builtMatch.getMetadata().getMetadata());
@@ -670,9 +686,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithArbitraryMasks() {
@@ -711,8 +725,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
@@ -723,9 +744,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithSrcCidrMaskAndDstArbitraryBitMask() {
@@ -764,8 +783,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
@@ -776,9 +802,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithSrcArbitraryBitMaskAndDstCidrMask() {
@@ -817,8 +841,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
@@ -830,9 +861,7 @@ public class MatchConvertorImplV13Test {
 
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithDstArbitraryBitMaskAndSrcCidrMask() {
@@ -871,8 +900,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
@@ -883,9 +919,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testWithMatchEntryWithDstCidrMaskAndSrcArbitraryBitMask() {
@@ -924,8 +958,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatch = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
 
         final Ipv4MatchArbitraryBitMask ipv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) builtMatch.getLayer3Match();
@@ -936,9 +977,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer4MatchUdp() {
@@ -972,8 +1011,15 @@ public class MatchConvertorImplV13Test {
 
         builder.setMatchEntry(entries);
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder builtMatch = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder builtMatch = salMatchOptional.get();
 
         final UdpMatch udpMatch = (UdpMatch) builtMatch.getLayer4Match();
         Assert.assertEquals("Wrong udp src port", 11, udpMatch.getUdpSourcePort().getValue().intValue());
@@ -981,9 +1027,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer4MatchSctp() {
@@ -1016,8 +1060,15 @@ public class MatchConvertorImplV13Test {
         entries.add(entriesBuilder.build());
         builder.setMatchEntry(entries);
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatchBuilder = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final SctpMatch udpMatch = (SctpMatch) builtMatch.getLayer4Match();
@@ -1026,9 +1077,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer3MatchIpv6() {
@@ -1113,8 +1162,15 @@ public class MatchConvertorImplV13Test {
         builder.setMatchEntry(entries);
         entries.add(entriesBuilder.build());
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatchBuilder = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final Ipv6Match ipv6Match = (Ipv6Match) builtMatch.getLayer3Match();
@@ -1131,9 +1187,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer3MatchIpv6ExtHeader2() {
@@ -1153,8 +1207,15 @@ public class MatchConvertorImplV13Test {
         entries.add(entriesBuilder.build());
         builder.setMatchEntry(entries);
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatchBuilder = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final Ipv6Match ipv6Match = (Ipv6Match) builtMatch.getLayer3Match();
@@ -1163,9 +1224,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer3MatchArp() {
@@ -1228,8 +1287,15 @@ public class MatchConvertorImplV13Test {
         entries.add(entriesBuilder.build());
         builder.setMatchEntry(entries);
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatchBuilder = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final ArpMatch arpMatch = (ArpMatch) builtMatch.getLayer3Match();
@@ -1241,9 +1307,7 @@ public class MatchConvertorImplV13Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
-     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
      */
     @Test
     public void testLayer3MatchArpWithMasks() {
@@ -1300,8 +1364,15 @@ public class MatchConvertorImplV13Test {
 
         builder.setMatchEntry(entries);
 
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(builder.build(), datapathIdConvertorData);
+
+        Assert.assertTrue("Match response convertor not found", salMatchOptional.isPresent());
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(builder.build(), new BigInteger("42"), OpenflowVersion.OF13);
+                .MatchBuilder salMatchBuilder = salMatchOptional.get();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final ArpMatch arpMatch = (ArpMatch) builtMatch.getLayer3Match();
