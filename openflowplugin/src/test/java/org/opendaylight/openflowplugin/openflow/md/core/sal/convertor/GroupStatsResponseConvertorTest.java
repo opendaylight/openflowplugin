@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
@@ -27,8 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class GroupStatsResponseConvertorTest {
 
-    GroupStatsResponseConvertor convertor =  new GroupStatsResponseConvertor();
-
     /**
      * Test empty GroupStats conversion
      */
@@ -36,10 +35,10 @@ public class GroupStatsResponseConvertorTest {
     public void testEmptyGroupStats() {
         List<GroupStats> groupStats = new ArrayList<>();
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats> salGroupStats = convertor.toSALGroupStatsList(groupStats);
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>> salGroupStats = ConvertorManager.getInstance().convert(groupStats);
 
-        Assert.assertEquals("Wrong group stats size", 0, salGroupStats.size());
+        Assert.assertFalse("Group stats response should be not present", salGroupStats.isPresent());
     }
 
     /**
@@ -58,12 +57,15 @@ public class GroupStatsResponseConvertorTest {
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
         groupStats.add(statsBuilder.build());
 
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+        Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats> salGroupStats = convertor.toSALGroupStatsList(groupStats);
+                .GroupStats> salGroupStats = salGroupStatsOptional.get();
 
         Assert.assertEquals("Wrong group stats size", 1, salGroupStats.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats stat = salGroupStats.get(0);
+                .GroupStats stat = salGroupStats.get(0);
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong ref-count", 24, stat.getRefCount().getValue().intValue());
         Assert.assertEquals("Wrong packet count", 54321, stat.getPacketCount().getValue().intValue());
@@ -98,12 +100,15 @@ public class GroupStatsResponseConvertorTest {
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
         groupStats.add(statsBuilder.build());
 
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+        Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats> salGroupStats = convertor.toSALGroupStatsList(groupStats);
+                .GroupStats> salGroupStats = salGroupStatsOptional.get();
 
         Assert.assertEquals("Wrong group stats size", 2, salGroupStats.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats stat = salGroupStats.get(0);
+                .GroupStats stat = salGroupStats.get(0);
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong key", 42, stat.getKey().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong ref-count", 24, stat.getRefCount().getValue().intValue());
@@ -148,12 +153,15 @@ public class GroupStatsResponseConvertorTest {
         statsBuilder.setBucketStats(bucketStats);
         groupStats.add(statsBuilder.build());
 
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+        Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats> salGroupStats = convertor.toSALGroupStatsList(groupStats);
+                .GroupStats> salGroupStats = salGroupStatsOptional.get();
 
         Assert.assertEquals("Wrong group stats size", 1, salGroupStats.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-        .GroupStats stat = salGroupStats.get(0);
+                .GroupStats stat = salGroupStats.get(0);
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong ref-count", 24, stat.getRefCount().getValue().intValue());
         Assert.assertEquals("Wrong packet count", 54321, stat.getPacketCount().getValue().intValue());
