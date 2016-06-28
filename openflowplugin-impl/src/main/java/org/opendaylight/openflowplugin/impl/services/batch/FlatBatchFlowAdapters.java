@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
-import org.opendaylight.openflowplugin.impl.util.FlatBatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
@@ -117,30 +116,22 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
-     * @param chainInput here all partial results are collected (values + errors)
      * @param stepOffset offset of current batch plan step
      * @return next chained result incorporating results of this step's batch
      */
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    createBatchFlowChainingFunction(final RpcResult<ProcessFlatBatchOutput> chainInput,
-                                    final int stepOffset) {
+    createBatchFlowChainingFunction(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
             public RpcResult<ProcessFlatBatchOutput> apply(@Nullable final RpcResult<T> input) {
-                // create rpcResult builder honoring both success/failure of current input and chained input + join errors
-                final RpcResultBuilder<ProcessFlatBatchOutput> output = FlatBatchUtil.mergeRpcResults(chainInput, input);
-                // convert values and add to chain values
-                final ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder(chainInput.getResult());
-                final List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
-                // join values
-                if (outputBuilder.getBatchFailure() == null) {
-                    outputBuilder.setBatchFailure(new ArrayList<BatchFailure>(batchFailures.size()));
-                }
-                outputBuilder.getBatchFailure().addAll(batchFailures);
-
-                return output.withResult(outputBuilder.build()).build();
+                List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
+                ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+                return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
+                                       .withRpcErrors(input.getErrors())
+                                       .withResult(outputBuilder.build())
+                                       .build();
             }
         };
     }
@@ -163,19 +154,17 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
-     * shortcut for {@link #createBatchFlowChainingFunction(RpcResult, int)} with conversion {@link ListenableFuture}
+     * shortcut for {@link #createBatchFlowChainingFunction(int)} with conversion {@link ListenableFuture}
      *
      * @param <T>                    exact type of batch flow output
-     * @param chainInput             here all partial results are collected (values + errors)
      * @param resultUpdateFlowFuture batch flow rpc-result (add/remove/update)
      * @param currentOffset          offset of current batch plan step with respect to entire chain of steps
      * @return next chained result incorporating results of this step's batch
      */
     public static <T extends BatchFlowOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    adaptFlowBatchFutureForChain(final RpcResult<ProcessFlatBatchOutput> chainInput,
-                                 final Future<RpcResult<T>> resultUpdateFlowFuture,
+    adaptFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
                                  final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
-                FlatBatchFlowAdapters.<T>createBatchFlowChainingFunction(chainInput, currentOffset));
+                FlatBatchFlowAdapters.<T>createBatchFlowChainingFunction(currentOffset));
     }
 }

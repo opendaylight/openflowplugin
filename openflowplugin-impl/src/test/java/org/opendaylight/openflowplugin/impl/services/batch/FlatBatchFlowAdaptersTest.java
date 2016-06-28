@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlow;
@@ -119,49 +118,35 @@ public class FlatBatchFlowAdaptersTest {
 
     @Test
     public void testCreateBatchFlowChainingFunction_failures() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
-                .withResult(new ProcessFlatBatchOutputBuilder()
-                        .setBatchFailure(Lists.newArrayList(
-                                createChainFailure(0, "f1"),
-                                createChainFailure(1, "f2")))
-                        .build())
-                .build();
-
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder.<BatchFlowOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowError")
                 .withResult(new AddFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(Lists.newArrayList(
-                                createBatchFailedFlowsOutput(0, "f3"),
-                                createBatchFailedFlowsOutput(1, "f4")
+                                createBatchFailedFlowsOutput(0, "f1"),
+                                createBatchFailedFlowsOutput(1, "f2")
                         ))
                         .build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchFlowAdapters
-                .createBatchFlowChainingFunction(chainInput, 2).apply(input);
+                .createBatchFlowChainingFunction(3).apply(input);
 
         Assert.assertFalse(rpcResult.isSuccessful());
-        Assert.assertEquals(2, rpcResult.getErrors().size());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(1, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().get(2).getBatchOrder().intValue());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(3).getBatchOrder().intValue());
-        Assert.assertEquals("f4", ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(3).getBatchItemIdChoice()).getFlowId().getValue());
+        Assert.assertEquals(1, rpcResult.getErrors().size());
+        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
+        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
+        Assert.assertEquals("f2", ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getFlowId().getValue());
     }
 
     @Test
     public void testCreateBatchFlowChainingFunction_successes() throws Exception {
-        final RpcResult<ProcessFlatBatchOutput> chainInput = RpcResultBuilder
-                .success(new ProcessFlatBatchOutputBuilder().build())
-                .build();
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder
                 .<BatchFlowOutputListGrouping>success(new AddFlowsBatchOutputBuilder().build())
                 .build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchFlowAdapters
-                .createBatchFlowChainingFunction(chainInput, 0).apply(input);
+                .createBatchFlowChainingFunction(0).apply(input);
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
