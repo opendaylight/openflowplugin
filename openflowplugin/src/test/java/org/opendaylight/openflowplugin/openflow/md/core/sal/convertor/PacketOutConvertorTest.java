@@ -10,13 +10,16 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -173,9 +176,14 @@ public class PacketOutConvertorTest {
         Assert.assertEquals((Object) version,
                 Short.valueOf(message.getVersion()));
         Assert.assertEquals(xid, message.getXid());
-        Assert.assertEquals(
-                ActionConvertor.getActions(actionList, version, datapathId, null),
-                message.getAction());
+        ActionConvertorData actionConvertorData = new ActionConvertorData(version);
+        actionConvertorData.setDatapathId(datapathId);
+
+        Optional<List<Action>> actionsOptional = ConvertorManager.getInstance().convert(
+                actionList, actionConvertorData);
+
+        List<Action> actions = actionsOptional.orElse(Collections.emptyList());
+        Assert.assertEquals(actions, message.getAction());
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
 
