@@ -10,8 +10,9 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
@@ -24,9 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * pulled out group stats to notification transformation
  */
 public class GroupStatisticsToNotificationTransformer {
-
-    private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
-
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state
@@ -47,7 +45,12 @@ public class GroupStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-            notification.getGroupStats().addAll(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
+            final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(
+                    replyBody.getGroupStats());
+
+            if (groupStatsList.isPresent()) {
+                notification.getGroupStats().addAll(groupStatsList.get());
+            }
         }
         return notification.build();
     }

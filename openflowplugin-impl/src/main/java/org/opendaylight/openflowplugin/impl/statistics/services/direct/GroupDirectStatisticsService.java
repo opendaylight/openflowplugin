@@ -10,11 +10,12 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutputBuilder;
@@ -39,8 +40,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Group direct statistics service.
  */
 public class GroupDirectStatisticsService extends AbstractDirectStatisticsService<GetGroupStatisticsInput, GetGroupStatisticsOutput> {
-    private final GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
-
     /**
      * Instantiates a new Group direct statistics service.
      *
@@ -74,7 +73,12 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                groupStats.addAll(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
+                final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(
+                        replyBody.getGroupStats());
+
+                if (groupStatsList.isPresent()) {
+                    groupStats.addAll(groupStatsList.get());
+                }
             }
         }
 
