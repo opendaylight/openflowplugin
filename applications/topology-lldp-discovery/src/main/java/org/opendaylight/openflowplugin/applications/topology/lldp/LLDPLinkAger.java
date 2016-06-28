@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,5 +69,11 @@ public class LLDPLinkAger implements AutoCloseable {
         }
 
     }
+
+    @VisibleForTesting
+    public boolean isLinkToDateEmpty() {
+        return linkToDate.isEmpty();
+    }
+
 }
 
