@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
@@ -40,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
@@ -147,7 +149,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testEmptyAndNullInput() {
@@ -162,7 +164,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testConversion() {
@@ -334,7 +336,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithNoMask(){
@@ -357,7 +359,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithMask(){
@@ -382,7 +384,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testUdpMatchConversion() {
@@ -406,7 +408,31 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
+     */
+    @Test
+    public void testTunnelIpv4MatchConversion() {
+        MatchBuilder builder = new MatchBuilder();
+        TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder = new TunnelIpv4MatchBuilder();
+        tunnelIpv4MatchBuilder.setTunnelIpv4Source(new Ipv4Prefix("10.0.0.1/32"));
+        tunnelIpv4MatchBuilder.setTunnelIpv4Destination(new Ipv4Prefix("10.0.0.2/32"));
+        builder.setLayer3Match(tunnelIpv4MatchBuilder.build());
+        Match match = builder.build();
+
+        List<MatchEntry> entries = convertor.convert(match);
+        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        MatchEntry entry = entries.get(0);
+        checkEntryHeader(entry, Ipv4Src.class, false);
+        Assert.assertEquals("Wrong ipv4 tunnel src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
+                .getIpv4Address().getValue());
+        entry = entries.get(1);
+        checkEntryHeader(entry, Ipv4Dst.class, false);
+        Assert.assertEquals("Wrong ipv4 tunnel dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst()
+                .getIpv4Address().getValue());
+    }
+
+    /**
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testSctpMatchConversion() {
@@ -430,7 +456,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testArpMatchConversion() {
@@ -473,7 +499,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testArpMatchConversionWithMasks() {
@@ -523,7 +549,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testIpv6MatchConversion() {
@@ -579,7 +605,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testIpv6MatchConversionWithMasks() {
@@ -608,7 +634,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testIpv6ExtHeaderConversion() {
@@ -632,7 +658,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}
+     * Test {@link Convertor#convert(Object)}
      */
     @Test
     public void testConversionWithMasks() {
