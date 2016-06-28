@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -17,11 +18,11 @@ import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.util.NodeConnectorRefToPortTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
@@ -73,17 +74,28 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
     @VisibleForTesting
     static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
-        Match match = MatchConvertorImpl.fromOFMatchToSALMatch(input.getMatch(),
-                datapathId,
-                OpenflowVersion.get(input.getVersion().shortValue())).build();
-        MatchBuilder matchBuilder = new MatchBuilder(match);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(input.getVersion());
+        datapathIdConvertorData.setDatapathId(datapathId);
 
-        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = ConvertorManager.getInstance().convert(input.getMatch(), datapathIdConvertorData);
+        MatchBuilder matchBuilder;
+
+        if (matchOptional.isPresent()) {
+            matchBuilder = new MatchBuilder(matchOptional.get().build());
+        } else {
+            matchBuilder = new MatchBuilder();
+        }
+
+        final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
                 MatchExtensionHelper.processAllExtensions(
-                        input.getMatch().getMatchEntry(), OpenflowVersion.get(input.getVersion().shortValue()), MatchPath.PACKETRECEIVED_MATCH);
+                        input.getMatch().getMatchEntry(),
+                        OpenflowVersion.get(input.getVersion()),
+                        MatchPath.PACKETRECEIVED_MATCH);
+
         if (matchExtensionWrap != null) {
             matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
         }
+
         return matchBuilder.build();
     }
 }

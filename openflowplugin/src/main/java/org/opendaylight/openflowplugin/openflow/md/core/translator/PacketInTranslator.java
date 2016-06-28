@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -17,7 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -96,20 +98,27 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     LOG.warn("Received packet_in, but couldn't find an input port");
                 } else {
                     LOG.trace("Received packet_in from {} on port {}", dpid, port);
+                    final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
+                    datapathIdConvertorData.setDatapathId(dpid);
 
-                    OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-                    Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(), dpid, ofVersion).build();
-                    MatchBuilder matchBuilder = new MatchBuilder(match);
+                    final OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
+                    final Optional<MatchBuilder> matchOptional = ConvertorManager.getInstance().convert(message.getMatch(), datapathIdConvertorData);
 
-                    AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
-                            MatchExtensionHelper.processAllExtensions(
-                                    message.getMatch().getMatchEntry(), ofVersion, MatchPath.PACKETRECEIVED_MATCH);
-                    if (matchExtensionWrap != null) {
-                        matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+                    if (matchOptional.isPresent()) {
+                        Match match = matchOptional.get().build();
+                        MatchBuilder matchBuilder = new MatchBuilder(match);
+
+                        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+                                MatchExtensionHelper.processAllExtensions(
+                                        message.getMatch().getMatchEntry(), ofVersion, MatchPath.PACKETRECEIVED_MATCH);
+                        if (matchExtensionWrap != null) {
+                            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+                        }
+
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = matchBuilder.build();
+                        pktInBuilder.setMatch(packetInMatch);
                     }
 
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = matchBuilder.build();
-                    pktInBuilder.setMatch(packetInMatch);
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                     pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                     pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port, ofVersion));

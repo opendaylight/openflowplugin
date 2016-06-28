@@ -9,13 +9,18 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
@@ -55,9 +60,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * Unit test for {@link MatchConvertorImpl}.
  */
-public class MatchConvertorImplTest {
+public class MatchResponseConvertorTest {
     private static final BigInteger DPID = BigInteger.TEN;
-    private static final Long IN_PORT = Long.valueOf(6);
+    private static final Long IN_PORT = 6L;
     private static final String URI_IN_PORT =
             "openflow:" + DPID + ":" + IN_PORT;
     private static final MacAddress MAC_SRC =
@@ -79,9 +84,8 @@ public class MatchConvertorImplTest {
     }
 
     /**
-     * Test method for {@link MatchConvertorImpl#fromOFMatchToSALMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}.
+     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }.
      */
-
     @Test
     public void testFromOFMatchToSALMatch() {
         List<MatchEntry> entries = createDefaultMatchEntry();
@@ -104,12 +108,15 @@ public class MatchConvertorImplTest {
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch =
                     createOFMatch(MatchEntry);
 
-            MatchBuilder builder = MatchConvertorImpl.
-                    fromOFMatchToSALMatch(ofMatch, DPID, OpenflowVersion.OF13);
+            final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+            data.setDatapathId(DPID);
+            final Optional<MatchBuilder> builderOptional = ConvertorManager.getInstance().convert(ofMatch, data);
+            assertTrue("Match response convertor not found", builderOptional.isPresent());
+            final MatchBuilder builder = builderOptional.get();
             checkDefault(builder);
             VlanMatch vlanMatch = builder.getVlanMatch();
             int expectedVid = (vid < 0) ? 0 : vid;
-            Boolean expectedCfi = Boolean.valueOf(vid != 0);
+            Boolean expectedCfi = vid != 0;
             assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().
                     getValue().intValue());
             assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
@@ -118,9 +125,8 @@ public class MatchConvertorImplTest {
     }
 
     /**
-     * Test method for {@link MatchConvertorImpl#fromOFMatchV10ToSALMatch(MatchV10, BigInteger, OpenflowVersion)}.
+     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }.
      */
-
     @Test
     public void testFromOFMatchV10ToSALMatch() {
         int[] vids = {
@@ -151,8 +157,11 @@ public class MatchConvertorImplTest {
 
                 FlowWildcardsV10 wc = wcBuilder.build();
                 MatchV10 ofMatch = builder.setWildcards(wc).build();
-                Match match = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-                        ofMatch, DPID, OpenflowVersion.OF10).build();
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+                data.setDatapathId(DPID);
+                Optional<MatchBuilder> builderOptional = ConvertorManager.getInstance().convert(ofMatch, data);
+                assertTrue("MatchV10 response convertor not found", builderOptional.isPresent());
+                Match match = builderOptional.get().build();
                 checkDefaultV10(match, wc, vid);
 
                 IpMatch ipMatch = match.getIpMatch();
@@ -163,8 +172,9 @@ public class MatchConvertorImplTest {
                 // Set all wildcard bits.
                 wc = wcBuilder.setAll(true).build();
                 ofMatch = builder.setWildcards(wc).build();
-                match = MatchConvertorImpl.fromOFMatchV10ToSALMatch(
-                        ofMatch, DPID, OpenflowVersion.OF10).build();
+                builderOptional = ConvertorManager.getInstance().convert(ofMatch, data);
+                assertTrue("MatchV10 response convertor not found", builderOptional.isPresent());
+                match = builderOptional.get().build();
                 checkDefaultV10(match, wc, vid);
                 assertEquals(null, match.getIpMatch());
             }
@@ -249,7 +259,7 @@ public class MatchConvertorImplTest {
     private static MatchEntry toOfVlanVid(final int vid) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         boolean cfi = true;
-        Integer vidValue = Integer.valueOf(vid);
+        Integer vidValue = vid;
         byte[] mask = null;
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setOxmMatchField(VlanVid.class);
@@ -260,7 +270,7 @@ public class MatchConvertorImplTest {
         } else if (vid < 0) {
             // Match packet with VLAN tag regardless of its value.
             mask = new byte[]{0x10, 0x00};
-            vidValue = Integer.valueOf(0);
+            vidValue = 0;
         }
 
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
@@ -278,7 +288,7 @@ public class MatchConvertorImplTest {
 
     private static void checkDefaultV10(final Match match, final FlowWildcardsV10 wc, final int vid) {
         EthernetMatch ethMatch = match.getEthernetMatch();
-        if (wc.isDLSRC().booleanValue()) {
+        if (wc.isDLSRC()) {
             if (ethMatch != null) {
                 assertEquals(null, ethMatch.getEthernetSource());
             }
@@ -286,21 +296,23 @@ public class MatchConvertorImplTest {
             assertEquals(MAC_SRC, ethMatch.getEthernetSource().getAddress());
         }
 
-        if (wc.isDLDST().booleanValue()) {
-            if (ethMatch != null) {
+        if (ethMatch != null) {
+            if (wc.isDLDST()) {
                 assertEquals(null, ethMatch.getEthernetDestination());
+            } else {
+                assertNotEquals(null, ethMatch.getEthernetDestination());
+                assertEquals(MAC_DST,
+                        ethMatch.getEthernetDestination().getAddress());
             }
-        } else {
-            assertEquals(MAC_DST,
-                    ethMatch.getEthernetDestination().getAddress());
         }
 
-        if (wc.isDLTYPE().booleanValue()) {
+        if (wc.isDLTYPE()) {
             if (ethMatch != null) {
                 assertEquals(null, ethMatch.getEthernetType());
             }
             assertEquals(null, match.getLayer3Match());
         } else {
+            assert ethMatch != null;
             assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().
                     getValue().intValue());
 
@@ -312,7 +324,7 @@ public class MatchConvertorImplTest {
         }
 
         VlanMatch vlanMatch = match.getVlanMatch();
-        if (wc.isDLVLAN().booleanValue()) {
+        if (wc.isDLVLAN()) {
             assertEquals(null, vlanMatch);
         } else {
             int expectedVid;
@@ -328,7 +340,7 @@ public class MatchConvertorImplTest {
                     getValue().intValue());
             assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
 
-            if (wc.isDLVLANPCP().booleanValue()) {
+            if (wc.isDLVLANPCP()) {
                 assertEquals(null, vlanMatch.getVlanPcp());
             } else {
                 assertEquals(VLAN_PCP,
