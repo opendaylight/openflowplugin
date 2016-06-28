@@ -56,15 +56,21 @@ public final class FlowUtil {
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
 
-    /** Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>, RpcResult<Void>>, RpcResult<RemoveFlowsBatchOutput>>
             FLOW_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
-    /** Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
             FLOW_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
-    /** Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt; */
+    /**
+     * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;
+     */
     public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>, RpcResult<Void>>, RpcResult<UpdateFlowsBatchOutput>>
             FLOW_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -145,6 +151,12 @@ public final class FlowUtil {
         return resultBld;
     }
 
+    /**
+     * Create alien flow id
+     *
+     * @param tableId the table id
+     * @return the flow id
+     */
     public static FlowId createAlienFlowId(final short tableId) {
         final StringBuilder sBuilder = new StringBuilder(ALIEN_SYSTEM_FLOW_ID)
                 .append(tableId).append('-').append(unaccountedFlowsCounter.incrementAndGet());
@@ -188,6 +200,8 @@ public final class FlowUtil {
     }
 
     /**
+     * Build flow path flow ref.
+     *
      * @param nodePath path to {@link Node}
      * @param tableId  path to {@link Table} under {@link Node}
      * @param flowId   path to {@link Flow} under {@link Table}
@@ -207,8 +221,8 @@ public final class FlowUtil {
      * Factory method: creates {@link Function} which keeps info of original inputs (passed to flow-rpc) and processes
      * list of all flow-rpc results.
      *
-     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type &lt;O&gt;
      * @param <O>             result container type
+     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type &lt;O&gt;
      * @return static reusable function
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(
