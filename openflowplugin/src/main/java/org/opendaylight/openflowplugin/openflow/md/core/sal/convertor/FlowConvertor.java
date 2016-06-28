@@ -8,11 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Ordering;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
@@ -72,10 +77,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Ordering;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -307,6 +308,13 @@ public class FlowConvertor {
             InstructionBuilder instructionBuilder = new InstructionBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
+            ActionConvertorData data = new ActionConvertorData(version);
+            data.setDatapathId(datapathid);
+
+            if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
+                data.setIpProtocol(flow.getMatch().getIpMatch().getIpProtocol());
+            }
+
             if (curInstruction instanceof GoToTableCase) {
                 GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
                 GoToTable goToTable = goToTablecase.getGoToTable();
@@ -334,7 +342,11 @@ public class FlowConvertor {
                 WriteActions writeActions = writeActionscase.getWriteActions();
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-                writeActionsBuilder.setAction(ActionConvertor.getActions(writeActions.getAction(),version, datapathid, flow));
+
+                final java.util.Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
+                        writeActions.getAction(), data);
+
+                writeActionsBuilder.setAction(actions.orElse(Collections.emptyList()));
                 writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
                 instructionBuilder.setInstructionChoice(writeActionsCaseBuilder.build());
                 instructionsList.add(instructionBuilder.build());
@@ -345,7 +357,10 @@ public class FlowConvertor {
                         new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder applyActionsBuilder =
                         new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder();
-                applyActionsBuilder.setAction(ActionConvertor.getActions(applyActions.getAction(), version, datapathid, flow));
+                final java.util.Optional<List<Action>> actionList = ConvertorManager.getInstance().convert(
+                        applyActions.getAction(), data);
+
+                applyActionsBuilder.setAction(actionList.orElse(Collections.emptyList()));
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 instructionBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
                 instructionsList.add(instructionBuilder.build());
@@ -381,7 +396,15 @@ public class FlowConvertor {
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
-                return ActionConvertor.getActions(applyActions.getAction(), version, datapathid, flow);
+                final ActionConvertorData data = new ActionConvertorData(version);
+                data.setDatapathId(datapathid);
+
+                if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
+                    data.setIpProtocol(flow.getMatch().getIpMatch().getIpProtocol());
+                }
+
+                java.util.Optional<List<Action>> result = ConvertorManager.getInstance().convert(applyActions.getAction(), data);
+                return result.orElse(Collections.emptyList());
             }
         }
         return null;
