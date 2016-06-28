@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
+import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
@@ -108,6 +109,8 @@ public final class GroupConvertor {
 
     private static List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType,BigInteger datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
+        final ActionConvertorData data = new ActionConvertorData(version);
+        data.setDatapathId(datapathid);
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket : buckets
                 .getBucket()) {
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
@@ -116,8 +119,12 @@ public final class GroupConvertor {
             salToOFBucketListWatchGroup(groupBucket, bucketBuilder, groupType);
             salToOFBucketListWatchPort(groupBucket, bucketBuilder, groupType);
 
-            List<Action> bucketActionList = ActionConvertor.getActions(groupBucket.getAction(), version, datapathid, null);
-            bucketBuilder.setAction(bucketActionList);
+            Optional<List<Action>> bucketActionList = ConvertorManager.getInstance().convert(
+                    groupBucket.getAction(), data);
+
+            if (bucketActionList.isPresent()) {
+                bucketBuilder.setAction(bucketActionList.get());
+            }
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
         }
