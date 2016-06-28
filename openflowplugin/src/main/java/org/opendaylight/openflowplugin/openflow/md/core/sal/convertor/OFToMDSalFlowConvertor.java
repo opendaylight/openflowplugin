@@ -10,10 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -68,9 +71,13 @@ public final class OFToMDSalFlowConvertor {
                 ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
+                final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(ofVersion.getVersion());
+                actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
-                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getApplyActions().getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION)));
+                final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> actions = ConvertorManager.getInstance().convert(
+                        actionsInstruction.getApplyActions().getAction(), actionResponseConvertorData);
 
+                applyActionsBuilder.setAction(wrapActionList(actions.orElse(Collections.emptyList())));
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 salInstruction = applyActionsCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase) {
@@ -106,7 +113,14 @@ public final class OFToMDSalFlowConvertor {
 
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(writeActionsCase.getWriteActions().getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION)));
+
+                final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(ofVersion.getVersion());
+                actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+
+                final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> actions = ConvertorManager.getInstance().convert(
+                        writeActionsCase.getWriteActions().getAction(), actionResponseConvertorData);
+
+                writeActionsBuilder.setAction(wrapActionList(actions.orElse(Collections.emptyList())));
                 writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
 
                 salInstruction = writeActionsCaseBuilder.build();
@@ -174,8 +188,13 @@ public final class OFToMDSalFlowConvertor {
         ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
-        applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsList, ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION)));
+        final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(ofVersion.getVersion());
+        actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
+        final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> actions = ConvertorManager.getInstance().convert(
+                actionsList, actionResponseConvertorData);
+
+        applyActionsBuilder.setAction(wrapActionList(actions.orElse(Collections.emptyList())));
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
 
         InstructionBuilder instBuilder = new InstructionBuilder();

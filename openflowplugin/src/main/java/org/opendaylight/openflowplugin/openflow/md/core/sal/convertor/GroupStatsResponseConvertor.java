@@ -9,12 +9,14 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -138,6 +140,8 @@ public class GroupStatsResponseConvertor {
 
     public  org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
             List<BucketsList> bucketDescStats, OpenflowVersion ofVersion ){
+        final ActionResponseConvertorData data = new ActionResponseConvertorData(ofVersion.getVersion());
+        data.setActionPath(ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc  =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();
@@ -145,21 +149,26 @@ public class GroupStatsResponseConvertor {
         int bucketKey = 0;
         for(BucketsList bucketDetails : bucketDescStats){
             BucketBuilder bucketDesc = new BucketBuilder();
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedSalActions =
-                    ActionConvertor.toMDSalActions (bucketDetails.getAction(), ofVersion,
-                            ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+            final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> convertedSalActions =
+                    ConvertorManager.getInstance().convert(bucketDetails.getAction(), data);
 
-            List<Action> actions = new ArrayList<>();
-            int actionKey = 0;
-            for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : convertedSalActions){
-                ActionBuilder wrappedAction = new ActionBuilder();
-                wrappedAction.setAction(action);
-                wrappedAction.setKey(new ActionKey(actionKey));
-                wrappedAction.setOrder(actionKey);
-                actions.add(wrappedAction.build());
-                actionKey++;
+            if (convertedSalActions.isPresent()) {
+                List<Action> actions = new ArrayList<>();
+                int actionKey = 0;
+                for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : convertedSalActions.get()) {
+                    ActionBuilder wrappedAction = new ActionBuilder();
+                    wrappedAction.setAction(action);
+                    wrappedAction.setKey(new ActionKey(actionKey));
+                    wrappedAction.setOrder(actionKey);
+                    actions.add(wrappedAction.build());
+                    actionKey++;
+                }
+
+                bucketDesc.setAction(actions);
+            } else {
+                bucketDesc.setAction(Collections.emptyList());
             }
-            bucketDesc.setAction(actions);
+
             bucketDesc.setWeight(bucketDetails.getWeight());
             bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
             bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
