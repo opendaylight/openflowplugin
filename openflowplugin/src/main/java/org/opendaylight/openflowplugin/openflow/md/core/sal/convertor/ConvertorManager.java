@@ -19,6 +19,8 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,9 @@ public class ConvertorManager {
         INSTANCE.registerConvertor(new MeterStatsResponseConvertor());
         INSTANCE.registerConvertor(new MeterConfigStatsResponseConvertor());
         INSTANCE.registerConvertor(new PortConvertor());
+        // TODO: Add MatchConvertor
+        INSTANCE.registerConvertor(new MatchResponseConvertor());
+        INSTANCE.registerConvertor(new MatchV10ResponseConvertor());
     }
 
     // Actual convertor keys
