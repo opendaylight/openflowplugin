@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -39,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdatedBuilder;
@@ -109,8 +111,6 @@ public class SinglePurposeMultipartReplyTranslator {
             .getLogger(SinglePurposeMultipartReplyTranslator.class);
 
     private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
-    private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
-
 
     public List<DataObject> translate(final BigInteger datapathId, final short version, final OfHeader msg) {
 
@@ -120,12 +120,13 @@ public class SinglePurposeMultipartReplyTranslator {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
             OpenflowVersion ofVersion = OpenflowVersion.get(version);
             NodeId node = nodeIdFromDatapathId(datapathId);
+            VersionConvertorData simpleConvertorData = new VersionConvertorData(version);
 
             translateFlow(listDataObject, mpReply, node, ofVersion, datapathId);
             translateAggregate(listDataObject, mpReply, node);
             translatePortStats(listDataObject, mpReply, node, ofVersion, datapathId);
             translateGroup(listDataObject, mpReply, node);
-            translateGroupDesc(listDataObject, mpReply, node, ofVersion);
+            translateGroupDesc(listDataObject, mpReply, node, simpleConvertorData);
             translateGroupFeatures(listDataObject, mpReply, node);
             translateMeter(listDataObject, mpReply, node);
             translateMeterConfig(listDataObject, mpReply, node);
@@ -254,7 +255,10 @@ public class SinglePurposeMultipartReplyTranslator {
         message.setTransactionId(generateTransactionId(mpReply.getXid()));
         MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
         MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-        message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
+        final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(
+                replyBody.getGroupStats());
+
+        message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
 
         listDataObject.add(message.build());
     }
@@ -262,7 +266,7 @@ public class SinglePurposeMultipartReplyTranslator {
     private static void translateGroupDesc(final List<DataObject> listDataObject,
                                            final MultipartReplyMessage mpReply,
                                            final NodeId node,
-                                           final OpenflowVersion ofVersion) {
+                                           VersionConvertorData simpleConvertorData) {
         if (!MultipartType.OFPMPGROUPDESC.equals(mpReply.getType())) {
             return;
         }
@@ -274,7 +278,10 @@ public class SinglePurposeMultipartReplyTranslator {
         MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
         MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-        message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
+        final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(
+                replyBody.getGroupDesc(), simpleConvertorData);
+
+        message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
 
         listDataObject.add(message.build());
     }
