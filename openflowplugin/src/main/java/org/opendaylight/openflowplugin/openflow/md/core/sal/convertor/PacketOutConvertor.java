@@ -11,11 +11,12 @@ import com.google.common.collect.Iterables;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
@@ -85,7 +86,13 @@ public final class PacketOutConvertor {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
                 inputPacket.getAction();
         if (inputActions != null) {
-            actions = ActionConvertor.getActions(inputActions, version, datapathid, null);
+            final ActionConvertorData actionConvertorData = new ActionConvertorData(version);
+            actionConvertorData.setDatapathId(datapathid);
+
+            final Optional<List<Action>> convertedActions = ConvertorManager.getInstance().convert(
+                    inputActions, actionConvertorData);
+
+            actions = convertedActions.orElse(new ArrayList<>());
 
         } else {
             actions = new ArrayList<>();
