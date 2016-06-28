@@ -216,35 +216,44 @@ public class OfEntityManager implements TransactionChainListener{
         final OfpRole newRole;
         final Entity entity = ownershipChange.getEntity();
         SessionContext sessionContext = entsession.get(entity)!=null?entsession.get(entity).getContext():null;
-        if (ownershipChange.isOwner()) {
-            LOG.info("onDeviceOwnershipChanged: Set controller as a MASTER controller because " +
-                    "it's the OWNER of the {}", entity);
-            newRole =  OfpRole.BECOMEMASTER;
-        }
-        else {
+        if (!ownershipChange.inJeopardy()) {
+            if (ownershipChange.isOwner()) {
+                LOG.info("onDeviceOwnershipChanged: Set controller as a MASTER controller because " +
+                        "it's the OWNER of the {}", entity);
+                newRole = OfpRole.BECOMEMASTER;
+            } else {
+                newRole = OfpRole.BECOMESLAVE;
+                if (sessionContext != null && ownershipChange.hasOwner()) {
+                    LOG.info("onDeviceOwnershipChanged: Set controller as a SLAVE controller because " +
+                            "it's not the OWNER of the {}", entity);
 
-            newRole =  OfpRole.BECOMESLAVE;
-            if(sessionContext != null && ownershipChange.hasOwner()) {
-                LOG.info("onDeviceOwnershipChanged: Set controller as a SLAVE controller because " +
-                        "it's not the OWNER of the {}", entity);
-
-                if(ownershipChange.wasOwner()) {
-                    setDeviceOwnershipState(entity,false);
-                    deregisterRoutedRPCForSwitch(entsession.get(entity));
-                    // You don't have to explicitly set role to Slave in this case,
-                    // because other controller will be taking over the master role
-                    // and that will force other controller to become slave.
-                } else {
-                    boolean isOwnershipInitialized = entsession.get(entity).getIsOwnershipInitialized();
-                    setDeviceOwnershipState(entity,false);
-                    if (!isOwnershipInitialized) {
-                        setSlaveRole(sessionContext);
-                        sendNodeAddedNotification(entsession.get(entity));
+                    if (ownershipChange.wasOwner()) {
+                        setDeviceOwnershipState(entity, false);
+                        deregisterRoutedRPCForSwitch(entsession.get(entity));
+                        // You don't have to explicitly set role to Slave in this case,
+                        // because other controller will be taking over the master role
+                        // and that will force other controller to become slave.
+                    } else {
+                        boolean isOwnershipInitialized = entsession.get(entity).getIsOwnershipInitialized();
+                        setDeviceOwnershipState(entity, false);
+                        if (!isOwnershipInitialized) {
+                            setSlaveRole(sessionContext);
+                            sendNodeAddedNotification(entsession.get(entity));
+                        }
                     }
                 }
+                return;
             }
-            return;
+        } else {
+            LOG.error("onDeviceOwnershipChanged: inJeopardy{}", ownershipChange.inJeopardy());
+            //if i am the owner at present , i have lost quorum
+            //thus transitioning to slave
+             //if i am not the owner , election will be triggered
+            newRole = OfpRole.BECOMESLAVE;
+            setDeviceOwnershipState(entity, false);
+            deregisterRoutedRPCForSwitch(entsession.get(entity));
         }
+
         if (sessionContext != null) {
             //Register the RPC, given *this* controller instance is going to be master owner.
             //If role registration fails for this node, it will deregister as a candidate for
