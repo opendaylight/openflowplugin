@@ -1,10 +1,11 @@
-/**
+/*
  * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
@@ -15,9 +16,12 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
@@ -36,81 +40,24 @@ import org.slf4j.LoggerFactory;
  * This Utility class decodes the SAL - Group Mod Message and encodes into a OF
  * Library for the OFPT_GROUP_MOD Message. Input:SAL Layer Group command data.
  * Output:GroupModInput Message.
- *
- *
  */
-public final class GroupConvertor {
-
+public class GroupConvertor implements ParametrizedConvertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupConvertor.class);
-
     private static final Integer DEFAULT_WEIGHT = 0;
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_WATCH_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
-    private static final Comparator<Bucket> comparator = new Comparator<Bucket>(){
-        @Override
-        public int compare(Bucket bucket1,
-                           Bucket bucket2) {
-            if(bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
-            return  bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
-        }
+    private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
+        if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
+        return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private GroupConvertor() {
-
-    }
-
-    public static GroupModInputBuilder toGroupModInput(
-
-    org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version,BigInteger datapathid) {
-        List<BucketsList> bucketLists = null;
-        GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
-        if (source instanceof AddGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
-        } else if (source instanceof RemoveGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
-        } else if (source instanceof UpdatedGroup) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
-        }
-
-        if (GroupTypes.GroupAll.equals(source.getGroupType())) {
-            groupModInputBuilder.setType(GroupType.OFPGTALL);
-        }
-
-        if (GroupTypes.GroupSelect.equals(source.getGroupType())) {
-            groupModInputBuilder.setType(GroupType.OFPGTSELECT);
-        }
-
-        if (GroupTypes.GroupIndirect.equals(source.getGroupType())) {
-            groupModInputBuilder.setType(GroupType.OFPGTINDIRECT);
-        }
-
-        if (GroupTypes.GroupFf.equals(source.getGroupType())) {
-            groupModInputBuilder.setType(GroupType.OFPGTFF);
-        }
-
-        groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
-        // Only if the bucket is configured for the group then add it
-        // During group deletion donot push the buckets
-        if(groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
-            if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
-
-                Collections.sort(source.getBuckets().getBucket(), comparator);
-
-                bucketLists = salToOFBucketList(source.getBuckets(), version, source.getGroupType().getIntValue(), datapathid);
-                groupModInputBuilder.setBucketsList(bucketLists);
-            }
-        }
-        groupModInputBuilder.setVersion(version);
-        return groupModInputBuilder;
-
-    }
-
-    private static List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType,BigInteger datapathid) {
+    private static List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType, BigInteger datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
+
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket : buckets
                 .getBucket()) {
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
@@ -125,9 +72,11 @@ public final class GroupConvertor {
             if (bucketActionList.isPresent()) {
                 bucketBuilder.setAction(bucketActionList.get());
             }
+
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
         }
+
         return bucketLists;
 
     }
@@ -156,7 +105,7 @@ public final class GroupConvertor {
 
     private static void salToOFBucketListWeight(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
         if (null != groupBucket.getWeight()) {
-            bucketBuilder.setWeight(groupBucket.getWeight().intValue());
+            bucketBuilder.setWeight(groupBucket.getWeight());
         } else {
             bucketBuilder.setWeight(DEFAULT_WEIGHT);
             if (groupType == GroupType.OFPGTSELECT.getIntValue()) {
@@ -165,4 +114,53 @@ public final class GroupConvertor {
         }
     }
 
+    @Override
+    public Class<?> getType() {
+        return Group.class;
+    }
+
+    @Override
+    public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data) {
+        GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
+        if (source instanceof AddGroupInput) {
+            groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
+        } else if (source instanceof RemoveGroupInput) {
+            groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+        } else if (source instanceof UpdatedGroup) {
+            groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+        }
+
+        if (GroupTypes.GroupAll.equals(source.getGroupType())) {
+            groupModInputBuilder.setType(GroupType.OFPGTALL);
+        }
+
+        if (GroupTypes.GroupSelect.equals(source.getGroupType())) {
+            groupModInputBuilder.setType(GroupType.OFPGTSELECT);
+        }
+
+        if (GroupTypes.GroupIndirect.equals(source.getGroupType())) {
+            groupModInputBuilder.setType(GroupType.OFPGTINDIRECT);
+        }
+
+        if (GroupTypes.GroupFf.equals(source.getGroupType())) {
+            groupModInputBuilder.setType(GroupType.OFPGTFF);
+        }
+
+        groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
+
+        // Only if the bucket is configured for the group then add it
+        // During group deletion do not push the buckets
+        if (groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
+            if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+
+                Collections.sort(source.getBuckets().getBucket(), COMPARATOR);
+
+                List<BucketsList> bucketLists = salToOFBucketList(source.getBuckets(), data.getVersion(), source.getGroupType().getIntValue(), data.getDatapathId());
+                groupModInputBuilder.setBucketsList(bucketLists);
+            }
+        }
+
+        groupModInputBuilder.setVersion(data.getVersion());
+        return groupModInputBuilder;
+    }
 }
