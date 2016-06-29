@@ -49,6 +49,7 @@ public class ConvertorManager {
         INSTANCE.registerConvertor(new GroupConvertor());
         INSTANCE.registerConvertor(new GroupDescStatsResponseConvertor());
         INSTANCE.registerConvertor(new GroupStatsResponseConvertor());
+        INSTANCE.registerConvertor(new PacketOutConvertor());
     }
 
     // Actual convertor keys
