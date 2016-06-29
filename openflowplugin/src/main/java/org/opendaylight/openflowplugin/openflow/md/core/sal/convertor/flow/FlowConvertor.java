@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, 2015 Ericsson. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6,22 +6,31 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Ordering;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.ApplyActionsCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.ClearActionsCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.GoToTableCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.MeterCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.WriteActionsCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.WriteMetadataCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag.FlowFlagReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
-import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
@@ -39,35 +48,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice._goto.table._case.GotoTableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.meter._case.MeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.actions._case.WriteActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MatchTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -75,17 +64,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for converting a MD-SAL Flow into the OF flow mod
+ * Converts the SAL Flow to OF Flow. It checks if there is a set-vlan-id (1.0) action made on OF1.3.
+ * If yes its handled separately.
+ *
+ * Example usage:
+ * <pre>
+ * {@code
+ * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);
+ * data.setDatapathId(datapathId);
+ * Optional<List<FlowModInputBuilder>> ofFlow = ConvertorManager.getInstance().convert(salFlow, data);
+ * }
  */
-public class FlowConvertor {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowConvertor.class);
-
-    // Default values for when things are null
-    private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
+public class FlowConvertor implements ParametrizedConvertor<Flow, List<FlowModInputBuilder>, VersionDatapathIdConvertorData> {
     /**
      * Default idle timeout
      */
@@ -98,11 +90,6 @@ public class FlowConvertor {
      * Default priority
      */
     public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
-    private static final Long DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
-    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
-    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
     /**
      * flow flag: remove
      */
@@ -134,14 +121,26 @@ public class FlowConvertor {
     /**
      * default match entries - empty
      */
-    public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntry>();
+    public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = new ArrayList<>();
+
+    // Default values for when things are null
+    private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
+    private static final Long DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
+    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
+    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
     private static final Integer PUSH_VLAN = 0x8100;
-
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> INSTRUCTION_ORDERING =
-            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>build());
-
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> INSTRUCTION_ORDERING = Ordering.from(OrderComparator.build());
     private static final VlanMatch VLAN_MATCH_FALSE;
     private static final VlanMatch VLAN_MATCH_TRUE;
+    private static final ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction, Instruction, ActionConvertorData> PROCESSOR = new ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction, Instruction, ActionConvertorData>()
+            .addCase(new ApplyActionsCase())
+            .addCase(new ClearActionsCase())
+            .addCase(new GoToTableCase())
+            .addCase(new MeterCase())
+            .addCase(new WriteActionsCase())
+            .addCase(new WriteMetadataCase());
 
     static {
         final VlanId zeroVlan = new VlanId(0);
@@ -160,28 +159,6 @@ public class FlowConvertor {
         vlanMatchBuilder2.setVlanId(vlanIdBuilder2.build());
 
         VLAN_MATCH_TRUE = vlanMatchBuilder2.build();
-    }
-
-    private FlowConvertor() {
-        //hiding implicit constructor
-    }
-
-    /**
-     * This method converts the SAL Flow to OF Flow.
-     * It checks if there is a set-vlan-id (1.0) action made on OF1.3.
-     * If yes its handled separately
-     *
-     * @param srcFlow source flow
-     * @param version openflow version
-     * @param datapathId datapath id
-     * @return list of flow mod build
-     */
-    public static List<FlowModInputBuilder> toFlowModInputs(Flow srcFlow, short version, BigInteger datapathId) {
-        if (version >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(srcFlow)) {
-            return handleSetVlanIdForOF13(srcFlow, version, datapathId);
-        } else {
-            return Collections.singletonList(toFlowModInput(srcFlow, version, datapathId));
-        }
     }
 
     private static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
@@ -208,6 +185,7 @@ public class FlowConvertor {
             flowMod.setInstruction(toInstructions(flow, version, datapathid));
             flowMod.setAction(getActions(version, datapathid, flow));
         }
+
         flowMod.setVersion(version);
 
         return flowMod;
@@ -297,95 +275,31 @@ public class FlowConvertor {
         }
     }
 
-    private static List<Instruction> toInstructions(
-            Flow flow,
-            short version, BigInteger datapathid) {
-        List<Instruction> instructionsList = new ArrayList<>();
+    private static List<Instruction> toInstructions(Flow flow, short version, BigInteger datapathid) {
+        final List<Instruction> instructionsList = new ArrayList<>();
+        final ActionConvertorData data = new ActionConvertorData(version);
+        data.setDatapathId(datapathid);
+        data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
+        Instructions instructions = flow.getInstructions();
+
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : instructions
                 .getInstruction()) {
-            InstructionBuilder instructionBuilder = new InstructionBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
-            ActionConvertorData data = new ActionConvertorData(version);
-            data.setDatapathId(datapathid);
 
-            if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
-                data.setIpProtocol(flow.getMatch().getIpMatch().getIpProtocol());
-            }
+            Optional<Instruction> result = PROCESSOR.process(curInstruction, data);
 
-            if (curInstruction instanceof GoToTableCase) {
-                GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
-                GoToTable goToTable = goToTablecase.getGoToTable();
-                GotoTableCaseBuilder gotoTableCaseBuilder = new GotoTableCaseBuilder();
-                GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();
-                gotoTableBuilder.setTableId(goToTable.getTableId());
-                gotoTableCaseBuilder.setGotoTable(gotoTableBuilder.build());
-                instructionBuilder.setInstructionChoice(gotoTableCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
-            } else if (curInstruction instanceof WriteMetadataCase) {
-                WriteMetadataCase writeMetadatacase = (WriteMetadataCase) curInstruction;
-                WriteMetadata writeMetadata = writeMetadatacase.getWriteMetadata();
-
-                WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
-                WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-                writeMetadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(),
-                                                                             OFConstants.SIZE_OF_LONG_IN_BYTES));
-                writeMetadataBuilder.setMetadataMask(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(),
-                                                                                     OFConstants.SIZE_OF_LONG_IN_BYTES));
-                writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
-                instructionBuilder.setInstructionChoice(writeMetadataCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
-            } else if (curInstruction instanceof WriteActionsCase) {
-                WriteActionsCase writeActionscase = (WriteActionsCase) curInstruction;
-                WriteActions writeActions = writeActionscase.getWriteActions();
-                WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
-                WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-
-                final java.util.Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
-                        writeActions.getAction(), data);
-
-                writeActionsBuilder.setAction(actions.orElse(new ArrayList<>()));
-                writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
-                instructionBuilder.setInstructionChoice(writeActionsCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
-            } else if (curInstruction instanceof ApplyActionsCase) {
-                ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
-                ApplyActions applyActions = applyActionscase.getApplyActions();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder applyActionsCaseBuilder =
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder applyActionsBuilder =
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder();
-                final java.util.Optional<List<Action>> actionList = ConvertorManager.getInstance().convert(
-                        applyActions.getAction(), data);
-
-                applyActionsBuilder.setAction(actionList.orElse(new ArrayList<>()));
-                applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
-                instructionBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
-            } else if (curInstruction instanceof ClearActionsCase) {
-                ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
-                instructionBuilder.setInstructionChoice(clearActionsCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
-            } else if (curInstruction instanceof MeterCase) {
-                MeterCase metercase = (MeterCase) curInstruction;
-                Meter meter = metercase.getMeter();
-                MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
-                MeterBuilder meterBuilder = new MeterBuilder();
-                Long meterId = meter.getMeterId().getValue();
-                meterBuilder.setMeterId(meterId);
-                meterCaseBuilder.setMeter(meterBuilder.build());
-                instructionBuilder.setInstructionChoice(meterCaseBuilder.build());
-                instructionsList.add(instructionBuilder.build());
+            if (result.isPresent()) {
+                instructionsList.add(result.get());
             }
         }
+
         return instructionsList;
     }
 
     private static List<Action> getActions(short version, BigInteger datapathid, Flow flow) {
-
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
+        Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> sortedInstructions =
                 INSTRUCTION_ORDERING.sortedCopy(instructions.getInstruction());
 
@@ -393,20 +307,18 @@ public class FlowConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
 
-            if (curInstruction instanceof ApplyActionsCase) {
-                ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
+            if (curInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase applyActionscase = (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) curInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
+
                 final ActionConvertorData data = new ActionConvertorData(version);
                 data.setDatapathId(datapathid);
-
-                if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
-                    data.setIpProtocol(flow.getMatch().getIpMatch().getIpProtocol());
-                }
-
-                java.util.Optional<List<Action>> result = ConvertorManager.getInstance().convert(applyActions.getAction(), data);
+                data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
+                Optional<List<Action>> result = ConvertorManager.getInstance().convert(applyActions.getAction(), data);
                 return result.orElse(new ArrayList<>());
             }
         }
+
         return null;
     }
 
@@ -420,8 +332,8 @@ public class FlowConvertor {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction =
                         instruction.getInstruction();
 
-                if (curInstruction instanceof ApplyActionsCase) {
-                    ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
+                if (curInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) {
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase applyActionscase = (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) curInstruction;
                     ApplyActions applyActions = applyActionscase.getApplyActions();
                     for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action :
                             applyActions.getAction()) {
@@ -489,13 +401,13 @@ public class FlowConvertor {
 
     private static Optional<? extends Flow> injectMatchToFlow(Flow sourceFlow, Match match) {
         if (sourceFlow instanceof AddFlowInput) {
-            return Optional.<AddFlowInput>of(new AddFlowInputBuilder(sourceFlow).setMatch(match).build());
+            return Optional.of(new AddFlowInputBuilder(sourceFlow).setMatch(match).build());
         } else if (sourceFlow instanceof RemoveFlowInput) {
-            return Optional.<RemoveFlowInput>of(new RemoveFlowInputBuilder(sourceFlow).setMatch(match).build());
+            return Optional.of(new RemoveFlowInputBuilder(sourceFlow).setMatch(match).build());
         } else if (sourceFlow instanceof UpdatedFlow) {
-            return Optional.<UpdatedFlow>of(new UpdatedFlowBuilder(sourceFlow).setMatch(match).build());
+            return Optional.of(new UpdatedFlowBuilder(sourceFlow).setMatch(match).build());
         } else {
-            return Optional.<Flow>absent();
+            return Optional.empty();
         }
     }
 
@@ -506,16 +418,16 @@ public class FlowConvertor {
                 .build();
 
         if (sourceFlow instanceof AddFlowInput) {
-            return Optional.<AddFlowInput>of(new AddFlowInputBuilder(sourceFlow)
+            return Optional.of(new AddFlowInputBuilder(sourceFlow)
                     .setMatch(match).setInstructions(instructions).build());
         } else if (sourceFlow instanceof RemoveFlowInput) {
-            return Optional.<RemoveFlowInput>of(new RemoveFlowInputBuilder(sourceFlow)
+            return Optional.of(new RemoveFlowInputBuilder(sourceFlow)
                     .setMatch(match).setInstructions(instructions).build());
         } else if (sourceFlow instanceof UpdatedFlow) {
-            return Optional.<UpdatedFlow>of(new UpdatedFlowBuilder(sourceFlow)
+            return Optional.of(new UpdatedFlowBuilder(sourceFlow)
                     .setMatch(match).setInstructions(instructions).build());
         } else {
-            return Optional.<Flow>absent();
+            return Optional.empty();
         }
     }
 
@@ -531,22 +443,19 @@ public class FlowConvertor {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder instructionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
 
-        for (int i = 0; i < srcInstructionList.size(); i++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction =
-                    srcInstructionList.get(i);
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction : srcInstructionList) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curSrcInstruction =
                     srcInstruction.getInstruction();
 
-            if (curSrcInstruction instanceof ApplyActionsCase) {
-                ApplyActionsCase applyActionscase = (ApplyActionsCase) curSrcInstruction;
+            if (curSrcInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase applyActionscase = (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase) curSrcInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
                 List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> srcActionList = applyActions.getAction();
 
                 int offset = 0;
-                for (int j = 0; j < srcActionList.size(); j++) {
+                for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action actionItem : srcActionList) {
                     // check if its a set-vlan-action. If yes, then add the injected-action
 
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action actionItem = srcActionList.get(j);
                     if (actionItem.getAction() instanceof SetVlanIdActionCase) {
                         SetVlanIdActionCase setVlanIdActionCase = (SetVlanIdActionCase) actionItem.getAction();
 
@@ -560,7 +469,7 @@ public class FlowConvertor {
                         pushVlanActionCaseBuilder.setPushVlanAction(pushVlanActionBuilder.build());
                         PushVlanActionCase injectedAction = pushVlanActionCaseBuilder.build();
 
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder actionBuilder = new ActionBuilder();
+                        ActionBuilder actionBuilder = new ActionBuilder();
                         actionBuilder.setAction(injectedAction)
                                 .setKey(actionItem.getKey())
                                 .setOrder(actionItem.getOrder() + offset);
@@ -571,8 +480,8 @@ public class FlowConvertor {
 
                     if (offset > 0) {
                         // we need to increment the order for all the actions added after injection
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder actionBuilder =
-                                new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder(actionItem);
+                        ActionBuilder actionBuilder =
+                                new ActionBuilder(actionItem);
                         actionBuilder.setOrder(actionItem.getOrder() + offset);
                         actionItem = actionBuilder.build();
                     }
@@ -600,4 +509,17 @@ public class FlowConvertor {
         return targetInstructionList;
     }
 
+    @Override
+    public Class<?> getType() {
+        return Flow.class;
+    }
+
+    @Override
+    public List<FlowModInputBuilder> convert(Flow source, VersionDatapathIdConvertorData data) {
+        if (data.getVersion() >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(source)) {
+            return handleSetVlanIdForOF13(source, data.getVersion(), data.getDatapathId());
+        } else {
+            return Collections.singletonList(toFlowModInput(source, data.getVersion(), data.getDatapathId()));
+        }
+    }
 }
