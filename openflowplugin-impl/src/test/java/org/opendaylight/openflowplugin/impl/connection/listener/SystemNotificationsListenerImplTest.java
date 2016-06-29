@@ -11,6 +11,10 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +23,10 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
@@ -39,17 +45,20 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class SystemNotificationsListenerImplTest {
 
-    public static final int SAFE_TIMEOUT = 1000;
+    private static final int SAFE_TIMEOUT = 1000;
     private final static int ECHO_REPLY_TIMEOUT = 2000;
+
     @Mock
-    private org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter connectionAdapter;
+    private ConnectionAdapter connectionAdapter;
     @Mock
     private FeaturesReply features;
-    private ConnectionContext connectionContext;
 
-    private SystemNotificationsListenerImpl systemNotificationsListener;
+    private ConnectionContext connectionContext;
     private ConnectionContextImpl connectionContextGolem;
-    private static final NodeId nodeId = new NodeId("OFP:TEST");
+    private SystemNotificationsListenerImpl systemNotificationsListener;
+
+    private static final NodeId nodeId =
+            new NodeId("OFP:TEST");
 
     @Before
     public void setUp() {
@@ -66,7 +75,9 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
-        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT);
+        systemNotificationsListener =
+                new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT);
+
     }
 
     @After
@@ -159,7 +170,8 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnSwitchIdleEvent1() throws Exception {
-        final SettableFuture<RpcResult<EchoOutput>> echoReply = SettableFuture.create();
+        final Future<RpcResult<EchoOutput>> echoReply = Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().build()).build());
+
         Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
 
         SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
@@ -167,8 +179,6 @@ public class SystemNotificationsListenerImplTest {
 
         // make sure that the idle notification processing thread started
         Thread.sleep(SAFE_TIMEOUT);
-        EchoOutput echoReplyVal = new EchoOutputBuilder().build();
-        echoReply.set(RpcResultBuilder.success(echoReplyVal).build());
 
         verifyCommonInvocations();
         Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
