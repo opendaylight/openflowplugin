@@ -22,6 +22,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
@@ -43,17 +44,23 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class SystemNotificationsListenerImplTest {
 
-    public static final int SAFE_TIMEOUT = 1000;
+    private static final int SAFE_TIMEOUT = 2000;
     private final static int ECHO_REPLY_TIMEOUT = 2000;
+
     @Mock
-    private org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter connectionAdapter;
+    private ConnectionAdapter connectionAdapter;
     @Mock
     private FeaturesReply features;
-    private ConnectionContext connectionContext;
 
-    private SystemNotificationsListenerImpl systemNotificationsListener;
+    private ConnectionContext connectionContext;
     private ConnectionContextImpl connectionContextGolem;
-    private static final NodeId nodeId = new NodeId("OFP:TEST");
+    private SystemNotificationsListenerImpl systemNotificationsListener;
+
+    private static final NodeId nodeId =
+            new NodeId("OFP:TEST");
+
+    private final ThreadPoolLoggingExecutor threadPool =
+            new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), "opfpool");
 
     @Before
     public void setUp() {
@@ -70,11 +77,9 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
-        final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), "opfpool");
+        systemNotificationsListener =
+                new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT, threadPool);
 
-        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT, threadPool);
     }
 
     @After
