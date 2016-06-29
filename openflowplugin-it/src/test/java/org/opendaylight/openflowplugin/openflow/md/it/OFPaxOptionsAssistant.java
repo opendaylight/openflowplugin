@@ -54,10 +54,7 @@ public abstract class OFPaxOptionsAssistant {
         if (System.getProperty(INSPECT_OSGI) != null) {
             option
             .add(CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address="+DEBUG_PORT))
-            .add(CoreOptions.mavenBundle("equinoxSDK381", "org.eclipse.equinox.console").versionAsInProject())
-            .add(CoreOptions.mavenBundle("equinoxSDK381", "org.apache.felix.gogo.shell").versionAsInProject())
-            .add(CoreOptions.mavenBundle("equinoxSDK381", "org.apache.felix.gogo.runtime").versionAsInProject())
-            .add(CoreOptions.mavenBundle("equinoxSDK381", "org.apache.felix.gogo.command").versionAsInProject());
+            .add(CoreOptions.mavenBundle("equinoxSDK381", "org.eclipse.equinox.console").versionAsInProject()));
         }
 
         return option;
