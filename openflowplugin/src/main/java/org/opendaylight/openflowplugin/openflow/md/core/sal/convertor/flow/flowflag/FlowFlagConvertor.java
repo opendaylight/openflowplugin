@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6,17 +6,22 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 
 /**
  * converting from MD-SAL match model into appropriate OF-API match model
- * @param <E>  type of converted match
+ *
+ * @param <E> type of converted match
  */
 public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E> {
-    
+
+    default Class<?> getType() {
+        return FlowModFlags.class;
+    }
+
     /**
      * @param source flow mode flags
      * @return converted match (into OF-API model)
