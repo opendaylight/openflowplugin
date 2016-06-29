@@ -89,22 +89,22 @@ public class ConntrackConvertorTest {
 
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getZoneSrc().longValue());
-        Assert.assertEquals((short) 1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getRecircTable().shortValue());
+        Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getFlags().intValue());
 
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getZoneSrc().longValue());
-        Assert.assertEquals((short) 1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getRecircTable().shortValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getFlags().intValue());
 
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getZoneSrc().longValue());
-        Assert.assertEquals((short) 1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getRecircTable().shortValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getFlags().intValue());
 
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getZoneSrc().longValue());
-        Assert.assertEquals((short) 1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getRecircTable().shortValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getFlags().intValue());
 
     }
