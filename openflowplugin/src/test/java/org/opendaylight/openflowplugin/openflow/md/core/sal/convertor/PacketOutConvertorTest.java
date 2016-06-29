@@ -20,6 +20,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -86,13 +87,12 @@ public class PacketOutConvertorTest {
 
         Short version = (short) 0x04;
         Long xid = null;
-        PacketOutInput message = PacketOutConvertor.toPacketOutInput(
-                transmitPacketInput, version, null, null);
+        PacketOutConvertorData data = new PacketOutConvertorData(version);
+        PacketOutInput message = convert(transmitPacketInput, data);
 
         //FIXME : this has to be fixed along with actions changed in openflowjava
 
-        Assert.assertEquals(PacketOutConvertorTest.buildActionForNullTransmitPacketInputAction(nodeConnKey,
-                version), message.getAction());
+        Assert.assertEquals(buildActionForNullTransmitPacketInputAction(nodeConnKey, version), message.getAction());
 
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
         Assert.assertEquals(new PortNumber(0xfffffffdL), message.getInPort());
@@ -166,8 +166,10 @@ public class PacketOutConvertorTest {
 
         OpenflowPortsUtil.init();
 
-        PacketOutInput message = PacketOutConvertor.toPacketOutInput(
-                transmitPacketInput, version, xid, datapathId);
+        PacketOutConvertorData data = new PacketOutConvertorData(version);
+        data.setXid(xid);
+        data.setDatapathId(datapathId);
+        PacketOutInput message = convert(transmitPacketInput, data);
 
         Assert.assertEquals(transmitPacketInput.getBufferId(),
                 message.getBufferId());
@@ -176,6 +178,7 @@ public class PacketOutConvertorTest {
         Assert.assertEquals((Object) version,
                 Short.valueOf(message.getVersion()));
         Assert.assertEquals(xid, message.getXid());
+
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
         actionConvertorData.setDatapathId(datapathId);
 
@@ -276,5 +279,10 @@ public class PacketOutConvertorTest {
                 .<Nodes>builder(Nodes.class)
                 .<Node, NodeKey>child(Node.class, key).build();
         return new NodeRef(path);
+    }
+
+    private PacketOutInput convert(TransmitPacketInput transmitPacketInput, PacketOutConvertorData data) {
+        Optional<PacketOutInput> messageOptional = ConvertorManager.getInstance().convert(transmitPacketInput, data);
+        return messageOptional.orElse(PacketOutConvertor.defaultResult(data.getVersion()));
     }
 }
