@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
@@ -109,18 +110,17 @@ public class SinglePurposeMultipartReplyTranslator {
     protected static final Logger logger = LoggerFactory
             .getLogger(SinglePurposeMultipartReplyTranslator.class);
 
-    private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
-
     public List<DataObject> translate(final BigInteger datapathId, final short version, final OfHeader msg) {
 
         List<DataObject> listDataObject = new ArrayList<>();
-
+        VersionDatapathIdConvertorData groupFlowConvertorData = new VersionDatapathIdConvertorData(version);
+        groupFlowConvertorData.setDatapathId(datapathId);
+        VersionConvertorData simpleConvertorData = new VersionConvertorData(version);
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
 
         if (msg instanceof MultipartReplyMessage) {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
             NodeId node = SinglePurposeMultipartReplyTranslator.nodeIdFromDatapathId(datapathId);
-            VersionConvertorData simpleConvertorData = new VersionConvertorData(version);
 
             switch (mpReply.getType()) {
                 case OFPMPFLOW: {
@@ -130,8 +130,10 @@ public class SinglePurposeMultipartReplyTranslator {
                     message.setTransactionId(generateTransactionId(mpReply.getXid()));
                     MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                     MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                    message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), datapathId, ofVersion));
+                    final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists =
+                            ConvertorManager.getInstance().convert(replyBody.getFlowStats(), groupFlowConvertorData);
 
+                    message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
