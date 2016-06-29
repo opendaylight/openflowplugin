@@ -8,21 +8,21 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import com.google.common.base.Optional;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -219,8 +219,11 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
         LOG.debug("TransmitPacket - {}", input);
         // Convert TransmitPacket to PacketOutInput
-        PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, sessionContext.getNextXid(),
-                sessionContext.getFeatures().getDatapathId());
+        final PacketOutConvertorData data = new PacketOutConvertorData(version);
+        data.setDatapathId(sessionContext.getFeatures().getDatapathId());
+        data.setXid(sessionContext.getNextXid());
+
+        final java.util.Optional<PacketOutInput> message = ConvertorManager.getInstance().convert(input, data);
 
         SwitchConnectionDistinguisher cookie = null;
         ConnectionCookie connectionCookie = input.getConnectionCookie();
@@ -229,7 +232,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         }
 
         LOG.debug("Calling the transmitPacket RPC method");
-        return messageService.packetOut(message, cookie);
+        return messageService.packetOut(message
+                .orElse(PacketOutConvertor.defaultResult(version)), cookie);
     }
 
     @Override
