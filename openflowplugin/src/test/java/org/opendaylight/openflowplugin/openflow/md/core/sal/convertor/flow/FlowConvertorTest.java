@@ -6,24 +6,37 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -38,7 +51,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
@@ -47,6 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * @author michal.polkorab
@@ -55,7 +76,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class FlowConvertorTest {
 
     /**
-     * Tests {@link FlowConvertor#toFlowModInputs(Flow, short, BigInteger)}
+     * Tests {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void test() {
@@ -75,8 +96,10 @@ public class FlowConvertorTest {
         flowBuilder.setMatch(null);
         RemoveFlowInput flow = flowBuilder.build();
 
-        List<FlowModInputBuilder> flowMod = FlowConvertor
-                .toFlowModInputs(flow, EncodeConstants.OF13_VERSION_ID, new BigInteger("42"));
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setDatapathId(new BigInteger("42"));
+
+        List<FlowModInputBuilder> flowMod = convert(flow, data);
 
         Assert.assertEquals("Wrong version", 4, flowMod.get(0).getVersion().intValue());
         Assert.assertEquals("Wrong cookie", 4, flowMod.get(0).getCookie().intValue());
@@ -96,7 +119,7 @@ public class FlowConvertorTest {
     }
 
     /**
-     * Tests {@link FlowConvertor#toFlowModInputs(Flow, short, BigInteger)}
+     * Tests {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testOnlyModifyStrictCommand() {
@@ -104,15 +127,17 @@ public class FlowConvertorTest {
         flowBuilder.setStrict(true);
         UpdatedFlow flow = flowBuilder.build();
 
-        List<FlowModInputBuilder> flowMod = FlowConvertor
-                .toFlowModInputs(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42"));
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        data.setDatapathId(new BigInteger("42"));
+
+        List<FlowModInputBuilder> flowMod = convert(flow, data);
 
         Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
         Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
     }
 
     /**
-     * Tests {@link FlowConvertor#toFlowModInputs(Flow, short, BigInteger)}
+     * Tests {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testInstructionsTranslation() {
@@ -175,8 +200,9 @@ public class FlowConvertorTest {
         flowBuilder.setInstructions(instructionsBuilder.build());
         AddFlowInput flow = flowBuilder.build();
 
-        List<FlowModInputBuilder> flowMod = FlowConvertor
-                .toFlowModInputs(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42"));
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        data.setDatapathId(new BigInteger("42"));
+        List<FlowModInputBuilder> flowMod = convert(flow, data);
 
         Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
         Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
@@ -214,5 +240,188 @@ public class FlowConvertorTest {
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.MeterCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         MeterCase meterCase = (MeterCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong meter id", 5, meterCase.getMeter().getMeterId().intValue());
+    }
+
+    @Test
+    public void testCloneAndAugmentFlowWithSetVlanId() {
+        MockFlow mockFlow = new MockFlow();
+        Action action1 = createAction(
+                new SetVlanIdActionCaseBuilder().setSetVlanIdAction(
+                        new SetVlanIdActionBuilder().setVlanId(new VlanId(10)).build())
+                        .build(),
+                0);
+
+        mockFlow.setMatch(new MatchBuilder().setEthernetMatch(createEthernetMatch()).build());
+        mockFlow.setInstructions(toApplyInstruction(Collections.singletonList(action1)));
+
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setDatapathId(BigInteger.ONE);
+
+        List<FlowModInputBuilder> flowModInputBuilders = convert(mockFlow, data);
+
+        Assert.assertEquals(2, flowModInputBuilders.size());
+
+    }
+
+    private List<FlowModInputBuilder> convert(Flow flow, VersionDatapathIdConvertorData data) {
+        Optional<List<FlowModInputBuilder>> flowModOptional = ConvertorManager.getInstance().convert(flow, data);
+        Assert.assertTrue("Flow convertor not found", flowModOptional.isPresent());
+        return flowModOptional.get();
+    }
+
+    private static Action createAction(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase,
+                                       final int order) {
+        Action action = new ActionBuilder().setOrder(order).setAction(actionCase).build();
+        return action;
+    }
+
+    private static EthernetMatch createEthernetMatch() {
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
+        ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType(33024L)).build());
+        return ethernetMatchBuilder.build();
+    }
+
+    private static Instructions toApplyInstruction(
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions) {
+        return new InstructionsBuilder()
+                .setInstruction(
+                        Collections.singletonList(
+                                new InstructionBuilder()
+                                        .setOrder(0)
+                                        .setInstruction(
+                                                new ApplyActionsCaseBuilder()
+                                                        .setApplyActions((new ApplyActionsBuilder()).setAction(actions).build())
+                                                        .build()
+                                        ).build())
+                ).build();
+    }
+
+    private static class MockFlow implements AddFlowInput {
+        private Instructions instructions;
+        private Match match;
+
+        public void setInstructions(final Instructions instructions) {
+            this.instructions = instructions;
+        }
+
+        public void setMatch(final Match match) {
+            this.match = match;
+        }
+
+
+        @Override
+        public FlowRef getFlowRef() {
+            return null;
+        }
+
+        @Override
+        public <E extends Augmentation<AddFlowInput>> E getAugmentation(final Class<E> augmentationType) {
+            return null;
+        }
+
+        @Override
+        public FlowTableRef getFlowTable() {
+            return null;
+        }
+
+        @Override
+        public Match getMatch() {
+            return match;
+        }
+
+        @Override
+        public Instructions getInstructions() {
+            return instructions;
+        }
+
+        @Override
+        public String getContainerName() {
+            return null;
+        }
+
+        @Override
+        public FlowCookie getCookieMask() {
+            return null;
+        }
+
+        @Override
+        public Long getBufferId() {
+            return null;
+        }
+
+        @Override
+        public BigInteger getOutPort() {
+            return null;
+        }
+
+        @Override
+        public Long getOutGroup() {
+            return null;
+        }
+
+        @Override
+        public org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags getFlags() {
+            return null;
+        }
+
+        @Override
+        public String getFlowName() {
+            return null;
+        }
+
+        @Override
+        public Boolean isInstallHw() {
+            return null;
+        }
+
+        @Override
+        public Boolean isBarrier() {
+            return null;
+        }
+
+        @Override
+        public Boolean isStrict() {
+            return null;
+        }
+
+        @Override
+        public Integer getPriority() {
+            return null;
+        }
+
+        @Override
+        public Integer getIdleTimeout() {
+            return null;
+        }
+
+        @Override
+        public Integer getHardTimeout() {
+            return null;
+        }
+
+        @Override
+        public FlowCookie getCookie() {
+            return null;
+        }
+
+        @Override
+        public Short getTableId() {
+            return null;
+        }
+
+        @Override
+        public NodeRef getNode() {
+            return null;
+        }
+
+        @Override
+        public Uri getTransactionUri() {
+            return null;
+        }
+
+        @Override
+        public Class<? extends DataContainer> getImplementedInterface() {
+            return null;
+        }
     }
 }

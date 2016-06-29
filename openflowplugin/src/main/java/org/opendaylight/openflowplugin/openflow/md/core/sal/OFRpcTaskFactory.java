@@ -29,7 +29,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
@@ -219,12 +218,16 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 // Convert the AddFlowInput to FlowModInput
-                List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
-                        getVersion(), getSession().getFeatures().getDatapathId());
-                LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
-                result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
+                final java.util.Optional<List<FlowModInputBuilder>> ofFlowModInputs =
+                        ConvertorManager.getInstance().convert(getInput(), data);
+
+                final List<FlowModInputBuilder> flowModInputs = ofFlowModInputs.orElse(Collections.emptyList());
+                LOG.debug("Number of flows to push to switch: {}", flowModInputs.size());
+                result = chainFlowMods(flowModInputs, 0, getTaskContext(), getCookie());
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
@@ -351,23 +354,27 @@ public abstract class OFRpcTaskFactory {
                 Short version = getVersion();
 
                 List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
-                List<FlowModInputBuilder> ofFlowModInputs;
+                java.util.Optional<List<FlowModInputBuilder>> ofFlowModInputs;
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
                     // We would need to remove original and add updated.
 
                     //remove flow
                     RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
-                    List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                            version, getSession().getFeatures().getDatapathId());
-                    // remove flow should be the first
-                    allFlowMods.addAll(ofFlowRemoveInput);
+                    java.util.Optional<List<FlowModInputBuilder>> ofFlowRemoveInput =
+                            ConvertorManager.getInstance().convert(removeflow.build(), data);
+
+                    if (ofFlowRemoveInput.isPresent()) {
+                        // remove flow should be the first
+                        allFlowMods.addAll(ofFlowRemoveInput.get());
+                    }
+
                     AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
-                    ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
-                            version, getSession().getFeatures().getDatapathId());
+                    ofFlowModInputs = ConvertorManager.getInstance().convert(addFlowInputBuilder.build(), data);
                 } else {
-                    ofFlowModInputs = FlowConvertor.toFlowModInputs(updated,
-                            version, getSession().getFeatures().getDatapathId());
+                    ofFlowModInputs = ConvertorManager.getInstance().convert(updated, data);
                 }
 
                 //deleting flow hash value from operational DS
@@ -403,7 +410,10 @@ public abstract class OFRpcTaskFactory {
 
                 }
 
-                allFlowMods.addAll(ofFlowModInputs);
+                if (ofFlowModInputs.isPresent()) {
+                    allFlowMods.addAll(ofFlowModInputs.get());
+                }
+
                 LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
                 result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
 
@@ -726,12 +736,14 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
+                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+                data.setDatapathId(getSession().getFeatures().getDatapathId());
 
                 // Convert the AddFlowInput to FlowModInput
-                List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
-                        getVersion(), getSession().getFeatures().getDatapathId());
+                final java.util.Optional<List<FlowModInputBuilder>> ofFlowModInputs =
+                        ConvertorManager.getInstance().convert(getInput(), data);
 
-                result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
+                result = chainFlowMods(ofFlowModInputs.orElse(Collections.emptyList()), 0, getTaskContext(), getCookie());
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
 
                 OFRpcTaskUtil.hookFutureNotification(this, result,

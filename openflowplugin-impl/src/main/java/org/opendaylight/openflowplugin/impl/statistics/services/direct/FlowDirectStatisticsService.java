@@ -10,13 +10,15 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
@@ -47,8 +49,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Flow direct statistics service.
  */
 public class FlowDirectStatisticsService extends AbstractDirectStatisticsService<GetFlowStatisticsInput, GetFlowStatisticsOutput> {
-    private final FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
-
     /**
      * Instantiates a new Flow direct statistics service.
      *
@@ -103,22 +103,26 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
     @Override
     protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
+        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
 
         if (success) {
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
+                final Optional<List<FlowAndStatisticsMapList>> statsListPart = ConvertorManager.getInstance().convert(
+                        replyBody.getFlowStats(), data);
 
-                final List<FlowAndStatisticsMapList> statsListPart = flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), getDatapathId(), getOfVersion());
+                if (statsListPart.isPresent()) {
+                    for (final FlowAndStatisticsMapList part : statsListPart.get()) {
+                        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId flowId =
+                                new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId(generateFlowId(part).getValue());
 
-                for (final FlowAndStatisticsMapList part : statsListPart) {
-                    final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId flowId =
-                            new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId(generateFlowId(part).getValue());
-
-                    statsList.add(new FlowAndStatisticsMapListBuilder(part)
-                            .setKey(new FlowAndStatisticsMapListKey(flowId))
-                            .setFlowId(flowId)
-                            .build());
+                        statsList.add(new FlowAndStatisticsMapListBuilder(part)
+                                .setKey(new FlowAndStatisticsMapListKey(flowId))
+                                .setFlowId(flowId)
+                                .build());
+                    }
                 }
             }
         }

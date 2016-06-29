@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
@@ -499,10 +500,7 @@ public class ActionConvertorV13Test {
 
         ActionConvertorData data = new ActionConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(new BigInteger("42"));
-
-        if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
-            data.setIpProtocol(flow.getMatch().getIpMatch().getIpProtocol());
-        }
+        data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
         Optional<List<Action>> actionsOptional = ConvertorManager.getInstance().convert(salActions, data);
         List<Action> actions = actionsOptional.orElse(Collections.emptyList());

@@ -12,12 +12,15 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -39,7 +42,11 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
     }
 
     List<FlowModInputBuilder> toFlowModInputs(final Flow input) {
-        return FlowConvertor.toFlowModInputs(input, getVersion(), getDatapathId());
+        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
+
+        final Optional<List<FlowModInputBuilder>> flowModInputBuilders = ConvertorManager.getInstance().convert(input, data);
+        return flowModInputBuilders.orElse(Collections.emptyList());
     }
 
     ListenableFuture<RpcResult<O>> processFlowModInputBuilders(final List<FlowModInputBuilder> ofFlowModInputs) {

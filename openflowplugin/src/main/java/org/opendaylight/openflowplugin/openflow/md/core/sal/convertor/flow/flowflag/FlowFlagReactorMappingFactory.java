@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6,10 +6,9 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
 
 import java.util.Map;
-
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
@@ -20,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * add prepared convertors and injectors into given mappings
+ *
  * @see FlowFlagReactor
  */
 public class FlowFlagReactorMappingFactory {
@@ -39,22 +39,22 @@ public class FlowFlagReactorMappingFactory {
         // OF-1.3|FlowModFlags --> FlowModInputBuilder
         injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlags, FlowModInputBuilder>() {
-            @Override
-            public void inject(final FlowModFlags value,
-                    final FlowModInputBuilder target) {
-                target.setFlags(value);
-            }
-        });
+                    @Override
+                    public void inject(final FlowModFlags value,
+                                       final FlowModInputBuilder target) {
+                        target.setFlags(value);
+                    }
+                });
 
         // OF-1.3|FlowModFlagsV10 --> FlowModInputBuilder
         injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlagsV10, FlowModInputBuilder>() {
-            @Override
-            public void inject(final FlowModFlagsV10 value,
-                    final FlowModInputBuilder target) {
-                target.setFlagsV10(value);
-            }
-        });
+                    @Override
+                    public void inject(final FlowModFlagsV10 value,
+                                       final FlowModInputBuilder target) {
+                        target.setFlagsV10(value);
+                    }
+                });
 
     }
 
