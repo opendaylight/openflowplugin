@@ -158,21 +158,6 @@
           <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>equinoxSDK381</groupId>
-          <artifactId>org.apache.felix.gogo.command</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>equinoxSDK381</groupId>
-          <artifactId>org.apache.felix.gogo.runtime</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>equinoxSDK381</groupId>
-          <artifactId>org.apache.felix.gogo.shell</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>logback-config</artifactId>
           <scope>test</scope>
