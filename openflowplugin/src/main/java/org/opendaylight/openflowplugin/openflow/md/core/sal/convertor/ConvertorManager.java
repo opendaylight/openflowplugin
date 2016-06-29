@@ -20,6 +20,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.Act
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowInstructionResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor;
 import org.slf4j.Logger;
@@ -50,6 +53,9 @@ public class ConvertorManager {
         INSTANCE.registerConvertor(new GroupDescStatsResponseConvertor());
         INSTANCE.registerConvertor(new GroupStatsResponseConvertor());
         INSTANCE.registerConvertor(new PacketOutConvertor());
+        INSTANCE.registerConvertor(new FlowConvertor());
+        INSTANCE.registerConvertor(new FlowInstructionResponseConvertor());
+        INSTANCE.registerConvertor(new FlowStatsResponseConvertor());
     }
 
     // Actual convertor keys
