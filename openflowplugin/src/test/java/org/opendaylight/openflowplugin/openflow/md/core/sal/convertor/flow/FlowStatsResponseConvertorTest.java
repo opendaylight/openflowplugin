@@ -6,17 +6,20 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
@@ -38,12 +41,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/18/14.
  */
-public class OFToMDSalFlowConvertorTest {
+public class FlowStatsResponseConvertorTest {
 
     private static final int PRESET_COUNT = 7;
 
     /**
-     * Test method for {@link OFToMDSalFlowConvertor#wrapOF10ActionsToInstruction(java.util.List, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test method for {@link FlowStatsResponseConvertor#wrapOF10ActionsToInstruction(java.util.List, short)} }
      */
     @Test
     public void testWrapOF10ActionsToInstruction() {
@@ -52,12 +55,12 @@ public class OFToMDSalFlowConvertorTest {
         for (int j = 0; j < PRESET_COUNT; j++) {
             actions.add(actionBuilder.build());
         }
-        Instructions instructions = OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(actions, OpenflowVersion.OF13);
+        Instructions instructions = FlowStatsResponseConvertor.wrapOF10ActionsToInstruction(actions, OFConstants.OFP_VERSION_1_3);
         assertNotNull(instructions);
     }
 
     /**
-     * Test method for {@link OFToMDSalFlowConvertor#toSALInstruction(java.util.List, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     * Test method for {@link FlowInstructionResponseConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData)} }
      */
     @Test
     public void testToSALInstruction() {
@@ -77,7 +80,10 @@ public class OFToMDSalFlowConvertorTest {
             instructionsList.add(instructionBuilder.build());
         }
 
-        Instructions instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        Instructions instructions;
+        VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
+
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
@@ -91,7 +97,7 @@ public class OFToMDSalFlowConvertorTest {
             instructionsList.add(instructionBuilder.build());
         }
 
-        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
@@ -99,13 +105,13 @@ public class OFToMDSalFlowConvertorTest {
         for (int i = 0; i < PRESET_COUNT; i++) {
             MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
             MeterBuilder meterBuilder = new MeterBuilder();
-            meterBuilder.setMeterId(Long.valueOf(i));
+            meterBuilder.setMeterId((long) i);
             meterCaseBuilder.setMeter(meterBuilder.build());
             instructionBuilder.setInstructionChoice(meterCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
-        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
@@ -125,7 +131,7 @@ public class OFToMDSalFlowConvertorTest {
             instructionsList.add(instructionBuilder.build());
         }
 
-        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
@@ -136,7 +142,7 @@ public class OFToMDSalFlowConvertorTest {
             instructionsList.add(instructionBuilder.build());
         }
 
-        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         int instructionSize = instructions.getInstruction().size();
         assertEquals(PRESET_COUNT, instructionSize);
@@ -153,9 +159,15 @@ public class OFToMDSalFlowConvertorTest {
             instructionsList.add(instructionBuilder.build());
         }
 
-        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        instructions = convert(instructionsList, data);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
+    }
+
+    private Instructions convert(List<Instruction> instructionsList, VersionConvertorData data) {
+        Optional<Instructions> instructionsOptional = ConvertorManager.getInstance().convert(instructionsList, data);
+        assertTrue("Flow instruction response convertor not found", instructionsOptional.isPresent());
+        return instructionsOptional.get();
     }
 
     private static final class MockActionBase extends ActionBase {
