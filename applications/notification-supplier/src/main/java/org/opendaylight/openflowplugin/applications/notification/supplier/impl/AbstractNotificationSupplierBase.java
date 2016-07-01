@@ -10,7 +10,8 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierDefinition;
@@ -35,7 +36,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
         NotificationSupplierDefinition<O> {
 
     protected final Class<O> clazz;
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
 
     /**
      * Default constructor for all Notification Supplier implementation
@@ -45,8 +46,9 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      */
     public AbstractNotificationSupplierBase(final DataBroker db, final Class<O> clazz) {
         Preconditions.checkArgument(db != null, "DataBroker can not be null!");
-        listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, getWildCardPath(), this,
-                DataChangeScope.BASE);
+        //TODO retries
+        listenerRegistration = db.registerDataTreeChangeListener( new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                getWildCardPath()),this);
         this.clazz = clazz;
     }
 

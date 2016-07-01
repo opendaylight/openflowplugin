@@ -14,20 +14,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
+import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
@@ -42,7 +49,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class NodeNotificationSupplierImplTest {
 
-    private static final String FLOW_NODE_ID = "test-111";
+    private static final String FLOW_NODE_ID = "openflow:111";
     private NodeNotificationSupplierImpl notifSupplierImpl;
     private NotificationProviderService notifProviderService;
     private DataBroker dataBroker;
@@ -55,19 +62,19 @@ public class NodeNotificationSupplierImplTest {
         TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullChangeEvent() {
-        notifSupplierImpl.onDataChanged(null);
+        notifSupplierImpl.onDataTreeChanged(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createEmptyTestDataEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -81,9 +88,11 @@ public class NodeNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
-        createdData.put(createTestFlowCapableNodePath(), createTestFlowCapableNode());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(createdData, null, null));
+        final TestData testData = new TestData(createTestFlowCapableNodePath(),null,
+                createTestFlowCapableNode(), DataObjectModification.ModificationType.WRITE);
+        Collection<DataTreeModification<FlowCapableNode>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(NodeUpdated.class));
     }
 
@@ -106,9 +115,11 @@ public class NodeNotificationSupplierImplTest {
 
     @Test
     public void testDeleteChangeEvent() {
-        final Set<InstanceIdentifier<?>> removeData = new HashSet<>();
-        removeData.add(createTestFlowCapableNodePath());
-        notifSupplierImpl.onDataChanged(TestChangeEventBuildHelper.createTestDataEvent(null, null, removeData));
+        final TestData testData = new TestData(createTestFlowCapableNodePath(),
+                createTestFlowCapableNode(),null, DataObjectModification.ModificationType.DELETE);
+        Collection<DataTreeModification<FlowCapableNode>> collection = new ArrayList<>();
+        collection.add(testData);
+        notifSupplierImpl.onDataTreeChanged(collection);
         verify(notifProviderService, times(1)).publish(Matchers.any(NodeRemoved.class));
     }
 
