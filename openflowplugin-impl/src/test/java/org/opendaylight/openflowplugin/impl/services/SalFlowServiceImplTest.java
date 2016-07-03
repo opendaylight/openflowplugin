@@ -226,8 +226,7 @@ public class SalFlowServiceImplTest extends TestCase {
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
 
         if (itemLifecycleListener != null) {
-            Mockito.verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
-            Mockito.verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any());
+            Mockito.verify(itemLifecycleListener).onUpdated(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
         }
 
     }

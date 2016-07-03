@@ -33,4 +33,13 @@ public interface ItemLifecycleListener {
      * @param itemPath keyed path in DS
      */
     <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath);
+
+    /**
+     * react upon item updated event
+     *
+     * @param itemPath keyed path in DS
+     * @param itemBody item body
+     */
+
+    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody);
 }

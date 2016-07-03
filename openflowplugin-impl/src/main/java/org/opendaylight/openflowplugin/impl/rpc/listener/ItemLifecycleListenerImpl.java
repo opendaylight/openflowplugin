@@ -37,7 +37,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             deviceContext.submitTransaction();
         } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+            LOG.warn("Not able to write to transaction: {}", e);
         }
     }
 
@@ -47,7 +47,18 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             deviceContext.submitTransaction();
         } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+            LOG.warn("Not able to write to transaction: {}", e);
+        }
+    }
+
+    @Override
+    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
+        try {
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
+            deviceContext.submitTransaction();
+        } catch (Exception e) {
+            LOG.warn("Not able to write to transaction: {}", e);
         }
     }
 }
