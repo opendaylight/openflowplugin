@@ -197,18 +197,18 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 FlowRegistryKey updatedflowRegistryKey = FlowRegistryKeyFactory.create(updated);
                 final FlowRef flowRef = input.getFlowRef();
                 final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-                deviceFlowRegistry.markToBeremoved(flowRegistryKey);
 
-                if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
-                    if (flowDescriptor != null) {
+                if (flowRef == null) { //then this is equivalent to a delete
+                    deviceFlowRegistry.markToBeremoved(flowRegistryKey);
+
+                    if (itemLifecycleListener != null) {
+                        final FlowDescriptor flowDescriptor =
+                                deviceContext.getDeviceFlowRegistry().retrieveIdForFlow( flowRegistryKey);
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
                         itemLifecycleListener.onRemoved(flowPath);
                     }
-                }
-                //if provided, store flow id to flow registry
-                if (flowRef != null) {
+                } else { //this is either an add or an update
                     final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                     final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
                     deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
@@ -216,9 +216,19 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     if (itemLifecycleListener != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-                        final FlowBuilder flowBuilder = new FlowBuilder(input.getUpdatedFlow()).setId(flowDescriptor.getFlowId());
-                        itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
+                        final FlowBuilder flowBuilder = new FlowBuilder(
+                                                    input.getUpdatedFlow()).setId(flowDescriptor.getFlowId());
+
+                        boolean isUpdate = null !=
+                                            deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
+                        if (isUpdate) {
+                            itemLifecycleListener.onUpdated(flowPath, flowBuilder.build());
+                        } else {
+                            itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
+                        }
                     }
+
+
                 }
             }
 
