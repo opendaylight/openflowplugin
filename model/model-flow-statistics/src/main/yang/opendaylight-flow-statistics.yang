@@ -9,7 +9,7 @@ module opendaylight-flow-statistics {
     import opendaylight-table-types {prefix table-types;revision-date "2013-10-26";}
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import flow-capable-transaction {prefix tr;}
-    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
 
     description "Openflow statistics polling.";
 

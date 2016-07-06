@@ -18,9 +18,9 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCase;
@@ -402,7 +402,7 @@ public class ActionConvertorV13Test {
         SetTpSrcActionCaseBuilder tpSrcCaseBuilder = new SetTpSrcActionCaseBuilder();
         SetTpSrcActionBuilder tpSrcBuilder = new SetTpSrcActionBuilder();
         tpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
-                .rev100924.PortNumber(54));
+                .rev130715.PortNumber(54));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setAction(tpSrcCaseBuilder.build());
         actionBuilder.setOrder(6);
@@ -413,7 +413,7 @@ public class ActionConvertorV13Test {
         SetTpDstActionCaseBuilder tpDstCaseBuilder = new SetTpDstActionCaseBuilder();
         SetTpDstActionBuilder tpDstBuilder = new SetTpDstActionBuilder();
         tpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
-                .rev100924.PortNumber(45));
+                .rev130715.PortNumber(45));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setAction(tpDstCaseBuilder.build());
         actionBuilder.setOrder(7);
