@@ -116,11 +116,11 @@ public class FlatBatchGroupAdapters {
 
     /**
      * @param stepOffset offset of current batch plan step
-     * @return next chained result incorporating results of this step's batch
+     * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchGroupOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    createBatchGroupChainingFunction(final int stepOffset) {
+    convertBatchGroupResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
@@ -153,17 +153,17 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
-     * shortcut for {@link #createBatchGroupChainingFunction(int)} with conversion {@link ListenableFuture}
+     * shortcut for {@link #convertBatchGroupResult(int)} with conversion {@link ListenableFuture}
      *
      * @param <T>                     exact type of batch flow output
      * @param resultUpdateGroupFuture batch group rpc-result (add/remove/update)
      * @param currentOffset           offset of current batch plan step with respect to entire chain of steps
-     * @return next chained result incorporating results of this step's batch
+     * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchGroupOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    adaptGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
-                                  final int currentOffset) {
+    convertGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
+                                    final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateGroupFuture),
-                FlatBatchGroupAdapters.<T>createBatchGroupChainingFunction(currentOffset));
+                FlatBatchGroupAdapters.<T>convertBatchGroupResult(currentOffset));
     }
 }
