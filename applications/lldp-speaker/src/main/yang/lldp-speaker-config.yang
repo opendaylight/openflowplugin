@@ -3,7 +3,7 @@ module lldp-speaker-config {
     namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:lldp-speaker:config";
     prefix "lldp-speaker-config";
 
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
 
     description
         "Configuration for LLDP speaker application.";

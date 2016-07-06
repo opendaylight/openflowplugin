@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.MatchUtil;
 
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 
 public class MatchUtilTest {
 

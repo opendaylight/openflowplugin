@@ -13,7 +13,7 @@ import com.google.common.base.Splitter;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.UnsignedBytes;
 import java.util.Iterator;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import java.util.HashSet;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
