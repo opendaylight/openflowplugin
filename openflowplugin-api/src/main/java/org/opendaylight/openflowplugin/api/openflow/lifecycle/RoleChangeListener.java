@@ -26,10 +26,8 @@ public interface RoleChangeListener {
     /**
      * Notification when the role change on device is done
      * @param deviceInfo
-     * @param success
      * @param newRole
-     * @param initializationPhase
      */
-    void roleChangeOnDevice(final DeviceInfo deviceInfo, final boolean success, final OfpRole newRole, final boolean initializationPhase);
+    void roleChangeOnDevice(final DeviceInfo deviceInfo, final OfpRole newRole);
 
 }

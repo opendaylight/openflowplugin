@@ -270,13 +270,15 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             @Override
             public void onSuccess(@Nullable final RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
                 LOG.info("Role {} successfully set on device {}", role, roleContext.getDeviceInfo().getNodeId());
-                notifyListenersRoleChangeOnDevice(roleContext.getDeviceInfo(), true, role, init);
+                if (!init) {
+                    notifyListenersRoleChangeOnDevice(roleContext.getDeviceInfo(), role);
+                }
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Unable to set role {} on device {}", role, roleContext.getDeviceInfo().getNodeId());
-                notifyListenersRoleChangeOnDevice(roleContext.getDeviceInfo(), false, role, init);
+                conductor.closeConnection(roleContext.getDeviceInfo());
             }
         });
     }
@@ -400,15 +402,13 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
      * Notifies registered listener on role change. Role is the new role on device
      * If initialization phase is true, we may skip service starting
      * @param deviceInfo
-     * @param success true if role change on device done ok, false otherwise
      * @param role new role meant to be set on device
-     * @param initializationPhase if true, then skipp services start
      */
     @VisibleForTesting
-    void notifyListenersRoleChangeOnDevice(final DeviceInfo deviceInfo, final boolean success, final OfpRole role, final boolean initializationPhase){
+    void notifyListenersRoleChangeOnDevice(final DeviceInfo deviceInfo, final OfpRole role){
         LOG.debug("Notifying registered listeners for role change, no. of listeners {}", listeners.size());
         for (final RoleChangeListener listener : listeners) {
-            listener.roleChangeOnDevice(deviceInfo, success, role, initializationPhase);
+            listener.roleChangeOnDevice(deviceInfo, role);
         }
     }
 

@@ -277,15 +277,13 @@ public class RoleManagerImplTest {
             }
 
             @Override
-            public void roleChangeOnDevice(final DeviceInfo deviceInfo_, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+            public void roleChangeOnDevice(final DeviceInfo deviceInfo_, final OfpRole newRole) {
                 Assert.assertTrue(RoleManagerImplTest.this.deviceInfo.equals(deviceInfo_));
-                Assert.assertTrue(success);
-                Assert.assertFalse(initializationPhase);
                 Assert.assertTrue(newRole.equals(OfpRole.BECOMEMASTER));
             }
         }));
         roleManager.notifyListenersRoleInitializationDone(deviceInfo, true);
-        roleManager.notifyListenersRoleChangeOnDevice(deviceInfo, true, OfpRole.BECOMEMASTER, false);
+        roleManager.notifyListenersRoleChangeOnDevice(deviceInfo, OfpRole.BECOMEMASTER);
     }
 
     @Test

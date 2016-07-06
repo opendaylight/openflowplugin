@@ -161,35 +161,14 @@ public class LifecycleConductorImplTest {
     }
 
     /**
-     * When getDeviceContext returns null nothing should happen
+     * When getDeviceContext returns null raise exception
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void roleChangeOnDeviceTest1() {
         when(deviceManager.gainContext(deviceInfo)).thenReturn(null);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,ofpRole);
         verify(deviceContext,times(0)).shutdownConnection();
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
-        verify(deviceContext,times(0)).shutdownConnection();
-    }
-
-    /**
-     * When success flag is set to FALSE connection should be closed
-     */
-    @Test
-    public void roleChangeOnDeviceTest2() {
-        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,false,ofpRole,false);
-        verify(deviceContext,times(1)).shutdownConnection();
-    }
-
-    /**
-     * When success flag is set to TRUE and initializationPahse flag is set to TRUE starting
-     * device should be skipped
-     */
-    @Test
-    public void roleChangeOnDeviceTest3() {
-        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,ofpRole,true);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,ofpRole);
         verify(deviceContext,times(0)).shutdownConnection();
     }
 
@@ -204,7 +183,7 @@ public class LifecycleConductorImplTest {
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker));
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMEMASTER,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,OfpRole.BECOMEMASTER);
         verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
     }
 
@@ -220,7 +199,7 @@ public class LifecycleConductorImplTest {
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
 
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,true,OfpRole.BECOMESLAVE,false);
+        lifecycleConductor.roleChangeOnDevice(deviceInfo,OfpRole.BECOMESLAVE);
         verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }
 
