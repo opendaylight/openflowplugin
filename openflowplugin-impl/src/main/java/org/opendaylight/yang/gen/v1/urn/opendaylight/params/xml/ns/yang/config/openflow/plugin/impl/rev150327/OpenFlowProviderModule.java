@@ -10,6 +10,10 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowProviderModule.class);
 
+    private static final int THREAD_POOL_MIN_THREADS = 1;
+    private static final int THREAD_POOL_MAX_THREADS = 32000;
+    private static final long THREAD_POOL_TIMEOUT = 60;
+
     public OpenFlowProviderModule(final org.opendaylight.controller.config.api.ModuleIdentifier identifier, final org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
@@ -27,7 +31,7 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
     public java.lang.AutoCloseable createInstance() {
         LOG.info("Initializing new OFP southbound.");
         OpenflowPortsUtil.init();
-        final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(getRpcRequestsQuota(), getGlobalNotificationQuota());
+        final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(getRpcRequestsQuota().longValue(), getGlobalNotificationQuota().longValue(), THREAD_POOL_MIN_THREADS, THREAD_POOL_MAX_THREADS, THREAD_POOL_TIMEOUT);
 
         openflowPluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         openflowPluginProvider.setDataBroker(getDataBrokerDependency());
