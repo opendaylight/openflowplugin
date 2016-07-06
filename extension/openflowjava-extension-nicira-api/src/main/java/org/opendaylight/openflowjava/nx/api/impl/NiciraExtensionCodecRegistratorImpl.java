@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
@@ -197,7 +198,11 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     @Override
     public void close() throws Exception {
         // TODO Auto-generated method stub
-        
+    }
+
+    @VisibleForTesting
+    boolean isEmptyActionDeserializers() {
+        return actionDeserializers.isEmpty();
     }
 
 }
