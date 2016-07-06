@@ -12,8 +12,8 @@ module openflowplugin-extension-nicira-match {
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
     import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
     import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
-    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
 
     description
         "Nicira openflow match extensions.";

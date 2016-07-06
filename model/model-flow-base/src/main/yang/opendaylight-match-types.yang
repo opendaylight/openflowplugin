@@ -2,8 +2,8 @@ module opendaylight-match-types {
     namespace "urn:opendaylight:model:match:types";
     prefix "match";
 
-    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     import opendaylight-l2-types {prefix l2t;revision-date "2013-08-27";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-arbitrary-bitmask-fields {prefix mask; revision-date "2016-01-30";}

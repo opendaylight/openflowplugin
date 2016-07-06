@@ -2,7 +2,7 @@ module opendaylight-statistics-types {
     namespace "urn:opendaylight:model:statistics:types";
     prefix stat-types;
 
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
 
     description "Openflowplugin statistics common types.";
 
