@@ -61,7 +61,7 @@ public class MdSalRegistrationUtilsTest {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
 
         final ExtensionConverterProvider extensionConverterProvider = mock(ExtensionConverterProvider.class);
-        MdSalRegistrationUtils.registerMasterServices(mockedRpcContext, mockedDeviceContext, OfpRole.BECOMEMASTER, extensionConverterProvider);
+        MdSalRegistrationUtils.registerServices(mockedRpcContext, mockedDeviceContext, extensionConverterProvider);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 Matchers.<Class<RpcService>> any(), any(RpcService.class));
     }
