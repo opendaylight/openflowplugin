@@ -29,14 +29,14 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
@@ -1063,13 +1063,13 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 boolean hasTcp = false;
                 if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
                     tcpMatchBuilder
-                            .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                            .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
                                     swMatch.getTpSrc()));
                     hasTcp = true;
                 }
                 if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
                     tcpMatchBuilder
-                            .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                            .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
                                     swMatch.getTpDst()));
                     hasTcp = true;
                 }
@@ -1082,13 +1082,13 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 boolean hasUdp = false;
                 if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
                     udpMatchBuilder
-                            .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                            .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
                                     swMatch.getTpSrc()));
                     hasUdp = true;
                 }
                 if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
                     udpMatchBuilder
-                            .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                            .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
                                     swMatch.getTpDst()));
                     hasUdp = true;
                 }
@@ -1266,7 +1266,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 }
             } else if (ofMatch.getOxmMatchField().equals(TcpDst.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDst tcpDst = ((TcpDstCase) ofMatch.getMatchEntryValue()).getTcpDst();
-                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber portNumber = tcpDst.getPort();
+                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber portNumber = tcpDst.getPort();
                 if (portNumber != null) {
                     tcpMatchBuilder.setTcpDestinationPort(portNumber);
                     matchBuilder.setLayer4Match(tcpMatchBuilder.build());
@@ -1285,14 +1285,14 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 }
             } else if (ofMatch.getOxmMatchField().equals(SctpSrc.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrc sctpSrc = ((SctpSrcCase) ofMatch.getMatchEntryValue()).getSctpSrc();
-                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber portNumber = sctpSrc.getPort();
+                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber portNumber = sctpSrc.getPort();
                 if (portNumber != null) {
                     sctpMatchBuilder.setSctpSourcePort(portNumber);
                     matchBuilder.setLayer4Match(sctpMatchBuilder.build());
                 }
             } else if (ofMatch.getOxmMatchField().equals(SctpDst.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.dst._case.SctpDst sctpDst = ((SctpDstCase) ofMatch.getMatchEntryValue()).getSctpDst();
-                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber portNumber = sctpDst.getPort();
+                org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber portNumber = sctpDst.getPort();
                 if (portNumber != null) {
                     sctpMatchBuilder.setSctpDestinationPort(portNumber);
                     matchBuilder.setLayer4Match(sctpMatchBuilder.build());

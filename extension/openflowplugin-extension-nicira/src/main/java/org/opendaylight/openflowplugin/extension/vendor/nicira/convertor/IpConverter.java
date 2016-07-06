@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 
 import java.util.List;
 import java.util.ListIterator;
