@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
@@ -51,7 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutput;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -105,40 +102,12 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             // if barrier after actual job is needed or it is the last job -> merge fired job results with chain result
             if ((batchJob.getPlanStep().isBarrierAfter()) || (i == batchJobsChain.size()-1)) {
                 firedJobs.add(0, chainSummaryResult);
-                chainSummaryResult = mergeJobsResultsFutures(firedJobs);
+                chainSummaryResult = FlatBatchUtil.mergeJobsResultsFutures(firedJobs);
                 firedJobs.clear();
             }
         }
         return chainSummaryResult;
 
-    }
-
-    private static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> mergeJobsResultsFutures(
-            final List<ListenableFuture<RpcResult<ProcessFlatBatchOutput>>> firedJobs) {
-
-        ListenableFuture<List<RpcResult<ProcessFlatBatchOutput>>> jobs = Futures.successfulAsList(firedJobs);
-
-        return Futures.transform(jobs, new AsyncFunction<List<RpcResult<ProcessFlatBatchOutput>>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Override
-            public ListenableFuture<RpcResult<ProcessFlatBatchOutput>> apply(List<RpcResult<ProcessFlatBatchOutput>> jobsResults) {
-                boolean isSuccessful = true;
-                List<RpcError> rpcErrors = new ArrayList<>();
-                List<BatchFailure> batchFailures = new ArrayList<>();
-
-                for (RpcResult<ProcessFlatBatchOutput> jobResult : jobsResults) {
-                    if (jobResult != null) {
-                        isSuccessful = (isSuccessful && jobResult.isSuccessful());
-                        rpcErrors.addAll(jobResult.getErrors());
-                        batchFailures.addAll(jobResult.getResult().getBatchFailure());
-                    }
-                }
-
-                return RpcResultBuilder.<ProcessFlatBatchOutput>status(isSuccessful)
-                        .withRpcErrors(rpcErrors)
-                        .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures).build())
-                        .buildFuture();
-            }
-        });
     }
 
     @VisibleForTesting
@@ -148,85 +117,73 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
         int stepOffset = 0;
         for (final BatchPlanStep planStep : batchPlan) {
             final int currentOffset = stepOffset;
-            chainJobs.add(new BatchStepJob(planStep, new AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>>() {
-                @Override
-                public ListenableFuture<RpcResult<ProcessFlatBatchOutput>> apply(final RpcResult<ProcessFlatBatchOutput> chainInput) throws Exception {
-                    if (exitOnFirstError && !chainInput.isSuccessful()) {
-                        LOG.debug("error on flat batch chain occurred -> skipping step {}", planStep.getStepType());
-                        return RpcResultBuilder.<ProcessFlatBatchOutput>status(false)
-                                               .withRpcErrors(new ArrayList<>())
-                                               .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
-                                               .buildFuture();
-                    }
-
-                    LOG.trace("batch progressing on step type {}", planStep.getStepType());
-                    LOG.trace("batch progressing previous steps result: {}", chainInput.isSuccessful());
-
-                    final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainOutput;
-                    switch (planStep.getStepType()) {
-                        case FLOW_ADD:
-                            final AddFlowsBatchInput addFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchAddFlow(
-                                    planStep, node);
-                            final Future<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture = salFlowService.addFlowsBatch(addFlowsBatchInput);
-                            chainOutput = FlatBatchFlowAdapters.adaptFlowBatchFutureForChain(resultAddFlowFuture, currentOffset);
-                            break;
-                        case FLOW_REMOVE:
-                            final RemoveFlowsBatchInput removeFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(
-                                    planStep, node);
-                            final Future<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture = salFlowService.removeFlowsBatch(removeFlowsBatchInput);
-                            chainOutput = FlatBatchFlowAdapters.adaptFlowBatchFutureForChain(resultRemoveFlowFuture, currentOffset);
-                            break;
-                        case FLOW_UPDATE:
-                            final UpdateFlowsBatchInput updateFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(
-                                    planStep, node);
-                            final Future<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture = salFlowService.updateFlowsBatch(updateFlowsBatchInput);
-                            chainOutput = FlatBatchFlowAdapters.adaptFlowBatchFutureForChain(resultUpdateFlowFuture, currentOffset);
-                            break;
-                        case GROUP_ADD:
-                            final AddGroupsBatchInput addGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchAddGroup(
-                                    planStep, node);
-                            final Future<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture = salGroupService.addGroupsBatch(addGroupsBatchInput);
-                            chainOutput = FlatBatchGroupAdapters.adaptGroupBatchFutureForChain(resultAddGroupFuture, currentOffset);
-                            break;
-                        case GROUP_REMOVE:
-                            final RemoveGroupsBatchInput removeGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(
-                                    planStep, node);
-                            final Future<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture = salGroupService.removeGroupsBatch(removeGroupsBatchInput);
-                            chainOutput = FlatBatchGroupAdapters.adaptGroupBatchFutureForChain(resultRemoveGroupFuture, currentOffset);
-                            break;
-                        case GROUP_UPDATE:
-                            final UpdateGroupsBatchInput updateGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(
-                                    planStep, node);
-                            final Future<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture = salGroupService.updateGroupsBatch(updateGroupsBatchInput);
-                            chainOutput = FlatBatchGroupAdapters.adaptGroupBatchFutureForChain(resultUpdateGroupFuture, currentOffset);
-                            break;
-                        case METER_ADD:
-                            final AddMetersBatchInput addMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchAddMeter(
-                                    planStep, node);
-                            final Future<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture = salMeterService.addMetersBatch(addMetersBatchInput);
-                            chainOutput = FlatBatchMeterAdapters.adaptMeterBatchFutureForChain(resultAddMeterFuture, currentOffset);
-                            break;
-                        case METER_REMOVE:
-                            final RemoveMetersBatchInput removeMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(
-                                    planStep, node);
-                            final Future<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture = salMeterService.removeMetersBatch(removeMetersBatchInput);
-                            chainOutput = FlatBatchMeterAdapters.adaptMeterBatchFutureForChain(resultRemoveMeterFuture, currentOffset);
-                            break;
-                        case METER_UPDATE:
-                            final UpdateMetersBatchInput updateMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(
-                                    planStep, node);
-                            final Future<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture = salMeterService.updateMetersBatch(updateMetersBatchInput);
-                            chainOutput = FlatBatchMeterAdapters.adaptMeterBatchFutureForChain(resultUpdateMeterFuture, currentOffset);
-                            break;
-                        default:
-                            LOG.warn("Unsupported plan-step type occurred: {} -> OMITTING", planStep.getStepType());
-                            chainOutput = RpcResultBuilder.<ProcessFlatBatchOutput>status(true)
-                                                          .withRpcErrors(new ArrayList<>())
-                                                          .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
-                                                          .buildFuture();
-                    }
-                    return chainOutput;
+            chainJobs.add(new BatchStepJob(planStep, chainInput -> {
+                if (exitOnFirstError && !chainInput.isSuccessful()) {
+                    LOG.debug("error on flat batch chain occurred -> skipping step {}", planStep.getStepType());
+                    return RpcResultBuilder.<ProcessFlatBatchOutput>status(false)
+                                           .withRpcErrors(new ArrayList<>())
+                                           .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
+                                           .buildFuture();
                 }
+
+                LOG.trace("batch progressing on step type {}", planStep.getStepType());
+                LOG.trace("batch progressing previous steps result: {}", chainInput.isSuccessful());
+
+                final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainOutput;
+                switch (planStep.getStepType()) {
+                    case FLOW_ADD:
+                        final AddFlowsBatchInput addFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, node);
+                        final Future<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture = salFlowService.addFlowsBatch(addFlowsBatchInput);
+                        chainOutput = FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultAddFlowFuture, currentOffset);
+                        break;
+                    case FLOW_REMOVE:
+                        final RemoveFlowsBatchInput removeFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, node);
+                        final Future<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture = salFlowService.removeFlowsBatch(removeFlowsBatchInput);
+                        chainOutput = FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultRemoveFlowFuture, currentOffset);
+                        break;
+                    case FLOW_UPDATE:
+                        final UpdateFlowsBatchInput updateFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, node);
+                        final Future<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture = salFlowService.updateFlowsBatch(updateFlowsBatchInput);
+                        chainOutput = FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultUpdateFlowFuture, currentOffset);
+                        break;
+                    case GROUP_ADD:
+                        final AddGroupsBatchInput addGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, node);
+                        final Future<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture = salGroupService.addGroupsBatch(addGroupsBatchInput);
+                        chainOutput = FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultAddGroupFuture, currentOffset);
+                        break;
+                    case GROUP_REMOVE:
+                        final RemoveGroupsBatchInput removeGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, node);
+                        final Future<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture = salGroupService.removeGroupsBatch(removeGroupsBatchInput);
+                        chainOutput = FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultRemoveGroupFuture, currentOffset);
+                        break;
+                    case GROUP_UPDATE:
+                        final UpdateGroupsBatchInput updateGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, node);
+                        final Future<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture = salGroupService.updateGroupsBatch(updateGroupsBatchInput);
+                        chainOutput = FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultUpdateGroupFuture, currentOffset);
+                        break;
+                    case METER_ADD:
+                        final AddMetersBatchInput addMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, node);
+                        final Future<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture = salMeterService.addMetersBatch(addMetersBatchInput);
+                        chainOutput = FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultAddMeterFuture, currentOffset);
+                        break;
+                    case METER_REMOVE:
+                        final RemoveMetersBatchInput removeMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, node);
+                        final Future<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture = salMeterService.removeMetersBatch(removeMetersBatchInput);
+                        chainOutput = FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultRemoveMeterFuture, currentOffset);
+                        break;
+                    case METER_UPDATE:
+                        final UpdateMetersBatchInput updateMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, node);
+                        final Future<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture = salMeterService.updateMetersBatch(updateMetersBatchInput);
+                        chainOutput = FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultUpdateMeterFuture, currentOffset);
+                        break;
+                    default:
+                        LOG.warn("Unsupported plan-step type occurred: {} -> OMITTING", planStep.getStepType());
+                        chainOutput = RpcResultBuilder.<ProcessFlatBatchOutput>status(true)
+                                                      .withRpcErrors(new ArrayList<>())
+                                                      .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
+                                                      .buildFuture();
+                }
+                return chainOutput;
             }));
             stepOffset += planStep.getTaskBag().size();
         }
