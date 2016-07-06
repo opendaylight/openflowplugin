@@ -116,11 +116,11 @@ public class FlatBatchMeterAdapters {
 
     /**
      * @param stepOffset offset of current batch plan step
-     * @return next chained result incorporating results of this step's batch
+     * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    createBatchMeterChainingFunction(final int stepOffset) {
+    convertBatchMeterResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
@@ -153,17 +153,17 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
-     * shortcut for {@link #createBatchMeterChainingFunction(int)} with conversion {@link ListenableFuture}
+     * shortcut for {@link #convertBatchMeterResult(int)} with conversion {@link ListenableFuture}
      *
      * @param <T>                     exact type of batch flow output
      * @param resultUpdateMeterFuture batch group rpc-result (add/remove/update)
      * @param currentOffset           offset of current batch plan step with respect to entire chain of steps
-     * @return next chained result incorporating results of this step's batch
+     * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchMeterOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    adaptMeterBatchFutureForChain(final Future<RpcResult<T>> resultUpdateMeterFuture,
-                                  final int currentOffset) {
+    convertMeterBatchFutureForChain(final Future<RpcResult<T>> resultUpdateMeterFuture,
+                                    final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateMeterFuture),
-                FlatBatchMeterAdapters.<T>createBatchMeterChainingFunction(currentOffset));
+                FlatBatchMeterAdapters.<T>convertBatchMeterResult(currentOffset));
     }
 }

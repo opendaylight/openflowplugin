@@ -117,11 +117,11 @@ public class FlatBatchFlowAdapters {
 
     /**
      * @param stepOffset offset of current batch plan step
-     * @return next chained result incorporating results of this step's batch
+     * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    createBatchFlowChainingFunction(final int stepOffset) {
+    convertBatchFlowResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
@@ -154,17 +154,17 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
-     * shortcut for {@link #createBatchFlowChainingFunction(int)} with conversion {@link ListenableFuture}
+     * shortcut for {@link #convertBatchFlowResult(int)} with conversion {@link ListenableFuture}
      *
      * @param <T>                    exact type of batch flow output
      * @param resultUpdateFlowFuture batch flow rpc-result (add/remove/update)
      * @param currentOffset          offset of current batch plan step with respect to entire chain of steps
-     * @return next chained result incorporating results of this step's batch
+     * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchFlowOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    adaptFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
-                                 final int currentOffset) {
+    convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
+                                   final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
-                FlatBatchFlowAdapters.<T>createBatchFlowChainingFunction(currentOffset));
+                FlatBatchFlowAdapters.<T>convertBatchFlowResult(currentOffset));
     }
 }

@@ -13,14 +13,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Wrapper for batch step jobs.
+ * Wrapper for batch step jobs (type + function).
  */
 public class BatchStepJob {
 
     private final BatchPlanStep planStep;
     private final AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> stepFunction;
 
-    public BatchStepJob(final BatchPlanStep planStep, final AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> stepFunction) {
+    public BatchStepJob(final BatchPlanStep planStep,
+                        final AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> stepFunction) {
         this.planStep = planStep;
         this.stepFunction = stepFunction;
     }
