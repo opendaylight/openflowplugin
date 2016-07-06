@@ -10,12 +10,16 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.Batch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.BatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.BatchChoice;
@@ -37,6 +41,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.batch.failure.batch.item.id.choice.FlatBatchFailureFlowIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -256,20 +264,31 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testMergeRpcResults() throws Exception {
-        final RpcResult<String> rpcResultFailed = RpcResultBuilder.<String>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError").build();
-        final RpcResult<String> rpcResultSuccess = RpcResultBuilder.<String>success().build();
+    public void testMergeJobsResultsFutures() throws Exception {
+        final BatchFailure batchFailure = new BatchFailureBuilder()
+                .setBatchOrder(9)
+                .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
+                        .setFlowId(new FlowId("11"))
+                        .build())
+                .build();
 
-        final RpcResult<String> rpcResult1 = FlatBatchUtil.mergeRpcResults(rpcResultFailed, rpcResultSuccess).build();
+        final ProcessFlatBatchOutput output = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure)).build();
+
+        final RpcResult<ProcessFlatBatchOutput> rpcResultFailed = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
+                .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
+                .withResult(output).build();
+        final RpcResult<ProcessFlatBatchOutput> rpcResultSuccess = RpcResultBuilder.<ProcessFlatBatchOutput>success()
+                .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>())).build();
+
+        final RpcResult<ProcessFlatBatchOutput> rpcResult1 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));
         Assert.assertEquals(1, rpcResult1.getErrors().size());
         Assert.assertFalse(rpcResult1.isSuccessful());
 
-        final RpcResult<String> rpcResult2 = FlatBatchUtil.mergeRpcResults(rpcResultFailed, rpcResultFailed).build();
+        final RpcResult<ProcessFlatBatchOutput> rpcResult2 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed));
         Assert.assertEquals(2, rpcResult2.getErrors().size());
         Assert.assertFalse(rpcResult2.isSuccessful());
 
-        final RpcResult<String> rpcResult3 = FlatBatchUtil.mergeRpcResults(rpcResultSuccess, rpcResultSuccess).build();
+        final RpcResult<ProcessFlatBatchOutput> rpcResult3 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultSuccess, rpcResultSuccess));
         Assert.assertEquals(0, rpcResult3.getErrors().size());
         Assert.assertTrue(rpcResult3.isSuccessful());
     }

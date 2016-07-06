@@ -9,12 +9,17 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.Batch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.BatchChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddFlowCase;
@@ -26,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.service.batch.common.rev160322.BatchOrderGrouping;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -173,52 +179,40 @@ public final class FlatBatchUtil {
     }
 
     /**
-     * join errors of left and right rpc result into output
-     *
-     * @param output     target result
-     * @param chainInput left part (chained rpc result)
-     * @param input      right part (result of current operation)
-     * @param <L>        chain type
-     * @param <R>        current operation type
+     * @return RPC result incorporating partial results (state, errors, batch failures)
      */
-    private static <L, R> void joinErrors(final RpcResultBuilder<L> output, final RpcResult<L> chainInput, final RpcResult<R> input) {
-        final Collection<RpcError> rpcErrors = new ArrayList<>(chainInput.getErrors());
-        rpcErrors.addAll(input.getErrors());
-        if (!rpcErrors.isEmpty()) {
-            output.withRpcErrors(rpcErrors);
-        }
+    @VisibleForTesting
+    static Function<List<RpcResult<ProcessFlatBatchOutput>>, RpcResult<ProcessFlatBatchOutput>> mergeRpcResults() {
+        return jobsResults -> {
+            boolean isSuccessful = true;
+            List<RpcError> rpcErrors = new ArrayList<>();
+            List<BatchFailure> batchFailures = new ArrayList<>();
+
+            for (RpcResult<ProcessFlatBatchOutput> jobResult : jobsResults) {
+                if (jobResult != null) {
+                    isSuccessful = (isSuccessful && jobResult.isSuccessful());
+                    rpcErrors.addAll(jobResult.getErrors());
+                    batchFailures.addAll(jobResult.getResult().getBatchFailure());
+                }
+            }
+
+            return RpcResultBuilder.<ProcessFlatBatchOutput>status(isSuccessful)
+                    .withRpcErrors(rpcErrors)
+                    .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures).build())
+                    .build();
+        };
     }
 
     /**
-     * create rpc result honoring success/fail outcomes of arguments
-     *
-     * @param chainInput left part (chained rpc result)
-     * @param input      right part (results of current operation)
-     * @param <L>        chain type
-     * @param <R>        current operation type
-     * @return rpc result with combined status
+     * Merge list of Futures with partial results into one ListenableFuture with single result.
+     * shortcut for {@link #mergeRpcResults()}
+     * @param firedJobs list of ListenableFutures with RPC results {@link ProcessFlatBatchOutput}
+     * @return ListenableFuture of RPC result with combined status and all errors + batch failures
      */
-    private static <L, R> RpcResultBuilder<L> createNextRpcResultBuilder(final RpcResult<L> chainInput, final RpcResult<R> input) {
-        return RpcResultBuilder.<L>status(input.isSuccessful() && chainInput.isSuccessful());
+    public static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> mergeJobsResultsFutures(
+            final List<ListenableFuture<RpcResult<ProcessFlatBatchOutput>>> firedJobs) {
+        return Futures.transform(Futures.successfulAsList(firedJobs), mergeRpcResults());
     }
 
-    /**
-     * Create rpc result builder with combined status and sum of all errors.
-     * <br>
-     * Shortcut for {@link #createNextRpcResultBuilder(RpcResult, RpcResult)} and
-     * {@link #joinErrors(RpcResultBuilder, RpcResult, RpcResult)}.
-     *
-     * @param chainInput left part (chained rpc result)
-     * @param input      right part (results of current operation)
-     * @param <L>        chain type
-     * @param <R>        current operation type
-     * @return rpc result with combined status and all errors
-     */
-    public static <L, R> RpcResultBuilder<L> mergeRpcResults(final RpcResult<L> chainInput, final RpcResult<R> input) {
-        // create rpcResult builder honoring both success/failure of current input and chained input
-        final RpcResultBuilder<L> output = FlatBatchUtil.createNextRpcResultBuilder(chainInput, input);
-        // join errors
-        FlatBatchUtil.joinErrors(output, chainInput, input);
-        return output;
-    }
+
 }
