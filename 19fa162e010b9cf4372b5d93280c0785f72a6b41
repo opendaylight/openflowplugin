@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_cb69278d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-06T13:19:09Z",
+      "side": 1,
+      "message": "don\u0027t need to send NodeId this is encapsulated in DeviceContext",
+      "range": {
+        "startLine": 62,
+        "startChar": 31,
+        "endLine": 62,
+        "endChar": 50
+      },
+      "revId": "19fa162e010b9cf4372b5d93280c0785f72a6b41",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
