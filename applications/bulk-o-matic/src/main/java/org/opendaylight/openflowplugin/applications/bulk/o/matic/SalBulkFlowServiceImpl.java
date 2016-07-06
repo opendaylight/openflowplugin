@@ -62,11 +62,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple implementation providing bulk flows operations.
  */
 public class SalBulkFlowServiceImpl implements SalBulkFlowService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowServiceImpl.class);
 
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
@@ -211,7 +215,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         } catch (MalformedObjectNameException | InstanceAlreadyExistsException
                 | MBeanRegistrationException | NotCompliantMBeanException e) {
             rpcResultBuilder = RpcResultBuilder.failed();
-            e.printStackTrace();
+            LOG.warn("Exception occurred: {}", e);
         }
         return Futures.immediateFuture(rpcResultBuilder.build());
     }

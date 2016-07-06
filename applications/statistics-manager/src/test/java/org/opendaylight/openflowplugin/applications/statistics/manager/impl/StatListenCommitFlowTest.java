@@ -56,6 +56,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Unit tests for StatListenCommitFlow.
@@ -63,6 +65,8 @@ import com.google.common.util.concurrent.Futures;
  * @author Monika Verma
  */
 public class StatListenCommitFlowTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitFlowTest.class);
 
     @Mock
     private NotificationProviderService mockNotificationProviderService;
@@ -126,7 +130,7 @@ public class StatListenCommitFlowTest {
             method.setAccessible(true);
             method.invoke(statCommitFlow, argObjects);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred {}", e);
             fail(e.getCause().toString());
         }
     }
@@ -203,7 +207,7 @@ public class StatListenCommitFlowTest {
             method.setAccessible(true);
             method.invoke(statCommitFlow, argObjects);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred {}", e);
             fail(e.getCause().toString());
         }
     }
@@ -248,7 +252,7 @@ public class StatListenCommitFlowTest {
             method.setAccessible(true);
             method.invoke(statCommitFlow, argObjects);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred {}", e);
             fail(e.getCause().toString());
         }
     }
