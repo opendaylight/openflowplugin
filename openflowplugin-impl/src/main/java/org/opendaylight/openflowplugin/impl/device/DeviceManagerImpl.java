@@ -69,6 +69,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
+    private final boolean isNotificationFlowRemovedOff;
 
     private final int spyRate = 10;
 
@@ -91,9 +92,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor) {
+                             final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -180,6 +182,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(conductor.getNotificationPublishService());
+        deviceContext.setNotificationFlowRemovedOff(isNotificationFlowRemovedOff);
 
         updatePacketInRateLimiters();
 

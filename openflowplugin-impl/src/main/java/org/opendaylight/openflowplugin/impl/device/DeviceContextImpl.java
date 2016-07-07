@@ -128,10 +128,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
+    private boolean isNotificationFlowRemovedOff;
 
     private final DeviceInfo deviceInfo;
 
     private volatile CONTEXT_STATE contextState;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -284,8 +286,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         //1. translate to general flow (table, priority, match, cookie)
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
-        // Trigger off a notification
-        notificationPublishService.offerNotification(flowRemovedNotification);
+
+        if(!isNotificationFlowRemovedOff) {
+            // Trigger off a notification
+            notificationPublishService.offerNotification(flowRemovedNotification);
+        } else if(LOG.isDebugEnabled()) {
+            LOG.debug("For nodeId={} isNotificationFlowRemovedOff={}", getDeviceInfo().getNodeId(), isNotificationFlowRemovedOff);
+        }
 
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
@@ -470,6 +477,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ItemLifeCycleRegistry getItemLifeCycleSourceRegistry() {
         return itemLifeCycleSourceRegistry;
+    }
+
+    @Override
+    public void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    }
+
+    @Override
+    public boolean isNotificationFlowRemovedOff() {
+        return isNotificationFlowRemovedOff;
     }
 
     @Override

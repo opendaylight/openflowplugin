@@ -73,4 +73,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setBarrierInterval(long barrierTimeoutLimit);
 
     void setEchoReplyTimeout(long echoReplyTimeout);
+
+
+    void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
 }

@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -109,6 +110,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -505,8 +507,16 @@ public class DeviceContextImplTest {
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
+        deviceContext.setNotificationFlowRemovedOff(true);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
+
         Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
+        Mockito.verify(mockedNotificationPublishService, Mockito.never()).offerNotification(Matchers.any(Notification.class));
+
+        deviceContext.setNotificationFlowRemovedOff(false);
+        deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
+
+        Mockito.verify(mockedNotificationPublishService).offerNotification(Matchers.any(Notification.class));
     }
 
     @Test
