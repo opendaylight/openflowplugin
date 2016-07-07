@@ -75,9 +75,11 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
 
-        systemNotificationsListener =
-                new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT);
+        final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), "opfpool");
 
+        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT, threadPool);
     }
 
     @After
