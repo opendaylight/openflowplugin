@@ -167,6 +167,13 @@
             <artifactId>openflowplugin-blueprint-config</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
+            <type>cfg</type>
+            <classifier>config</classifier>
+        </dependency>
 
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>

@@ -31,6 +31,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -129,10 +130,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
+    private final DeviceManager deviceManager;
 
     private final DeviceInfo deviceInfo;
 
     private volatile CONTEXT_STATE contextState;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -140,7 +143,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final LifecycleConductor conductor,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary) {
+                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      final DeviceManager manager) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -153,7 +157,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = conductor.getMessageIntelligenceAgency();
-
+        this.deviceManager = Preconditions.checkNotNull(manager);
 
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ 1000, /*initial*/2000, messageSpy, REJECTED_DRAIN_FACTOR);
@@ -285,8 +289,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         //1. translate to general flow (table, priority, match, cookie)
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
-        // Trigger off a notification
-        notificationPublishService.offerNotification(flowRemovedNotification);
+
+        if(!deviceManager.getIsNotificationFlowRemovedOff()) {
+            // Trigger off a notification
+            notificationPublishService.offerNotification(flowRemovedNotification);
+        } else if(LOG.isDebugEnabled()) {
+            LOG.debug("For nodeId={} isNotificationFlowRemovedOff={}", getDeviceInfo().getNodeId(), deviceManager.getIsNotificationFlowRemovedOff());
+        }
 
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
