@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_7479d82e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-07T06:17:02Z",
+      "side": 1,
+      "message": "dont use only e.getMessage, or use LOG.trace to catch whole exception stack trace plz, otherwise we lose this stacktrace",
+      "range": {
+        "startLine": 61,
+        "startChar": 12,
+        "endLine": 61,
+        "endChar": 77
+      },
+      "revId": "502244252f678bf98327bf6a3fb7f70299a95bf7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_b473704c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-07T06:17:02Z",
+      "side": 1,
+      "message": "you have got this stored in variable deviceFlowRegistry :)",
+      "range": {
+        "startLine": 223,
+        "startChar": 44,
+        "endLine": 223,
+        "endChar": 81
+      },
+      "revId": "502244252f678bf98327bf6a3fb7f70299a95bf7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
