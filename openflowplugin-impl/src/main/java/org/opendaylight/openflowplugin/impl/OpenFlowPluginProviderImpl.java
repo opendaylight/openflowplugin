@@ -87,6 +87,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private boolean isNotificationFlowRemovedOff = true;
 
     private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
@@ -170,6 +171,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.echoReplyTimeout = echoReplyTimeout;
     }
 
+    @Override
+    public void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    }
+
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -215,7 +221,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 switchFeaturesMandatory,
                 barrierInterval,
                 barrierCountLimit,
-                conductor);
+                conductor,
+                isNotificationFlowRemovedOff);
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 

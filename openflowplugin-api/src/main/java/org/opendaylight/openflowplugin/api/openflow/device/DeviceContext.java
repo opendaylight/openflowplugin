@@ -131,6 +131,13 @@ public interface DeviceContext extends AutoCloseable,
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
+    void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
+
+    /**
+     * @return notificationFlowRemovedOff
+     */
+    boolean isNotificationFlowRemovedOff();
+
     @Override
     void close();
 }

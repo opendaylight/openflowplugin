@@ -82,5 +82,11 @@ module openflow-provider-config {
             type uint32;
             default 60;
         }
+
+        leaf notification-flow-removed-off {
+            description "Turning off deprecated flow removed notification";
+            type boolean;
+            default "true";
+        }
     }
 }

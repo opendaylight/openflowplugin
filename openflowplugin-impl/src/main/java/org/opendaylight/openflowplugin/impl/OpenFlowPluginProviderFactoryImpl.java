@@ -58,6 +58,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
+        openflowPluginProvider.setNotificationFlowRemovedOff(providerConfig.isNotificationFlowRemovedOff());
 
         openflowPluginProvider.initialize();
 
@@ -69,7 +70,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "EchoReplyTimeout:{}, " +
                 "ThreadPoolMinThreads:{}, " +
                 "ThreadPoolMaxThreads:{}, " +
-                "ThreadPoolTimeout:{}",
+                "ThreadPoolTimeout:{}, " +
+                "NotificationFlowRemovedOff:{}",
                 providerConfig.isIsStatisticsPollingOff(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
@@ -77,7 +79,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getEchoReplyTimeout().getValue(),
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout());
+                providerConfig.getThreadPoolTimeout(),
+                providerConfig.isNotificationFlowRemovedOff());
 
         return openflowPluginProvider;
     }
