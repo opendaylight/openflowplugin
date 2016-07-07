@@ -23,6 +23,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -205,28 +206,28 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                             final InstanceIdentifier<T> path) throws Exception {
+                                                             final InstanceIdentifier<T> path) throws TransactionChainClosedException {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             LOG.trace("addDeleteOperation called with path {} ", path);
             writeTx.delete(store, path);
         } else {
             LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", nodeII, path);
-            throw new Exception("Cannot write into transaction.");
+            throw new TransactionChainClosedException("Cannot write into transaction.");
         }
     }
 
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                    final InstanceIdentifier<T> path,
                                                    final T data,
-                                                   final boolean createParents) throws Exception {
+                                                   final boolean createParents) throws TransactionChainClosedException {
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             LOG.trace("writeToTransaction called with path {} ", path);
             writeTx.put(store, path, data, createParents);
         } else {
             LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeII, path);
-            throw new Exception("Cannot write into transaction.");
+            throw new TransactionChainClosedException("Cannot write into transaction.");
         }
     }
 
