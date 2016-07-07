@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.impl.util.FlatBatchUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
@@ -50,7 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Sa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,10 +88,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
         BatchStepJob batchJob;
         final List<ListenableFuture<RpcResult<ProcessFlatBatchOutput>>> firedJobs = new ArrayList<>();
         ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainSummaryResult =
-            RpcResultBuilder.<ProcessFlatBatchOutput>success()
-                            .withRpcErrors(new ArrayList<>())
-                            .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
-                            .buildFuture();
+                FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
 
         for (int i = 0; i < batchJobsChain.size(); i++)  {
             batchJob = batchJobsChain.get(i);
@@ -119,10 +114,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             chainJobs.add(new BatchStepJob(planStep, chainInput -> {
                 if (exitOnFirstError && !chainInput.isSuccessful()) {
                     LOG.debug("error on flat batch chain occurred -> skipping step {}", planStep.getStepType());
-                    return RpcResultBuilder.<ProcessFlatBatchOutput>status(false)
-                                           .withRpcErrors(new ArrayList<>())
-                                           .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
-                                           .buildFuture();
+                    return FlatBatchUtil.createEmptyRpcBatchResultFuture(false);
                 }
 
                 LOG.trace("batch progressing on step type {}", planStep.getStepType());
@@ -177,10 +169,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                         break;
                     default:
                         LOG.warn("Unsupported plan-step type occurred: {} -> OMITTING", planStep.getStepType());
-                        chainOutput = RpcResultBuilder.<ProcessFlatBatchOutput>status(true)
-                                                      .withRpcErrors(new ArrayList<>())
-                                                      .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
-                                                      .buildFuture();
+                        chainOutput = FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
                 }
                 return chainOutput;
             }));
