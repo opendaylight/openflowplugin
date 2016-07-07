@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -51,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -109,6 +111,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,6 +173,8 @@ public class DeviceContextImplTest {
     private LifecycleConductor lifecycleConductor;
     @Mock
     private DeviceInfo deviceInfo;
+    @Mock
+    private DeviceManager deviceManager;
 
     private InOrder inOrderDevState;
 
@@ -220,7 +225,7 @@ public class DeviceContextImplTest {
                 .thenReturn(messageTranslatorFlowRemoved);
         Mockito.when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -231,17 +236,17 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
     }
 
     @Test
@@ -504,9 +509,18 @@ public class DeviceContextImplTest {
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
 
+        Mockito.when(deviceManager.getIsNotificationFlowRemovedOff()).thenReturn(true);
+
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
+
         Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
+        Mockito.verify(mockedNotificationPublishService, Mockito.never()).offerNotification(Matchers.any(Notification.class));
+
+        Mockito.when(deviceManager.getIsNotificationFlowRemovedOff()).thenReturn(false);
+        deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
+
+        Mockito.verify(mockedNotificationPublishService).offerNotification(Matchers.any(Notification.class));
     }
 
     @Test

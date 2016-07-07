@@ -72,5 +72,9 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      */
     void notifyDeviceValidListeners(final DeviceInfo deviceInfo, final boolean deviceValid);
 
+    void setIsNotificationFlowRemovedOff(boolean value);
+
+    boolean getIsNotificationFlowRemovedOff();
+
 }
 
