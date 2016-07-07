@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import java.util.Collection;
+import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.BindingService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -73,4 +74,9 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setBarrierInterval(long barrierTimeoutLimit);
 
     void setEchoReplyTimeout(long echoReplyTimeout);
+
+
+    void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
+
+    void update(Map<String,Object> props);
 }
