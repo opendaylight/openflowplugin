@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
  */
 public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
 
-    private LoadingCache<K, Semaphore> semaphoreCache;
+    private final LoadingCache<K, Semaphore> semaphoreCache;
 
     public SemaphoreKeeperGuavaImpl(final int permits, final boolean fair) {
         semaphoreCache = CacheBuilder.newBuilder()

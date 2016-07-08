@@ -30,13 +30,14 @@ import org.slf4j.LoggerFactory;
 public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedConfigListener.class);
     private final SyncReactor reactor;
-    private final FlowCapableNodeSnapshotDao configSnaphot;
+    private final FlowCapableNodeSnapshotDao configSnapshot;
     private final FlowCapableNodeDao operationalDao;
 
-    public SimplifiedConfigListener(final SyncReactor reactor, FlowCapableNodeSnapshotDao configSnaphot,
-            FlowCapableNodeDao operationalDao) {
+    public SimplifiedConfigListener(final SyncReactor reactor,
+                                    final FlowCapableNodeSnapshotDao configSnapshot,
+                                    final FlowCapableNodeDao operationalDao) {
         this.reactor = reactor;
-        this.configSnaphot = configSnaphot;
+        this.configSnapshot = configSnapshot;
         this.operationalDao = operationalDao;
     }
 
@@ -56,7 +57,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
-        configSnaphot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
+        configSnapshot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
 
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
@@ -94,8 +95,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                            FlowCapableNode dataAfter, FlowCapableNode operationalNode) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId);
-        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
-        return endResult;
+        return reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
     }
 
     /**
@@ -109,8 +109,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                           FlowCapableNode dataBefore, FlowCapableNode dataAfter) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeUpdated {}", nodeId);
-        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
-        return endResult;
+        return reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
     }
 
     /**
@@ -122,8 +121,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                     FlowCapableNode dataBefore) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeDeleted {}", nodeId);
-        final ListenableFuture<Boolean> endResult = reactor.syncup(nodePath, null, dataBefore, dsType());
-        return endResult;
+        return reactor.syncup(nodePath, null, dataBefore, dsType());
     }
 
     @Override

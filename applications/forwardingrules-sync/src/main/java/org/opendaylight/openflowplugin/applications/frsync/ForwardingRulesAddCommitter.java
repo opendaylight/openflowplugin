@@ -26,6 +26,7 @@ public interface ForwardingRulesAddCommitter<D extends DataObject, A extends Dat
      * @param identifier - the whole path to new DataObject
      * @param add        - new DataObject
      * @param nodeIdent  - Node InstanceIdentifier
+     * @return RpcResult of action
      */
     Future<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add, InstanceIdentifier<FlowCapableNode> nodeIdent);
 

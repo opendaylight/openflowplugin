@@ -27,6 +27,7 @@ public interface ForwardingRulesUpdateCommitter<D extends DataObject, U extends 
      * @param original   - original DataObject (for update)
      * @param update     - changed DataObject (contain updates)
      * @param nodeIdent  - Node InstanceIdentifier
+     * @return RpcResult of action
      */
     Future<RpcResult<U>> update(InstanceIdentifier<D> identifier, D original, D update,
                                 InstanceIdentifier<FlowCapableNode> nodeIdent);
