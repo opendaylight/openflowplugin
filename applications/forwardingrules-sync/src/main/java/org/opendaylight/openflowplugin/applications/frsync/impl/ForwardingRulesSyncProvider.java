@@ -14,11 +14,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
@@ -29,7 +29,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
-import org.opendaylight.openflowplugin.applications.frsync.util.RetryRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -85,25 +85,25 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setDaemon(false)
                 .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
                 .build());
-        syncThreadPool = MoreExecutors.listeningDecorator(executorService);
 
+        syncThreadPool = MoreExecutors.listeningDecorator(executorService);
         broker.registerProvider(this);
     }
 
     @Override
-    public void onSessionInitiated(final BindingAwareBroker.ProviderContext providerContext) {
+    public void onSessionInitiated(final ProviderContext providerContext) {
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl()
                 .setFlatBatchService(flatBatchService)
                 .setTableForwarder(tableForwarder);
 
-        final RetryRegistry retryRegistry = new RetryRegistry();
+        final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
-        final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, retryRegistry);
+        final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
         final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
-                new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true));
+                new SemaphoreKeeperGuavaImpl<>(1, true));
 
         final SyncReactor reactor = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
@@ -117,7 +117,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final NodeListener<FlowCapableNode> nodeListenerConfig =
                 new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
         final NodeListener<Node> nodeListenerOperational =
-                new SimplifiedOperationalRetryListener(reactor, operationalSnapshot, configDao, retryRegistry);
+                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry);
 
         dataTreeConfigChangeListener =
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
@@ -140,4 +140,5 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         syncThreadPool.shutdown();
     }
+
 }

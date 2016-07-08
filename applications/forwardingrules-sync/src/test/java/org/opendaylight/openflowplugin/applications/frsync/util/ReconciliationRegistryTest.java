@@ -17,38 +17,38 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
- * Test for {@link RetryRegistry}.
+ * Test for {@link ReconciliationRegistry}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class RetryRegistryTest {
+public class ReconciliationRegistryTest {
 
     private static final NodeId NODE_ID = new NodeId("testNode");
-    private RetryRegistry retryRegistry;
+    private ReconciliationRegistry reconciliationRegistry;
 
     @Before
     public void setUp() throws Exception {
-        retryRegistry = new RetryRegistry();
+        reconciliationRegistry = new ReconciliationRegistry();
     }
 
     @Test
     public void testRegister() {
-        Date timestamp = retryRegistry.register(NODE_ID);
-        Assert.assertEquals(true, retryRegistry.isRegistered(NODE_ID));
+        Date timestamp = reconciliationRegistry.register(NODE_ID);
+        Assert.assertEquals(true, reconciliationRegistry.isRegistered(NODE_ID));
         Assert.assertNotNull(timestamp);
     }
 
     @Test
     public void testUnregisterIfRegistered() {
-        retryRegistry.register(NODE_ID);
-        Date timestamp = retryRegistry.unregisterIfRegistered(NODE_ID);
-        Assert.assertEquals(false, retryRegistry.isRegistered(NODE_ID));
+        reconciliationRegistry.register(NODE_ID);
+        Date timestamp = reconciliationRegistry.unregisterIfRegistered(NODE_ID);
+        Assert.assertEquals(false, reconciliationRegistry.isRegistered(NODE_ID));
         Assert.assertNotNull(timestamp);
     }
 
     @Test
     public void testUnregisterIfNotRegistered() {
-        Date timestamp = retryRegistry.unregisterIfRegistered(NODE_ID);
-        Assert.assertEquals(false, retryRegistry.isRegistered(NODE_ID));
+        Date timestamp = reconciliationRegistry.unregisterIfRegistered(NODE_ID);
+        Assert.assertEquals(false, reconciliationRegistry.isRegistered(NODE_ID));
         Assert.assertNull(timestamp);
     }
 
