@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_87cefb81",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 661,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-08T06:22:05Z",
+      "side": 1,
+      "message": "can you please use LOG.error(\"Unhandled exception while waiting for group installation on node {}\",nodeId,e)",
+      "range": {
+        "startLine": 659,
+        "startChar": 16,
+        "endLine": 661,
+        "endChar": 34
+      },
+      "revId": "0e74a1345463ffb1add9810d75ca30bd1ac311bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
