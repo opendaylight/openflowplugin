@@ -11,8 +11,13 @@ import org.opendaylight.controller.sal.binding.api.NotificationListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.Notification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NotificationProviderServiceHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationProviderServiceHelper.class);
+
     private NotificationProviderService notifBroker = new NotificationProviderServiceDummyImpl();
 
     public NotificationProviderService getNotifBroker() {
@@ -38,11 +43,9 @@ public class NotificationProviderServiceHelper {
 
         void propagateNotification(Notification notification) {
             try {
-                m.invoke(listenerInst, new Object[]{notification});
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                m.invoke(listenerInst, notification);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                LOG.error("Exception occurred: {} ", e.getMessage(), e);
             }
         }
 
