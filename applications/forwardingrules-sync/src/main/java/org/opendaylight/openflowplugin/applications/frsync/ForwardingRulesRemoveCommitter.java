@@ -26,6 +26,7 @@ public interface ForwardingRulesRemoveCommitter<D extends DataObject, R extends 
      * @param identifier - the whole path to DataObject
      * @param del        - DataObject for removing
      * @param nodeIdent  - Node InstanceIdentifier
+     * @return RpcResult of action
      */
     Future<RpcResult<R>> remove(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent);
 

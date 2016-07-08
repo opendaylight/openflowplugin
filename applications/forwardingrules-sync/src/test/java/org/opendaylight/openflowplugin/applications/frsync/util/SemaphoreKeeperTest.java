@@ -111,7 +111,7 @@ public class SemaphoreKeeperTest {
     private static class Worker implements Runnable {
         private final SemaphoreKeeper<String> keeper;
         private final String key;
-        private ConcurrentMap<Integer, Integer> counter = new ConcurrentHashMap<>();
+        private final ConcurrentMap<Integer, Integer> counter = new ConcurrentHashMap<>();
         private volatile int index = 0;
 
         public Worker(SemaphoreKeeper<String> keeper, final String key) {
