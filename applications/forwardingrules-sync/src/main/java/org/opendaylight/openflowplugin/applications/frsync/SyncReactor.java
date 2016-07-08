@@ -23,6 +23,7 @@ public interface SyncReactor {
      * @param operationalTree device reflection
      * @param dsType type of DS change
      * @return synchronization outcome
+     * @throws InterruptedException
      */
     ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                      final FlowCapableNode configTree, final FlowCapableNode operationalTree,

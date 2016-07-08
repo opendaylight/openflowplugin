@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -43,21 +42,19 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup future {}", nodeId.getValue());
 
-        final ListenableFuture<Boolean> syncup = executorService.submit(new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                final String oldThreadName = updateThreadName(nodeId);
+        final ListenableFuture<Boolean> syncup = executorService.submit(() -> {
+            final String oldThreadName = updateThreadName(nodeId);
 
-                try {
-                    final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree, dsType)
-                            .get(10000, TimeUnit.MILLISECONDS);
-                    LOG.trace("ret {} {}", nodeId.getValue(), ret);
-                    return true;
-                } catch (TimeoutException e) {
-                    LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
-                    return false;
-                } finally {
-                    updateThreadName(oldThreadName);
-                }
+            try {
+                final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree, dsType)
+                        .get(10000, TimeUnit.MILLISECONDS);
+                LOG.trace("ret {} {}", nodeId.getValue(), ret);
+                return true;
+            } catch (TimeoutException e) {
+                LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
+                return false;
+            } finally {
+                updateThreadName(oldThreadName);
             }
         });
 
@@ -88,7 +85,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         return oldName;
     }
 
-    private String updateThreadName(String name) {
+    private void updateThreadName(String name) {
         final Thread currentThread = Thread.currentThread();
         final String oldName = currentThread.getName();
         try {
@@ -100,6 +97,5 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         } catch (Exception e) {
             LOG.error("failed updating threadName {}", name, e);
         }
-        return oldName;
     }
 }

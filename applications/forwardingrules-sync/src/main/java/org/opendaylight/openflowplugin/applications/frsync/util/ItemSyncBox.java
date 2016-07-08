@@ -17,8 +17,8 @@ import java.util.Set;
  */
 public class ItemSyncBox<I> {
 
-    private Set<I> itemsToPush = new LinkedHashSet<>();
-    private Set<ItemUpdateTuple<I>> itemsToUpdate = new LinkedHashSet<>();
+    private final Set<I> itemsToPush = new LinkedHashSet<>();
+    private final Set<ItemUpdateTuple<I>> itemsToUpdate = new LinkedHashSet<>();
 
     public Set<I> getItemsToPush() {
         return itemsToPush;

@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.opendaylight.openflowplugin.applications.frsync.markandsweep.SwitchFlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -284,8 +282,7 @@ public class ReconcileUtil {
      * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
      * @return list of safe synchronization steps
      */
-    @VisibleForTesting
-    static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
+    public static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
                                                      final Map<SwitchFlowId, Flow> flowOperationalMap,
                                                      final boolean gatherUpdates) {
         final ItemSyncBox<Flow> flowsSyncBox = new ItemSyncBox<>();
