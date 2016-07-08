@@ -129,13 +129,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                    //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
-                    //        Futures.asList Arrays.asList(input, output),
-                    //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
-                }
-
                 final List<Batch> batchBag = new ArrayList<>();
                 int batchOrder = 0;
 
@@ -235,12 +228,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             batchMap.put(Range.closed(batch.getBatchOrder(), nextBatchOrder - 1), batch);
         }
         return batchMap;
-    }
-
-    private int getNextBatchLimit(final PeekingIterator<Batch> inputBatchIterator, final int failureIndexLimit) {
-        return inputBatchIterator.hasNext()
-                ? inputBatchIterator.peek().getBatchOrder()
-                : failureIndexLimit;
     }
 
     @VisibleForTesting

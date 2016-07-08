@@ -69,6 +69,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Test for {@link SyncPlanPushStrategyIncrementalImpl}.
  */
+@SuppressWarnings("ALL")
 @RunWith(MockitoJUnitRunner.class)
 public class SyncPlanPushStrategyIncrementalImplTest {
 
@@ -108,12 +109,12 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     private SyncCrudCounters counters;
 
-    private List<ItemSyncBox<Group>> groupsToAddOrUpdate;
-    private List<ItemSyncBox<Group>> groupsToRemove;
-    private ItemSyncBox<Meter> metersToAddOrUpdate;
-    private ItemSyncBox<Meter> metersToRemove;
-    private Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
-    private Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
+    private final List<ItemSyncBox<Group>> groupsToAddOrUpdate;
+    private final List<ItemSyncBox<Group>> groupsToRemove;
+    private final ItemSyncBox<Meter> metersToAddOrUpdate;
+    private final ItemSyncBox<Meter> metersToRemove;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
 
     public SyncPlanPushStrategyIncrementalImplTest() {
         groupsToAddOrUpdate = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),

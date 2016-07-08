@@ -81,12 +81,12 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     @Captor
     private ArgumentCaptor<ProcessFlatBatchInput> processFlatBatchInputCpt;
 
-    private List<ItemSyncBox<Group>> groupsToAddOrUpdate;
-    private List<ItemSyncBox<Group>> groupsToRemove;
-    private ItemSyncBox<Meter> metersToAddOrUpdate;
-    private ItemSyncBox<Meter> metersToRemove;
-    private Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
-    private Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
+    private final List<ItemSyncBox<Group>> groupsToAddOrUpdate;
+    private final List<ItemSyncBox<Group>> groupsToRemove;
+    private final ItemSyncBox<Meter> metersToAddOrUpdate;
+    private final ItemSyncBox<Meter> metersToRemove;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
+    private final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
     private List<Batch> batchBag;
 
     private SyncPlanPushStrategyFlatBatchImpl syncPlanPushStrategy;
@@ -280,7 +280,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testMapBachesToRanges() throws Exception {
+    public void testMapBatchesToRanges() throws Exception {
         final List<Batch> inputBatchBag = Lists.newArrayList(
                 new BatchBuilder().setBatchOrder(0).build(),
                 new BatchBuilder().setBatchOrder(5).build(),

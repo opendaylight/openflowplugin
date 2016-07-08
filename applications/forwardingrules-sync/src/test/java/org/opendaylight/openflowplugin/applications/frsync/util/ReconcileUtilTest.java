@@ -89,11 +89,6 @@ public class ReconcileUtilTest {
         Assert.assertTrue(vehicle.get().isSuccessful());
     }
 
-    @Test
-    public void testCreateRpcResultCondenser() throws Exception {
-
-    }
-
     /**
      * add one missing group
      *
@@ -334,20 +329,5 @@ public class ReconcileUtilTest {
             syncBox1.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(orig, orig + "_updated"));
         }
         return syncBox1;
-    }
-
-    @Test
-    public void testResolveMeterDiffs() throws Exception {
-
-    }
-
-    @Test
-    public void testResolveFlowDiffsInTable() throws Exception {
-
-    }
-
-    @Test
-    public void testResolveFlowDiffsInAllTables() throws Exception {
-
     }
 }
