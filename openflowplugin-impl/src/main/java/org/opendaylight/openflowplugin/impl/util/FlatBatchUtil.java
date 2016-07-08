@@ -213,5 +213,16 @@ public final class FlatBatchUtil {
         return Futures.transform(Futures.successfulAsList(firedJobs), mergeRpcResults());
     }
 
+    /**
+     *
+     * @param status RPC result status
+     * @return ListenableFuture of RPC result with empty list of errors and batch failures
+     */
+    public static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> createEmptyRpcBatchResultFuture(final boolean status) {
+        return RpcResultBuilder.<ProcessFlatBatchOutput>status(status)
+                               .withRpcErrors(new ArrayList<>())
+                               .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
+                               .buildFuture();
+    }
 
 }

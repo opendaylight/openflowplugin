@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
+import org.opendaylight.openflowplugin.impl.util.FlatBatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -447,8 +448,7 @@ public class SalFlatBatchServiceImplTest {
         Mockito.when(batchStepJob1.getPlanStep()).thenReturn(batchPlanStep1);
         Mockito.when(batchStepJob2.getPlanStep()).thenReturn(batchPlanStep2);
 
-        final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> succeededChainOutput =
-                RpcResultBuilder.<ProcessFlatBatchOutput>success().withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build()).buildFuture();
+        final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> succeededChainOutput = FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
         final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> failedChainOutput =
                 RpcResultBuilder.<ProcessFlatBatchOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
