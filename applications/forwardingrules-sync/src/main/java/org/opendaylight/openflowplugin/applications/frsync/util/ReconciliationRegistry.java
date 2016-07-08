@@ -18,18 +18,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Holder of registration request for fresh operational.
  */
-public class RetryRegistry {
+public class ReconciliationRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RetryRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationRegistry.class);
     private final Map<NodeId, Date> registration = new ConcurrentHashMap<>();
     public static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     public Date register(NodeId nodeId) {
         Date timestamp = new Date();
         registration.put(nodeId, timestamp);
-        if (timestamp != null) {
-            LOG.debug("Registered for next consistent operational: {}", nodeId.getValue());
-        }
+        LOG.debug("Registered for next consistent operational: {}", nodeId.getValue());
         return timestamp;
     }
 
@@ -48,5 +46,4 @@ public class RetryRegistry {
     public Date getRegistration(NodeId nodeId) {
         return registration.get(nodeId);
     }
-
 }

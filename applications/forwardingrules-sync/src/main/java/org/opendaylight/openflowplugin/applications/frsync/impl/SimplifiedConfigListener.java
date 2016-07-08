@@ -33,8 +33,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private final FlowCapableNodeSnapshotDao configSnaphot;
     private final FlowCapableNodeDao operationalDao;
 
-    public SimplifiedConfigListener(final SyncReactor reactor, FlowCapableNodeSnapshotDao configSnaphot,
-            FlowCapableNodeDao operationalDao) {
+    public SimplifiedConfigListener(final SyncReactor reactor,
+                                    final FlowCapableNodeSnapshotDao configSnaphot,
+                                    final FlowCapableNodeDao operationalDao) {
         this.reactor = reactor;
         this.configSnaphot = configSnaphot;
         this.operationalDao = operationalDao;
