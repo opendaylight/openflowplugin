@@ -14,7 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
-import org.opendaylight.openflowplugin.applications.frsync.util.RetryRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -29,11 +29,11 @@ public class SyncReactorRetryDecorator implements SyncReactor {
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorRetryDecorator.class);
 
     private final SyncReactor delegate;
-    private final RetryRegistry retryRegistry;
+    private final ReconciliationRegistry reconciliationRegistry;
 
-    public SyncReactorRetryDecorator(final SyncReactor delegate, RetryRegistry retryRegistry) {
+    public SyncReactorRetryDecorator(final SyncReactor delegate, ReconciliationRegistry reconciliationRegistry) {
         this.delegate = delegate;
-        this.retryRegistry = retryRegistry;
+        this.reconciliationRegistry = reconciliationRegistry;
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
@@ -43,7 +43,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup retry {}", nodeId.getValue());
 
-        if (dsType == LogicalDatastoreType.CONFIGURATION && retryRegistry.isRegistered(nodeId)) {
+        if (dsType == LogicalDatastoreType.CONFIGURATION && reconciliationRegistry.isRegistered(nodeId)) {
             LOG.trace("Config change ignored because device is in retry [{}]", nodeId);
             return Futures.immediateFuture(Boolean.FALSE);
         }
@@ -55,10 +55,10 @@ public class SyncReactorRetryDecorator implements SyncReactor {
             public Boolean apply(Boolean result) {
                 LOG.trace("syncup ret in retry {}", result);
                 if (result) {
-                    retryRegistry.unregisterIfRegistered(nodeId);
+                    reconciliationRegistry.unregisterIfRegistered(nodeId);
                     return true;
                 } else {
-                    retryRegistry.register(nodeId);
+                    reconciliationRegistry.register(nodeId);
                     // TODO  elicit statistics gathering if not running actually
                     // triggerStatisticsGathering(nodeId);
                     return false;

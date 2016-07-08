@@ -46,7 +46,7 @@ public class SimplifiedConfigListenerTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
     private SimplifiedConfigListener nodeListenerConfig;
-    private LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
+    private final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
 
     @Mock
     private SyncReactor reactor;
