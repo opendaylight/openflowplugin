@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -16,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,8 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,7 +170,50 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
             if (OfpRole.BECOMEMASTER.equals(newRole)) {
                 logText = "Start";
-                statisticsManager.startScheduling(deviceInfo);
+
+                // Fill device flow registry with flows from datastore
+                final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
+                        deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
+
+                // Start statistics scheduling only after we finished initializing device flow registry
+                Futures.addCallback(deviceFlowRegistryFill, new FutureCallback<List<Optional<FlowCapableNode>>>() {
+                    @Override
+                    public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
+                        if (LOG.isDebugEnabled()) {
+                            int flowCount = 0;
+
+                            // Count all flows we read from datastore for debugging purposes.
+                            // This number do not always represent how many flows were actually added
+                            // to DeviceFlowRegistry, because of possible duplicates.
+                            if (result != null) {
+                                for (final Optional<FlowCapableNode> nodeOptional : result) {
+                                    if (nodeOptional != null && nodeOptional.isPresent()) {
+                                        final FlowCapableNode node = nodeOptional.get();
+
+                                        if (node.getTable() != null) {
+                                            for (final Table table : node.getTable()) {
+                                                if (table.getFlow() != null) {
+                                                    flowCount += table.getFlow().size();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getNodeId());
+                        }
+
+                        statisticsManager.startScheduling(deviceInfo);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getNodeId(), t);
+                        statisticsManager.startScheduling(deviceInfo);
+                    }
+                });
+
                 MdSalRegistrationUtils.registerMasterServices(
                         rpcManager.gainContext(deviceInfo),
                         deviceContext,
@@ -179,9 +226,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                             notificationPublishService,
                             new AtomicLong());
                 }
-
-                // Fill flow registry with flows found in operational and config datastore
-                deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
             } else {
                 logText = "Stopp";
                 statisticsManager.stopScheduling(deviceInfo);
@@ -195,7 +239,11 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                 @Override
                 public void onSuccess(@Nullable final Void aVoid) {
                     LOG.info("{}ing services for node {} was successful", logText, deviceInfo);
-                    if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(deviceInfo, true);
+
+                    if (newRole.equals(OfpRole.BECOMESLAVE)) {
+                        deviceContext.getDeviceFlowRegistry().close();
+                        notifyServiceChangeListeners(deviceInfo, true);
+                    }
                 }
 
                 @Override

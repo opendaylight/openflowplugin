@@ -87,7 +87,6 @@ public class LifecycleConductorImplTest {
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
     private OfpRole ofpRole = OfpRole.NOCHANGE;
-    private long delay = 42;
 
     @Before
     public void setUp() {
@@ -98,18 +97,16 @@ public class LifecycleConductorImplTest {
         lifecycleConductor.setSafelyManager(statisticsManager);
         lifecycleConductor.setSafelyManager(rpcManager);
 
-        when(deviceManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(deviceContext);
+        when(deviceManager.gainContext(Mockito.any())).thenReturn(deviceContext);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
+        when(rpcManager.gainContext(Mockito.any())).thenReturn(rpcContext);
         when(deviceInfo.getNodeId()).thenReturn(nodeId);
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        when(rpcManager.gainContext(Mockito.<DeviceInfo>any())).thenReturn(rpcContext);
+        when(rpcManager.gainContext(Mockito.any())).thenReturn(rpcContext);
     }
-
-
 
     @Test
     public void addOneTimeListenerWhenServicesChangesDoneTest() {
