@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -16,10 +17,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -40,6 +42,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +164,44 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
         if (OfpRole.BECOMEMASTER.equals(newRole)) {
             logText = "Start";
-            statisticsManager.startScheduling(deviceInfo);
+
+            // Fill device flow registry with flows from datastore
+            final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
+                    deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
+
+            // Start statistics scheduling only after we finished initializing device flow registry
+            Futures.addCallback(deviceFlowRegistryFill, new FutureCallback<List<Optional<FlowCapableNode>>>() {
+                @Override
+                public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
+                    if (LOG.isDebugEnabled()) {
+                        // Count all flows we read from datastore for debugging purposes.
+                        // This number do not always represent how many flows were actually added
+                        // to DeviceFlowRegistry, because of possible duplicates.
+                        long flowCount = Optional.fromNullable(result).asSet().stream()
+                                .flatMap(Collection::stream)
+                                .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                                .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                                .flatMap(table -> table.getFlow().stream())
+                                .count();
+
+                        LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getNodeId());
+                    }
+
+                    statisticsManager.startScheduling(deviceInfo);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    // If we manually cancelled this future, do not start scheduling of statistics
+                    if (deviceFlowRegistryFill.isCancelled()) {
+                        LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getNodeId());
+                    } else {
+                        LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getNodeId(), t);
+                        statisticsManager.startScheduling(deviceInfo);
+                    }
+                }
+            });
+
             MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
 
             if (rpcContext.isStatisticsRpcEnabled()) {
@@ -176,6 +216,12 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         } else {
             logText = "Stopp";
             statisticsManager.stopScheduling(deviceInfo);
+
+            // Clean device flow registry if we became slave
+            if (OfpRole.BECOMESLAVE.equals(newRole)) {
+                deviceContext.getDeviceFlowRegistry().close();
+            }
+
             MdSalRegistrationUtils.unregisterServices(rpcContext);
         }
 

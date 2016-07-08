@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,7 +69,7 @@ public class DeviceFlowRegistryImplTest {
         final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
-        deviceFlowRegistry.fill(nodeInstanceIdentifier);
+        deviceFlowRegistry.fill(nodeInstanceIdentifier).get();
 
         verify(dataBroker, times(2)).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
