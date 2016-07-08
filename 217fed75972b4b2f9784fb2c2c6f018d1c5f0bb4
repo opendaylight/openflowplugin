@@ -22,6 +22,30 @@
       "revId": "217fed75972b4b2f9784fb2c2c6f018d1c5f0bb4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_646f6593",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-07-08T05:35:47Z",
+      "side": 1,
+      "message": "I agree. I will update the patch to use Futures.successfulAsList().",
+      "parentUuid": "9a561d44_31476d21",
+      "range": {
+        "startLine": 624,
+        "startChar": 3,
+        "endLine": 642,
+        "endChar": 5
+      },
+      "revId": "217fed75972b4b2f9784fb2c2c6f018d1c5f0bb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
