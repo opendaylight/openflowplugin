@@ -9,7 +9,11 @@
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import java.util.Map;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -20,7 +24,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
-    void fill(KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+    ListenableFuture<List<Optional<FlowCapableNode>>> fill(KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
 
     FlowDescriptor retrieveIdForFlow(FlowRegistryKey flowRegistryKey);
 
