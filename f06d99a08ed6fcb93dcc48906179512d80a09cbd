@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_47ffc367",
+        "filename": "extension/features/src/main/features/features.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-08T07:25:52Z",
+      "side": 1,
+      "message": "I do not see blueprint used in extension extension project, so yes I think",
+      "parentUuid": "9a561d44_5acb1ba5",
+      "range": {
+        "startLine": 14,
+        "startChar": 8,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "f06d99a08ed6fcb93dcc48906179512d80a09cbd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
