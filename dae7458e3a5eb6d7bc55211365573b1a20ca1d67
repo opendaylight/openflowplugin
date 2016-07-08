@@ -23,6 +23,30 @@
       "revId": "dae7458e3a5eb6d7bc55211365573b1a20ca1d67",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_3fe8cf0f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeConnectorInventoryTranslatorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 396
+      },
+      "writtenOn": "2016-07-08T23:11:52Z",
+      "side": 1,
+      "message": "+1. And I fixed them. We need to do the same change on the master branch as well.",
+      "parentUuid": "9a561d44_4427c164",
+      "range": {
+        "startLine": 92,
+        "startChar": 18,
+        "endLine": 92,
+        "endChar": 19
+      },
+      "revId": "dae7458e3a5eb6d7bc55211365573b1a20ca1d67",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
