@@ -83,16 +83,12 @@ public class MdSalRegistrationUtils {
      *
      * @param rpcContext    - registration processing is implemented in {@link RpcContext}
      * @param deviceContext - every service needs {@link DeviceContext} as input parameter
-     * @param newRole       - role validation for {@link OfpRole#BECOMEMASTER}
      */
-    public static void registerMasterServices(@CheckForNull final RpcContext rpcContext,
-                                              @CheckForNull final DeviceContext deviceContext,
-                                              @CheckForNull final OfpRole newRole,
-                                              final ExtensionConverterProvider extensionConverterProvider) {
+    public static void registerServices(@CheckForNull final RpcContext rpcContext,
+                                        @CheckForNull final DeviceContext deviceContext,
+                                        final ExtensionConverterProvider extensionConverterProvider) {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(deviceContext != null);
-        Preconditions.checkArgument(newRole != null);
-        Verify.verify(OfpRole.BECOMEMASTER.equals(newRole), "Service call with bad Role {} we expect role BECOMEMASTER", newRole);
 
         // create service instances
         final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext);
@@ -135,23 +131,6 @@ public class MdSalRegistrationUtils {
     }
 
     /**
-     * Method unregisters all services in first step. So we don't need to call {@link MdSalRegistrationUtils#unregisterServices(RpcContext)}
-     * directly before by change role from {@link OfpRole#BECOMEMASTER} to {@link OfpRole#BECOMESLAVE}.
-     * Method registers {@link SalEchoService} in next step only because we would like to have SalEchoService as local service for all apps
-     * to be able actively check connection status for slave connection too.
-     *
-     * @param rpcContext - registration/unregistration processing is implemented in {@link RpcContext}
-     * @param newRole    - role validation for {@link OfpRole#BECOMESLAVE}
-     */
-    public static void registerSlaveServices(@CheckForNull final RpcContext rpcContext, @CheckForNull final OfpRole newRole) {
-        Preconditions.checkArgument(rpcContext != null);
-        Preconditions.checkArgument(newRole != null);
-        Verify.verify(OfpRole.BECOMESLAVE.equals(newRole), "Service call with bad Role {} we expect role BECOMESLAVE", newRole);
-
-        unregisterServices(rpcContext);
-    }
-
-    /**
      * Method unregisters all OF services.
      *
      * @param rpcContext - unregistration processing is implemented in {@link RpcContext}
@@ -183,11 +162,11 @@ public class MdSalRegistrationUtils {
      * @param rpcContext
      * @param deviceContext
      * @param notificationPublishService
-     * @param compatibilityXidSeed
      */
     public static void registerStatCompatibilityServices(final RpcContext rpcContext, final DeviceContext deviceContext,
-                                                         final NotificationPublishService notificationPublishService,
-                                                         final AtomicLong compatibilityXidSeed) {
+                                                         final NotificationPublishService notificationPublishService) {
+
+        AtomicLong compatibilityXidSeed = new AtomicLong();
         // pickup low statistics service
         final OpendaylightFlowStatisticsService flowStatisticsService = Preconditions.checkNotNull(
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));

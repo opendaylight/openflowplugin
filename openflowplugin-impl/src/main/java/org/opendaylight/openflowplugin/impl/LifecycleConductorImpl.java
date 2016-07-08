@@ -143,68 +143,58 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     }
 
     @Override
-    public void roleChangeOnDevice(final DeviceInfo deviceInfo, final boolean success, final OfpRole newRole, final boolean initializationPhase) {
+    public void roleChangeOnDevice(final DeviceInfo deviceInfo, final OfpRole newRole) {
 
-        final DeviceContext deviceContext = getDeviceContext(deviceInfo);
+        final DeviceContext deviceContext = Preconditions.checkNotNull(
+                deviceManager.gainContext(deviceInfo),
+                "Something went wrong, device context for nodeId: %s doesn't exists", deviceInfo.getNodeId()
+        );
 
-        if (null == deviceContext) {
-            LOG.warn("Something went wrong, device context for nodeId: {} doesn't exists");
-            return;
-        }
-        if (!success) {
-            LOG.warn("Role change to {} in role context for node {} was NOT successful, closing connection", newRole, deviceInfo);
-            closeConnection(deviceInfo);
-        } else {
-            if (initializationPhase) {
-                LOG.debug("Initialization phase skipping starting services.");
-                return;
-            }
+        final RpcContext rpcContext =  Preconditions.checkNotNull(
+                rpcManager.gainContext(deviceInfo),
+                "Something went wrong, rpc context for nodeId: %s doesn't exists", deviceInfo.getNodeId()
+        );
 
-            LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo);
+        LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo);
 
-            final String logText;
+        final String logText;
 
-            if (OfpRole.BECOMEMASTER.equals(newRole)) {
-                logText = "Start";
-                statisticsManager.startScheduling(deviceInfo);
-                MdSalRegistrationUtils.registerMasterServices(
-                        rpcManager.gainContext(deviceInfo),
+        if (OfpRole.BECOMEMASTER.equals(newRole)) {
+            logText = "Start";
+            statisticsManager.startScheduling(deviceInfo);
+            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
+
+            if (rpcContext.isStatisticsRpcEnabled()) {
+                MdSalRegistrationUtils.registerStatCompatibilityServices(
+                        rpcContext,
                         deviceContext,
-                        OfpRole.BECOMEMASTER,
-                        this.extensionConverterProvider);
-                if (((RpcContext)rpcManager.gainContext(deviceInfo)).isStatisticsRpcEnabled()) {
-                    MdSalRegistrationUtils.registerStatCompatibilityServices(
-                            rpcManager.gainContext(deviceInfo),
-                            deviceManager.gainContext(deviceInfo),
-                            notificationPublishService,
-                            new AtomicLong());
-                }
-
-                // Fill flow registry with flows found in operational and config datastore
-                deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
-            } else {
-                logText = "Stopp";
-                statisticsManager.stopScheduling(deviceInfo);
-                MdSalRegistrationUtils.registerSlaveServices(
-                        rpcManager.gainContext(deviceInfo),
-                        OfpRole.BECOMESLAVE);
+                        notificationPublishService);
             }
 
-            final ListenableFuture<Void> onClusterRoleChange = deviceManager.onClusterRoleChange(deviceInfo, newRole);
-            Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(@Nullable final Void aVoid) {
-                    LOG.info("{}ing services for node {} was successful", logText, deviceInfo);
-                    if (newRole.equals(OfpRole.BECOMESLAVE)) notifyServiceChangeListeners(deviceInfo, true);
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
-                    closeConnection(deviceInfo);
-                }
-            });
+            // Fill flow registry with flows found in operational and config datastore
+            deviceContext.getDeviceFlowRegistry().fill(deviceInfo.getNodeInstanceIdentifier());
+        } else {
+            logText = "Stopp";
+            statisticsManager.stopScheduling(deviceInfo);
+            MdSalRegistrationUtils.unregisterServices(rpcContext);
         }
+
+        final ListenableFuture<Void> onClusterRoleChange = deviceManager.onClusterRoleChange(deviceInfo, newRole);
+        Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable final Void aVoid) {
+                LOG.info("{}ing services for node {} was successful", logText, deviceInfo);
+                if (newRole.equals(OfpRole.BECOMESLAVE)) {
+                    notifyServiceChangeListeners(deviceInfo, true);
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
+                closeConnection(deviceInfo);
+            }
+        });
     }
 
     public MessageIntelligenceAgency getMessageIntelligenceAgency() {

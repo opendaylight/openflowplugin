@@ -111,7 +111,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
         }
         final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
-        LOG.debug("Actively closing connection: {}, datapathId:{}.",
+        LOG.debug("Actively closing connection: {}, datapathId: {}",
                 connectionAdapter.getRemoteAddress(), datapathId);
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
@@ -123,15 +123,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             }
         });
         try {
-            LOG.debug("Waiting 1s for unregistering outbound queue.");
             future.get(1, TimeUnit.SECONDS);
-            LOG.info("Unregistering outbound queue successful.");
-        } catch (InterruptedException e) {
-            LOG.warn("Unregistering outbound queue was interrupted for node {}", nodeId);
-        } catch (ExecutionException e) {
-            LOG.warn("Unregistering outbound queue throws exception for node {}", nodeId, e);
-        } catch (TimeoutException e) {
-            LOG.warn("Unregistering outbound queue took longer than 1 seconds for node {}", nodeId);
+            LOG.info("Unregister outbound queue successful.");
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            LOG.warn("Unregister outbound queue throws exception for node {} ", nodeId);
+            LOG.trace("Unregister outbound queue throws exception for node {} ", nodeId, e);
         }
 
         closeHandshakeContext();
@@ -292,10 +288,10 @@ public class ConnectionContextImpl implements ConnectionContext {
 
             DeviceInfoImpl that = (DeviceInfoImpl) o;
 
-            if (!nodeId.equals(that.nodeId)) return false;
-            if (!nodeII.equals(that.nodeII)) return false;
-            if (!version.equals(that.version)) return false;
-            return datapathId.equals(that.datapathId);
+            return  nodeId.equals(that.nodeId) &&
+                    nodeII.equals(that.nodeII) &&
+                    version.equals(that.version) &&
+                    datapathId.equals(that.datapathId);
 
         }
 
