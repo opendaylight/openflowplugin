@@ -9,14 +9,17 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.romix.scala.collection.concurrent.TrieMap;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -47,35 +50,43 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
     private final DataBroker dataBroker;
+    private ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture;
 
     public DeviceFlowRegistryImpl(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
     @Override
-    public void fill(final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
-        LOG.trace("Filling flow registry with flows for node: {}", instanceIdentifier);
+    public ListenableFuture<List<Optional<FlowCapableNode>>> fill(final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+        LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier);
 
         // Prepare path for read transaction
         // TODO: Read only Tables, and not entire FlowCapableNode (fix Yang model)
         final InstanceIdentifier<FlowCapableNode> path = instanceIdentifier.augmentation(FlowCapableNode.class);
 
         // First, try to fill registry with flows from DS/Configuration
-        fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
+        CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture = fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
 
         // Now, try to fill registry with flows from DS/Operational
         // in case of cluster fail over, when clients are not using DS/Configuration
         // for adding flows, but only RPCs
-        fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
+        CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture = fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
+
+        // And at last, chain and return futures created above.
+        // Also, cache this future, so call to DeviceFlowRegistry.close() will be able
+        // to cancel this future immediately if it will be still in progress
+        lastFillFuture = Futures.allAsList(Arrays.asList(configFuture, operationalFuture));
+        return lastFillFuture;
     }
 
-    private void fillFromDatastore(final LogicalDatastoreType logicalDatastoreType, final InstanceIdentifier<FlowCapableNode> path) {
+    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType, final InstanceIdentifier<FlowCapableNode> path) {
         // Create new read-only transaction
         final ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();
 
         // Bail out early if transaction is null
         if (transaction == null) {
-            return;
+            return Futures.immediateFailedCheckedFuture(
+                    new ReadFailedException("Read transaction is null"));
         }
 
         // Prepare read operation from datastore for path
@@ -84,52 +95,73 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         // Bail out early if future is null
         if (future == null) {
-            return;
+            return Futures.immediateFailedCheckedFuture(
+                    new ReadFailedException("Future from read transaction is null"));
         }
 
-        try {
-            // Synchronously read all data in path
-            final Optional<FlowCapableNode> data = future.get();
+        Futures.addCallback(future, new FutureCallback<Optional<FlowCapableNode>>() {
+            @Override
+            public void onSuccess(Optional<FlowCapableNode> result) {
+                if (result.isPresent()) {
+                    final List<Table> tables = result.get().getTable();
 
-            if (data.isPresent()) {
-                final List<Table> tables = data.get().getTable();
+                    if (tables != null) {
+                        for (Table table : tables) {
+                            final List<Flow> flows = table.getFlow();
 
-                if (tables != null) {
-                    for (Table table : tables) {
-                        final List<Flow> flows = table.getFlow();
+                            if (flows != null) {
+                                // If we finally got some flows, store each of them in registry if needed
+                                for (Flow flow : table.getFlow()) {
+                                    final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
 
-                        if (flows != null) {
-                            // If we finally got some flows, store each of them in registry if needed
-                            for (Flow flow : table.getFlow()) {
-                                final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
+                                    // Now, we will update the registry, but we will also try to prevent duplicate entries
+                                    if (!flowRegistry.containsKey(key)) {
+                                        LOG.trace("Found flow with table ID : {} and flow ID : {}",
+                                                flow.getTableId(),
+                                                flow.getId().getValue());
 
-                                // Now, we will update the registry, but we will also try to prevent duplicate entries
-                                if (!flowRegistry.containsKey(key)) {
-                                    LOG.trace("Reading and storing flowDescriptor with table ID : {} and flow ID : {}",
-                                            flow.getTableId(),
-                                            flow.getId().getValue());
+                                        final FlowDescriptor descriptor = FlowDescriptorFactory.create(
+                                                flow.getTableId(),
+                                                flow.getId());
 
-                                    final FlowDescriptor descriptor = FlowDescriptorFactory.create(
-                                            flow.getTableId(),
-                                            flow.getId());
-
-                                    flowRegistry.put(key, descriptor);
+                                        store(key, descriptor);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Read transaction for identifier {} failed with exception: {}", path, e);
-        }
 
-        // After we are done with reading from datastore, close the transaction
-        transaction.close();
+                // After we are done with reading from datastore, close the transaction
+                transaction.close();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                // Even when read operation failed, close the transaction
+                transaction.close();
+            }
+        });
+
+        return future;
     }
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
+        LOG.trace("Retrieving flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
+
+        // Get FlowDescriptor from flow registry
+        return flowRegistry.get(flowRegistryKey);
+    }
+
+    @Override
+    public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+        LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
+        flowRegistry.put(flowRegistryKey, flowDescriptor);
+    }
+
+    @Override
+    public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Trying to retrieve flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
 
         // First, try to get FlowDescriptor from flow registry
@@ -146,19 +178,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             store(flowRegistryKey, flowDescriptor);
         }
 
-        return flowDescriptor;
-    }
-
-    @Override
-    public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
-        LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-        flowRegistry.put(flowRegistryKey, flowDescriptor);
-    }
-
-    @Override
-    public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey) {
-        // We will simply reuse retrieveIdForFlow to get or generate FlowDescriptor and store it if needed
-        final FlowDescriptor flowDescriptor = retrieveIdForFlow(flowRegistryKey);
         return flowDescriptor.getFlowId();
     }
 
@@ -167,6 +186,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         synchronized (marks) {
             marks.add(flowRegistryKey);
         }
+
         LOG.trace("Flow hash {} was marked for removal.", flowRegistryKey.hashCode());
     }
 
@@ -189,6 +209,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void close() {
+        if (lastFillFuture != null) {
+            lastFillFuture.cancel(true);
+            lastFillFuture = null;
+        }
+
         flowRegistry.clear();
         marks.clear();
     }
