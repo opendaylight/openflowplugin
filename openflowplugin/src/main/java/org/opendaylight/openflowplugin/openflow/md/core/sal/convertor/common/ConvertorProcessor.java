@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +23,11 @@ import org.slf4j.LoggerFactory;
  * @param <TO>   the result type
  * @param <DATA> the type of convertor data
  */
-public class ConvertorProcessor<FROM, TO, DATA extends ConvertorData> {
+public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends ConvertorData> {
     private static final short OFP_VERSION_ALL = 0x00;
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorProcessor.class);
 
-    private final Map<InjectionKey, ConvertorCase<?, TO, DATA>> conversions = new HashMap<>();
+    private final Map<InjectionKey, ConvertorCase<?, TO, DATA>> conversions = new ConcurrentHashMap<>();
     private ConvertorCase<?, TO, DATA> defaultCase;
 
     /**
@@ -69,33 +71,24 @@ public class ConvertorProcessor<FROM, TO, DATA extends ConvertorData> {
         Optional<TO> result = Optional.empty();
         final short version = data != null ? data.getVersion() : OFP_VERSION_ALL;
 
-        if (source == null) {
+        if (Objects.isNull(source)) {
             LOG.trace("Failed to convert null for version {}", version);
             return result;
         }
 
-        Class<?> clazz = source.getClass();
-        final Class<?>[] interfaces = clazz.getInterfaces();
-
-        if (interfaces.length > 0) {
-            clazz = interfaces[0];
-        }
-
+        final Class<?> clazz = source.getImplementedInterface();
         final InjectionKey key = new InjectionKey(version, clazz);
-        ConvertorCase<?, TO, DATA> rule = defaultCase;
+        final Optional<ConvertorCase<?, TO, DATA>> caseOptional = Optional.ofNullable(conversions.get(key));
+        final ConvertorCase<?, TO, DATA> processorCase = caseOptional.orElse(defaultCase);
 
-        if (conversions.containsKey(key)) {
-            rule = conversions.get(key);
-        }
+        if (Objects.nonNull(processorCase)) {
+            result = processorCase.processRaw(source, data);
 
-        if (rule != null) {
-            result = rule.processRaw(source, data);
-
-            if (rule.isErrorOnEmpty() && !result.isPresent()) {
-                LOG.error("Failed to convert {} for version {}", clazz, version);
+            if (processorCase.isErrorOnEmpty() && !result.isPresent()) {
+                LOG.warn("Failed to process {} for version {}", clazz, version);
             }
         } else {
-            LOG.trace("Failed to convert {} for version {}", clazz, version);
+            LOG.trace("Failed to process {} for version {}", clazz, version);
         }
 
         return result;
