@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 - 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,18 +10,45 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+
+import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Objects;
+
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcRemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowOriginal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.AllMatchesGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcRemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowOriginal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowUpdated;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public class FlowRegistryKeyFactory {
-
+    private static final Logger LOG = LoggerFactory.getLogger(FlowRegistryKey.class);
 
     public FlowRegistryKeyFactory() {
     }
@@ -31,6 +58,65 @@ public class FlowRegistryKeyFactory {
     }
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
+
+        private final static Class[] MATCH_AUGMENTATIONS = {GeneralAugMatchNodesNodeTableFlow.class,
+                                                            GeneralAugMatchNotifUpdateFlowStats.class,
+                                                            GeneralAugMatchNotifPacketIn.class,
+                                                            GeneralAugMatchNotifSwitchFlowRemoved.class,
+                                                            GeneralAugMatchRpcAddFlow.class,
+                                                            GeneralAugMatchRpcRemoveFlow.class,
+                                                            GeneralAugMatchRpcUpdateFlowOriginal.class,
+                                                            GeneralAugMatchRpcUpdateFlowUpdated.class};
+
+        private final static Class[] EXT_LIST_AUGMENTATIONS = {NxAugMatchNodesNodeTableFlow.class,
+                                                                NxAugMatchNotifUpdateFlowStats.class,
+                                                                NxAugMatchNotifPacketIn.class,
+                                                                NxAugMatchNotifSwitchFlowRemoved.class,
+                                                                NxAugMatchRpcAddFlow.class,
+                                                                NxAugMatchRpcRemoveFlow.class,
+                                                                NxAugMatchRpcUpdateFlowOriginal.class,
+                                                                NxAugMatchRpcUpdateFlowUpdated.class};
+
+        private final static String[] MATCH_GETTER_METHODS = {"getInPort",
+                                                                "getInPhyPort",
+                                                                "getMetadata",
+                                                                "getTunnel",
+                                                                "getEthernetMatch",
+                                                                "getVlanMatch",
+                                                                "getIpMatch",
+                                                                "getLayer3Match",
+                                                                "getLayer4Match",
+                                                                "getIcmpv4Match",
+                                                                "getIcmpv6Match",
+                                                                "getProtocolMatchFields",
+                                                                "getTcpFlagMatch"};
+
+        private final static String[] ALL_MATCHES_GROUPING_GETTERS = {"getNxmOfEthSrc",
+                                                                        "getNxmOfArpOp",
+                                                                        "getNxmOfUdpDst",
+                                                                        "getNxmNxNshc3",
+                                                                        "getNxmNxCtZone",
+                                                                        "getNxmNxArpSha",
+                                                                        "getNxmOfIcmpType",
+                                                                        "getNxmNxNshc1",
+                                                                        "getNxmOfArpSpa",
+                                                                        "getNxmNxTunIpv4Dst",
+                                                                        "getNxmOfTcpSrc",
+                                                                        "getNxmNxNshc4",
+                                                                        "getNxmOfArpTpa",
+                                                                        "getNxmOfTcpDst",
+                                                                        "getNxmNxNsi",
+                                                                        "getNxmNxNshc2",
+                                                                        "getNxmNxArpTha",
+                                                                        "getNxmNxReg",
+                                                                        "getNxmOfIpSrc",
+                                                                        "getNxmOfEthType",
+                                                                        "getNxmOfEthDst",
+                                                                        "getNxmOfUdpSrc",
+                                                                        "getNxmNxCtState",
+                                                                        "getNxmNxTunIpv4Src",
+                                                                        "getNxmOfIpDst",
+                                                                        "getNxmNxNsp"};
 
         private final short tableId;
         private final int priority;
@@ -57,17 +143,144 @@ public class FlowRegistryKeyFactory {
 
             final FlowRegistryKey that = (FlowRegistryKey) o;
 
-            return getPriority() == that.getPriority() &&
-                    getTableId() == that.getTableId() &&
-                    getMatch().equals(that.getMatch());
+            if (getPriority() != that.getPriority() || getTableId() != that.getTableId()) {
+                return false;
+            }
+
+            if (!areMatchFieldsEqual(this.match, that.getMatch())) {
+                return false;
+            }
+
+            MatchAugmentationIterator thisIt = new MatchAugmentationIterator(this.match);
+            MatchAugmentationIterator thatIt = new MatchAugmentationIterator(that.getMatch());
+
+            Augmentation augThis = thisIt.next();
+            Augmentation augThat = thatIt.next();
+
+            while(true) {
+                if(!areMatchAugmentationsEqual((AllMatchesGrouping)augThis, (AllMatchesGrouping)augThat)) {
+                    return false;
+                }
+
+                if(augThis == null && augThat == null) {
+                    break;
+                }
+
+                augThis = thisIt.next();
+                augThat = thatIt.next();
+            }
+
+            return true;
         }
 
         @Override
         public int hashCode() {
             int result = tableId;
             result = 31 * result + priority;
-            result = 31 * result + match.hashCode();
+            result = 31 * result + matchHashCode();
             return result;
+        }
+
+        class MatchAugmentationIterator {
+
+            Match myMatch;
+
+            public MatchAugmentationIterator(Match match) {
+                this.myMatch = match;
+            }
+
+            private int matchAugmentationIdx = 0;
+            private int extListListIdx = 0;
+            private int extListAugmentationIdx = 0;
+
+            public Augmentation next() {
+
+                while (matchAugmentationIdx < MATCH_AUGMENTATIONS.length) {
+                    GeneralExtensionListGrouping extensionListGrouping = (GeneralExtensionListGrouping)
+                                            myMatch.getAugmentation(MATCH_AUGMENTATIONS[matchAugmentationIdx]);
+
+                    if (null != extensionListGrouping) {
+                        List<ExtensionList> extListList = extensionListGrouping.getExtensionList();
+
+                        while (extListListIdx < extListList.size()) {
+
+                            ExtensionList extList = extListList.get(extListListIdx);
+
+                            while(extListAugmentationIdx < EXT_LIST_AUGMENTATIONS.length) {
+                                Augmentation res = extList.getExtension().getAugmentation(
+                                                                        EXT_LIST_AUGMENTATIONS[extListAugmentationIdx]);
+                                ++extListAugmentationIdx;
+                                if (res != null) {
+                                    return res;
+                                }
+                            }
+                            extListAugmentationIdx = 0;
+                            ++extListListIdx;
+                        }
+                        extListListIdx = 0;
+                    }
+                    ++matchAugmentationIdx;
+
+                }
+
+                return null;
+            }
+
+        }
+
+        private int matchHashCode() {
+            int result = 0;
+
+            for(String methodName : MATCH_GETTER_METHODS) {
+                try {
+                    Method method = Match.class.getMethod(methodName);
+                    result = 31 * result + Objects.hashCode(method.invoke(match));
+                } catch(Exception e) {
+                    LOG.warn("Exception while hashing objects, skipping", e);
+                }
+            }
+
+            MatchAugmentationIterator it = new MatchAugmentationIterator(match);
+            Augmentation aug = it.next();
+            while(aug != null) {
+                result = 31 * result + aug.hashCode();
+                aug = it.next();
+            }
+
+            return result;
+
+        }
+
+        private boolean compareObjects(String[] getters, Class clazz, Object obj1, Object obj2) {
+            if (obj1 == null && obj2 == null) {
+                return true;
+            }
+
+            if (obj1 == null || obj2 == null) {
+                return false;
+            }
+
+            for(String methodName : getters) {
+                try {
+                    Method method = clazz.getMethod(methodName);
+                    if (!Objects.equals(method.invoke(obj1), method.invoke(obj2))) {
+                        return false;
+                    }
+                } catch(Exception e) {
+                    LOG.warn("Error while comparing Match objects, assuming unequal", e);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private boolean areMatchFieldsEqual(Match m1, Match m2) {
+            return compareObjects(MATCH_GETTER_METHODS, Match.class, m1, m2);
+        }
+
+        private boolean areMatchAugmentationsEqual(AllMatchesGrouping obj1, AllMatchesGrouping obj2) {
+            return compareObjects(ALL_MATCHES_GROUPING_GETTERS, AllMatchesGrouping.class, obj1, obj2);
         }
 
         @Override
