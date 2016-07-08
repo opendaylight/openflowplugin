@@ -30,8 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -137,6 +141,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         // We was not able to retrieve FlowDescriptor, so we will at least try to generate it
         if (flowDescriptor == null) {
+            LOG.warn("JOSH could not find descriptor for {} {}", flowRegistryKey.hashCode(), flowRegistryKey.getMatch());
             final short tableId = flowRegistryKey.getTableId();
             final FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
             flowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
@@ -152,6 +157,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
+        LOG.warn("JOSH storing {} {}", flowRegistryKey.hashCode(), flowRegistryKey.getMatch());
+        Match m = flowRegistryKey.getMatch();
+        m.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
         flowRegistry.put(flowRegistryKey, flowDescriptor);
     }
 
@@ -176,6 +184,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             for (FlowRegistryKey flowRegistryKey : marks) {
                 LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
                 flowRegistry.remove(flowRegistryKey);
+                LOG.warn("JOSH removing {}", flowRegistryKey.hashCode());
             }
 
             marks.clear();
