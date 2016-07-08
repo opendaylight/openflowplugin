@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -63,14 +64,14 @@ public class ConvertorManagerTest {
 
     @Test
     public void testRegisterConvertor() throws Exception {
-        boolean success = ConvertorManager.getInstance().registerConvertor(convertor);
-        assertFalse("Convertor should be already registered", success);
+        Convertor result = ConvertorManager.getInstance().registerConvertor(convertor);
+        assertNotNull("Convertor should be already registered", result);
     }
 
     @Test
     public void testRegisterParametrizedConvertor() throws Exception {
-        boolean success = ConvertorManager.getInstance().registerConvertor(parametrizedConvertor);
-        assertFalse("Parametrized convertor should be already registered", success);
+        ParametrizedConvertor result = ConvertorManager.getInstance().registerConvertor(parametrizedConvertor);
+        assertNotNull("Parametrized convertor should be already registered", result);
     }
 
     @Test

@@ -10,12 +10,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -32,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages various convertors and allows to use them all in one generic way
  */
-public class ConvertorManager {
+public class ConvertorManager implements ConvertorRegistrator, ConvertorExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorManager.class);
     private static ConvertorManager INSTANCE;
 
@@ -65,8 +64,8 @@ public class ConvertorManager {
 
     // Cache, that holds all registered convertors, but they can have multiple keys,
     // based on instanceof checks in the convert method
-    private Map<Class<?>, Convertor> convertors = new HashMap<>();
-    private Map<Class<?>, ParametrizedConvertor> parametrizedConvertors = new HashMap<>();
+    private Map<Class<?>, Convertor> convertors = new ConcurrentHashMap<>();
+    private Map<Class<?>, ParametrizedConvertor> parametrizedConvertors = new ConcurrentHashMap<>();
 
     private ConvertorManager() {
         // Hiding implicit constructor
@@ -81,169 +80,121 @@ public class ConvertorManager {
         return INSTANCE;
     }
 
-    /**
-     * Register convertor.
-     *
-     * @param convertor the convertor
-     * @return if registration was successful
-     */
-    public boolean registerConvertor(final Convertor convertor) {
+    @Override
+    public Convertor registerConvertor(final Convertor convertor) {
         final Class<?> type = convertor.getType();
+        final Convertor result = convertors.get(type);
 
-        if (convertors.containsKey(type)) {
+        if (Objects.isNull(result)) {
+            convertorKeys.add(type);
+            convertors.put(type, convertor);
+            LOG.debug("{} is now converted by {}", type, convertor);
+        } else {
             LOG.warn("Convertor for type {} is already registered", type);
-            return false;
         }
 
-        convertorKeys.add(type);
-        convertors.put(type, convertor);
-        LOG.debug("{} is now converted by {}", type, convertor);
-        return true;
+        return result;
     }
 
-    /**
-     * Register convertor.
-     *
-     * @param convertor the convertor
-     * @return if registration was successful
-     */
-    public boolean registerConvertor(final ParametrizedConvertor convertor) {
+    @Override
+    public ParametrizedConvertor registerConvertor(final ParametrizedConvertor convertor) {
         final Class<?> type = convertor.getType();
+        final ParametrizedConvertor result = parametrizedConvertors.get(type);
 
-        if (parametrizedConvertors.containsKey(type)) {
+        if (Objects.isNull(result)) {
+            parametrizedConvertorKeys.add(type);
+            parametrizedConvertors.put(type, convertor);
+            LOG.debug("{} is now converted by {}", type, convertor);
+        } else {
             LOG.warn("Convertor for type {} is already registered", type);
-            return false;
         }
 
-        parametrizedConvertorKeys.add(type);
-        parametrizedConvertors.put(type, convertor);
-        LOG.debug("{} is now converted by {}", type, convertor);
-        return true;
+        return result;
     }
 
-    /**
-     * Lookup and use convertor by specified type, then converts source and returns converted result
-     *
-     * @param <FROM> the source type
-     * @param <TO>   the result type
-     * @param source the source
-     * @return the result (can be empty, if no convertor was found)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <FROM, TO> Optional<TO> convert(final FROM source) {
-        if (Objects.isNull(source)) {
-            LOG.trace("Cannot convert source, because it is null");
+        final Optional<Class<?>> optionalType = extractType(source);
+
+        if (!optionalType.isPresent()) {
+            LOG.trace("Cannot convert {}", source);
             return Optional.empty();
         }
 
-        Class<?> type = source.getClass();
+        final Class<?> type = optionalType.get();
+        Convertor convertor = convertors.get(type);
 
-        if (source instanceof Collection) {
-            final Iterator it = ((Collection) source).iterator();
-            Object next = null;
-
-            if (it.hasNext()) {
-                next = it.next();
-            }
-
-            if (Objects.isNull(next)) {
-                LOG.trace("Cannot convert {}, because it is empty collection", type);
-                return Optional.empty();
-            }
-
-            type = next.getClass();
-        }
-
-        Convertor convertor = null;
-
-        if (!convertors.containsKey(type)) {
-            boolean found = false;
-
-            for (Class<?> key : convertorKeys) {
+        if (Objects.isNull(convertor)) {
+            for (final Class<?> key : convertorKeys) {
                 if (key.isAssignableFrom(type)) {
                     convertor = convertors.get(key);
                     convertors.put(type, convertor);
                     LOG.debug("{} is now converted by {}", type, convertor);
-                    found = true;
                     break;
                 }
             }
 
-            if (!found) {
-                LOG.error("Convertor for {} not found", type);
+            if (Objects.isNull(convertor)) {
+                LOG.warn("Convertor for {} not found", type);
                 return Optional.empty();
             }
         }
 
-        if (Objects.isNull(convertor)) {
-            convertor = convertors.get(type);
-        }
-
-        final Object result = convertor.convert(source);
-        return Optional.of((TO) result);
+        return Optional.of((TO) convertor.convert(source));
     }
 
-    /**
-     * Lookup and use convertor by specified type, then converts source and returns converted result
-     *
-     * @param <FROM> the source type
-     * @param <TO>   the result type
-     * @param <DATA> the data type
-     * @param source the source
-     * @param data   convertor data
-     * @return the result (can be empty, if no convertor was found)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <FROM, TO, DATA extends ConvertorData> Optional<TO> convert(final FROM source, final DATA data) {
+        final Optional<Class<?>> optionalType = extractType(source);
+
+        if (!optionalType.isPresent()) {
+            LOG.trace("Cannot convert {}", source);
+            return Optional.empty();
+        }
+
+        final Class<?> type = optionalType.get();
+        ParametrizedConvertor convertor = parametrizedConvertors.get(type);
+
+        if (Objects.isNull(convertor)) {
+            for (final Class<?> key : parametrizedConvertorKeys) {
+                if (key.isAssignableFrom(type)) {
+                    convertor = parametrizedConvertors.get(key);
+                    parametrizedConvertors.put(type, convertor);
+                    LOG.debug("{} is now converted by {}", type, convertor);
+                    break;
+                }
+            }
+
+            if (Objects.isNull(convertor)) {
+                LOG.warn("Convertor for {} not found", type);
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of((TO) convertor.convert(source, data));
+    }
+
+    private <FROM> Optional<Class<?>> extractType(FROM source) {
         if (Objects.isNull(source)) {
-            LOG.trace("Cannot convert source, because it is null");
+            LOG.trace("Cannot extract type from source, because it is null");
             return Optional.empty();
         }
 
         Class<?> type = source.getClass();
 
         if (source instanceof Collection) {
-            final Iterator it = ((Collection) source).iterator();
-            Object next = null;
+            final Optional first = ((Collection) source).stream().findFirst();
 
-            if (it.hasNext()) {
-                next = it.next();
-            }
-
-            if (Objects.isNull(next)) {
-                LOG.trace("Cannot convert {}, because it is empty collection", type);
+            if (!first.isPresent()) {
+                LOG.trace("Cannot extract type {}, because it is empty collection", type);
                 return Optional.empty();
             }
 
-            type = next.getClass();
+            type = first.get().getClass();
         }
 
-        ParametrizedConvertor convertor = null;
-
-        if (!parametrizedConvertors.containsKey(type)) {
-            boolean found = false;
-
-            for (Class<?> key : parametrizedConvertorKeys) {
-                if (key.isAssignableFrom(type)) {
-                    convertor = parametrizedConvertors.get(key);
-                    parametrizedConvertors.put(type, convertor);
-                    LOG.debug("{} is now converted by {}", type, convertor);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                LOG.error("Convertor for {} not found", type);
-                return Optional.empty();
-            }
-        }
-
-        if (Objects.isNull(convertor)) {
-            convertor = parametrizedConvertors.get(type);
-        }
-
-        final Object result = convertor.convert(source, data);
-        return Optional.of((TO) result);
+        return Optional.of(type);
     }
 }
