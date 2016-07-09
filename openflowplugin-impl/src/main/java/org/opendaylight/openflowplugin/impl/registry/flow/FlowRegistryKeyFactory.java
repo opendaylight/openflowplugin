@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -40,7 +41,7 @@ public class FlowRegistryKeyFactory {
             //TODO: mandatory flow input values (or default values) should be specified via yang model
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
-            match = Preconditions.checkNotNull(flow.getMatch(), "Match value must not be null");
+            match = flow.getMatch()==null? new MatchBuilder().build(): flow.getMatch();
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
 
