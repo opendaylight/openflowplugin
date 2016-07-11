@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_e5636adb",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-11T07:16:03Z",
+      "side": 1,
+      "message": "just: Turning off flow removed notification, without deprecated",
+      "range": {
+        "startLine": 87,
+        "startChar": 25,
+        "endLine": 87,
+        "endChar": 73
+      },
+      "revId": "ef632e18f496cc67fb1b0b34c8cdb2fcc276cf13",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_456336dc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-11T07:16:03Z",
+      "side": 1,
+      "message": "move inside if as else clause",
+      "range": {
+        "startLine": 290,
+        "startChar": 0,
+        "endLine": 291,
+        "endChar": 75
+      },
+      "revId": "ef632e18f496cc67fb1b0b34c8cdb2fcc276cf13",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
