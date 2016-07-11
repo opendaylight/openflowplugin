@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
@@ -161,6 +162,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +176,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class TableFeaturesResponseConvertor implements Convertor<MultipartReplyTableFeatures, List<TableFeatures>> {
+public class TableFeaturesResponseConvertor implements Convertor<MultipartReplyTableFeatures, List<TableFeatures>, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesResponseConvertor.class);
     private static final Map<TableFeaturesPropType, ActionExecutor> TABLE_FEATURE_PROPERTY_TYPE_TO_ACTION;
     private static final Map<Class<?>, org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> OF_TO_SAL_ACTION;
@@ -479,12 +481,12 @@ public class TableFeaturesResponseConvertor implements Convertor<MultipartReplyT
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return MultipartReplyTableFeatures.class;
     }
 
     @Override
-    public List<TableFeatures> convert(MultipartReplyTableFeatures source) {
+    public List<TableFeatures> convert(MultipartReplyTableFeatures source, VersionConvertorData data) {
         if (source == null || source.getTableFeatures() == null) {
             return Collections.emptyList();
         }

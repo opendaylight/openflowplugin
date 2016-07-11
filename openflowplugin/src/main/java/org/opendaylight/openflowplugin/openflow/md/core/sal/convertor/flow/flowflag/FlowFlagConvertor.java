@@ -9,23 +9,30 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * converting from MD-SAL match model into appropriate OF-API match model
  *
  * @param <E> type of converted match
  */
-public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E> {
+public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E, VersionConvertorData> {
 
-    default Class<?> getType() {
-        return FlowModFlags.class;
+    @Override
+    default Class<? extends DataContainer> getType() {
+        return DataContainer.class;
+    }
+
+    @Override
+    default E convert(FlowModFlags source, VersionConvertorData data) {
+        return convert(source);
     }
     
     /**
      * @param source flow mode flags
      * @return converted match (into OF-API model)
      */
-    @Override
     E convert(FlowModFlags source);
 }
