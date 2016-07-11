@@ -27,7 +27,7 @@ public class FlowFlagReactorMappingFactory {
     /**
      * @param conversionMapping conversion mapping
      */
-    public static void addFlowFlagsConvertors(final Map<Short, Convertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?>> conversionMapping) {
+    public static void addFlowFlagsConvertors(final Map<Short, Convertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new FlowFlagsConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new FlowFlagsConvertorV10Impl());
     }
