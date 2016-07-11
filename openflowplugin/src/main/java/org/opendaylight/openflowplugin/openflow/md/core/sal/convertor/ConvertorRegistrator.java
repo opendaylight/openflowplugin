@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
 
 public interface ConvertorRegistrator {
     /**
@@ -19,12 +18,4 @@ public interface ConvertorRegistrator {
      * @return previous convertor if already registered or null
      */
     Convertor registerConvertor(final Convertor convertor);
-
-    /**
-     * Register convertor.
-     *
-     * @param convertor the convertor
-     * @return previous convertor if already registered or null
-     */
-    ParametrizedConvertor registerConvertor(final ParametrizedConvertor convertor);
 }

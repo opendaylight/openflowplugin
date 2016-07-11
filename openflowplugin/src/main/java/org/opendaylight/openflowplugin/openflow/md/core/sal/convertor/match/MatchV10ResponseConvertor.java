@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts Openflow 1.0 specific flow match to MD-SAL format flow
@@ -44,14 +45,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * }
  * </pre>
  */
-public class MatchV10ResponseConvertor implements ParametrizedConvertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
+public class MatchV10ResponseConvertor implements Convertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;
     private static final String NO_IP = "0.0.0.0/0";
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return MatchV10.class;
     }
 

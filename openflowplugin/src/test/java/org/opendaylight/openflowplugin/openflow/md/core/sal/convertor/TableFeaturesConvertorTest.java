@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +20,6 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -49,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchBuilder;
@@ -88,9 +86,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesConvertorTest extends TestCase {
-
-    @Mock
-    private TableFeatures tableFeatures;
     private static final TablePropertiesBuilder tablePropertiesBuilder = new TablePropertiesBuilder();
     private static final Map<Class<? extends TableFeaturePropType>, TableFeaturePropType> augmentationsMap = new HashMap<>();
     private static final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction> instructionsList = new ArrayList<>();
@@ -334,7 +329,11 @@ public class TableFeaturesConvertorTest extends TestCase {
             tableFeaturesBuilder.setTableProperties(getTableProperties());
             tableFeaturesList.add(tableFeaturesBuilder.build());
         }
-        when(tableFeatures.getTableFeatures()).thenReturn(tableFeaturesList);
+
+        TableFeatures tableFeatures = new UpdatedTableBuilder()
+                .setTableFeatures(tableFeaturesList)
+                .build();
+
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures>> tableFeaturesesOptional =
                 ConvertorManager.getInstance().convert(tableFeatures);
 

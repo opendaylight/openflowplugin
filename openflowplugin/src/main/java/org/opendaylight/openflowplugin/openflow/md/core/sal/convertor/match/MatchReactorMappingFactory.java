@@ -34,7 +34,7 @@ public class MatchReactorMappingFactory {
     /**
      * @param conversionMapping conversion mapping
      */
-    public static void addMatchConvertors(final Map<Short, Convertor<Match, ?>> conversionMapping) {
+    public static void addMatchConvertors(final Map<Short, Convertor<Match, ?, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new MatchConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new MatchConvertorV10Impl());
     }

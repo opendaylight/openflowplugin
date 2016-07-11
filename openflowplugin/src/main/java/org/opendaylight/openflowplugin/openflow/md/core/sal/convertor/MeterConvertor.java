@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class MeterConvertor implements ParametrizedConvertor<Meter, MeterModInputBuilder, VersionConvertorData> {
+public class MeterConvertor implements Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
 
     /**
@@ -141,7 +142,7 @@ public class MeterConvertor implements ParametrizedConvertor<Meter, MeterModInpu
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return Meter.class;
     }
 

@@ -18,10 +18,10 @@ import java.util.Map;
  */
 public abstract class ConvertReactor<FROM> {
     private final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping;
-    private final Map<Short, Convertor<FROM, ?>> conversionMapping;
+    private final Map<Short, Convertor<FROM, ?, ?>> conversionMapping;
 
     protected ConvertReactor() {
-        final Map<Short, Convertor<FROM, ?>> conversions = new HashMap<>();
+        final Map<Short, Convertor<FROM, ?, ?>> conversions = new HashMap<>();
         final Map<InjectionKey, ResultInjector<?, ?>> injections = new HashMap<>();
         initMappings(conversions, injections);
 
@@ -35,7 +35,7 @@ public abstract class ConvertReactor<FROM> {
      * @param conversions convert from
      * @param injections injection
      */
-    protected abstract void initMappings(Map<Short, Convertor<FROM, ?>> conversions,
+    protected abstract void initMappings(Map<Short, Convertor<FROM, ?, ?>> conversions,
             Map<InjectionKey, ResultInjector<?, ?>> injections);
 
     /**
@@ -49,11 +49,11 @@ public abstract class ConvertReactor<FROM> {
     public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target) {
 
         //lookup converter
-        Convertor<FROM, RESULT> convertor = (Convertor<FROM, RESULT>) conversionMapping.get(version);
+        Convertor<FROM, RESULT, ?> convertor = (Convertor<FROM, RESULT, ?>) conversionMapping.get(version);
         if (convertor == null) {
             throw new IllegalArgumentException("convertor for given version ["+version+"] not found");
         }
-        RESULT convertedItem = convertor.convert(source);
+        RESULT convertedItem = convertor.convert(source, null);
 
         //lookup injection
         InjectionKey key = buildInjectionKey(version, convertedItem, target);

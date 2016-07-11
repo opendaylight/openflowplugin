@@ -8,13 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import javax.annotation.Nullable;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
+
 /**
  * Converts OpenflowJava to MDSal model and vice versa
  *
  * @param <FROM> type of source
  * @param <TO>   type of result
  */
-public interface Convertor<FROM, TO> {
+public interface Convertor<FROM, TO, DATA extends ConvertorData> {
 
     /**
      * Gets type of convertor, used in
@@ -22,13 +25,14 @@ public interface Convertor<FROM, TO> {
      *
      * @return the type of convertor
      */
-    Class<?> getType();
+    Class<? extends DataContainer> getType();
 
     /**
      * Converts source to result
      *
      * @param source source
+     * @param data   convertor data
      * @return converted source
      */
-    TO convert(FROM source);
+    TO convert(FROM source, @Nullable DATA data);
 }

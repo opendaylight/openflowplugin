@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroup;
 
@@ -57,17 +59,22 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyGroupCase groupCase = mock(MultipartReplyGroupCase.class);
         final MultipartReplyGroup group = mock(MultipartReplyGroup.class);
-        final GroupStats groupStat = mock(GroupStats.class);
-        final List<GroupStats> groupStats = Arrays.asList(groupStat);
-        final List<MultipartReply> input = Arrays.asList(reply);
+        final GroupStats groupStat = new GroupStatsBuilder()
+                .setGroupId(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO))
+                .setByteCount(BigInteger.ONE)
+                .setPacketCount(BigInteger.ONE)
+                .setBucketStats(Collections.emptyList())
+                .setDurationSec(1L)
+                .setDurationNsec(1L)
+                .setRefCount(0L)
+                .build();
+
+        final List<GroupStats> groupStats = Collections.singletonList(groupStat);
+        final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(group.getGroupStats()).thenReturn(groupStats);
         when(groupCase.getMultipartReplyGroup()).thenReturn(group);
         when(reply.getMultipartReplyBody()).thenReturn(groupCase);
-
-        when(groupStat.getGroupId()).thenReturn(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO));
-        when(groupStat.getByteCount()).thenReturn(BigInteger.ONE);
-        when(groupStat.getPacketCount()).thenReturn(BigInteger.ONE);
 
         final GetGroupStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getGroupStats().size() > 0);

@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts Openflow 1.3+ specific instructions to MD-SAL format flow instruction
@@ -53,13 +54,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * }
  * </pre>
  */
-public final class FlowInstructionResponseConvertor implements ParametrizedConvertor<
+public final class FlowInstructionResponseConvertor implements Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction>,
         Instructions,
         VersionConvertorData> {
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction.class;
     }
 

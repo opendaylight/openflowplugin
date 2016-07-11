@@ -34,7 +34,7 @@ public class FlowFlagReactor extends ConvertReactor<FlowModFlags> {
     }
 
     @Override
-    protected void initMappings(final Map<Short, Convertor<FlowModFlags, ?>> conversions,
+    protected void initMappings(final Map<Short, Convertor<FlowModFlags, ?, ?>> conversions,
                                 final Map<InjectionKey, ResultInjector<?, ?>> injections) {
         FlowFlagReactorMappingFactory.addFlowFlagsConvertors(conversions);
         FlowFlagReactorMappingFactory.addFlowFlagsIjectors(injections);

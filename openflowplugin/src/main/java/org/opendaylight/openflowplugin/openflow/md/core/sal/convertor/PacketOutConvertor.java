@@ -17,7 +17,7 @@ import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class PacketOutConvertor implements ParametrizedConvertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
+public class PacketOutConvertor implements Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
 
     /**
@@ -75,7 +76,7 @@ public class PacketOutConvertor implements ParametrizedConvertor<TransmitPacketI
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return TransmitPacketInput.class;
     }
 

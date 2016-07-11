@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeter;
 
@@ -57,17 +59,22 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyMeterCase MeterCase = mock(MultipartReplyMeterCase.class);
         final MultipartReplyMeter meter = mock(MultipartReplyMeter.class);
-        final MeterStats meterStat = mock(MeterStats.class);
-        final List<MeterStats> meterStats = Arrays.asList(meterStat);
-        final List<MultipartReply> input = Arrays.asList(reply);
+        final MeterStats meterStat = new MeterStatsBuilder()
+                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(METER_NO))
+                .setByteInCount(BigInteger.ONE)
+                .setPacketInCount(BigInteger.ONE)
+                .setDurationSec(1L)
+                .setDurationNsec(1L)
+                .setFlowCount(0L)
+                .setMeterBandStats(Collections.emptyList())
+                .build();
+
+        final List<MeterStats> meterStats = Collections.singletonList(meterStat);
+        final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(meter.getMeterStats()).thenReturn(meterStats);
         when(MeterCase.getMultipartReplyMeter()).thenReturn(meter);
         when(reply.getMultipartReplyBody()).thenReturn(MeterCase);
-
-        when(meterStat.getMeterId()).thenReturn(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(METER_NO));
-        when(meterStat.getByteInCount()).thenReturn(BigInteger.ONE);
-        when(meterStat.getPacketInCount()).thenReturn(BigInteger.ONE);
 
         final GetMeterStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getMeterStats().size() > 0);

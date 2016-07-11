@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts flow related statistics messages coming from openflow switch to MD-SAL messages.
@@ -53,7 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * }
  * </pre>
  */
-public class FlowStatsResponseConvertor implements ParametrizedConvertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
+public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
 
     /**
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
@@ -89,7 +90,7 @@ public class FlowStatsResponseConvertor implements ParametrizedConvertor<List<Fl
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return FlowStats.class;
     }
 
