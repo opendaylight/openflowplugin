@@ -51,7 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class GroupConvertorTest {
 
     /**
-     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testGroupModConvertorwithallParameters() {
@@ -174,7 +174,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testGroupModConvertorNoBucket() {
@@ -193,7 +193,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
@@ -273,7 +273,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testGroupModConvertSortedBuckets() {
@@ -428,7 +428,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {
