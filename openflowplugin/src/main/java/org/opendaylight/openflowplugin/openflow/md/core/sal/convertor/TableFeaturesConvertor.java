@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCase;
@@ -142,6 +143,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfield;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +159,8 @@ import org.slf4j.LoggerFactory;
  */
 public class TableFeaturesConvertor implements Convertor<
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures,
-        List<TableFeatures>> {
+        List<TableFeatures>,
+        VersionConvertorData> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesConvertor.class);
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
@@ -585,12 +588,12 @@ public class TableFeaturesConvertor implements Convertor<
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class;
     }
 
     @Override
-    public List<TableFeatures> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source) {
+    public List<TableFeatures> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source, VersionConvertorData data) {
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder ofTableFeatures = new TableFeaturesBuilder();
 

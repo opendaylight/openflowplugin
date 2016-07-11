@@ -34,7 +34,7 @@ public class MatchReactor extends ConvertReactor<Match> {
     }
 
     @Override
-    protected void initMappings(final Map<Short, Convertor<Match, ?>> conversions,
+    protected void initMappings(final Map<Short, Convertor<Match, ?, ?>> conversions,
                                 final Map<InjectionKey, ResultInjector<?, ?>> injections) {
         MatchReactorMappingFactory.addMatchConvertors(conversions);
         MatchReactorMappingFactory.addMatchIjectors(injections);
