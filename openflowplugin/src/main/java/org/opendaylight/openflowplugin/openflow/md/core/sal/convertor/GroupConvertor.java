@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class GroupConvertor implements ParametrizedConvertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
+public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -132,7 +133,7 @@ public class GroupConvertor implements ParametrizedConvertor<Group, GroupModInpu
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return Group.class;
     }
 

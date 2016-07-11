@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 
@@ -66,21 +67,24 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyFlowCase flowCase = mock(MultipartReplyFlowCase.class);
         final MultipartReplyFlow flow = mock(MultipartReplyFlow.class);
-        final FlowStats flowStat = mock(FlowStats.class);
-        final List<FlowStats> flowStats = Arrays.asList(flowStat);
-        final List<MultipartReply> input = Arrays.asList(reply);
+        final FlowStats flowStat = new FlowStatsBuilder()
+                .setDurationSec(1L)
+                .setDurationNsec(1L)
+                .setTableId(TABLE_NO)
+                .setByteCount(BigInteger.ONE)
+                .setPacketCount(BigInteger.ONE)
+                .setFlags(mock(FlowModFlags.class))
+                .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
+                        .setMatchEntry(Collections.emptyList())
+                        .build())
+                .build();
+
+        final List<FlowStats> flowStats = Collections.singletonList(flowStat);
+        final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(flow.getFlowStats()).thenReturn(flowStats);
         when(flowCase.getMultipartReplyFlow()).thenReturn(flow);
         when(reply.getMultipartReplyBody()).thenReturn(flowCase);
-
-        when(flowStat.getTableId()).thenReturn(TABLE_NO);
-        when(flowStat.getByteCount()).thenReturn(BigInteger.ONE);
-        when(flowStat.getPacketCount()).thenReturn(BigInteger.ONE);
-        when(flowStat.getFlags()).thenReturn(mock(FlowModFlags.class));
-        when(flowStat.getMatch()).thenReturn(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
-                .setMatchEntry(Collections.emptyList())
-                .build());
 
         final GetFlowStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getFlowAndStatisticsMapList().size() > 0);
