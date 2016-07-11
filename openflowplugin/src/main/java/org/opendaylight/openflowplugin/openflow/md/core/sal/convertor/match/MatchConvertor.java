@@ -9,23 +9,30 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * converting from MD-SAL match model into appropriate OF-API match model
  *
  * @param <E> type of converted match
  */
-public interface MatchConvertor<E> extends Convertor<Match, E> {
+public interface MatchConvertor<E> extends Convertor<Match, E, VersionConvertorData> {
 
-    default Class<?> getType() {
+    @Override
+    default Class<? extends DataContainer> getType() {
         return Match.class;
+    }
+
+    @Override
+    default E convert(Match source, VersionConvertorData data) {
+        return convert(source);
     }
     
     /**
      * @param source match input
      * @return converted match (into OF-API model)
      */
-    @Override
     E convert(Match source);
 }
