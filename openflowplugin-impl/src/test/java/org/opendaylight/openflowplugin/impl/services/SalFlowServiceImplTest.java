@@ -38,12 +38,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -138,7 +142,11 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testAddFlowFailCallback() throws Exception {
-        AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
+        AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .build();
+
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
@@ -152,7 +160,10 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testRemoveFlowFailCallback() throws Exception {
-        RemoveFlowInput mockedRemoveFlowInput = createFlowMock(RemoveFlowInput.class);
+        RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
+                .setMatch(match)
+                .build();
+
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
@@ -170,7 +181,11 @@ public class SalFlowServiceImplTest extends TestCase {
     }
 
     private void addFlow(final ItemLifecycleListener itemLifecycleListener) throws ExecutionException, InterruptedException {
-        AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
+        AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .build();
+
         salFlowService.setItemLifecycleListener(itemLifecycleListener);
 
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
@@ -190,7 +205,10 @@ public class SalFlowServiceImplTest extends TestCase {
     }
 
     private void removeFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
-        RemoveFlowInput mockedRemoveFlowInput = createFlowMock(RemoveFlowInput.class);
+        RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .build();
 
         if (itemLifecycleListener != null) {
             salFlowService.setItemLifecycleListener(itemLifecycleListener);
@@ -218,14 +236,22 @@ public class SalFlowServiceImplTest extends TestCase {
     private void updateFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
 
-        UpdatedFlow mockedUpdateFlow = createFlowMock(UpdatedFlow.class);
+        UpdatedFlow mockedUpdateFlow = new UpdatedFlowBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .build();
+
         when(mockedUpdateFlowInput.getUpdatedFlow()).thenReturn(mockedUpdateFlow);
 
         FlowRef mockedFlowRef = mock(FlowRef.class);
         Mockito.doReturn(TABLE_II.child(Flow.class, new FlowKey(new FlowId(DUMMY_FLOW_ID)))).when(mockedFlowRef).getValue();
         when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
 
-        OriginalFlow mockedOriginalFlow = createFlowMock(OriginalFlow.class);
+        OriginalFlow mockedOriginalFlow = new OriginalFlowBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .build();
+
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
 
         if (itemLifecycleListener != null) {
@@ -255,11 +281,5 @@ public class SalFlowServiceImplTest extends TestCase {
         final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(addFlowOutputRpcResult);
         assertTrue(addFlowOutputRpcResult.isSuccessful());
-    }
-
-    private <T extends org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow> T createFlowMock(Class<T> flowClazz) {
-        T mockedFlow = mock(flowClazz);
-        when(mockedFlow.getMatch()).thenReturn(match);
-        return mockedFlow;
     }
 }

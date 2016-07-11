@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalArpOpCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalArpShaCase;
@@ -74,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts Openflow 1.3+ specific flow match to MD-SAL format flow
@@ -88,7 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
  * }
  * </pre>
  */
-public class MatchResponseConvertor implements ParametrizedConvertor<MatchEntriesGrouping, MatchBuilder, VersionDatapathIdConvertorData> {
+public class MatchResponseConvertor implements Convertor<MatchEntriesGrouping, MatchBuilder, VersionDatapathIdConvertorData> {
     private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData> OF_TO_SAL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
             .addCase(new OfToSalInPortCase())
             .addCase(new OfToSalInPhyPortCase())
@@ -136,7 +137,7 @@ public class MatchResponseConvertor implements ParametrizedConvertor<MatchEntrie
             .addCase(new OfToSalTunnelIpv4DstCase());
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return MatchEntriesGrouping.class;
     }
 

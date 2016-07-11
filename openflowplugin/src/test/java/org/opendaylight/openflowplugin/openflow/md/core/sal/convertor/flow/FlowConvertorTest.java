@@ -421,7 +421,7 @@ public class FlowConvertorTest {
 
         @Override
         public Class<? extends DataContainer> getImplementedInterface() {
-            return null;
+            return Flow.class;
         }
     }
 }

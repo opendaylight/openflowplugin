@@ -32,10 +32,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cas
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetQueueCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalStripVlanCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts OF actions associated with bucket to SAL Actions.
@@ -49,7 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * }
  * </pre>
  */
-public final class ActionResponseConvertor implements ParametrizedConvertor<
+public final class ActionResponseConvertor implements Convertor<
         List<Action>,
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>,
         ActionResponseConvertorData> {
@@ -79,7 +80,7 @@ public final class ActionResponseConvertor implements ParametrizedConvertor<
             .addCase(new OfToSalStripVlanCase());
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return Action.class;
     }
 

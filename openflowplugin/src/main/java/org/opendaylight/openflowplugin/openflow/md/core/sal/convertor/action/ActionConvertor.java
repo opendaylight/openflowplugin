@@ -53,9 +53,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cas
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.SalToOfStripVlanActionV10Case;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.SalToOfVendorCodecCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts SAL actions into OF Library actions
@@ -70,7 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * }
  * </pre>
  */
-public final class ActionConvertor implements ParametrizedConvertor<
+public final class ActionConvertor implements Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>,
         List<Action>,
         ActionConvertorData> {
@@ -126,7 +127,7 @@ public final class ActionConvertor implements ParametrizedConvertor<
             .addCase(new SalToOfGeneralExtensionGroupingCase());
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action.class;
     }
 
