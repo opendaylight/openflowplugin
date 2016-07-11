@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ParametrizedConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts port mod, port status and port description MD-SAL messages to OF library data
@@ -37,7 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * }
  * </pre>
  */
-public class PortConvertor implements ParametrizedConvertor<Port, PortModInput, VersionConvertorData> {
+public class PortConvertor implements Convertor<Port, PortModInput, VersionConvertorData> {
 
     /**
      * Create default empty port mod input
@@ -144,7 +145,7 @@ public class PortConvertor implements ParametrizedConvertor<Port, PortModInput, 
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<? extends DataContainer> getType() {
         return Port.class;
     }
 
