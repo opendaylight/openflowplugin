@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +53,8 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
+    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
+
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -133,8 +137,8 @@ public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, Ve
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Group.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return  TYPES;
     }
 
     @Override

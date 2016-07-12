@@ -10,9 +10,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -56,6 +58,8 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
 
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(FlowStats.class);
+
     /**
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
      *
@@ -90,8 +94,8 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return FlowStats.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

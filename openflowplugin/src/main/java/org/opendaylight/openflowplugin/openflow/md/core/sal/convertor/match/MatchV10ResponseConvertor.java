@@ -9,6 +9,9 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -50,10 +53,11 @@ public class MatchV10ResponseConvertor implements Convertor<MatchV10, MatchBuild
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;
     private static final String NO_IP = "0.0.0.0/0";
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MatchV10.class);
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return MatchV10.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

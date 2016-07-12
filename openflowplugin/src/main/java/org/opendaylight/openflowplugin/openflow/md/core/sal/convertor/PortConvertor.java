@@ -9,6 +9,9 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -39,6 +42,8 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * </pre>
  */
 public class PortConvertor implements Convertor<Port, PortModInput, VersionConvertorData> {
+
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Port.class);
 
     /**
      * Create default empty port mod input
@@ -145,8 +150,8 @@ public class PortConvertor implements Convertor<Port, PortModInput, VersionConve
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Port.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

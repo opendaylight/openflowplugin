@@ -10,9 +10,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketOutConvertor implements Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(TransmitPacketInput.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -76,8 +79,8 @@ public class PacketOutConvertor implements Convertor<TransmitPacketInput, Packet
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return TransmitPacketInput.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

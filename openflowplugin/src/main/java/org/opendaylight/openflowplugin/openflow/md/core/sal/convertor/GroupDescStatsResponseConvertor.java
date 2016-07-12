@@ -9,11 +9,12 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -45,6 +46,8 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * </pre>
  */
 public class GroupDescStatsResponseConvertor implements Convertor<List<GroupDesc>, List<GroupDescStats>, VersionConvertorData> {
+
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(GroupDesc.class);
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(List<BucketsList> bucketDescStats, short version) {
         final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
@@ -96,8 +99,8 @@ public class GroupDescStatsResponseConvertor implements Convertor<List<GroupDesc
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return GroupDesc.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

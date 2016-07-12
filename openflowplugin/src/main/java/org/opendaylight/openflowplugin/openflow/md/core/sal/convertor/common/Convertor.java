@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
@@ -25,7 +26,7 @@ public interface Convertor<FROM, TO, DATA extends ConvertorData> {
      *
      * @return the type of convertor
      */
-    Class<? extends DataContainer> getType();
+    Collection<Class<? extends DataContainer>> getTypes();
 
     /**
      * Converts source to result
