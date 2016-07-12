@@ -1,9 +1,8 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+<<<<<<< HEAD
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
@@ -12,14 +11,30 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+=======
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
+>>>>>>> 5617c32... Bug 5390 - Adding Ipv6 L3ArbitraryBitMask feature support.
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
+<<<<<<< HEAD
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+=======
+>>>>>>> 5617c32... Bug 5390 - Adding Ipv6 L3ArbitraryBitMask feature support.
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 
 /**
  * @author sai.marapareddy@gmail.com (arbitrary masks)
@@ -343,5 +358,64 @@ public class MatchComparatorHelperTest {
         assertEquals(ipv4PrefixNullMask,new Ipv4Prefix("1.1.1.1/32"));
         Ipv4Prefix ipv4PrefixNoMask = MatchComparatorHelper.createPrefix(ipv4Address);
         assertEquals(ipv4PrefixNoMask,new Ipv4Prefix("1.1.1.1/32"));
+    }
+
+    @Test
+    public void layer3MatchEqualsIpv6ArbitraryMaskTest(){
+        final Ipv6MatchBuilder statsBuilder = new Ipv6MatchBuilder();
+        final Ipv6MatchArbitraryBitMaskBuilder storedBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("1:2:3:4:5:6:7:8/16"));
+        storedBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("1:2:3:4:5:6:7:8"));
+        storedBuilder.setIpv6DestinationArbitraryBitmask(new Ipv6ArbitraryMask("FFFF:0000:0000:0000:0000:0000:0000:0000"));
+        statsBuilder.setIpv6Source(new Ipv6Prefix("1:2:3:4:5:6:7:8/32"));
+        storedBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("1:2:3:4:5:6:7:8"));
+        storedBuilder.setIpv6SourceArbitraryBitmask(new Ipv6ArbitraryMask("FFFF:FFFF::"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
+    }
+
+
+    @Test
+    public void layer3MatchEqualsIpv6ArbitraryMaskRandomTest() {
+        final Ipv6MatchArbitraryBitMaskBuilder statsBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
+        final Ipv6MatchArbitraryBitMaskBuilder storedBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("1::8"));
+        statsBuilder.setIpv6DestinationArbitraryBitmask(new Ipv6ArbitraryMask("FFFF::FFFF"));
+        storedBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("1:92:93:94:95:96:97:8"));
+        storedBuilder.setIpv6DestinationArbitraryBitmask(new Ipv6ArbitraryMask("FFFF::FFFF"));
+        statsBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("1::8"));
+        statsBuilder.setIpv6SourceArbitraryBitmask(new Ipv6ArbitraryMask("FFFF::FFFF"));
+        storedBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("1:92:93:94:95:96:97:8"));
+        storedBuilder.setIpv6SourceArbitraryBitmask(new Ipv6ArbitraryMask("FFFF::FFFF"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
+    }
+
+    @Test
+    public void layer3MatchEqualsIpv6ArbitraryMaskEqualsNullTest() {
+        final Ipv6MatchBuilder statsBuilder = new Ipv6MatchBuilder();
+        final Ipv6MatchArbitraryBitMaskBuilder storedBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv6Source(new Ipv6Prefix("1:2:3:4:5:6:7:8/128"));
+        storedBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("1:2:3:4:5:6:7:8"));
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("1:2:3:4:5:6::/128"));
+        storedBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("1:2:3:4:5:6::"));
+        assertEquals(false, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
+    }
+
+    @Test
+    public void layer3MatchEqualsIpv6ArbitraryEmptyBitMaskTest(){
+        final Ipv6MatchBuilder statsBuilder = new Ipv6MatchBuilder();
+        final Ipv6MatchArbitraryBitMaskBuilder storedBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
+        assertEquals(true,MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(),storedBuilder.build()));
+        statsBuilder.setIpv6Destination(new Ipv6Prefix("1:2:3:4:5:6:7:8/128"));
+        storedBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("1:2:3:4:5:6:7:8"));
+        statsBuilder.setIpv6Source(new Ipv6Prefix("1:2:3:4:5:6::/128"));
+        storedBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("1:2:3:4:5:6::"));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(statsBuilder.build(), storedBuilder.build()));
+        assertEquals(true, MatchComparatorHelper.layer3MatchEquals(null, null));
     }
 }
