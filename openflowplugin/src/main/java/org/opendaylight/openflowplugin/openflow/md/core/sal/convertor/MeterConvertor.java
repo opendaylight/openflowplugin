@@ -9,9 +9,13 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
@@ -53,6 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MeterConvertor implements Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
+    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Meter.class, AddMeterInput.class, RemoveMeterInput.class, UpdatedMeter.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -142,8 +147,8 @@ public class MeterConvertor implements Convertor<Meter, MeterModInputBuilder, Ve
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Meter.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return  TYPES;
     }
 
     @Override
@@ -151,9 +156,9 @@ public class MeterConvertor implements Convertor<Meter, MeterModInputBuilder, Ve
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
         List<Bands> bands = new ArrayList<>();
 
-        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
+        if (source instanceof AddMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
-        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
+        } else if (source instanceof RemoveMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCDELETE);
         } else if (source instanceof UpdatedMeter) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
