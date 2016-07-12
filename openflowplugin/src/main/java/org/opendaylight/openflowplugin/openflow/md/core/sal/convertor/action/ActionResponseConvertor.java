@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -80,8 +82,8 @@ public final class ActionResponseConvertor implements Convertor<
             .addCase(new OfToSalStripVlanCase());
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Action.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(Action.class);
     }
 
     @Override

@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.Collection;
+import java.util.Collections;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -145,8 +147,8 @@ public class PortConvertor implements Convertor<Port, PortModInput, VersionConve
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Port.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(Port.class);
     }
 
     @Override
