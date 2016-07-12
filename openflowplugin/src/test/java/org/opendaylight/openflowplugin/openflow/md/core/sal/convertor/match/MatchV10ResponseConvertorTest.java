@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -37,12 +38,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class MatchV10ResponseConvertorTest {
 
+    private ConvertorManager convertorManager;
+
     /**
      * Initializes OpenflowPortsUtil
      */
     @Before
     public void startUp() {
         OpenflowPortsUtil.init();
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
     /**
@@ -815,7 +819,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
-        final Optional<MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+        final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }

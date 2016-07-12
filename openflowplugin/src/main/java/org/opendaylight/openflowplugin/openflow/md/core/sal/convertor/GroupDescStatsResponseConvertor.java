@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class GroupDescStatsResponseConvertor implements Convertor<List<GroupDesc>, List<GroupDescStats>, VersionConvertorData> {
+public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, List<GroupDescStats>, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(GroupDesc.class);
 
@@ -61,7 +61,7 @@ public class GroupDescStatsResponseConvertor implements Convertor<List<GroupDesc
         for (BucketsList bucketDetails : bucketDescStats) {
             BucketBuilder bucketDesc = new BucketBuilder();
             final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> convertedSalActions =
-                    ConvertorManager.getInstance().convert(
+                    getConvertorExecutor().convert(
                             bucketDetails.getAction(), data);
 
 

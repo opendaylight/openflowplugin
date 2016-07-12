@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 
 public interface ConvertorRegistrator {
     /**
@@ -16,5 +17,5 @@ public interface ConvertorRegistrator {
      *
      * @param convertor the convertor
      */
-    void registerConvertor(final Convertor convertor);
+    ConvertorManager registerConvertor(final short version, final Convertor<?, ?, ? extends ConvertorData> convertor);
 }

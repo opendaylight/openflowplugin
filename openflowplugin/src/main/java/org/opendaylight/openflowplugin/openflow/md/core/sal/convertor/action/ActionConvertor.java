@@ -74,7 +74,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public final class ActionConvertor implements Convertor<
+public final class ActionConvertor extends Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>,
         List<Action>,
         ActionConvertorData> {
@@ -143,7 +143,7 @@ public final class ActionConvertor implements Convertor<
         // Iterate over SAL actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
             for (final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action : source) {
-                final Optional<Action> convertedAction = PROCESSOR.process(action.getAction(), data);
+                final Optional<Action> convertedAction = PROCESSOR.process(action.getAction(), data, getConvertorExecutor());
 
                 if (convertedAction.isPresent()) {
                     result.add(convertedAction.get());

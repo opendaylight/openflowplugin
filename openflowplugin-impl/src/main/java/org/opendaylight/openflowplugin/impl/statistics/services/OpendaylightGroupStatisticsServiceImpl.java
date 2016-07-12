@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
@@ -35,12 +36,13 @@ public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroup
 
     public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
                                                   final AtomicLong compatibilityXidSeed,
-                                                  final NotificationPublishService notificationPublishService) {
+                                                  final NotificationPublishService notificationPublishService,
+                                                  final ConvertorExecutor convertorExecutor) {
         this.notificationPublishService = notificationPublishService;
-        allGroups = new AllGroupsStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
-        groupDesc = new GroupDescriptionService(requestContextStack, deviceContext, compatibilityXidSeed);
+        allGroups = new AllGroupsStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        groupDesc = new GroupDescriptionService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
         groupFeat = new GroupFeaturesService(requestContextStack, deviceContext, compatibilityXidSeed);
-        groupStats = new GroupStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
+        groupStats = new GroupStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
     @Override

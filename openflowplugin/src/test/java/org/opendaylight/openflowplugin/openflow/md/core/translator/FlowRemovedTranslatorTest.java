@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManagerOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -161,11 +164,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
-
 @RunWith(MockitoJUnitRunner.class)
-public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
+public class FlowRemovedTranslatorTest {
 
-    private static final FlowRemovedTranslator flowRemovedTranslator = new FlowRemovedTranslator();
+    private FlowRemovedTranslator flowRemovedTranslator;
     private static final BigInteger DATA_PATH_ID = BigInteger.valueOf(42);
     public static final Ipv6Address IPV_6_ADDRESS = new Ipv6Address("2001:0DB8:AC10:FE01:0000:0000:0000:0000");
     private static final byte[] IPV_6_ADDRESS_MASK = ByteUtil.unsignedIntToBytes(new Long(64));
@@ -538,6 +540,8 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
 
     @Before
     public void setup() {
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        flowRemovedTranslator = new FlowRemovedTranslator(convertorManager);
         when(sessionContext.getPrimaryConductor()).thenReturn(connectionConductor);
         when(connectionConductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(sessionContext.getFeatures()).thenReturn(featuresOutput);

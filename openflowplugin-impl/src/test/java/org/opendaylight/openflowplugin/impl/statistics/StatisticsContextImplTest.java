@@ -28,6 +28,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -42,16 +44,18 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private static final Long TEST_XID = 55L;
     private StatisticsContextImpl statisticsContext;
+    private ConvertorManager convertorManager;
 
     @Before
     public void setUp() throws Exception {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor);
+        statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor, convertorManager);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
@@ -69,7 +73,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor, convertorManager);
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {

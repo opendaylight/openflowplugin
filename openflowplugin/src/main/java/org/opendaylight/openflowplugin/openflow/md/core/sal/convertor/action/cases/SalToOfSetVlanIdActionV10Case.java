@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase;
@@ -27,7 +28,7 @@ public class SalToOfSetVlanIdActionV10Case extends ConvertorCase<SetVlanIdAction
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         SetVlanIdAction setvlanidaction = source.getSetVlanIdAction();
         SetVlanVidActionBuilder vlanidActionBuilder = new SetVlanVidActionBuilder();
         SetVlanVidCaseBuilder setVlanVidCaseBuilder = new SetVlanVidCaseBuilder();

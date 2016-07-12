@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -62,11 +63,11 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
-        flowRemove = new FlowService(requestContextStack, deviceContext, RemoveFlowOutput.class);
-        flowAdd = new FlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
-        flowUpdate = new FlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
+        flowRemove = new FlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
+        flowAdd = new FlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
+        flowUpdate = new FlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
     }
 
     @Override

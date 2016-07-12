@@ -41,7 +41,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class MeterStatsResponseConvertor implements Convertor<
+public class MeterStatsResponseConvertor extends Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
                 .multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats>,
         List<MeterStats>,

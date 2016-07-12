@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -47,6 +48,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
 public class GroupConvertorTest {
+    private ConvertorManager convertorManager;
+
+    @Before
+    public void setUp() {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+    }
 
     /**
      * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
@@ -510,7 +517,7 @@ public class GroupConvertorTest {
     }
 
     private GroupModInputBuilder convert(Group group, VersionDatapathIdConvertorData data) {
-        final Optional<GroupModInputBuilder> outAddGroupInputOptional = ConvertorManager.getInstance().convert(group, data);
+        final Optional<GroupModInputBuilder> outAddGroupInputOptional = convertorManager.convert(group, data);
         Assert.assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
         return outAddGroupInputOptional.get();
     }

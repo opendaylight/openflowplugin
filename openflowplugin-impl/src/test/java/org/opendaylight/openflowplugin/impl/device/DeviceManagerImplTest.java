@@ -57,6 +57,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -148,8 +150,9 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, true);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, true, convertorManager);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

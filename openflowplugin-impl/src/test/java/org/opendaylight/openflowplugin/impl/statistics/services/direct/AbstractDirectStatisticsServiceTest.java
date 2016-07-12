@@ -28,6 +28,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -73,6 +75,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
 
     protected NodeConnectorId nodeConnectorId;
     protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    protected ConvertorManager convertorManager;
 
     protected static NodeRef createNodeRef(String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
@@ -91,6 +94,8 @@ public abstract class AbstractDirectStatisticsServiceTest {
         nodeInstanceIdentifier = InstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
+
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);

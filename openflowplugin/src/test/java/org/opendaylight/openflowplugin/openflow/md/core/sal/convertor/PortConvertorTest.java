@@ -61,7 +61,8 @@ public class PortConvertorTest {
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
-        Optional<PortModInput> portOutOptional = ConvertorManager.getInstance().convert(portBld.build(), data);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        Optional<PortModInput> portOutOptional = convertorManager.convert(portBld.build(), data);
         PortModInput portOut = portOutOptional.orElse(PortConvertor.defaultResult(OFConstants.OFP_VERSION_1_3));
 
         PortConfigV10 portConfV10 = new PortConfigV10(false, false, false, false, true, true, false);
