@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -481,8 +482,8 @@ public class TableFeaturesResponseConvertor implements Convertor<MultipartReplyT
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return MultipartReplyTableFeatures.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(MultipartReplyTableFeatures.class);
     }
 
     @Override

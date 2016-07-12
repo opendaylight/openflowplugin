@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import java.util.Arrays;
+import java.util.Collection;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -74,6 +76,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -137,8 +141,8 @@ public class MatchResponseConvertor implements Convertor<MatchEntriesGrouping, M
             .addCase(new OfToSalTunnelIpv4DstCase());
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return MatchEntriesGrouping.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Arrays.asList(Match.class, SetFieldAction.class);
     }
 
     @Override

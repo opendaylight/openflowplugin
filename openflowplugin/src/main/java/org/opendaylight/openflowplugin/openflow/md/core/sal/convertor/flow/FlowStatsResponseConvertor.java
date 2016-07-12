@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -90,8 +91,8 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return FlowStats.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(FlowStats.class);
     }
 
     @Override
