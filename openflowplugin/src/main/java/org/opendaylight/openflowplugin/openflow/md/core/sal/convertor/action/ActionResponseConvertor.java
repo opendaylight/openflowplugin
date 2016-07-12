@@ -9,8 +9,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalCopyTtlInCase;
@@ -78,10 +81,11 @@ public final class ActionResponseConvertor implements Convertor<
             .addCase(new OfToSalSetNwTtlCase())
             .addCase(new OfToSalSetQueueCase())
             .addCase(new OfToSalStripVlanCase());
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Action.class);
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Action.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override

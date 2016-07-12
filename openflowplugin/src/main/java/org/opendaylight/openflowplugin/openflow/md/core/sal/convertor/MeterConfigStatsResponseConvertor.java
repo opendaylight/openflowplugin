@@ -9,7 +9,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
@@ -50,9 +53,11 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class MeterConfigStatsResponseConvertor implements Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
 
+    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MeterConfig.class);
+
     @Override
-    public Class<? extends DataContainer> getType() {
-        return MeterConfig.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return TYPES;
     }
 
     @Override
