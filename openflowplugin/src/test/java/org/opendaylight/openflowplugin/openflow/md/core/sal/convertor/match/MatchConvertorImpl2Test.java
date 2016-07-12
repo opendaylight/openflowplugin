@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +41,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSha;
@@ -725,5 +729,30 @@ public class MatchConvertorImpl2Test {
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
         Assert.assertArrayEquals("Wrong tunnel id mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 14},
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getMask());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
+     */
+    @Test
+    public void testIpv6MatchArbitraryBitMask(){
+        MatchBuilder builder = new MatchBuilder();
+        Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder= new Ipv6MatchArbitraryBitMaskBuilder();
+        ipv6MatchArbitraryBitMaskBuilder.setIpv6SourceAddressNoMask(new Ipv6Address("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
+        ipv6MatchArbitraryBitMaskBuilder.setIpv6SourceArbitraryBitmask(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
+        ipv6MatchArbitraryBitMaskBuilder.setIpv6DestinationAddressNoMask(new Ipv6Address("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
+        ipv6MatchArbitraryBitMaskBuilder.setIpv6DestinationArbitraryBitmask(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
+        builder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
+        Match match = builder.build();
+
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
+        Assert.assertEquals("Wrong entries size", 2, entries.size());
+
+        MatchEntry entry = entries.get(0);
+        checkEntryHeader(entry,Ipv6Src.class,true);
+        Assert.assertEquals("wrong Ipv6Adress source", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
+        entry = entries.get(1);
+        checkEntryHeader(entry,Ipv6Dst.class,true);
+        Assert.assertEquals("wrong Ipv6Adress destination", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 }

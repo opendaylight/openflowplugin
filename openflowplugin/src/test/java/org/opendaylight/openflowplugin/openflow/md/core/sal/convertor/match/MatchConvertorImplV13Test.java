@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
@@ -1118,9 +1118,9 @@ public class MatchConvertorImplV13Test {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final Ipv6Match ipv6Match = (Ipv6Match) builtMatch.getLayer3Match();
-        Assert.assertEquals("Wrong ipv6 src address", "2001:cdba:0000:0000:0000:0000:3257:9657/128",
+        Assert.assertEquals("Wrong ipv6 src address", "2001:cdba::3257:9657/128",
                 ipv6Match.getIpv6Source().getValue());
-        Assert.assertEquals("Wrong ipv6 dst address", "2001:cdba:0000:0000:0000:0000:3257:9658/128",
+        Assert.assertEquals("Wrong ipv6 dst address", "2001:cdba::3257:9658/128",
                 ipv6Match.getIpv6Destination().getValue());
         Assert.assertEquals("Wrong ipv6 nd target", "2001:cdba:0000:0000:0000:0000:3257:9659",
                 ipv6Match.getIpv6NdTarget().getValue());
@@ -1312,4 +1312,275 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:04", arpMatch.getArpTargetHardwareAddress().getAddress().getValue());
         Assert.assertEquals("Wrong arp tha mask", "01:01:01:02:02:02", arpMatch.getArpTargetHardwareAddress().getMask().getValue());
     }
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
+     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+    @Test
+    public void testWithMatchEntryWithIpv6ArbitraryMasks() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv6MatchArbitraryBitMask ipv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv6 src address", "1001:1001:1001:1001:1001:1001:1001:1001",
+                ipv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv6 dst address", "2002:2002:2002:2002:2002:2002:2002:2002",
+                ipv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask().getValue());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
+     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+    @Test
+    public void testWithMatchEntryWithIpv6SrcCidrlMaskAndDstArbitraryBitMask() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv6MatchArbitraryBitMask ipv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv6 src address", "1001:1001:1001:1001:1001:1001:1001:1001",
+                ipv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv6 dst address", "2002:2002:2002:2002:2002:2002:2002:2002",
+                ipv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask().getValue());
+    }
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
+     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+    @Test
+    public void testWithMatchEntryWithIpv6SrcArbitraryBitMaskAndDstCidrMask() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv6MatchArbitraryBitMask ipv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv6 src address", "1001:1001:1001:1001:1001:1001:1001:1001",
+                ipv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv6 dst address", "2002:2002:2002:2002:2002:2002:2002:2002",
+                ipv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask().getValue());
+    }
+
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
+     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+
+    @Test
+    public void testWithMatchEntryWithIpv6DstArbitraryBitMaskAndSrcCidrMask() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv6MatchArbitraryBitMask ipv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv6 src address", "2002:2002:2002:2002:2002:2002:2002:2002",
+                ipv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv6 dst address", "1001:1001:1001:1001:1001:1001:1001:1001",
+                ipv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask().getValue());
+    }
+
+
+    /**
+     * Test {@link MatchConvertorImpl#fromOFMatchToSALMatch(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match, java.math.BigInteger,
+     * org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
+     */
+
+    @Test
+    public void testWithMatchEntryWithIpv6DstCidrMaskAndSrcArbitraryBitMask() {
+        final MatchBuilder builder = new MatchBuilder();
+        builder.setType(OxmMatchType.class);
+        final List<MatchEntry> entries = new ArrayList<>();
+        MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+        entriesBuilder.setHasMask(true);
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setHasMask(true);
+        final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        builder.setMatchEntry(entries);
+        final Match match = builder.build();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                .MatchBuilder salMatch = MatchConvertorImpl.fromOFMatchToSALMatch(match, new BigInteger("42"), OpenflowVersion.OF13);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatch.build();
+
+        final Ipv6MatchArbitraryBitMask ipv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) builtMatch.getLayer3Match();
+        Assert.assertEquals("Wrong ipv6 src address", "2002:2002:2002:2002:2002:2002:2002:2002",
+                ipv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask().getValue());
+        Assert.assertEquals("Wrong ipv6 dst address", "1001:1001:1001:1001:1001:1001:1001:1001",
+                ipv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask().getValue());
+    }
+
+
 }
