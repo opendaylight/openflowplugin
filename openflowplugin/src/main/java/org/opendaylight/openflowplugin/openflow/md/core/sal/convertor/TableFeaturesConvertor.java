@@ -160,7 +160,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class TableFeaturesConvertor implements Convertor<
+public class TableFeaturesConvertor extends Convertor<
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures,
         List<TableFeatures>,
         VersionConvertorData> {

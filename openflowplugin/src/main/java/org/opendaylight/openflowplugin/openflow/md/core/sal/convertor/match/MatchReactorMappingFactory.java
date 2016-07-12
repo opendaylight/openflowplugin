@@ -11,8 +11,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -34,7 +34,7 @@ public class MatchReactorMappingFactory {
     /**
      * @param conversionMapping conversion mapping
      */
-    public static void addMatchConvertors(final Map<Short, Convertor<Match, ?, ?>> conversionMapping) {
+    public static void addMatchConvertors(final Map<Short, ConvertReactorConvertor<Match, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new MatchConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new MatchConvertorV10Impl());
     }
@@ -42,9 +42,9 @@ public class MatchReactorMappingFactory {
     /**
      * @param injectionMapping injection mapping
      */
-    public static void addMatchIjectors(final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
+    public static void addMatchIjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|List<MatchEntries> --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<List<MatchEntry>, FlowModInputBuilder>() {
                     @Override
                     public void inject(final List<MatchEntry> value,
@@ -54,7 +54,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.3|List<MatchEntries> --> OxmFieldsActionBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, SetFieldActionBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, SetFieldActionBuilder.class),
                 new ResultInjector<List<MatchEntry>, SetFieldActionBuilder>() {
                     @Override
                     public void inject(final List<MatchEntry> value,
@@ -64,7 +64,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.0|MatchV10Builder --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
                 new ResultInjector<MatchV10, FlowModInputBuilder>() {
                     @Override
                     public void inject(final MatchV10 value,
@@ -74,7 +74,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.3|List<MatchEntries> --> MultipartRequestFlowBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, MultipartRequestFlowBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, MultipartRequestFlowBuilder.class),
                 new ResultInjector<List<MatchEntry>, MultipartRequestFlowBuilder>() {
                     @Override
                     public void inject(final List<MatchEntry> value,
@@ -84,7 +84,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.0|List<MatchEntries> --> MultipartRequestFlowBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, MultipartRequestFlowBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_0, MultipartRequestFlowBuilder.class),
                 new ResultInjector<MatchV10, MultipartRequestFlowBuilder>() {
                     @Override
                     public void inject(final MatchV10 value,
@@ -94,7 +94,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.3|List<MatchEntries> --> MultipartRequestAggregateBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, MultipartRequestAggregateBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, MultipartRequestAggregateBuilder.class),
                 new ResultInjector<List<MatchEntry>, MultipartRequestAggregateBuilder>() {
                     @Override
                     public void inject(final List<MatchEntry> value,
@@ -104,7 +104,7 @@ public class MatchReactorMappingFactory {
                 });
 
         // OF-1.0|List<MatchEntries> --> MultipartRequestAggregateBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, MultipartRequestAggregateBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_0, MultipartRequestAggregateBuilder.class),
                 new ResultInjector<MatchV10, MultipartRequestAggregateBuilder>() {
                     @Override
                     public void inject(final MatchV10 value,

@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,11 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
@@ -84,8 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TableFeaturesConvertorTest extends TestCase {
+public class TableFeaturesConvertorTest {
     private static final TablePropertiesBuilder tablePropertiesBuilder = new TablePropertiesBuilder();
     private static final Map<Class<? extends TableFeaturePropType>, TableFeaturePropType> augmentationsMap = new HashMap<>();
     private static final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction> instructionsList = new ArrayList<>();
@@ -334,8 +335,10 @@ public class TableFeaturesConvertorTest extends TestCase {
                 .setTableFeatures(tableFeaturesList)
                 .build();
 
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures>> tableFeaturesesOptional =
-                ConvertorManager.getInstance().convert(tableFeatures);
+                convertorManager.convert(tableFeatures, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures> tableFeatureses =
                 tableFeaturesesOptional.orElse(Collections.emptyList());

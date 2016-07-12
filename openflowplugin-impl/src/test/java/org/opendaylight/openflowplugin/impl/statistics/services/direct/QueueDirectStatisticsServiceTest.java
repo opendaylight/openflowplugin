@@ -38,7 +38,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new QueueDirectStatisticsService(requestContextStack, deviceContext);
+        service = new QueueDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
     }
 
     @Override

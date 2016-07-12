@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.SalToOfArpMatchCase;
@@ -125,16 +126,16 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
-    private static void layer3Match(final List<MatchEntry> matchEntryList, final Layer3Match layer3Match) {
-        java.util.Optional<List<MatchEntry>> result = LAYER3_PROCESSOR.process(layer3Match);
+    private static void layer3Match(final List<MatchEntry> matchEntryList, final Layer3Match layer3Match, ConvertorExecutor convertorExecutor) {
+        java.util.Optional<List<MatchEntry>> result = LAYER3_PROCESSOR.process(layer3Match, convertorExecutor);
 
         if (result.isPresent()) {
             matchEntryList.addAll(result.get());
         }
     }
 
-    private static void layer4Match(final List<MatchEntry> matchEntryList, final Layer4Match layer4Match) {
-        java.util.Optional<List<MatchEntry>> result = LAYER4_PROCESSOR.process(layer4Match);
+    private static void layer4Match(final List<MatchEntry> matchEntryList, final Layer4Match layer4Match, ConvertorExecutor convertorExecutor) {
+        java.util.Optional<List<MatchEntry>> result = LAYER4_PROCESSOR.process(layer4Match, convertorExecutor);
 
         if (result.isPresent()) {
             matchEntryList.addAll(result.get());
@@ -538,7 +539,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
     @Override
-    public List<MatchEntry> convert(final Match match) {
+    public List<MatchEntry> convert(final Match match, ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (match == null) {
@@ -551,10 +552,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         ethernetMatch(result, match.getEthernetMatch());
         vlanMatch(result, match.getVlanMatch());
         ipMatch(result, match.getIpMatch());
-        layer4Match(result, match.getLayer4Match());
+        layer4Match(result, match.getLayer4Match(), convertorExecutor);
         icmpv4Match(result, match.getIcmpv4Match());
         icmpv6Match(result, match.getIcmpv6Match());
-        layer3Match(result, match.getLayer3Match());
+        layer3Match(result, match.getLayer3Match(), convertorExecutor);
         protocolMatchFields(result, match.getProtocolMatchFields());
         tunnelMatch(result, match.getTunnel());
 
