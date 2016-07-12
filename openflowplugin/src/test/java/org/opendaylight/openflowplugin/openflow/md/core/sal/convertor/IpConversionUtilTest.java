@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,5 +149,82 @@ public class IpConversionUtilTest {
         DottedQuad dottedQuad;
         dottedQuad = IpConversionUtil.extractIpv4AddressMask(new Ipv4Prefix("1.1.1.1/24"));
         Assert.assertEquals(dottedQuad.getValue(),"255.255.255.0");
+    }
+
+    @Test
+    public void convertipv6ArbitraryMaskToByteArrayTest() {
+        byte[] bytes = {-5,-96,-1,-74,-1,-16,-1,-16, -1,-16,-1,-16,-1,-16,-91,85};
+        byte[] maskBytes = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
+        for(int i=0; i<bytes.length;i++){
+            int mask = maskBytes[i];
+            Assert.assertEquals(bytes[i],mask);
+        }
+    }
+
+    @Test
+    public void createArbitraryBitMaskTest() {
+        byte[] bytes = {-1,-1,-1,0};
+        DottedQuad dottedQuad;
+        dottedQuad = IpConversionUtil.createArbitraryBitMask(bytes);
+        Assert.assertEquals(dottedQuad.getValue(),"255.255.255.0");
+        DottedQuad dottedQuadNull;
+        dottedQuadNull = IpConversionUtil.createArbitraryBitMask(null);
+        Assert.assertEquals(dottedQuadNull.getValue(),"255.255.255.255");
+    }
+
+    @Test
+    public void createIpv6ArbitraryBitMaskTest() {
+        byte[] bytes = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        Ipv6ArbitraryMask ipv6ArbitraryMask;
+        ipv6ArbitraryMask = IpConversionUtil.createIpv6ArbitraryBitMask(bytes);
+        Assert.assertEquals(ipv6ArbitraryMask.getValue(),"ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+        Ipv6ArbitraryMask ipv6ArbitraryMaskNull;
+        ipv6ArbitraryMaskNull = IpConversionUtil.createIpv6ArbitraryBitMask(null);
+        Assert.assertEquals(ipv6ArbitraryMaskNull.getValue(),"ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+    }
+
+    @Test
+    public void extractIpv6AddressMaskTest() {
+        Ipv6ArbitraryMask ipv6IpAddressMask;
+        Ipv6Prefix ipv6Prefix = new Ipv6Prefix("1:2:3:4:5:6:7:8/16");
+        ipv6IpAddressMask = IpConversionUtil.extractIpv6AddressMask(ipv6Prefix);
+        Assert.assertEquals(ipv6IpAddressMask.getValue(),"ffff:0:0:0:0:0:0:0");
+    }
+
+    @Test
+    public void isIpv6ArbitraryBitMaskTest() {
+        byte[] bytes = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        boolean falseCase =  false;
+        boolean trueCase =  true;
+        Assert.assertEquals(falseCase,IpConversionUtil.isIpv6ArbitraryBitMask(bytes));
+        byte[] bytesArbitraryMask = {-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        Assert.assertEquals(trueCase,IpConversionUtil.isIpv6ArbitraryBitMask(bytesArbitraryMask));
+        Assert.assertEquals(falseCase,IpConversionUtil.isIpv6ArbitraryBitMask(null));
+        byte[] bytesMask = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0};
+        Assert.assertEquals(falseCase,IpConversionUtil.isIpv6ArbitraryBitMask(bytesMask));
+        byte[] bytesArbMask = {0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        Assert.assertEquals(trueCase,IpConversionUtil.isIpv6ArbitraryBitMask(bytesArbMask));
+    }
+
+    @Test
+    public void extractIpv6AddressTest() {
+        Ipv6Address ipv6Address;
+        ipv6Address = IpConversionUtil.extractIpv6Address(new Ipv6Prefix("1:2:3:4:5:6:7:8/16"));
+        Assert.assertEquals(ipv6Address.getValue(),"1:2:3:4:5:6:7:8");
+    }
+
+    @Test
+    public void extractIpv6PrefixTest() {
+        int ipv6Address;
+        ipv6Address = IpConversionUtil.extractIpv6Prefix(new Ipv6Prefix("1:2:3:4:5:6:7:8/16"));
+        Assert.assertEquals(ipv6Address,16);
+    }
+
+    @Test
+    public void compressedIpv6MaskFormatTest() {
+        Ipv6ArbitraryMask compressedIpv6IpAddressMask;
+        Ipv6ArbitraryMask ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF:0000:0000:0:0:0:1001:1000");
+        compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(),"FFFF::1001:1000");
     }
 }

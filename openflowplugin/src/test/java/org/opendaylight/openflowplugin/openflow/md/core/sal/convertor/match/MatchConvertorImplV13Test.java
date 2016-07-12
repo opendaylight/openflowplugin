@@ -1118,9 +1118,9 @@ public class MatchConvertorImplV13Test {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         final Ipv6Match ipv6Match = (Ipv6Match) builtMatch.getLayer3Match();
-        Assert.assertEquals("Wrong ipv6 src address", "2001:cdba:0000:0000:0000:0000:3257:9657/128",
+        Assert.assertEquals("Wrong ipv6 src address", "2001:cdba::3257:9657/128",
                 ipv6Match.getIpv6Source().getValue());
-        Assert.assertEquals("Wrong ipv6 dst address", "2001:cdba:0000:0000:0000:0000:3257:9658/128",
+        Assert.assertEquals("Wrong ipv6 dst address", "2001:cdba::3257:9658/128",
                 ipv6Match.getIpv6Destination().getValue());
         Assert.assertEquals("Wrong ipv6 nd target", "2001:cdba:0000:0000:0000:0000:3257:9659",
                 ipv6Match.getIpv6NdTarget().getValue());
