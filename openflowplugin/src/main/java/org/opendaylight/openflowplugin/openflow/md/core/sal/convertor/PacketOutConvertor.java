@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -76,8 +77,8 @@ public class PacketOutConvertor implements Convertor<TransmitPacketInput, Packet
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return TransmitPacketInput.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(TransmitPacketInput.class);
     }
 
     @Override

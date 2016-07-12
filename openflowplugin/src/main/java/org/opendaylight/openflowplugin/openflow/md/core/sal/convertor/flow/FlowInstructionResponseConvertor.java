@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -60,8 +61,8 @@ public final class FlowInstructionResponseConvertor implements Convertor<
         VersionConvertorData> {
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction.class);
     }
 
     @Override

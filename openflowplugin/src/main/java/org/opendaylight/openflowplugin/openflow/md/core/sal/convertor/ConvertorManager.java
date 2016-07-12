@@ -81,19 +81,19 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
 
     @Override
     @SuppressWarnings("unchecked")
-    public Convertor registerConvertor(final Convertor convertor) {
-        final Class<? extends DataContainer> type = convertor.getType();
-        final Convertor result = convertors.get(type);
+    public void registerConvertor(final Convertor convertor) {
+        for (final Object typeRaw : convertor.getTypes()) {
+            final Class<? extends DataContainer> type = (Class<? extends DataContainer>)typeRaw;
+            final Convertor result = convertors.get(type);
 
-        if (Objects.isNull(result)) {
-            convertorKeys.add(type);
-            convertors.put(type, convertor);
-            LOG.debug("{} is now converted by {}", type, convertor);
-        } else {
-            LOG.warn("Convertor for type {} is already registered", type);
+            if (Objects.isNull(result)) {
+                convertorKeys.add(type);
+                convertors.put(type, convertor);
+                LOG.debug("{} is now converted by {}", type, convertor);
+            } else {
+                LOG.warn("Convertor for type {} is already registered", type);
+            }
         }
-
-        return result;
     }
 
     public <FROM extends DataContainer, TO> Optional<TO> convert(final FROM source) {
@@ -117,25 +117,12 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
             return result;
         }
 
-        Convertor convertor = convertors.get(type);
+        final Optional<Convertor> convertor = findConvertor(type);
 
-        if (Objects.isNull(convertor)) {
-            for (final Class<? extends DataContainer> key : convertorKeys) {
-                if (key.isAssignableFrom(type)) {
-                    convertor = convertors.get(key);
-                    convertors.put(type, convertor);
-                    LOG.debug("{} is now converted by {}", type, convertor);
-                    break;
-                }
-            }
-
-            if (Objects.isNull(convertor)) {
-                LOG.warn("Convertor for {} not found", type);
-                return result;
-            }
+        if (convertor.isPresent()) {
+            result = Optional.of((TO) convertor.get().convert(source, data));
         }
 
-        result = Optional.of((TO) convertor.convert(source, data));
         return result;
     }
 
@@ -167,25 +154,41 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
             return result;
         }
 
-        Convertor convertor = convertors.get(type);
+        final Optional<Convertor> convertor = findConvertor(type);
 
-        if (Objects.isNull(convertor)) {
+        if (convertor.isPresent()) {
+            result = Optional.of((TO) convertor.get().convert(source, data));
+        }
+
+        return result;
+    }
+
+    /**
+     * Last resort. If we do not already have convertor registered,
+     * we will perform some costly operations and try to find if we
+     * can convert input using any of already registered convertors
+     * @param type input type
+     * @return found convertor
+     */
+    private Optional<Convertor> findConvertor(final Class<? extends DataContainer> type) {
+        Optional<Convertor> convertor = Optional.ofNullable(convertors.get(type));
+
+        if (!convertor.isPresent()) {
             for (final Class<? extends DataContainer> key : convertorKeys) {
                 if (key.isAssignableFrom(type)) {
-                    convertor = convertors.get(key);
-                    convertors.put(type, convertor);
-                    LOG.debug("{} is now converted by {}", type, convertor);
+                    final Convertor foundConvertor = convertors.get(key);
+                    convertor = Optional.ofNullable(foundConvertor);
+                    convertors.put(type, foundConvertor);
+                    LOG.warn("{} is now converted by {} using last resort method", type, foundConvertor);
                     break;
                 }
             }
 
-            if (Objects.isNull(convertor)) {
+            if (!convertor.isPresent()) {
                 LOG.warn("Convertor for {} not found", type);
-                return result;
             }
         }
 
-        result = Optional.of((TO) convertor.convert(source, data));
-        return result;
+        return convertor;
     }
 }

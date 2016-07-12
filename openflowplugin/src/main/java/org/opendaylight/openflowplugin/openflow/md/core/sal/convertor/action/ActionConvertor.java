@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.SalToOfCopyTtlInCase;
@@ -127,8 +129,8 @@ public final class ActionConvertor implements Convertor<
             .addCase(new SalToOfGeneralExtensionGroupingCase());
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action.class);
     }
 
     @Override

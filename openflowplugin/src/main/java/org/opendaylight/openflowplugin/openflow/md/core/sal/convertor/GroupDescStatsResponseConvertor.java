@@ -9,11 +9,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -96,8 +96,8 @@ public class GroupDescStatsResponseConvertor implements Convertor<List<GroupDesc
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return GroupDesc.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(GroupDesc.class);
     }
 
     @Override
