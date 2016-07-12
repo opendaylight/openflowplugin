@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -31,7 +32,7 @@ public class SalToOfVendorCodecCase extends ConvertorCase<org.opendaylight.yang.
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action source, final ActionConvertorData data) {
         final short version = data.getVersion();
         final TypeVersionKey<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key =
                 new TypeVersionKey<>(

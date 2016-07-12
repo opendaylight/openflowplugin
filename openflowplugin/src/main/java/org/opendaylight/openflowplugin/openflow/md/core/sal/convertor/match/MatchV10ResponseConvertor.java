@@ -47,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class MatchV10ResponseConvertor implements Convertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
+public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;

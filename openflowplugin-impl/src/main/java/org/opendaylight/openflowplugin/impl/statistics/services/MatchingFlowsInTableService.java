@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -25,8 +26,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput> {
 
-    public MatchingFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    private final ConvertorManager convertorManager;
+
+    public MatchingFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -60,7 +64,7 @@ final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggr
             mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder);
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, convertorManager);
 
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 

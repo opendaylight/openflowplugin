@@ -23,8 +23,11 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public final class PacketProcessingServiceImpl extends AbstractVoidService<TransmitPacketInput> implements PacketProcessingService {
 
-    public PacketProcessingServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    private final ConvertorManager convertorManager;
+
+    public PacketProcessingServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -38,7 +41,7 @@ public final class PacketProcessingServiceImpl extends AbstractVoidService<Trans
         data.setDatapathId(getDatapathId());
         data.setXid(xid.getValue());
 
-        final Optional<PacketOutInput> result = ConvertorManager.getInstance().convert(input, data);
+        final Optional<PacketOutInput> result = convertorManager.convert(input, data);
         return result.orElse(PacketOutConvertor.defaultResult(getVersion()));
     }
 }

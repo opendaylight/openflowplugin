@@ -19,7 +19,6 @@ import io.netty.util.TimerTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -40,6 +39,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,11 +58,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     private StatisticsManager statisticsManager;
     private RpcManager rpcManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
+    private final ConvertorManager convertorManager;
     private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private NotificationPublishService notificationPublishService;
 
-    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
+    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency, ConvertorManager convertorManager) {
         this.messageIntelligenceAgency = Preconditions.checkNotNull(messageIntelligenceAgency);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -162,13 +164,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         if (OfpRole.BECOMEMASTER.equals(newRole)) {
             logText = "Start";
             statisticsManager.startScheduling(deviceInfo);
-            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
+            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider, convertorManager);
 
             if (rpcContext.isStatisticsRpcEnabled()) {
                 MdSalRegistrationUtils.registerStatCompatibilityServices(
                         rpcContext,
                         deviceContext,
-                        notificationPublishService);
+                        notificationPublishService, convertorManager);
             }
 
             // Fill flow registry with flows found in operational and config datastore

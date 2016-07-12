@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -50,10 +49,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Created by Jakub Toth jatoth@cisco.com on 9/23/14.
  */
 
-public class PacketOutConvertorTest {
+public class PacketOutConvertorTest extends ConvertorManagerInitialization{
 
-    @Before
-    public void init() {
+    @Override
+    public void setUp() {
         OpenflowPortsUtil.init();
     }
 
@@ -182,7 +181,7 @@ public class PacketOutConvertorTest {
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
         actionConvertorData.setDatapathId(datapathId);
 
-        Optional<List<Action>> actionsOptional = ConvertorManager.getInstance().convert(
+        Optional<List<Action>> actionsOptional = getConvertorManager().convert(
                 actionList, actionConvertorData);
 
         List<Action> actions = actionsOptional.orElse(Collections.emptyList());
@@ -282,7 +281,7 @@ public class PacketOutConvertorTest {
     }
 
     private PacketOutInput convert(TransmitPacketInput transmitPacketInput, PacketOutConvertorData data) {
-        Optional<PacketOutInput> messageOptional = ConvertorManager.getInstance().convert(transmitPacketInput, data);
+        Optional<PacketOutInput> messageOptional = getConvertorManager().convert(transmitPacketInput, data);
         return messageOptional.orElse(PacketOutConvertor.defaultResult(data.getVersion()));
     }
 }

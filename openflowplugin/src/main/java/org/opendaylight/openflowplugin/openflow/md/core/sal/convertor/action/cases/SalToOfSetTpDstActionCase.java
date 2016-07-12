@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
@@ -49,7 +50,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetTpDstActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final SetTpDstActionCase source, final ActionConvertorData data) {
         IPProtocols protocol = null;
 
         if (data.getIpProtocol() != null) {

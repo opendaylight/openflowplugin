@@ -34,12 +34,14 @@ public class FlowStatisticsToNotificationTransformer {
      * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
+     * @param convertorManager
      * @return notification containing flow stats
      */
     public static FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,
                                                                 final DeviceInfo deviceInfo,
                                                                 final OpenflowVersion ofVersion,
-                                                                final TransactionId emulatedTxId) {
+                                                                final TransactionId emulatedTxId,
+                                                                final ConvertorManager convertorManager) {
         final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(ofVersion.getVersion());
         data.setDatapathId(deviceInfo.getDatapathId());
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
@@ -55,7 +57,7 @@ public class FlowStatisticsToNotificationTransformer {
             MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpRawReply.getMultipartReplyBody();
             MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
             final Optional<List<FlowAndStatisticsMapList>> outStatsItem =
-                    ConvertorManager.getInstance().convert(replyBody.getFlowStats(), data);
+                    convertorManager.convert(replyBody.getFlowStats(), data);
 
 
             if (outStatsItem.isPresent()) {

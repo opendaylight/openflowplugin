@@ -77,7 +77,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
     @Override
     public void setUp() {
         flowStatisticsServiceDelegate = new OpendaylightFlowStatisticsServiceDelegateImpl(
-                rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21));
+                rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21), getConvertorManager());
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));

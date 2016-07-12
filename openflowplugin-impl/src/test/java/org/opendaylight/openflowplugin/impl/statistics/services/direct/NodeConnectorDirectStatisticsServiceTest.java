@@ -35,7 +35,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
     @Override
     public void setUp() throws Exception {
-        service = new NodeConnectorDirectStatisticsService(requestContextStack, deviceContext);
+        service = new NodeConnectorDirectStatisticsService(requestContextStack, deviceContext, getConvertorManager());
     }
 
     @Override

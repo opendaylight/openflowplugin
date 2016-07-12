@@ -10,16 +10,14 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -60,7 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * Unit test for {@link MatchConvertorImpl}.
  */
-public class MatchResponseConvertorTest {
+public class MatchResponseConvertorTest extends ConvertorManagerInitialization {
     private static final BigInteger DPID = BigInteger.TEN;
     private static final Long IN_PORT = 6L;
     private static final String URI_IN_PORT =
@@ -78,8 +76,8 @@ public class MatchResponseConvertorTest {
 
     private static final int DL_VLAN_NONE = 0xffff;
 
-    @BeforeClass
-    public static void setUp() {
+    @Override
+    public void setUp() {
         OpenflowPortsUtil.init();
     }
 
@@ -344,13 +342,13 @@ public class MatchResponseConvertorTest {
     }
 
     private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
-        final Optional<MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+        final Optional<MatchBuilder> salMatchOptional = getConvertorManager().convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }
 
     private MatchBuilder convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match, VersionDatapathIdConvertorData data) {
-        final Optional<MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+        final Optional<MatchBuilder> salMatchOptional = getConvertorManager().convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }

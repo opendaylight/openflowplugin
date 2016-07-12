@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -45,11 +46,11 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         this.deviceContext = deviceContext;
-        addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
-        updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
-        removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
+        addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorManager);
+        updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorManager);
+        removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorManager);
     }
 
     @Override

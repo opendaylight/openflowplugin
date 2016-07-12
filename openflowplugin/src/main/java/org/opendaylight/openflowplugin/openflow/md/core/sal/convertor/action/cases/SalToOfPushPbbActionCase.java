@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCase;
@@ -27,7 +28,7 @@ public class SalToOfPushPbbActionCase extends ConvertorCase<PushPbbActionCase, A
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PushPbbActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final PushPbbActionCase source, final ActionConvertorData data) {
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbBuilder = new PushPbbActionBuilder();
         pushPbbBuilder.setEthertype(new EtherType(source.getPushPbbAction().getEthernetType()));

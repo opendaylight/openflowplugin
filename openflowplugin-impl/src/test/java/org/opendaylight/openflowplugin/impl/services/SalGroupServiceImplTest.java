@@ -38,10 +38,9 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     SalGroupServiceImpl salGroupService;
 
     @Override
-    public void initialization() {
-        super.initialization();
+    public void setUp() {
         when(mockedDeviceContext.getDeviceGroupRegistry()).thenReturn(mockedDeviceGroupRegistry);
-        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, getConvertorManager());
     }
 
     @Test

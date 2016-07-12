@@ -29,13 +29,12 @@ public class ApplyActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase source, final ActionConvertorData data) {
+    public Optional<Instruction> process(ConvertorManager convertorManager, final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase source, final ActionConvertorData data) {
         ApplyActions applyActions = source.getApplyActions();
         ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
-        final Optional<List<Action>> actionList = ConvertorManager.getInstance().convert(
-                applyActions.getAction(), data);
+        final Optional<List<Action>> actionList = convertorManager.convert(applyActions.getAction(), data);
 
         applyActionsBuilder.setAction(actionList.orElse(Collections.emptyList()));
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());

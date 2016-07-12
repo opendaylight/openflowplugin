@@ -14,7 +14,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
@@ -56,7 +56,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 /**
  * @author michal.polkorab
  */
-public class MultipartReplyTranslatorFifthTest {
+public class MultipartReplyTranslatorFifthTest extends ConvertorManagerInitialization {
 
     @Mock
     SwitchConnectionDistinguisher cookie;
@@ -67,13 +67,14 @@ public class MultipartReplyTranslatorFifthTest {
     @Mock
     GetFeaturesOutput features;
 
-    MultipartReplyTranslator translator = new MultipartReplyTranslator();
+    MultipartReplyTranslator translator;
 
     /**
      * Initializes mocks
      */
-    @Before
-    public void startUp() {
+    @Override
+    public void setUp() {
+        translator = new MultipartReplyTranslator(getConvertorManager());
         MockitoAnnotations.initMocks(this);
         when(sc.getPrimaryConductor()).thenReturn(conductor);
         when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);

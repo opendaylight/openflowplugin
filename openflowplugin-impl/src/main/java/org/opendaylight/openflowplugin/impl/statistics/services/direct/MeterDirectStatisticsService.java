@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutputBuilder;
@@ -40,14 +41,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Meter direct statistics service.
  */
 public class MeterDirectStatisticsService extends AbstractDirectStatisticsService<GetMeterStatisticsInput, GetMeterStatisticsOutput> {
+    private final VersionConvertorData data;
+
     /**
      * Instantiates a new Meter direct statistics service.
-     *
-     * @param requestContextStack the request context stack
+     *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorManager
      */
-    public MeterDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(MultipartType.OFPMPMETER, requestContextStack, deviceContext);
+    public MeterDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorManager convertorManager) {
+        super(MultipartType.OFPMPMETER, requestContextStack, deviceContext, convertorManager);
+        data = new VersionConvertorData(getVersion());
     }
 
     @Override
@@ -73,7 +77,7 @@ public class MeterDirectStatisticsService extends AbstractDirectStatisticsServic
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                final Optional<List<MeterStats>> meterStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+                final Optional<List<MeterStats>> meterStatsList = getConvertorManager().convert(replyBody.getMeterStats(), data);
 
                 if (meterStatsList.isPresent()) {
                     meterStats.addAll(meterStatsList.get());

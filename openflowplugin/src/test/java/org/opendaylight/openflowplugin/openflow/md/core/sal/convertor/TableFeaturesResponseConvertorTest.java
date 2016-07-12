@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
@@ -106,7 +108,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 /**
  * @author michal.polkorab
  */
-public class TableFeaturesResponseConvertorTest {
+public class TableFeaturesResponseConvertorTest extends ConvertorManagerInitialization {
 
     /**
      * Incorrect / empty input test
@@ -787,7 +789,7 @@ public class TableFeaturesResponseConvertorTest {
 
 
     private List<TableFeatures> convert(MultipartReplyTableFeatures features) {
-        Optional<List<TableFeatures>> listOptional = ConvertorManager.getInstance().convert(features);
+        Optional<List<TableFeatures>> listOptional = getConvertorManager().convert(features, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         return listOptional.orElse(Collections.emptyList());
     }
 }

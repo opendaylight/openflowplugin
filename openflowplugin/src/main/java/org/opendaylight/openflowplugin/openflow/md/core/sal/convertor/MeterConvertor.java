@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class MeterConvertor implements Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
+public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
 
     /**

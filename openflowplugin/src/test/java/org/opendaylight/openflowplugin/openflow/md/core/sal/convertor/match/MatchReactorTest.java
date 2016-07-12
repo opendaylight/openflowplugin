@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
@@ -22,14 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * match conversion and injection test
  */
-public class MatchReactorTest {
-
+public class MatchReactorTest extends ConvertorManagerInitialization {
     private MatchBuilder matchBuilder;
 
-    /**
-     * prepare input match
-     */
-    @Before
+    @Override
     public void setUp() {
         matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
@@ -46,7 +42,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV13_flow() {
         FlowModInputBuilder target = new FlowModInputBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_3, target);
+                OFConstants.OFP_VERSION_1_3, target, getConvertorManager());
         Assert.assertNotNull(target.getMatch());
     }
 
@@ -57,7 +53,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV10_flow() {
         FlowModInputBuilder target = new FlowModInputBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_0, target);
+                OFConstants.OFP_VERSION_1_0, target, getConvertorManager());
         Assert.assertNotNull(target.getMatchV10());
     }
 
@@ -69,7 +65,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV13_mpRequestFlow() {
         MultipartRequestFlowBuilder target = new MultipartRequestFlowBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_3, target);
+                OFConstants.OFP_VERSION_1_3, target, getConvertorManager());
         Assert.assertNotNull(target.getMatch());
     }
 
@@ -80,7 +76,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV10_mpRequestFlow() {
         MultipartRequestFlowBuilder target = new MultipartRequestFlowBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_0, target);
+                OFConstants.OFP_VERSION_1_0, target, getConvertorManager());
         Assert.assertNotNull(target.getMatchV10());
     }
 
@@ -88,7 +84,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV10_null() {
         MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
         MatchReactor.getInstance().convert(null,
-                OFConstants.OFP_VERSION_1_0, target);
+                OFConstants.OFP_VERSION_1_0, target, getConvertorManager());
         Assert.assertNotNull(target.getMatchV10());
     }
 
@@ -99,7 +95,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV13_mpRequestAggregate() {
         MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_3, target);
+                OFConstants.OFP_VERSION_1_3, target, getConvertorManager());
         Assert.assertNotNull(target.getMatch());
     }
 
@@ -107,7 +103,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV13_null() {
         MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
         MatchReactor.getInstance().convert(null,
-                OFConstants.OFP_VERSION_1_3, target);
+                OFConstants.OFP_VERSION_1_3, target, getConvertorManager());
         Assert.assertNotNull(target.getMatch());
         Assert.assertEquals(0, target.getMatch().getMatchEntry().size());
     }
@@ -119,7 +115,7 @@ public class MatchReactorTest {
     public void testMatchConvertorV10_mpRequestAggregate() {
         MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(),
-                OFConstants.OFP_VERSION_1_0, target);
+                OFConstants.OFP_VERSION_1_0, target, getConvertorManager());
         Assert.assertNotNull(target.getMatchV10());
     }
 

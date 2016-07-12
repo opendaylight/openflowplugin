@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutputBuilder;
@@ -40,14 +41,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Group direct statistics service.
  */
 public class GroupDirectStatisticsService extends AbstractDirectStatisticsService<GetGroupStatisticsInput, GetGroupStatisticsOutput> {
+    private final VersionConvertorData data;
+
     /**
      * Instantiates a new Group direct statistics service.
-     *
-     * @param requestContextStack the request context stack
+     *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorManager
      */
-    public GroupDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(MultipartType.OFPMPGROUP, requestContextStack, deviceContext);
+    public GroupDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorManager convertorManager) {
+        super(MultipartType.OFPMPGROUP, requestContextStack, deviceContext, convertorManager);
+        data = new VersionConvertorData(getVersion());
     }
 
     @Override
@@ -73,8 +77,8 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(
-                        replyBody.getGroupStats());
+                final Optional<List<GroupStats>> groupStatsList = getConvertorManager().convert(
+                        replyBody.getGroupStats(), data);
 
                 if (groupStatsList.isPresent()) {
                     groupStats.addAll(groupStatsList.get());

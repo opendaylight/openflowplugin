@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  *
  */
-public class GroupDescStatsResponseConvertorTest {
+public class GroupDescStatsResponseConvertorTest extends ConvertorManagerInitialization {
 
     /**
      * Test empty GroupDescStats conversion
@@ -236,7 +236,7 @@ public class GroupDescStatsResponseConvertorTest {
     }
 
     private List<GroupDescStats> convert(List<GroupDesc> groupDescStats,VersionConvertorData data) {
-        Optional<List<GroupDescStats>> statsListOptional = ConvertorManager.getInstance().convert(groupDescStats, data);
+        Optional<List<GroupDescStats>> statsListOptional = getConvertorManager().convert(groupDescStats, data);
         return  statsListOptional.orElse(Collections.emptyList());
     }
 }

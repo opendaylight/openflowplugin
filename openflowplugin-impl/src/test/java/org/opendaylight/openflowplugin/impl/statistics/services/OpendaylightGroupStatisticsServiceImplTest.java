@@ -66,7 +66,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
     public void setUp() {
         groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
-                new AtomicLong(), notificationPublishService);
+                new AtomicLong(), notificationPublishService, getConvertorManager());
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));

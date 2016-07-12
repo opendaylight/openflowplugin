@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -53,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -103,7 +103,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeviceInitializationUtilsTest {
+public class DeviceInitializationUtilsTest extends ConvertorManagerInitialization {
 
     public static final String DUMMY_NODE_ID = "dummyNodeId";
     private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier.create(Nodes.class)
@@ -136,7 +136,7 @@ public class DeviceInitializationUtilsTest {
     @Mock
     private DeviceInfo deviceInfo;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
         OpenflowPortsUtil.init();
 
@@ -171,7 +171,7 @@ public class DeviceInitializationUtilsTest {
         final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
 
-        DeviceInitializationUtils.initializeNodeInformation(mockedDeviceContext, true);
+        DeviceInitializationUtils.initializeNodeInformation(mockedDeviceContext, true, getConvertorManager());
 
         verify(mockFeatures, atLeastOnce()).getPhyPort();
         verify(tLibrary, atLeastOnce()).lookupTranslator(any(TranslatorKey.class));
@@ -208,13 +208,14 @@ public class DeviceInitializationUtilsTest {
 
         final Collection<MultipartReply> multipartReplyMessages = prepareDataforTypeDesc(mockedDeviceContext);
 
-        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, getConvertorManager());
         verify(mockedDeviceContext)
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
     }
 
     @Test
     public void translateAndWriteReplyTypeTableFeatures() throws Exception {
+        when(mockedDeviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         tableFeature.setTableId(DUMMY_TABLE_ID);
         final List<TableFeatures> tableFeatures = new ArrayList<>();
@@ -226,7 +227,7 @@ public class DeviceInitializationUtilsTest {
 
         final MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyTableFeaturesCaseBuilder.build()).build();
         final Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
-        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPTABLEFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPTABLEFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, getConvertorManager());
         verify(mockedDeviceContext)
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                         eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID))), any(Table.class));
@@ -248,7 +249,7 @@ public class DeviceInitializationUtilsTest {
 
         final MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyMeterFeaturesCaseBuilder.build()).build();
         final Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
-        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPMETERFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPMETERFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, getConvertorManager());
         verify(mockedDeviceContext)
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(NodeMeterFeatures.class)), any(NodeMeterFeatures.class));
         verify(mockedDeviceState).setMeterAvailable(eq(true));
@@ -270,7 +271,7 @@ public class DeviceInitializationUtilsTest {
         final MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyGroupFeaturesCaseBuilder.build()).build();
         final Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
 
-        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPGROUPFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPGROUPFEATURES, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, getConvertorManager());
         verify(mockedDeviceContext)
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(NodeGroupFeatures.class)), any(NodeGroupFeatures.class));
     }
@@ -304,7 +305,7 @@ public class DeviceInitializationUtilsTest {
         final Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
 
         OpenflowPortsUtil.init();
-        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPPORTDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages);
+        DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPPORTDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, getConvertorManager());
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier<NodeConnector>> any(), any(NodeConnector.class));
     }
@@ -320,12 +321,12 @@ public class DeviceInitializationUtilsTest {
         final RpcResult<List<MultipartReply>> result = RpcResultBuilder.<List<MultipartReply>>success(multipartReplies).build();
         ListenableFuture<RpcResult<List<MultipartReply>>> mockedRequestContextFuture = Futures.immediateFuture(result);
 
-        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
+        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture, getConvertorManager());
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
 
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.PROTOCOL, "dummy error").build();
         mockedRequestContextFuture = Futures.immediateFuture(rpcResult);
-        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture);
+        DeviceInitializationUtils.createSuccessProcessingCallback(MultipartType.OFPMPDESC, mockedDeviceContext, DUMMY_NODE_II, mockedRequestContextFuture, getConvertorManager());
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(DUMMY_NODE_II.augmentation(FlowCapableNode.class)), any(FlowCapableNode.class));
     }
 
