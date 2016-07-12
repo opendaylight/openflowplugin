@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.Iterator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -205,10 +206,11 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
      *
      * @param match MD-SAL match
+     * @param convertorExecutor
      * @return OF-API match
      */
     @Override
-    public MatchV10 convert(final Match match) {
+    public MatchV10 convert(final Match match, ConvertorExecutor convertorExecutor) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         boolean _dLDST = true;
         boolean _dLSRC = true;

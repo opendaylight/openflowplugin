@@ -48,13 +48,12 @@ import org.slf4j.LoggerFactory;
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);
  * data.setDatapathId(datapathId);
- * Optional<GroupModInputBuilder> ofGroup = ConvertorManager.getInstance().convert(salGroup, data);
+ * Optional<GroupModInputBuilder> ofGroup = convertorManager.convert(salGroup, data);
  * }
  * </pre>
  */
-public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
+public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
     private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
-
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -78,7 +77,7 @@ public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, Ve
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private static List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType, BigInteger datapathid) {
+    private List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType, BigInteger datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
@@ -91,7 +90,7 @@ public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, Ve
             salToOFBucketListWatchGroup(groupBucket, bucketBuilder, groupType);
             salToOFBucketListWatchPort(groupBucket, bucketBuilder, groupType);
 
-            Optional<List<Action>> bucketActionList = ConvertorManager.getInstance().convert(
+            Optional<List<Action>> bucketActionList = getConvertorExecutor().convert(
                     groupBucket.getAction(), data);
 
             bucketBuilder.setAction(bucketActionList.orElse(Collections.emptyList()));

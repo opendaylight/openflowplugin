@@ -52,9 +52,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class PacketOutConvertorTest {
 
+    private ConvertorManager convertorManager;
+
     @Before
-    public void init() {
+    public void setUp() {
         OpenflowPortsUtil.init();
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
     /**
@@ -182,7 +185,7 @@ public class PacketOutConvertorTest {
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
         actionConvertorData.setDatapathId(datapathId);
 
-        Optional<List<Action>> actionsOptional = ConvertorManager.getInstance().convert(
+        Optional<List<Action>> actionsOptional = convertorManager.convert(
                 actionList, actionConvertorData);
 
         List<Action> actions = actionsOptional.orElse(Collections.emptyList());
@@ -282,7 +285,7 @@ public class PacketOutConvertorTest {
     }
 
     private PacketOutInput convert(TransmitPacketInput transmitPacketInput, PacketOutConvertorData data) {
-        Optional<PacketOutInput> messageOptional = ConvertorManager.getInstance().convert(transmitPacketInput, data);
+        Optional<PacketOutInput> messageOptional = convertorManager.convert(transmitPacketInput, data);
         return messageOptional.orElse(PacketOutConvertor.defaultResult(data.getVersion()));
     }
 }

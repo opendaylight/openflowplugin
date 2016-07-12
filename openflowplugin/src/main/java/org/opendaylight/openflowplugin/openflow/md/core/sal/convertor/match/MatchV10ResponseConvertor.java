@@ -44,11 +44,11 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);
  * data.setDatapathId(datapathId);
- * Optional<MatchBuilder> salMatch = ConvertorManager.getInstance().convert(ofMatchV10, data);
+ * Optional<MatchBuilder> salMatch = convertorManager.convert(ofMatchV10, data);
  * }
  * </pre>
  */
-public class MatchV10ResponseConvertor implements Convertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
+public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder, VersionDatapathIdConvertorData> {
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;

@@ -37,11 +37,11 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);
- * Optional<PortModInput> ofPort = ConvertorManager.getInstance().convert(salPort, data);
+ * Optional<PortModInput> ofPort = convertorManager.convert(salPort, data);
  * }
  * </pre>
  */
-public class PortConvertor implements Convertor<Port, PortModInput, VersionConvertorData> {
+public class PortConvertor extends Convertor<Port, PortModInput, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Port.class);
 

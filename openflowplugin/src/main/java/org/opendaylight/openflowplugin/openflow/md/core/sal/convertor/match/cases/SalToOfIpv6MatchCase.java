@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -51,7 +52,7 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv6Match source, VersionConvertorData data) {
+    public Optional<List<MatchEntry>> process(@Nonnull Ipv6Match source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv6Source() != null) {

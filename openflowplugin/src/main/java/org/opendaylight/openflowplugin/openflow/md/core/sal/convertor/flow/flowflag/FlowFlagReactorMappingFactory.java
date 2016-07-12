@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flow
 
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
@@ -27,7 +27,7 @@ public class FlowFlagReactorMappingFactory {
     /**
      * @param conversionMapping conversion mapping
      */
-    public static void addFlowFlagsConvertors(final Map<Short, Convertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?, ?>> conversionMapping) {
+    public static void addFlowFlagsConvertors(final Map<Short, ConvertReactorConvertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new FlowFlagsConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new FlowFlagsConvertorV10Impl());
     }
@@ -35,9 +35,9 @@ public class FlowFlagReactorMappingFactory {
     /**
      * @param injectionMapping injection mapping
      */
-    public static void addFlowFlagsIjectors(final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
+    public static void addFlowFlagsIjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|FlowModFlags --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlags, FlowModInputBuilder>() {
                     @Override
                     public void inject(final FlowModFlags value,
@@ -47,7 +47,7 @@ public class FlowFlagReactorMappingFactory {
                 });
 
         // OF-1.3|FlowModFlagsV10 --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
+        injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlagsV10, FlowModInputBuilder>() {
                     @Override
                     public void inject(final FlowModFlagsV10 value,

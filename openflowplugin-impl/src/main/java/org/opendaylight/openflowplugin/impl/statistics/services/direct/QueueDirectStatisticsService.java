@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -51,12 +52,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class QueueDirectStatisticsService extends AbstractDirectStatisticsService<GetQueueStatisticsInput, GetQueueStatisticsOutput> {
     /**
      * Instantiates a new Queue direct statistics service.
-     *
-     * @param requestContextStack the request context stack
+     *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorExecutor
      */
-    public QueueDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(MultipartType.OFPMPQUEUE, requestContextStack, deviceContext);
+    public QueueDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
+        super(MultipartType.OFPMPQUEUE, requestContextStack, deviceContext, convertorExecutor);
     }
 
     @Override

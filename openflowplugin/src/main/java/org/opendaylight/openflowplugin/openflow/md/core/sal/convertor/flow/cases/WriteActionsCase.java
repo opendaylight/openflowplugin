@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActions;
@@ -29,13 +29,12 @@ public class WriteActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase source, final ActionConvertorData data) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         WriteActions writeActions = source.getWriteActions();
         WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
         WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
 
-        final Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
-                writeActions.getAction(), data);
+        final Optional<List<Action>> actions = convertorExecutor.convert(writeActions.getAction(), data);
 
         writeActionsBuilder.setAction(actions.orElse(Collections.emptyList()));
         writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());

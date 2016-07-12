@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
     private static final short OFP_VERSION_ALL = 0x00;
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorProcessor.class);
 
-    private final Map<InjectionKey, ConvertorCase<?, TO, DATA>> conversions = new ConcurrentHashMap<>();
+    private final Map<Short, Map<Class<?>, ConvertorCase<?, TO, DATA>>> conversions = new ConcurrentHashMap<>();
     private ConvertorCase<?, TO, DATA> defaultCase;
 
     /**
@@ -38,12 +39,10 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      */
     public ConvertorProcessor<FROM, TO, DATA> addCase(final ConvertorCase<?, TO, DATA> processorCase) {
         if (processorCase.getSupportedVersions().isEmpty()) {
-            final InjectionKey key = new InjectionKey(OFP_VERSION_ALL, processorCase.getType());
-            conversions.putIfAbsent(key, processorCase);
+            getCasesForVersion(OFP_VERSION_ALL).putIfAbsent(processorCase.getType(), processorCase);
         } else {
             for (short supportedVersion : processorCase.getSupportedVersions()) {
-                final InjectionKey key = new InjectionKey(supportedVersion, processorCase.getType());
-                conversions.putIfAbsent(key, processorCase);
+                getCasesForVersion(supportedVersion).putIfAbsent(processorCase.getType(), processorCase);
             }
         }
 
@@ -54,10 +53,11 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      * Process source and return result based on convertor cases, or empty if no match is found.
      *
      * @param source the source
+     * @param convertorExecutor convertor executor
      * @return the optional
      */
-    public Optional<TO> process(final FROM source) {
-        return process(source, null);
+    public Optional<TO> process(final FROM source, final ConvertorExecutor convertorExecutor) {
+        return process(source, null, convertorExecutor);
     }
 
     /**
@@ -65,9 +65,10 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      *
      * @param source the source
      * @param data   the data
+     * @param convertorExecutor convertor executor
      * @return the optional
      */
-    public Optional<TO> process(final FROM source, final DATA data) {
+    public Optional<TO> process(final FROM source, final DATA data, final ConvertorExecutor convertorExecutor) {
         Optional<TO> result = Optional.empty();
         final short version = data != null ? data.getVersion() : OFP_VERSION_ALL;
 
@@ -77,12 +78,13 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
         }
 
         final Class<?> clazz = source.getImplementedInterface();
-        final InjectionKey key = new InjectionKey(version, clazz);
-        final Optional<ConvertorCase<?, TO, DATA>> caseOptional = Optional.ofNullable(conversions.get(key));
+        final Optional<ConvertorCase<?, TO, DATA>> caseOptional = Optional
+                .ofNullable(getCasesForVersion(version).get(clazz));
+
         final ConvertorCase<?, TO, DATA> processorCase = caseOptional.orElse(defaultCase);
 
         if (Objects.nonNull(processorCase)) {
-            result = processorCase.processRaw(source, data);
+            result = processorCase.processRaw(source, data, convertorExecutor);
 
             if (processorCase.isErrorOnEmpty() && !result.isPresent()) {
                 LOG.warn("Failed to process {} for version {}", clazz, version);
@@ -103,5 +105,14 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
     public ConvertorProcessor<FROM, TO, DATA> setDefaultCase(final ConvertorCase<?, TO, DATA> defaultCase) {
         this.defaultCase = defaultCase;
         return this;
+    }
+
+    private Map<Class<?>, ConvertorCase<?, TO, DATA>> getCasesForVersion(final short version) {
+        final Map<Class<?>, ConvertorCase<?, TO, DATA>> casesForVersion =
+                conversions.getOrDefault(version, new ConcurrentHashMap<>());
+
+        conversions.putIfAbsent(version, casesForVersion);
+
+        return casesForVersion;
     }
 }

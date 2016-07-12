@@ -37,11 +37,12 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * Example usage:
  * <pre>
  * {@code
- * Optional<List<GroupStats>> salGroupStats = ConvertorManager.getInstance().convert(ofGroupStats);
+ * VersionConvertorData data = new VersionConvertorData(version);
+ * Optional<List<GroupStats>> salGroupStats = convertorManager.convert(ofGroupStats, data);
  * }
  * </pre>
  */
-public class GroupStatsResponseConvertor implements Convertor<
+public class GroupStatsResponseConvertor extends Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats>,
         List<GroupStats>,
         VersionConvertorData> {

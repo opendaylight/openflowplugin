@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.meter.band.stats.BandStat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
@@ -61,8 +63,8 @@ public class MeterStatsResponseConvertorTest {
      * Test of basic mapping functionality of {@link MeterStatsResponseConvertor#convert(java.util.List)}
      */
     public void testToSALMeterStatsList() {
-
-        Optional<List<MeterStats>> meterStatsListOptional = ConvertorManager.getInstance().convert(createMeterStatsLit());
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        Optional<List<MeterStats>> meterStatsListOptional = convertorManager.convert(createMeterStatsLit(), new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MeterStats> meterStatsList = meterStatsListOptional.orElse(Collections.emptyList());
         assertEquals(PRESET_COUNT, meterStatsList.size());
 

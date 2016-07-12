@@ -96,6 +96,5 @@ class StatisticsContextImpMockInitiation {
 
         mockConductor.setSafelyManager(mockedDeviceManager);
         when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
-
     }
 }

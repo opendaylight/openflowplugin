@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -217,12 +218,15 @@ public class NodeStaticReplyTranslatorUtil {
      * table can have List of TableFeatures so add it directly to
      * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder}
      *
-     * @param reply
-     * @return
+     * @param reply reply
+     * @param version Openflow version
+     * @param convertorExecutor convertor executor
+     * @return list of table features
      */
-    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply) {
+    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply, final short version, @CheckForNull final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(reply != null);
-        final Optional<List<TableFeatures>> tableFeaturesList = ConvertorManager.getInstance().convert(reply);
+        Preconditions.checkArgument(convertorExecutor != null);
+        final Optional<List<TableFeatures>> tableFeaturesList = convertorExecutor.convert(reply, new VersionConvertorData(version));
         return tableFeaturesList.orElse(Collections.emptyList());
     }
 

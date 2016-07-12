@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.case
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
@@ -25,7 +26,7 @@ public class GoToTableCase extends ConvertorCase<org.opendaylight.yang.gen.v1.ur
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase source, final ActionConvertorData data) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         GoToTable goToTable = source.getGoToTable();
         GotoTableCaseBuilder gotoTableCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();

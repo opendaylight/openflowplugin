@@ -10,16 +10,16 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -77,10 +77,12 @@ public class MatchResponseConvertorTest {
             Ipv4Address.getDefaultInstance("10.1.2.3");
 
     private static final int DL_VLAN_NONE = 0xffff;
+    private ConvertorManager convertorManager;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         OpenflowPortsUtil.init();
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
     /**
@@ -344,13 +346,13 @@ public class MatchResponseConvertorTest {
     }
 
     private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
-        final Optional<MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+        final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }
 
     private MatchBuilder convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match, VersionDatapathIdConvertorData data) {
-        final Optional<MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+        final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }
