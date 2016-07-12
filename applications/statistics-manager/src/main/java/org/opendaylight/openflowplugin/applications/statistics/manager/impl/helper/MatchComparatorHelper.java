@@ -7,34 +7,32 @@
  */
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.net.InetAddresses;
+import com.google.common.primitives.UnsignedBytes;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMask;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.net.InetAddresses;
-import com.google.common.primitives.UnsignedBytes;
 
 /**
  * @author joe
@@ -55,8 +53,10 @@ public class MatchComparatorHelper {
     private static final int POSITION_OCTET_3 = 2;
     private static final int POSITION_OCTET_4 = 3;
     private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
+    private static final String DEFAULT_IPV6_ARBITRARY_BIT_MASK = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
     private static final String PREFIX_SEPARATOR = "/";
     private static final int IPV4_ADDRESS_LENGTH = 32;
+    private static final int IPV6_ADDRESS_LENGTH = 128;
     private static final int BYTE_SIZE = 8;
 
     /*
@@ -93,7 +93,7 @@ public class MatchComparatorHelper {
     }
 
     static boolean ethernetMatchFieldsEquals(final MacAddressFilter statsEthernetMatchFields,
-            final MacAddressFilter storedEthernetMatchFields) {
+                                             final MacAddressFilter storedEthernetMatchFields) {
         boolean verdict = true;
         final Boolean checkNullValues = checkNullValues(statsEthernetMatchFields, storedEthernetMatchFields);
         if (checkNullValues != null) {
@@ -148,31 +148,31 @@ public class MatchComparatorHelper {
             if ((storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null |
                     storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null)) {
                 if (storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null) {
-                        String storedDstIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
-                                storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
-                        String statsDstIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
-                                statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
-                        if (MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue(),
-                                statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedDstIpAddress,
-                                    statsDstIpAddress);
-                        } else {
-                            verdict = false;
-                            return verdict;
-                        }
+                    String storedDstIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                            storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
+                    String statsDstIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(),
+                            statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
+                    if (MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue(),
+                            statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask().getValue())) {
+                        verdict = MatchComparatorHelper.compareStringNullSafe(storedDstIpAddress,
+                                statsDstIpAddress);
+                    } else {
+                        verdict = false;
+                        return verdict;
+                    }
                 }
                 if (storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null) {
-                        String storedSrcIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
-                                ,storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
-                        String statsSrcIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
-                                ,statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
-                        if (MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue(),
-                                statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue())) {
-                            verdict = MatchComparatorHelper.compareStringNullSafe(storedSrcIpAddress,
-                                    statsSrcIpAddress);
-                        } else {
-                            verdict = false;
-                        }
+                    String storedSrcIpAddress = normalizeIpv4Address(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                            ,storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
+                    String statsSrcIpAddress = normalizeIpv4Address(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask()
+                            ,statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
+                    if (MatchComparatorHelper.compareStringNullSafe(storedIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue(),
+                            statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask().getValue())) {
+                        verdict = MatchComparatorHelper.compareStringNullSafe(storedSrcIpAddress,
+                                statsSrcIpAddress);
+                    } else {
+                        verdict = false;
+                    }
                 }
             } else {
                 final Boolean nullCheckOut = checkNullValues(storedLayer3Match, statsLayer3Match);
@@ -210,6 +210,86 @@ public class MatchComparatorHelper {
                     ipv4PrefixSource = createPrefix(storedIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask());
                 }
                 verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(ipv4PrefixSource, statsIpv4Match.getIpv4Source());
+            }
+        } else if (statsLayer3Match instanceof Ipv6MatchArbitraryBitMask && storedLayer3Match instanceof Ipv6MatchArbitraryBitMask) {
+            // At this moment storedIpv6MatchArbitraryBitMask & statsIpv6MatchArbitraryBitMask will always have non null arbitrary masks.
+            // In case of no / null arbitrary mask, statsLayer3Match will be an instance of Ipv6Match.
+            // Eg:- stats src/dest  -> 2001:2001:2001:2001:2001:2001:2001:2001/FFFF:FFFF:FFFF:FFFF:0000:FFFF:FFFF:FFF0
+            //     stored src/dest  -> 2001:2001:2001:2001:2001:2001:2001:2001/FFFF:FFFF:FFFF:FFFF:0000:FFFF:FFFF:FFF0
+            final Ipv6MatchArbitraryBitMask statsIpv6MatchArbitraryBitMask= (Ipv6MatchArbitraryBitMask) statsLayer3Match;
+            final Ipv6MatchArbitraryBitMask storedIpv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) storedLayer3Match;
+            if ((storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask() != null |
+                    storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask() != null)) {
+                if (storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask() != null) {
+                    String storedDstIpAddress = normalizeIpv6Address(storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask(),
+                            storedIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask());
+                    String statsDstIpAddress = normalizeIpv6Address(statsIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask(),
+                            statsIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask());
+                    String storedDstMask = extractIpv6CanonicalForm(storedIpv6MatchArbitraryBitMask.
+                            getIpv6DestinationArbitraryBitmask().getValue()).getHostAddress();
+                    String statsDstMask = extractIpv6CanonicalForm(statsIpv6MatchArbitraryBitMask.
+                            getIpv6DestinationArbitraryBitmask().getValue()).getHostAddress();
+                    if (MatchComparatorHelper.compareStringNullSafe(storedDstMask,statsDstMask)) {
+                        verdict = MatchComparatorHelper.compareStringNullSafe(storedDstIpAddress,
+                                statsDstIpAddress);
+                    } else {
+                        verdict = false;
+                        return verdict;
+                    }
+                }
+                if (storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask() != null) {
+                    String storedSrcIpAddress = normalizeIpv6Address(storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask()
+                            ,storedIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask());
+                    String statsSrcIpAddress = normalizeIpv6Address(statsIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask()
+                            ,statsIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask());
+                    String storedSrcMask = extractIpv6CanonicalForm(storedIpv6MatchArbitraryBitMask.
+                            getIpv6SourceArbitraryBitmask().getValue()).getHostAddress();
+                    String statsSrcMask = extractIpv6CanonicalForm(statsIpv6MatchArbitraryBitMask.
+                            getIpv6SourceArbitraryBitmask().getValue()).getHostAddress();
+                    if (MatchComparatorHelper.compareStringNullSafe(storedSrcMask, statsSrcMask)) {
+                        verdict = MatchComparatorHelper.compareStringNullSafe(storedSrcIpAddress,
+                                statsSrcIpAddress);
+                    } else {
+                        verdict = false;
+                    }
+                }
+            } else {
+                final Boolean nullCheckOut = checkNullValues(storedLayer3Match, statsLayer3Match);
+                if (nullCheckOut != null) {
+                    verdict = nullCheckOut;
+                } else {
+                    verdict = storedLayer3Match.equals(statsLayer3Match);
+                }
+            }
+        } else if (statsLayer3Match instanceof Ipv6Match && storedLayer3Match instanceof Ipv6MatchArbitraryBitMask) {
+            // Here stored netmask is an instance of Ipv6MatchArbitraryBitMask, when it is pushed in to switch
+            // it automatically converts it in to cidr format in case of certain subnet masks ( consecutive ones or zeroes)
+            // Eg:- stats src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/124
+            // stored src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFF0
+            final Ipv6Match statsIpv6Match = (Ipv6Match) statsLayer3Match;
+            final Ipv6MatchArbitraryBitMask storedIpv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) storedLayer3Match;
+            if (storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask() != null) {
+                Ipv6Prefix ipv6PrefixDestination;
+                if (storedIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask() != null) {
+                    byte[] destByteMask = convertIpv6ArbitraryMaskToByteArray(storedIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask());
+                    ipv6PrefixDestination = createPrefix(storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask(), destByteMask);
+                } else {
+                    ipv6PrefixDestination = createPrefix(storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(ipv6PrefixDestination, statsIpv6Match.getIpv6Destination());
+                if (verdict == false) {
+                    return verdict;
+                }
+            }
+            if (storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask() != null) {
+                Ipv6Prefix ipv6PrefixSource;
+                if (storedIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask() != null) {
+                    byte[] srcByteMask = convertIpv6ArbitraryMaskToByteArray(storedIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask());
+                    ipv6PrefixSource = createPrefix(storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask(), srcByteMask);
+                } else {
+                    ipv6PrefixSource = createPrefix(storedIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(ipv6PrefixSource, statsIpv6Match.getIpv6Source());
             }
         } else if (statsLayer3Match instanceof ArpMatch && storedLayer3Match instanceof ArpMatch) {
             verdict = arpMatchEquals((ArpMatch)statsLayer3Match, (ArpMatch)storedLayer3Match);
@@ -287,7 +367,7 @@ public class MatchComparatorHelper {
     }
 
     static boolean ipAndMaskBasedMatch(final IntegerIpAddress statsIpAddressInt,
-            final IntegerIpAddress storedIpAddressInt) {
+                                       final IntegerIpAddress storedIpAddressInt) {
         return ((statsIpAddressInt.getIp() & statsIpAddressInt.getMask()) == (storedIpAddressInt.getIp() & storedIpAddressInt
                 .getMask()));
     }
@@ -437,9 +517,11 @@ public class MatchComparatorHelper {
 
     static final byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
         String maskValue;
-        if(mask.getValue() != null && mask != null){
+        if (mask.getValue() != null) {
             maskValue  = mask.getValue();
-        } else maskValue = DEFAULT_ARBITRARY_BIT_MASK;
+        } else {
+            maskValue = DEFAULT_ARBITRARY_BIT_MASK;
+        }
         InetAddress maskInIpFormat = null;
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
@@ -450,6 +532,22 @@ public class MatchComparatorHelper {
         return bytes;
     }
 
+    private static final byte[] convertIpv6ArbitraryMaskToByteArray ( final Ipv6ArbitraryMask mask) {
+        String maskValue;
+        if (mask.getValue() != null) {
+            maskValue = mask.getValue();
+        } else
+        {
+            maskValue = DEFAULT_IPV6_ARBITRARY_BIT_MASK;
+        }
+        InetAddress maskInIpv6Format = null;
+        try {
+            maskInIpv6Format = InetAddress.getByName(maskValue);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to convert string mask value to ipv6 format. ", e);
+        }
+        return maskInIpv6Format.getAddress();
+    }
 
     static String normalizeIpv4Address(Ipv4Address ipAddress, DottedQuad netMask) {
         String actualIpAddress="";
@@ -468,8 +566,56 @@ public class MatchComparatorHelper {
         return actualIpAddress;
     }
 
+    private static String normalizeIpv6Address(final Ipv6Address ipAddress, final Ipv6ArbitraryMask netMask) {
+        byte[] ipAddressParts = convertIpv6ToBytes(ipAddress.getValue());
+        byte[] netMaskParts  = convertIpv6ToBytes(netMask.getValue());
+        byte[] actualIpv6Bytes = new byte[16];
+
+        for (int i=0; i<ipAddressParts.length;i++) {
+            byte ipAddressPart= (byte) (ipAddressParts[i] & netMaskParts[i]);
+            actualIpv6Bytes[i] = ipAddressPart;
+        }
+        InetAddress ipv6Address = null;
+        try {
+            ipv6Address = InetAddress.getByAddress(actualIpv6Bytes);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to recognize the host while normalizing IPv6 address from bytes ", e);
+        }
+        return ipv6Address.getHostAddress();
+    }
+
+    private static byte[] convertIpv6ToBytes(final String ipv6Address) {
+        return extractIpv6CanonicalForm(ipv6Address).getAddress();
+    }
+
+    private static InetAddress extractIpv6CanonicalForm(final String ipv6Address) {
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName(ipv6Address);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to recognize the host while converting IPv6 to bytes ", e);
+        }
+        return address;
+    }
+
     static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask){
         return createPrefix(ipv4Address, String.valueOf(countBits(bytemask)));
+    }
+
+    private static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask) {
+        return createPrefix(ipv6Address, String.valueOf(countBits(bytemask)));
+    }
+
+    private static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask) {
+        if (mask != null && !mask.isEmpty()) {
+            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
+        } else {
+            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + IPV6_ADDRESS_LENGTH);
+        }
+    }
+
+    private static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address) {
+        return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + IPV6_ADDRESS_LENGTH);
     }
 
     static int countBits(final byte[] mask) {
