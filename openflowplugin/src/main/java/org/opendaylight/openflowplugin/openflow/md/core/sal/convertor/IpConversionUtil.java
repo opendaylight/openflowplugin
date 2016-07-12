@@ -8,31 +8,32 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
+import com.google.common.primitives.UnsignedBytes;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterators;
-import com.google.common.net.InetAddresses;
-import com.google.common.primitives.UnsignedBytes;
 
 
 /**
@@ -51,6 +52,7 @@ public final class IpConversionUtil {
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
     private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
+    private static final String DEFAULT_IPV6_ARBITRARY_BITMASK = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -132,18 +134,32 @@ public final class IpConversionUtil {
         return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
-    public static DottedQuad createArbitraryBitMask(final byte [] bytemask)  {
+    public static DottedQuad createArbitraryBitMask(final byte [] bitmask)  {
         DottedQuad dottedQuad = null;
-        if (bytemask == null ) {
+        if (bitmask == null ) {
             dottedQuad = new DottedQuad(DEFAULT_ARBITRARY_BIT_MASK);
         } else {
             try {
-                dottedQuad = new DottedQuad(InetAddress.getByAddress(bytemask).getHostAddress());
+                dottedQuad = new DottedQuad(InetAddress.getByAddress(bitmask).getHostAddress());
             } catch (UnknownHostException e) {
                 LOG.error("Failed to create the dottedQuad notation for the given mask ", e);
             }
         }
         return dottedQuad;
+    }
+
+    public static Ipv6ArbitraryMask createIpv6ArbitraryBitMask(final byte [] bitmask) {
+        Ipv6ArbitraryMask ipv6ArbitraryMask = null;
+        if (bitmask == null ) {
+            ipv6ArbitraryMask = new Ipv6ArbitraryMask(DEFAULT_IPV6_ARBITRARY_BITMASK);
+        } else {
+            try {
+                ipv6ArbitraryMask = new Ipv6ArbitraryMask(InetAddress.getByAddress(bitmask).getHostAddress());
+            } catch (UnknownHostException e) {
+                LOG.error("Failed to create the Ipv6ArbitraryMask notation for the given mask ", e);
+            }
+        }
+        return ipv6ArbitraryMask;
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address){
@@ -386,7 +402,7 @@ public final class IpConversionUtil {
         List<String> partsV6Prefix = Lists.newArrayList(splittedV6Prefix.iterator());
 
         boolean valid = true;
-
+        
         try {
             mask = Integer.parseInt(partsV6Prefix.get(1));
             if (mask > 128) {
@@ -618,6 +634,27 @@ public final class IpConversionUtil {
         return netMask;
     }
 
+    public static Ipv6ArbitraryMask extractIpv6AddressMask(final Ipv6Prefix ipv6Prefix) {
+        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
+        addressParts.next();
+        int maskLength = 0;
+        if (addressParts.hasNext()) {
+            maskLength = Integer.parseInt(addressParts.next());
+        }
+        BitSet ipmask = new BitSet(128);
+        ipmask.set(0,maskLength,true);
+        ipmask.set(maskLength+1,128,false);
+        byte[] finalmask = new byte[16];
+        System.arraycopy(ipmask.toByteArray(),0,finalmask,0,ipmask.toByteArray().length);
+        InetAddress inetAddress = null;
+        try {
+            inetAddress = InetAddress.getByAddress(finalmask);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to convert the Ipv6 subnetmask from integer to mask value ", e);
+        }
+        return new Ipv6ArbitraryMask(inetAddress.getHostAddress());
+    }
+
     public static Integer extractIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
         return IetfInetUtil.INSTANCE.splitIpv6Prefix(ipv6Prefix).getValue();
     }
@@ -641,7 +678,7 @@ public final class IpConversionUtil {
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
-            LOG.error ("Failed to resolve the ip address of the mask",e);
+            LOG.error ("Failed to resolve the ip address of the mask ",e);
         }
         byte[] bytes = maskInIpFormat.getAddress();
         return bytes;
@@ -655,7 +692,6 @@ public final class IpConversionUtil {
             String maskInBits;
             // converting byte array to bits
             maskInBits = new BigInteger(1, byteMask).toString(2);
-
             ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
             for (String string:stringMaskArrayList) {
                 integerMaskArrayList.add(Integer.parseInt(string));
@@ -677,5 +713,63 @@ public final class IpConversionUtil {
             }
         }
         return false;
+    }
+
+    public static final byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
+        String maskValue;
+        if (mask.getValue() != null) {
+            maskValue  = mask.getValue();
+        } else {
+            maskValue = DEFAULT_IPV6_ARBITRARY_BITMASK;
+        }
+        InetAddress maskInIpFormat = null;
+        try {
+            maskInIpFormat = InetAddress.getByName(maskValue);
+        } catch (UnknownHostException e) {
+            LOG.error ("Failed to convert mask string to ipv6 format mask ",e);
+        }
+        return maskInIpFormat.getAddress();
+    }
+
+    public static boolean isIpv6ArbitraryBitMask(final byte[] byteMask) {
+        if (byteMask == null) {
+            return false;
+        } else {
+            ArrayList<Integer> integerMaskArrayList = new ArrayList<Integer>();
+            String maskInBits;
+            // converting byte array to bits
+            maskInBits = new BigInteger(1, byteMask).toString(2);
+            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+            for (String string:stringMaskArrayList) {
+                integerMaskArrayList.add(Integer.parseInt(string));
+            }
+            return checkIpv6ArbitraryBitMask(integerMaskArrayList);
+        }
+    }
+
+    private static boolean checkIpv6ArbitraryBitMask(final ArrayList<Integer> arrayList) {
+        // checks 0*1* case - Leading zeros in arrayList are truncated
+        if (arrayList.size() > 0 && arrayList.size() < IPV6_ADDRESS_LENGTH) {
+            return true;
+        } else {
+            //checks 1*0*1 case
+            for (int i=0; i<arrayList.size()-1;i++) {
+                if (arrayList.get(i) ==0 && arrayList.get(i+1) == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static String compressedIpv6Format(final String ipv6Address) {
+        String compressedIpv6Address;
+        compressedIpv6Address = ipv6Address.replaceAll("((?::0+\\b){2,}):?(?!\\S*\\b\\1:0\\b)(\\S*)", "::$2");
+        return compressedIpv6Address;
+    }
+
+    public static Ipv6ArbitraryMask compressedIpv6MaskFormat(final Ipv6ArbitraryMask ipv6Mask) {
+        String stringIpv6Mask = ipv6Mask.getValue();
+        return new Ipv6ArbitraryMask(compressedIpv6Format(stringIpv6Mask));
     }
 }
