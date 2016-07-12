@@ -93,7 +93,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class MatchResponseConvertor implements Convertor<MatchEntriesGrouping, MatchBuilder, VersionDatapathIdConvertorData> {
+public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, MatchBuilder, VersionDatapathIdConvertorData> {
     private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData> OF_TO_SAL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
             .addCase(new OfToSalInPortCase())
             .addCase(new OfToSalInPhyPortCase())
@@ -179,9 +179,9 @@ public class MatchResponseConvertor implements Convertor<MatchEntriesGrouping, M
                  * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value
                  * and proper use of it can fix this bug.
                  */
-                OF_TO_SAL_TUNNEL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data);
+                OF_TO_SAL_TUNNEL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
             } else {
-                OF_TO_SAL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data);
+                OF_TO_SAL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
             }
         }
 

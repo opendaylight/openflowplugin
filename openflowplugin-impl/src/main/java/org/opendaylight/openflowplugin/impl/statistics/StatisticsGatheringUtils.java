@@ -119,7 +119,6 @@ public final class StatisticsGatheringUtils {
     private static String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
-    private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
     private static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
 
     private StatisticsGatheringUtils() {
@@ -132,7 +131,8 @@ public final class StatisticsGatheringUtils {
                                                       final MultipartType type,
                                                       final TxFacade txFacade,
                                                       final DeviceRegistry registry,
-                                                      final Boolean initial) {
+                                                      final Boolean initial,
+                                                      final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
         EventIdentifier wholeProcessEventIdentifier = null;
         if (MultipartType.OFPMPFLOW.equals(type)) {
             wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
@@ -142,7 +142,7 @@ public final class StatisticsGatheringUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry, initial);
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry, initial, multipartReplyTranslator);
     }
 
     private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
@@ -151,7 +151,8 @@ public final class StatisticsGatheringUtils {
                                                                              final MultipartType type,
                                                                              final TxFacade txFacade,
                                                                              final DeviceRegistry registry,
-                                                                             final boolean initial) {
+                                                                             final boolean initial,
+                                                                             final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
         return Futures.transform(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -169,7 +170,7 @@ public final class StatisticsGatheringUtils {
 
                         try {
                             for (final MultipartReply singleReply : rpcResult.getResult()) {
-                                final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(
+                                final List<? extends DataObject> multipartDataList = multipartReplyTranslator.translate(
                                         deviceInfo.getDatapathId(),
                                         deviceInfo.getVersion(), singleReply);
                                 multipartData = multipartDataList.get(0);

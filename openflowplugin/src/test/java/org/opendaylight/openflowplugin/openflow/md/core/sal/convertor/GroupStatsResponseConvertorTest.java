@@ -14,7 +14,10 @@ import java.util.List;
 
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats;
@@ -27,6 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public class GroupStatsResponseConvertorTest {
+    private ConvertorManager convertorManager;
+
+    @Before
+    public void setUp() {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+    }
 
     /**
      * Test empty GroupStats conversion
@@ -36,7 +45,7 @@ public class GroupStatsResponseConvertorTest {
         List<GroupStats> groupStats = new ArrayList<>();
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStats = ConvertorManager.getInstance().convert(groupStats);
+                .GroupStats>> salGroupStats = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
 
         Assert.assertFalse("Group stats response should be not present", salGroupStats.isPresent());
     }
@@ -58,7 +67,7 @@ public class GroupStatsResponseConvertorTest {
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();
@@ -101,7 +110,7 @@ public class GroupStatsResponseConvertorTest {
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();
@@ -154,7 +163,7 @@ public class GroupStatsResponseConvertorTest {
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = ConvertorManager.getInstance().convert(groupStats);
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();

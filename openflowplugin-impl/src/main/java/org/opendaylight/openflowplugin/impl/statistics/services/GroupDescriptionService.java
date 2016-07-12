@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
@@ -37,9 +37,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 final class GroupDescriptionService
         extends AbstractCompatibleStatService<GetGroupDescriptionInput, GetGroupDescriptionOutput, GroupDescStatsUpdated> {
     private static final MultipartRequestGroupDescCase GROUP_DESC_CASE = new MultipartRequestGroupDescCaseBuilder().build();
+    private final ConvertorExecutor convertorExecutor;
 
-    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorExecutor = convertorExecutor;
     }
 
     @Override
@@ -68,7 +70,7 @@ final class GroupDescriptionService
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
-            final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(
+            final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
             if (groupDescStatsList.isPresent()) {

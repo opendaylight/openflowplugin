@@ -35,6 +35,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -207,8 +209,9 @@ public class ModelDrivenSwitchImplTest {
 
         OpenflowPortsUtil.init();
 
-        mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
-        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context, convertorManager);
+        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context, convertorManager);
     }
 
     /**

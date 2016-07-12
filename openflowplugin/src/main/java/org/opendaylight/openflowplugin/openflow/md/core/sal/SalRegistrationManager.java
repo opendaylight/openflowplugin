@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionListe
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRegistrationManager.class);
+    private final ConvertorExecutor convertorExecutor;
 
     private NotificationProviderService publishService;
 
@@ -66,7 +68,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private OfEntityManager entManager;
 
-    public SalRegistrationManager() {
+    public SalRegistrationManager(ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
 
@@ -105,7 +108,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
-        ModelDrivenSwitch ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier,context);
+        ModelDrivenSwitch ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context, convertorExecutor);
 
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
                 nodeAdded(ofSwitch, features, nodeRef),

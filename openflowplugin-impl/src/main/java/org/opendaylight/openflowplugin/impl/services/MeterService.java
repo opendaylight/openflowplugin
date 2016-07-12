@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
@@ -21,14 +21,18 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class MeterService<I extends Meter, O extends DataObject> extends AbstractSimpleService<I, O> {
 
-    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final ConvertorExecutor convertorExecutor;
+    private final VersionConvertorData data;
+
+    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
+        this.convertorExecutor = convertorExecutor;
+        data = new VersionConvertorData(getVersion());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) {
-        final VersionConvertorData data = new VersionConvertorData(getVersion());
-        final Optional<MeterModInputBuilder> ofMeterModInput = ConvertorManager.getInstance().convert(input, data);
+        final Optional<MeterModInputBuilder> ofMeterModInput = convertorExecutor.convert(input, data);
         final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
                 .orElse(MeterConvertor.defaultResult(getVersion()));
 

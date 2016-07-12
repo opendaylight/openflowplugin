@@ -52,7 +52,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public final class ActionResponseConvertor implements Convertor<
+public final class ActionResponseConvertor extends Convertor<
         List<Action>,
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>,
         ActionResponseConvertorData> {
@@ -94,7 +94,7 @@ public final class ActionResponseConvertor implements Convertor<
         // Iterate over Openflow actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
             for (final Action action : source) {
-                final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedAction = PROCESSOR.process(action.getActionChoice(), data);
+                final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedAction = PROCESSOR.process(action.getActionChoice(), data, getConvertorExecutor());
 
                 if (convertedAction.isPresent()) {
                     result.add(convertedAction.get());

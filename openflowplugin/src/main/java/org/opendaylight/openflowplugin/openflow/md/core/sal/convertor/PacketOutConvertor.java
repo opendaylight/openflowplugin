@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class PacketOutConvertor implements Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
+public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
 
     /**
@@ -125,7 +125,7 @@ public class PacketOutConvertor implements Convertor<TransmitPacketInput, Packet
             final ActionConvertorData actionConvertorData = new ActionConvertorData(data.getVersion());
             actionConvertorData.setDatapathId(data.getDatapathId());
 
-            final Optional<List<Action>> convertedActions = ConvertorManager.getInstance().convert(
+            final Optional<List<Action>> convertedActions = getConvertorExecutor().convert(
                     inputActions, actionConvertorData);
 
             actions = convertedActions.orElse(Collections.emptyList());
