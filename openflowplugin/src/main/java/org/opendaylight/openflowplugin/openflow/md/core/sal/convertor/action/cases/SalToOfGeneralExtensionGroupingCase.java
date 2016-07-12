@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -32,7 +33,7 @@ public class SalToOfGeneralExtensionGroupingCase extends ConvertorCase<GeneralEx
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final GeneralExtensionGrouping source, final ActionConvertorData data) {
+    public Optional<Action> process(@Nonnull final GeneralExtensionGrouping source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         final short version = data.getVersion();
         /**
          * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)

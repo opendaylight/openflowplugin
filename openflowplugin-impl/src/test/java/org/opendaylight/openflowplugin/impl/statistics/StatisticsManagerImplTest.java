@@ -59,6 +59,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -183,7 +185,8 @@ public class StatisticsManagerImplTest {
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor, convertorManager);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         when(conductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
     }

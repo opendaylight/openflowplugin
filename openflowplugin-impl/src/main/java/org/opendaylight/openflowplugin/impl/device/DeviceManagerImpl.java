@@ -52,6 +52,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -74,6 +75,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final int spyRate = 10;
 
     private final DataBroker dataBroker;
+    private final ConvertorExecutor convertorExecutor;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
@@ -92,11 +94,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff) {
+                             final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff,
+                             final ConvertorExecutor convertorExecutor) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.convertorExecutor = convertorExecutor;
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
 
@@ -379,7 +383,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         ((DeviceContextImpl)deviceContext).getTransactionChainManager().activateTransactionManager();
         /* Init Collecting NodeInfo */
         final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
-                deviceContext, switchFeaturesMandatory);
+                deviceContext, switchFeaturesMandatory, convertorExecutor);
         /* Init Collecting StatInfo */
         final ListenableFuture<Boolean> statPollFuture = Futures.transform(initCollectingDeviceInfo,
                 new AsyncFunction<Void, Boolean>() {

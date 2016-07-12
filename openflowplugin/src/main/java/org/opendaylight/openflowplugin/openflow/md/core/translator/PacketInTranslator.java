@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
@@ -43,6 +43,11 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
 
     private static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
+    private final ConvertorExecutor convertorExecutor;
+
+    public PacketInTranslator(ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
+    }
 
     @Override
     public List<DataObject> translate(final SwitchConnectionDistinguisher cookie,
@@ -101,7 +106,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     datapathIdConvertorData.setDatapathId(dpid);
 
                     final OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-                    final Optional<MatchBuilder> matchOptional = ConvertorManager.getInstance().convert(message.getMatch(), datapathIdConvertorData);
+                    final Optional<MatchBuilder> matchOptional = convertorExecutor.convert(message.getMatch(), datapathIdConvertorData);
                     final MatchBuilder matchBuilder = new MatchBuilder(matchOptional.orElse(new MatchBuilder()).build());
 
                     AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =

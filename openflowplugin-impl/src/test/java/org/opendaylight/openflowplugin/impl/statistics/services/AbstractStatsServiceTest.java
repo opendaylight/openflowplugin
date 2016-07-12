@@ -104,7 +104,6 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
         Mockito.when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
-
         setUp();
     }
 
