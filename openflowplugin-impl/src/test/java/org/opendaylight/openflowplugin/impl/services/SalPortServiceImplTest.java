@@ -29,9 +29,8 @@ public class SalPortServiceImplTest extends ServiceMocking {
     SalPortServiceImpl salPortService;
 
     @Override
-    public void initialization() {
-        super.initialization();
-        salPortService = new SalPortServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+    public void setUp() {
+        salPortService = new SalPortServiceImpl(mockedRequestContextStack, mockedDeviceContext, getConvertorManager());
     }
 
     @Test

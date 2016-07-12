@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 /**
  * injection lookup key based on version and target object
  */
-public class InjectionKey {
+public class ConvertorKey {
 
     private final int version;
     private final Class<?> targetClazz;
@@ -25,9 +25,23 @@ public class InjectionKey {
      * @param version openflow version
      * @param targetClazz target class
      */
-    public InjectionKey(final int version, final Class<?> targetClazz) {
+    public ConvertorKey(final int version, final Class<?> targetClazz) {
         this.version = version;
         this.targetClazz = Preconditions.checkNotNull(targetClazz);
+    }
+
+    public boolean isAssignableFrom(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConvertorKey other = (ConvertorKey) obj;
+        return version == other.version && targetClazz.isAssignableFrom(other.targetClazz);
     }
 
     @Override
@@ -46,11 +60,8 @@ public class InjectionKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final InjectionKey other = (InjectionKey) obj;
-        if (version != other.version) {
-            return false;
-        }
-        return targetClazz.equals(other.targetClazz);
+        final ConvertorKey other = (ConvertorKey) obj;
+        return version == other.version && targetClazz.equals(other.targetClazz);
     }
 
     @Override

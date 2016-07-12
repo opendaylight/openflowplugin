@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
@@ -33,7 +34,7 @@ public class SalToOfSetNwTosActionCase extends ConvertorCase<SetNwTosActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwTosActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final SetNwTosActionCase source, final ActionConvertorData data) {
         SetNwTosAction setnwtosaction = source.getSetNwTosAction();
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 
 /**
  * The Convertor case used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}.
@@ -42,11 +43,13 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
     /**
      * Process source and return result, what can be empty
      *
+     *
+     * @param convertorManager
      * @param source the source
      * @param data   the data
      * @return the optional
      */
-    public abstract Optional<TO> process(@Nonnull final FROM source, final DATA data);
+    public abstract Optional<TO> process(ConvertorManager convertorManager, @Nonnull final FROM source, final DATA data);
 
     /**
      * Should {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}
@@ -61,12 +64,14 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
     /**
      * Cast untyped source to type of this case and sends it to actual process method.
      *
+     *
+     * @param convertorManager
      * @param source the source
      * @param data   the data
      * @return the optional
      */
-    Optional<TO> processRaw(@Nonnull final Object source, final DATA data) {
-        return process(getType().cast(source), data);
+    Optional<TO> processRaw(ConvertorManager convertorManager, @Nonnull final Object source, final DATA data) {
+        return process(convertorManager, getType().cast(source), data);
     }
 
     /**

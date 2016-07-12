@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -25,7 +26,7 @@ public class OfToSalTcpDstCase extends ConvertorCase<TcpDstCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull TcpDstCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull TcpDstCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final TcpMatchBuilder tcpMatchBuilder = data.getTcpMatchBuilder();
 

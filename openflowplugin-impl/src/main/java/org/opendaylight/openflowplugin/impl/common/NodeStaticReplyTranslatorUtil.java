@@ -16,6 +16,7 @@ import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -211,9 +212,10 @@ public class NodeStaticReplyTranslatorUtil {
      * @param reply
      * @return
      */
-    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply) {
+    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply, final short version, @CheckForNull final ConvertorManager convertorManager) {
         Preconditions.checkArgument(reply != null);
-        final Optional<List<TableFeatures>> tableFeaturesList = ConvertorManager.getInstance().convert(reply);
+        Preconditions.checkArgument(convertorManager != null);
+        final Optional<List<TableFeatures>> tableFeaturesList = convertorManager.convert(reply, new VersionConvertorData(version));
         return tableFeaturesList.orElse(Collections.emptyList());
     }
 

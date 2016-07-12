@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.MeterStatisticsToNotificationTransformer;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsOutput;
@@ -46,8 +47,11 @@ final class AllMeterStatsService
         METER_CASE = caseBuilder.build();
     }
 
-    public AllMeterStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    private final ConvertorManager convertorManager;
+
+    public AllMeterStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -65,6 +69,6 @@ final class AllMeterStatsService
 
     @Override
     public MeterStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return MeterStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return MeterStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorManager);
     }
 }

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
@@ -64,7 +65,7 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv4DstCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull Ipv4DstCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();
         final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = data.getIpv4MatchArbitraryBitMaskBuilder();

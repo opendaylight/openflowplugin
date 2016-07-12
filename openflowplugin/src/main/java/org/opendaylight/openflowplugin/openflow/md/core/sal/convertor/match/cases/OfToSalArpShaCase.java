@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -27,7 +28,7 @@ public class OfToSalArpShaCase extends ConvertorCase<ArpShaCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull ArpShaCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull ArpShaCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ArpMatchBuilder arpMatchBuilder = data.getArpMatchBuilder();
 

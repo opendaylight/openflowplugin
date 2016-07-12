@@ -17,13 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -35,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -159,8 +157,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * simple NPE smoke test
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ModelDrivenSwitchImplTest {
+public class ModelDrivenSwitchImplTest extends ConvertorManagerInitialization {
 
     private ModelDrivenSwitchImpl mdSwitchOF10;
     private ModelDrivenSwitchImpl mdSwitchOF13;
@@ -185,7 +182,7 @@ public class ModelDrivenSwitchImplTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @Override
     public void setUp() throws Exception {
         Mockito.when(context.getPrimaryConductor()).thenReturn(conductor);
         Mockito.when(context.getMessageDispatchService()).thenReturn(messageDispatchService);
@@ -207,8 +204,8 @@ public class ModelDrivenSwitchImplTest {
 
         OpenflowPortsUtil.init();
 
-        mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
-        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
+        mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context, getConvertorManager());
+        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context, getConvertorManager());
     }
 
     /**

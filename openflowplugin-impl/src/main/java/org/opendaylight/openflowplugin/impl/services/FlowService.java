@@ -31,8 +31,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 final class FlowService<O extends DataObject> extends AbstractSimpleService<FlowModInputBuilder, O> {
 
-    protected FlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final ConvertorManager convertorManager;
+    private final VersionDatapathIdConvertorData data;
+
+    protected FlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, clazz);
+        this.convertorManager = convertorManager;
+        data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
     }
 
     @Override
@@ -42,10 +48,7 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
     }
 
     List<FlowModInputBuilder> toFlowModInputs(final Flow input) {
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
-        data.setDatapathId(getDatapathId());
-
-        final Optional<List<FlowModInputBuilder>> flowModInputBuilders = ConvertorManager.getInstance().convert(input, data);
+        final Optional<List<FlowModInputBuilder>> flowModInputBuilders = convertorManager.convert(input, data);
         return flowModInputBuilders.orElse(Collections.emptyList());
     }
 

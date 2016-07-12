@@ -13,14 +13,12 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Collections;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -39,8 +37,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 /**
  * Test of {@link AggregatedFlowStatisticsTranslator}
  */
-@RunWith(MockitoJUnitRunner.class)
-public class FlowRemovedTranslatorTest {
+public class FlowRemovedTranslatorTest extends ConvertorManagerInitialization {
 
     private FlowRemovedTranslator translator;
 
@@ -63,13 +60,13 @@ public class FlowRemovedTranslatorTest {
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeId;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
         nodeId = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
-        translator = new FlowRemovedTranslator();
-        translatorV10 = new FlowRemovedV10Translator();
+        translator = new FlowRemovedTranslator(getConvertorManager());
+        translatorV10 = new FlowRemovedV10Translator(getConvertorManager());
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeId);

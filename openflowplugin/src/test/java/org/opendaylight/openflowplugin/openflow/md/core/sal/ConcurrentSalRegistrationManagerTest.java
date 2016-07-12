@@ -23,14 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -43,6 +40,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -54,13 +52,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/22/14.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ConcurrentSalRegistrationManagerTest {
+public class ConcurrentSalRegistrationManagerTest extends ConvertorManagerInitialization {
 
 
     /** registration related action must end within this amount of seconds */
     private static final int REGISTRATION_ACTION_TIMEOUT = 5;
-    protected static final SalRegistrationManager registrationManager = new SalRegistrationManager();
+    protected SalRegistrationManager registrationManager;
     protected static final Logger LOG = LoggerFactory.getLogger(ConcurrentSalRegistrationManagerTest.class);
     protected static final SwitchSessionKeyOF SWITCH_SESSION_KEY_OF = new SwitchSessionKeyOF();
 
@@ -92,8 +89,9 @@ public class ConcurrentSalRegistrationManagerTest {
     /**
      * prepare surrounding objects
      */
-    @Before
+    @Override
     public void setUp() {
+        registrationManager = new SalRegistrationManager(getConvertorManager());
         SWITCH_SESSION_KEY_OF.setDatapathId(BigInteger.ONE);
         Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);
 

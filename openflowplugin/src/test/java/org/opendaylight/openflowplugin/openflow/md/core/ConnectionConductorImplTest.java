@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -42,6 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -67,7 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConnectionConductorImplTest {
+public class ConnectionConductorImplTest extends ConvertorManagerInitialization {
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
@@ -148,13 +148,13 @@ public class ConnectionConductorImplTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @Override
     public void setUp() throws Exception {
         adapter = new ConnectionAdapterStackImpl();
 
         popListener = new PopListenerCountingImpl<>();
 
-        controller = new MDController();
+        controller = new MDController(getConvertorManager());
         controller.init();
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
 

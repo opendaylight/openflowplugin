@@ -10,17 +10,15 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -36,6 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -53,8 +52,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/26/14.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SalRegistrationManagerTest {
+public class SalRegistrationManagerTest extends ConvertorManagerInitialization {
 
 
     private static final BigInteger dataPathId = BigInteger.ONE;
@@ -90,7 +88,7 @@ public class SalRegistrationManagerTest {
 
     ModelDrivenSwitchRegistration registration;
 
-    @Before
+    @Override
     public void setUp() {
         OFSessionUtil.getSessionManager().setRpcPool(rpcPool);
         Mockito.when(conductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0)
@@ -103,7 +101,7 @@ public class SalRegistrationManagerTest {
         context.setNotificationEnqueuer(notificationEnqueuer);
 
 	OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
-        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
+        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context, getConvertorManager());
         registration = new AbstractModelDrivenSwitchRegistration(mdSwitchOF13) {
             @Override
             protected void removeRegistration() {
@@ -119,7 +117,7 @@ public class SalRegistrationManagerTest {
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        salRegistrationManager = new SalRegistrationManager();
+        salRegistrationManager = new SalRegistrationManager(getConvertorManager());
         salRegistrationManager.setPublishService(notificationProviderService);
         salRegistrationManager.setDataService(dataBroker);
         salRegistrationManager.setRpcProviderRegistry(rpcProviderRegistry);

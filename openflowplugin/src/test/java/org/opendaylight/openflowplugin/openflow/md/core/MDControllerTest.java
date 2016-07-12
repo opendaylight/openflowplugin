@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
@@ -23,7 +24,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MDControllerTest {
+public class MDControllerTest extends ConvertorManagerInitialization{
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
@@ -33,9 +34,9 @@ public class MDControllerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @Override
     public void setUp() throws Exception {
-        controller = new MDController();
+        controller = new MDController(getConvertorManager());
         controller.init();
     }
 

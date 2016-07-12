@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -35,6 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -67,7 +67,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MultipartRequestOnTheFlyCallbackTest {
+public class MultipartRequestOnTheFlyCallbackTest extends ConvertorManagerInitialization {
 
     private static final String DUMMY_NODE_ID = "dummyNodeId";
     private static final String DUMMY_EVENT_NAME = "dummy event name 1";
@@ -103,8 +103,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private MultipartRequestOnTheFlyCallback multipartRequestOnTheFlyCallback;
     private final short tableId = 0;
 
-    @Before
-    public void initialization() {
+    @Override
+    public void setUp() {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(new MessageIntelligenceAgencyImpl());
         when(mockedNodeId.toString()).thenReturn(DUMMY_NODE_ID);
         when(mockedPrimaryConnection.getNodeId()).thenReturn(mockedNodeId);
@@ -121,6 +121,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
         when(mockedDeviceInfo.getNodeId()).thenReturn(mockedNodeId);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(mockedDeviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
@@ -143,7 +144,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         };
         multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
                 mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceInfo,
-                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext);
+                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext, getConvertorManager());
     }
 
 

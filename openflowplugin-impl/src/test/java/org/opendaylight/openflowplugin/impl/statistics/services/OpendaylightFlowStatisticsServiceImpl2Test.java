@@ -53,7 +53,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
 
     public void setUp() {
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext);
+        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, getConvertorManager());
 
         rqContextMp = new AbstractRequestContext<List<MultipartReply>>(42L) {
             @Override

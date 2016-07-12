@@ -29,7 +29,7 @@ public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
     FlowCapableTransactionServiceImpl flowCapableTransactionService;
 
     @Override
-    protected void setup() {
+    protected void setUp() {
         flowCapableTransactionService = new FlowCapableTransactionServiceImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 

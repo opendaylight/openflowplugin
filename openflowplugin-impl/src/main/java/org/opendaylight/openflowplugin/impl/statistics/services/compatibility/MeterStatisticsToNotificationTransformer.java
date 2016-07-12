@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
@@ -32,13 +33,16 @@ public class MeterStatisticsToNotificationTransformer {
      * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
+     * @param convertorManager
      * @return notification containing flow stats
      */
     public static MeterStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,
                                                                  final DeviceInfo deviceInfo,
                                                                  final OpenflowVersion ofVersion,
-                                                                 final TransactionId emulatedTxId) {
+                                                                 final TransactionId emulatedTxId,
+                                                                 final ConvertorManager convertorManager) {
 
+        VersionConvertorData data = new VersionConvertorData(deviceInfo.getVersion());
         MeterStatisticsUpdatedBuilder notification = new MeterStatisticsUpdatedBuilder();
         notification.setId(deviceInfo.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
@@ -48,7 +52,7 @@ public class MeterStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-            final Optional<List<MeterStats>> meterStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+            final Optional<List<MeterStats>> meterStatsList = convertorManager.convert(replyBody.getMeterStats(), data);
 
             if (meterStatsList.isPresent()) {
                 notification.getMeterStats().addAll(meterStatsList.get());

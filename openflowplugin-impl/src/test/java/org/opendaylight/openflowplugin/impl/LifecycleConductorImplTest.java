@@ -20,7 +20,6 @@ import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LifecycleConductorImplTest {
+public class LifecycleConductorImplTest extends ConvertorManagerInitialization {
 
     private LifecycleConductorImpl lifecycleConductor;
 
@@ -88,11 +87,11 @@ public class LifecycleConductorImplTest {
     private NodeId nodeId = new NodeId("openflow-junit:1");
     private OfpRole ofpRole = OfpRole.NOCHANGE;
 
-    @Before
+    @Override
     public void setUp() {
         final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
-        lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
+        lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency, getConvertorManager());
         lifecycleConductor.setSafelyManager(deviceManager);
         lifecycleConductor.setSafelyManager(statisticsManager);
         lifecycleConductor.setSafelyManager(rpcManager);

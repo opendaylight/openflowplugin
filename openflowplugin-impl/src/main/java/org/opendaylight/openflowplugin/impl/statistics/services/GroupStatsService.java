@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.GroupStatisticsToNotificationTransformer;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
@@ -31,8 +32,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 final class GroupStatsService
         extends AbstractCompatibleStatService<GetGroupStatisticsInput, GetGroupStatisticsOutput, GroupStatisticsUpdated> {
 
-    public GroupStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    private final ConvertorManager convertorManager;
+
+    public GroupStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -56,6 +60,6 @@ final class GroupStatsService
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId, convertorManager);
     }
 }

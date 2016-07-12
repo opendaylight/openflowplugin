@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -26,7 +27,7 @@ public class OfToSalPbbIsidCase extends ConvertorCase<PbbIsidCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull PbbIsidCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull PbbIsidCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = data.getProtocolMatchFieldsBuilder();
 

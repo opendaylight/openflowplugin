@@ -19,7 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -113,6 +112,11 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
     protected static final Logger logger = LoggerFactory
             .getLogger(MultipartReplyTranslator.class);
+    private final ConvertorManager convertorManager;
+
+    public MultipartReplyTranslator(ConvertorManager convertorManager) {
+        this.convertorManager = convertorManager;
+    }
 
 
     @Override
@@ -121,6 +125,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
         OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
+        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
+        data.setDatapathId(sc.getFeatures().getDatapathId());
 
         if(msg instanceof MultipartReplyMessage){
             MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
@@ -134,10 +140,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
                 MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
-                data.setDatapathId(sc.getFeatures().getDatapathId());
 
-                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = ConvertorManager.getInstance().convert(replyBody.getFlowStats(), data);
+                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = convertorManager.convert(replyBody.getFlowStats(), data);
 
                 message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
                 logger.debug("Converted flow statistics : {}",message.build().toString());
@@ -228,7 +232,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(replyBody.getGroupStats());
+                final Optional<List<GroupStats>> groupStatsList = convertorManager.convert(replyBody.getGroupStats(), data);
                 message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -244,8 +248,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-                final VersionConvertorData data = new VersionConvertorData(sc.getPrimaryConductor().getVersion());
-                final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(replyBody.getGroupDesc(), data);
+                final Optional<List<GroupDescStats>> groupDescStatsList = convertorManager.convert(replyBody.getGroupDesc(), data);
                 message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -311,7 +314,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
 
                 final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>> meterStatsList =
-                        ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+                        convertorManager.convert(replyBody.getMeterStats(), data);
 
                 message.setMeterStats(meterStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());
@@ -328,7 +331,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
-                final Optional<List<MeterConfigStats>> meterConfigStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterConfig());
+                final Optional<List<MeterConfigStats>> meterConfigStatsList = convertorManager.convert(replyBody.getMeterConfig(), data);
 
                 message.setMeterConfigStats(meterConfigStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());

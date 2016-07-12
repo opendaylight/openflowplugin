@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCase;
@@ -25,7 +26,7 @@ public class SalToOfDecMplsTtlCase extends ConvertorCase<DecMplsTtlCase, Action,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final DecMplsTtlCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final DecMplsTtlCase source, final ActionConvertorData data) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new DecMplsTtlCaseBuilder().build())
                 .build());

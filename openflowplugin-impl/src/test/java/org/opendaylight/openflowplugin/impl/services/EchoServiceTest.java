@@ -19,7 +19,7 @@ public class EchoServiceTest extends ServiceMocking {
     EchoService echoService;
 
     @Override
-    public void setup() {
+    public void setUp() {
         echoService = new EchoService(mockedRequestContextStack, mockedDeviceContext);
     }
 

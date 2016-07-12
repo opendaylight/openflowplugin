@@ -28,11 +28,11 @@ public class OfToSalSetFieldCase extends ConvertorCase<SetFieldCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionResponseConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final SetFieldCase source, final ActionResponseConvertorData data) {
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(data.getVersion());
         final SetFieldAction setFieldAction = source.getSetFieldAction();
         final SetFieldBuilder setField = new SetFieldBuilder();
-        final Optional<MatchBuilder> matchOptional = ConvertorManager.getInstance().convert(setFieldAction, datapathIdConvertorData);
+        final Optional<MatchBuilder> matchOptional = convertorManager.convert(setFieldAction, datapathIdConvertorData);
         setField.fieldsFrom(matchOptional.orElse(new MatchBuilder()).build());
 
         return Optional.of(new SetFieldCaseBuilder().setSetField(setField.build()).build());

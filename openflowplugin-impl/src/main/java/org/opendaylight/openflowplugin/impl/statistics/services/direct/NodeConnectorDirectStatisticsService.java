@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
@@ -48,12 +49,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class NodeConnectorDirectStatisticsService extends AbstractDirectStatisticsService<GetNodeConnectorStatisticsInput, GetNodeConnectorStatisticsOutput> {
     /**
      * Instantiates a new Node connector direct statistics service.
-     *
-     * @param requestContextStack the request context stack
+     *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorManager
      */
-    public NodeConnectorDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(MultipartType.OFPMPPORTSTATS, requestContextStack, deviceContext);
+    public NodeConnectorDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorManager convertorManager) {
+        super(MultipartType.OFPMPPORTSTATS, requestContextStack, deviceContext, convertorManager);
     }
 
     @Override

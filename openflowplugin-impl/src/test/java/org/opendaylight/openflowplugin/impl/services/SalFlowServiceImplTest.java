@@ -1,6 +1,9 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -8,8 +11,6 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import junit.framework.TestCase;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -31,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -63,7 +65,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SalFlowServiceImplTest extends TestCase {
+public class SalFlowServiceImplTest extends ConvertorManagerInitialization {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
@@ -106,8 +108,8 @@ public class SalFlowServiceImplTest extends TestCase {
     @Mock
     private GetFeaturesOutput mockedFeaturesOutput;
 
-    @Before
-    public void initialization() {
+    @Override
+    public void setUp() {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
         when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
@@ -132,7 +134,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
 
-        salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, getConvertorManager());
     }
 
     @Test

@@ -12,7 +12,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -42,7 +42,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
-public abstract class AbstractDirectStatisticsServiceTest {
+public abstract class AbstractDirectStatisticsServiceTest extends ConvertorManagerInitialization {
     protected static final Long PORT_NO = 1L;
     protected static final BigInteger DATAPATH_ID = BigInteger.TEN;
     protected static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
@@ -81,7 +81,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
         return new NodeRef(nodePath);
     }
 
-    @Before
+    @Override
     public void init() throws Exception {
         OpenflowPortsUtil.init();
 
@@ -108,10 +108,8 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(features.getVersion()).thenReturn(OF_VERSION);
         when(features.getDatapathId()).thenReturn(DATAPATH_ID);
-        setUp();
+        super.init();
     }
-
-    protected abstract void setUp() throws Exception;
 
     @Test
     public abstract void testBuildRequestBody() throws Exception;

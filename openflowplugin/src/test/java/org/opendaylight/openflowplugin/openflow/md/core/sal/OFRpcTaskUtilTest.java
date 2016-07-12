@@ -10,22 +10,21 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -35,8 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-@RunWith(MockitoJUnitRunner.class)
-public class OFRpcTaskUtilTest {
+public class OFRpcTaskUtilTest extends ConvertorManagerInitialization {
 
     @Mock
     private OFRpcTaskContext taskContext;
@@ -53,8 +51,6 @@ public class OFRpcTaskUtilTest {
     @Mock
     private ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlowRpcResultListenableFuture;
     @Mock
-    private OFRpcTaskContext ofRpcTaskContext;
-    @Mock
     private NotificationProviderService notificationProviderService;
     @Mock
     private NotificationComposer<?> notificationComposer;
@@ -62,15 +58,15 @@ public class OFRpcTaskUtilTest {
     ListeningExecutorService executorService;
 
 
-    @Before
-    public void setup() {
+    @Override
+    public void setUp() {
         when(taskContext.getSession()).thenReturn(sessionContext);
         when(taskContext.getMessageService()).thenReturn(messageDispatchService);
         when(sessionContext.getNextXid()).thenReturn(new Long(10));
         when(sessionContext.getFeatures()).thenReturn(featuresOutput);
         when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(messageDispatchService.barrier(Mockito.any(BarrierInput.class), Mockito.any(SwitchConnectionDistinguisher.class))).thenReturn(resultListenableFuture);
-        when(ofRpcTaskContext.getRpcPool()).thenReturn(executorService);
+        when(taskContext.getRpcPool()).thenReturn(executorService);
         when(executorService.submit(Mockito.<Callable<RpcResult<UpdateFlowOutput>>> any())).thenReturn(updateFlowRpcResultListenableFuture);
     }
 
@@ -84,7 +80,7 @@ public class OFRpcTaskUtilTest {
     @Test
     public void testHookFutureNotification() throws Exception {
         final AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
-        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(taskContext, flowInputBuilder.build(), connectionDistinguisher, getConvertorManager());
         OFRpcTaskUtil.hookFutureNotification(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture, notificationProviderService, notificationComposer);
     }
 
@@ -92,7 +88,7 @@ public class OFRpcTaskUtilTest {
     public void testChainFutureBarrier() throws Exception {
         final AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
         flowInputBuilder.setBarrier(true);
-        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        final OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(taskContext, flowInputBuilder.build(), connectionDistinguisher, getConvertorManager());
         OFRpcTaskUtil.chainFutureBarrier(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture);
     }
 }

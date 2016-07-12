@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
@@ -33,10 +34,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public final class AllFlowsInAllTablesService extends AbstractCompatibleStatService<GetAllFlowsStatisticsFromAllFlowTablesInput,
         GetAllFlowsStatisticsFromAllFlowTablesOutput, FlowsStatisticsUpdate> {
     private final MultipartRequestFlowCase flowCase;
+    private final ConvertorManager convertorManager;
 
     public AllFlowsInAllTablesService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
-                                      final AtomicLong compatibilityXidSeed) {
+                                      final AtomicLong compatibilityXidSeed, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorManager = convertorManager;
 
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
@@ -67,6 +70,6 @@ public final class AllFlowsInAllTablesService extends AbstractCompatibleStatServ
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorManager);
     }
 }

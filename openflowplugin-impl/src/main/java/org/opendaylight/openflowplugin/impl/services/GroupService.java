@@ -20,17 +20,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class GroupService<I extends Group, O extends DataObject> extends AbstractSimpleService<I, O> {
-    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final ConvertorManager convertorManager;
+    private final VersionDatapathIdConvertorData data;
+
+    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, clazz);
+        this.convertorManager = convertorManager;
+        data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) {
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
-        data.setDatapathId(getDatapathId());
-        final Optional<GroupModInputBuilder> ofGroupModInput = ConvertorManager
-                .getInstance()
-                .convert(input, data);
+        final Optional<GroupModInputBuilder> ofGroupModInput = convertorManager.convert(input, data);
 
         final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
                 .orElse(GroupConvertor.defaultResult(getVersion()))

@@ -13,15 +13,15 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
@@ -50,21 +50,24 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author michal.polkorab
  *
  */
-public class MultipartReplyTableFeaturesToTableUpdatedTranslatorTest {
+public class MultipartReplyTableFeaturesToTableUpdatedTranslatorTest extends ConvertorManagerInitialization {
 
     @Mock SwitchConnectionDistinguisher cookie;
     @Mock SessionContext sc;
     @Mock GetFeaturesOutput features;
+    @Mock ConnectionConductor conductor;
 
-    MultipartReplyTableFeaturesToTableUpdatedTranslator translator = new MultipartReplyTableFeaturesToTableUpdatedTranslator();
+    MultipartReplyTableFeaturesToTableUpdatedTranslator translator;
 
     /**
      * Initializes mocks
      */
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
+    @Override
+    public void setUp() {
+        translator = new MultipartReplyTableFeaturesToTableUpdatedTranslator(getConvertorManager());
+        when(sc.getPrimaryConductor()).thenReturn(conductor);
         when(sc.getFeatures()).thenReturn(features);
+        when(conductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(features.getDatapathId()).thenReturn(new BigInteger("42"));
     }
 

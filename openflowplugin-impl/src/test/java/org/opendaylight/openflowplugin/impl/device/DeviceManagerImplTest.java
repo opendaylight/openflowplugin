@@ -60,6 +60,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -70,7 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeviceManagerImplTest {
+public class DeviceManagerImplTest extends ConvertorManagerInitialization {
 
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000l;
     private static final int barrierCountLimit = 25600;
@@ -152,7 +153,7 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, getConvertorManager());
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

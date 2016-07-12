@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -41,23 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/18/14.
  */
-public class FlowStatsResponseConvertorTest {
+public class FlowStatsResponseConvertorTest extends ConvertorManagerInitialization {
 
     private static final int PRESET_COUNT = 7;
-
-    /**
-     * Test method for {@link FlowStatsResponseConvertor#wrapOF10ActionsToInstruction(java.util.List, short)} }
-     */
-    @Test
-    public void testWrapOF10ActionsToInstruction() {
-        ActionBuilder actionBuilder = new ActionBuilder();
-        List<Action> actions = new ArrayList<>();
-        for (int j = 0; j < PRESET_COUNT; j++) {
-            actions.add(actionBuilder.build());
-        }
-        Instructions instructions = FlowStatsResponseConvertor.wrapOF10ActionsToInstruction(actions, OFConstants.OFP_VERSION_1_3);
-        assertNotNull(instructions);
-    }
 
     /**
      * Test method for {@link FlowInstructionResponseConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData)} }
@@ -165,7 +152,7 @@ public class FlowStatsResponseConvertorTest {
     }
 
     private Instructions convert(List<Instruction> instructionsList, VersionConvertorData data) {
-        Optional<Instructions> instructionsOptional = ConvertorManager.getInstance().convert(instructionsList, data);
+        Optional<Instructions> instructionsOptional = getConvertorManager().convert(instructionsList, data);
         assertTrue("Flow instruction response convertor not found", instructionsOptional.isPresent());
         return instructionsOptional.get();
     }

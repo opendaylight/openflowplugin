@@ -9,9 +9,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
+
 import java.math.BigInteger;
-import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
@@ -41,7 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/30/14.
  */
-public class MatchConvertorV10ImplTest {
+public class MatchConvertorV10ImplTest extends ConvertorManagerInitialization {
 
     private static final MatchConvertorV10Impl matchConvertorV10 = new MatchConvertorV10Impl();
     private static final BigInteger dataPathId = BigInteger.TEN;
@@ -58,8 +59,8 @@ public class MatchConvertorV10ImplTest {
     private static final Ipv4Address DEFAULT_IPV4_ADDRESS = new Ipv4Address("10.0.0.1");
     private static final short DEFAULT_MASK = 24;
 
-    @Before
-    public void setup() {
+    @Override
+    public void setUp() {
         OpenflowPortsUtil.init();
     }
 
@@ -68,7 +69,7 @@ public class MatchConvertorV10ImplTest {
      * Test method for {@link MatchConvertorV10Impl#convert(Match,BigInteger)}
      */
     public void testConvert() {
-        MatchV10 matchV10 = matchConvertorV10.convert(createL4UdpMatch().build());
+        MatchV10 matchV10 = matchConvertorV10.convert(createL4UdpMatch().build(), null);
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
@@ -83,24 +84,24 @@ public class MatchConvertorV10ImplTest {
         assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpSrc().intValue());
         assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpDst().intValue());
 
-        matchV10 = matchConvertorV10.convert(createL4TcpMatch().build());
+        matchV10 = matchConvertorV10.convert(createL4TcpMatch().build(), null);
         assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpSrc().intValue());
         assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpDst().intValue());
 
-        matchV10 = matchConvertorV10.convert(createVlanTcpMatch().build());
+        matchV10 = matchConvertorV10.convert(createVlanTcpMatch().build(), null);
         assertEquals(DEFAULT_VLAN_ID.getValue().intValue(), matchV10.getDlVlan().intValue());
 
     }
 
     /**
      * ICMPv4 match test for
-     * {@link MatchConvertorV10Impl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)}.
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor#convert(Object, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager)}.
      */
     @Test
     public void testConvertIcmpv4() {
         MatchBuilder matchBuilder = createMatchBuilderWithDefaults();
         Match match = matchBuilder.build();
-        MatchV10 matchV10 = matchConvertorV10.convert(match);
+        MatchV10 matchV10 = matchConvertorV10.convert(match, getConvertorManager());
         Integer zero = 0;
         boolean wcTpSrc = true;
         boolean wcTpDst = true;
@@ -131,7 +132,7 @@ public class MatchConvertorV10ImplTest {
             wcTpDst, wcTpSrc);
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).
             build();
-        matchV10 = matchConvertorV10.convert(match);
+        matchV10 = matchConvertorV10.convert(match, getConvertorManager());
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(0, matchV10.getDlType().intValue());
@@ -157,7 +158,7 @@ public class MatchConvertorV10ImplTest {
             wcTpDst, wcTpSrc);
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).
             build();
-        matchV10 = matchConvertorV10.convert(match);
+        matchV10 = matchConvertorV10.convert(match, getConvertorManager());
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(0, matchV10.getDlType().intValue());
@@ -185,7 +186,7 @@ public class MatchConvertorV10ImplTest {
             wcTpDst, wcTpSrc);
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).
             build();
-        matchV10 = matchConvertorV10.convert(match);
+        matchV10 = matchConvertorV10.convert(match, getConvertorManager());
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(0, matchV10.getDlType().intValue());

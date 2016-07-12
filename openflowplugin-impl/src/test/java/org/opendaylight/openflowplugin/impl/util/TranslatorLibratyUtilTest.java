@@ -20,12 +20,13 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 
-public class TranslatorLibratyUtilTest {
+public class TranslatorLibratyUtilTest extends ConvertorManagerInitialization {
 
     private static class TranslatorLibrarianTestImpl implements TranslatorLibrarian {
 
@@ -51,7 +52,7 @@ public class TranslatorLibratyUtilTest {
 
     @Test
     public void setBasicTranslatorLibraryTest() {
-        TranslatorLibraryUtil.setBasicTranslatorLibrary(translatorLibrarian);
+        TranslatorLibraryUtil.setBasicTranslatorLibrary(translatorLibrarian, getConvertorManager());
         TranslatorLibrary translatorLibrary = translatorLibrarian.oook();
 
         TranslatorKeyFactory of13TranslatorKeyFactory = new TranslatorKeyFactory(OFP_VERSION_1_3);

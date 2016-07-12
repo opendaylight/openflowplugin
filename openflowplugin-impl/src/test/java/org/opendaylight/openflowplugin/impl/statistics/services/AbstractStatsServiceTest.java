@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.util.concurrent.FutureCallback;
 import java.math.BigInteger;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -29,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -44,7 +44,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Created by mirehak on 7/23/15.
  */
 @RunWith(MockitoJUnitRunner.class)
-public abstract class AbstractStatsServiceTest {
+public abstract class AbstractStatsServiceTest extends ConvertorManagerInitialization {
     @Mock
     protected RequestContextStack rqContextStack;
     @Mock
@@ -87,7 +87,7 @@ public abstract class AbstractStatsServiceTest {
         OpenflowPortsUtil.init();
     }
 
-    @Before
+    @Override
     public void init() throws Exception {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
@@ -104,12 +104,7 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
         Mockito.when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
-
-        setUp();
-    }
-
-    protected void setUp() {
-        //NOOP
+        super.init();
     }
 
     protected static NodeRef createNodeRef(String nodeIdValue) {

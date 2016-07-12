@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
@@ -29,7 +30,7 @@ public class OfToSalTunnelIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv4SrcCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull Ipv4SrcCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();
         final TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder = data.getTunnelIpv4MatchBuilder();

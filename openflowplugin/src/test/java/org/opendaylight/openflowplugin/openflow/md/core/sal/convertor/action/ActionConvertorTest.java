@@ -15,9 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -79,15 +78,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 /**
  * test for {@link ActionConvertor}
  */
-public class ActionConvertorTest {
+public class ActionConvertorTest extends ConvertorManagerInitialization {
 
-    List<Action> actions = new ArrayList<>();
-    static Integer actionItem = 0;
+    private List<Action> actions = new ArrayList<>();
+    private static Integer actionItem = 0;
 
     /**
      * prepare OpenflowPortsUtil util class
      */
-    @Before
+    @Override
     public void setUp() {
         OpenflowPortsUtil.init();
     }
@@ -111,7 +110,7 @@ public class ActionConvertorTest {
         data.setDatapathId(BigInteger.ONE);
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>> OFActionsList =
-                ConvertorManager.getInstance().convert(actions, data);
+                getConvertorManager().convert(actions, data);
 
         outputActions(OFActionsList.orElse(Collections.emptyList()));
 
@@ -210,7 +209,6 @@ public class ActionConvertorTest {
 
             }
             if (action.getActionChoice() instanceof CopyTtlInCase) {
-                CopyTtlInCase copyTtlInCase = (CopyTtlInCase) action.getActionChoice();
                 Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlInCase.class.getName());
 
             }

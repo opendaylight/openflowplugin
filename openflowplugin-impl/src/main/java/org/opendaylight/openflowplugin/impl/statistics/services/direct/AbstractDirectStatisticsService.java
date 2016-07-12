@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.StoreStatsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -67,18 +68,25 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
             };
 
     private final MultipartType multipartType;
+    private final ConvertorManager convertorManager;
     private final OpenflowVersion ofVersion = OpenflowVersion.get(getVersion());
-
     /**
      * Instantiates a new Abstract direct statistics service.
      *
      * @param multipartType       the multipart type
      * @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorManager
      */
-    protected AbstractDirectStatisticsService(MultipartType multipartType, RequestContextStack requestContextStack, DeviceContext deviceContext) {
+    protected AbstractDirectStatisticsService(MultipartType multipartType, RequestContextStack requestContextStack,
+                                              DeviceContext deviceContext, ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext);
         this.multipartType = multipartType;
+        this.convertorManager = convertorManager;
+    }
+
+    protected ConvertorManager getConvertorManager() {
+        return convertorManager;
     }
 
     /**

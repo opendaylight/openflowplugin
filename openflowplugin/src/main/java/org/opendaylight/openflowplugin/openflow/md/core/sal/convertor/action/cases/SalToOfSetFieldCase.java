@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
@@ -27,11 +28,11 @@ public class SalToOfSetFieldCase extends ConvertorCase<SetFieldCase, Action, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final SetFieldCase source, final ActionConvertorData data) {
         final short version = data.getVersion();
         final SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 
-        MatchReactor.getInstance().convert(source.getSetField(), version, setFieldBuilder);
+        MatchReactor.getInstance().convert(source.getSetField(), version, setFieldBuilder, convertorManager);
 
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new SetFieldCaseBuilder()

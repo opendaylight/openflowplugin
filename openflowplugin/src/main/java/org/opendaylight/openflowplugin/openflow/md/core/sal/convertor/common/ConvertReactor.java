@@ -11,18 +11,19 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 
 /**
  * @param <FROM> source type for conversion
  *
  */
 public abstract class ConvertReactor<FROM> {
-    private final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping;
-    private final Map<Short, Convertor<FROM, ?, ?>> conversionMapping;
+    private final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping;
+    private final Map<Short, ConvertReactorConvertor<FROM, ?>> conversionMapping;
 
     protected ConvertReactor() {
-        final Map<Short, Convertor<FROM, ?, ?>> conversions = new HashMap<>();
-        final Map<InjectionKey, ResultInjector<?, ?>> injections = new HashMap<>();
+        final Map<Short, ConvertReactorConvertor<FROM, ?>> conversions = new HashMap<>();
+        final Map<ConvertorKey, ResultInjector<?, ?>> injections = new HashMap<>();
         initMappings(conversions, injections);
 
         // Create optimized view of mappings
@@ -35,28 +36,29 @@ public abstract class ConvertReactor<FROM> {
      * @param conversions convert from
      * @param injections injection
      */
-    protected abstract void initMappings(Map<Short, Convertor<FROM, ?, ?>> conversions,
-            Map<InjectionKey, ResultInjector<?, ?>> injections);
+    protected abstract void initMappings(Map<Short, ConvertReactorConvertor<FROM, ?>> conversions,
+            Map<ConvertorKey, ResultInjector<?, ?>> injections);
 
     /**
+     * @param <RESULT> result
+     * @param <TARGET> target
      * @param source convert from
      * @param version openflow version
      * @param target convert to
-     * @param <RESULT> result
-     * @param <TARGET> target
+     * @param convertorManager
      */
     @SuppressWarnings("unchecked")
-    public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target) {
+    public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target, final ConvertorManager convertorManager) {
 
         //lookup converter
-        Convertor<FROM, RESULT, ?> convertor = (Convertor<FROM, RESULT, ?>) conversionMapping.get(version);
+        ConvertReactorConvertor<FROM, RESULT> convertor = (ConvertReactorConvertor<FROM, RESULT>) conversionMapping.get(version);
         if (convertor == null) {
             throw new IllegalArgumentException("convertor for given version ["+version+"] not found");
         }
-        RESULT convertedItem = convertor.convert(source, null);
+        RESULT convertedItem = convertor.convert(source, convertorManager);
 
         //lookup injection
-        InjectionKey key = buildInjectionKey(version, convertedItem, target);
+        ConvertorKey key = buildInjectionKey(version, convertedItem, target);
         ResultInjector<RESULT, TARGET> injection = (ResultInjector<RESULT, TARGET>) injectionMapping.get(key);
         if (injection == null) {
             throw new IllegalArgumentException("injector for given version and target ["+key+"] not found");
@@ -70,8 +72,8 @@ public abstract class ConvertReactor<FROM> {
      * @param target object
      * @return injection key
      */
-    protected InjectionKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
-        return new InjectionKey(version, target.getClass());
+    protected ConvertorKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
+        return new ConvertorKey(version, target.getClass());
     }
 
 }

@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -45,11 +46,11 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     private ItemLifecycleListener itemLifecycleListener;
     private final DeviceContext deviceContext;
 
-    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         this.deviceContext = deviceContext;
-        addMeter = new MeterService<>(requestContextStack, deviceContext, AddMeterOutput.class);
-        updateMeter = new MeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);
-        removeMeter = new MeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class);
+        addMeter = new MeterService<>(requestContextStack, deviceContext, AddMeterOutput.class, convertorManager);
+        updateMeter = new MeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class, convertorManager);
+        removeMeter = new MeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class, convertorManager);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class StatisticsGatheringServiceTest extends ServiceMocking {
     private StatisticsGatheringService statisticsGatheringService;
 
     @Override
-    protected void setup() {
+    protected void setUp() {
         statisticsGatheringService = new StatisticsGatheringService(mockedRequestContextStack, mockedDeviceContext);
 
     }

@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
@@ -19,7 +20,7 @@ public class FlowFlagsConvertorV10Impl implements FlowFlagConvertor<FlowModFlags
 
     @Override
     public FlowModFlagsV10 convert(
-            FlowModFlags source) {
+            FlowModFlags source, ConvertorManager convertorManager) {
 
         FlowModFlagsV10 ofFlowModFlags;
         if (source != null) {
