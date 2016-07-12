@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -55,7 +54,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public final class FlowInstructionResponseConvertor implements Convertor<
+public final class FlowInstructionResponseConvertor extends Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction>,
         Instructions,
         VersionConvertorData> {
@@ -83,7 +82,7 @@ public final class FlowInstructionResponseConvertor implements Convertor<
                 final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(data.getVersion());
                 actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
-                final Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
+                final Optional<List<Action>> actions = getConvertorExecutor().convert(
                         actionsInstruction.getApplyActions().getAction(), actionResponseConvertorData);
 
                 applyActionsBuilder.setAction(FlowConvertorUtil.wrapActionList(actions.orElse(Collections.emptyList())));
@@ -118,7 +117,7 @@ public final class FlowInstructionResponseConvertor implements Convertor<
                 final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(data.getVersion());
                 actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
-                final Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
+                final Optional<List<Action>> actions = getConvertorExecutor().convert(
                         writeActionsCase.getWriteActions().getAction(), actionResponseConvertorData);
 
                 writeActionsBuilder.setAction(FlowConvertorUtil.wrapActionList(actions.orElse(Collections.emptyList())));

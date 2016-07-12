@@ -17,6 +17,8 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -69,6 +71,8 @@ public class PacketReceivedTranslatorTest {
     @Mock
     PhyPort phyPort;
 
+    ConvertorManager convertorManager;
+
     static final Long PORT_NO = 5l;
     static final Long PORT_NO_DS = 6l;
     static final String DATA = "Test_Data";
@@ -81,6 +85,7 @@ public class PacketReceivedTranslatorTest {
     @Before
     public void setUp() throws Exception {
         final List<PhyPort> phyPorts = Arrays.asList(phyPort);
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
@@ -98,7 +103,7 @@ public class PacketReceivedTranslatorTest {
         final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
-        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator();
+        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
         final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
@@ -143,7 +148,8 @@ public class PacketReceivedTranslatorTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         BigInteger dpid = BigInteger.TEN;
 
-        final Match packetInMatch = PacketReceivedTranslator.getPacketInMatch(inputBld.build(), dpid);
+        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
+        final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), dpid);
 
         Assert.assertNotNull(packetInMatch.getInPort());
         Assert.assertEquals("openflow:10:" + PORT_NUM_VALUE, packetInMatch.getInPort().getValue());

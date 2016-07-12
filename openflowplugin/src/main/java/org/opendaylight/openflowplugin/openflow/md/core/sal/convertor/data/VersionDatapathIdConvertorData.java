@@ -9,12 +9,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
 import java.math.BigInteger;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 
 /**
  * Convertor data implementation containing Openflow version and datapath ID
  */
-public class VersionDatapathIdConvertorData extends ConvertorData {
+public class VersionDatapathIdConvertorData extends VersionConvertorData {
     private BigInteger datapathId;
 
     /**

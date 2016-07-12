@@ -16,5 +16,5 @@ public interface ConvertorRegistrator {
      *
      * @param convertor the convertor
      */
-    void registerConvertor(final Convertor convertor);
+    ConvertorManager registerConvertor(final short version, final Convertor convertor);
 }

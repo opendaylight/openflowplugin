@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -36,7 +37,7 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull TunnelIpv4Match source, VersionConvertorData data) {
+    public Optional<List<MatchEntry>> process(@Nonnull TunnelIpv4Match source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getTunnelIpv4Source() != null) {

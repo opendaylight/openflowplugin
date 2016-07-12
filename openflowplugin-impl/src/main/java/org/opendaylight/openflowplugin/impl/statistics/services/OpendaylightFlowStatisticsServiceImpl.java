@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -86,13 +87,13 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     private OpendaylightFlowStatisticsService delegate;
 
     public static OpendaylightFlowStatisticsServiceImpl createWithOook(final RequestContextStack requestContextStack,
-                                                              final DeviceContext deviceContext) {
-        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack, deviceContext, deviceContext.oook());
+                                                              final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack, deviceContext, deviceContext.oook(), convertorExecutor);
     }
 
     public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
-                                                 final TranslatorLibrary translatorLibrary) {
-        matchingFlowsInTable = new MatchingFlowsInTableService(requestContextStack, deviceContext);
+                                                 final TranslatorLibrary translatorLibrary, final ConvertorExecutor convertorExecutor) {
+        matchingFlowsInTable = new MatchingFlowsInTableService(requestContextStack, deviceContext, convertorExecutor);
         this.translatorLibrary = translatorLibrary;
     }
 
