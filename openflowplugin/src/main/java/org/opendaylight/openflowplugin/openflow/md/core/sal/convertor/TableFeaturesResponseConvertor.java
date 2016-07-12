@@ -178,7 +178,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  */
-public class TableFeaturesResponseConvertor implements Convertor<MultipartReplyTableFeatures, List<TableFeatures>, VersionConvertorData> {
+public class TableFeaturesResponseConvertor extends Convertor<MultipartReplyTableFeatures, List<TableFeatures>, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesResponseConvertor.class);
     private static final Map<TableFeaturesPropType, ActionExecutor> TABLE_FEATURE_PROPERTY_TYPE_TO_ACTION;
     private static final Map<Class<?>, org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> OF_TO_SAL_ACTION;

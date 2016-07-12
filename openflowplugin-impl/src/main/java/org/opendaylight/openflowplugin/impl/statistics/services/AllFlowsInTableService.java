@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
@@ -34,10 +35,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAllFlowStatisticsFromFlowTableInput,
         GetAllFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
 
+    private final ConvertorExecutor convertorExecutor;
     private Function<? super RpcResult<List<MultipartReply>>, FlowsStatisticsUpdate> transformer;
 
-    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorExecutor = convertorExecutor;
     }
 
     @Override
@@ -72,6 +75,6 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> mpResult, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult, getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
     }
 }

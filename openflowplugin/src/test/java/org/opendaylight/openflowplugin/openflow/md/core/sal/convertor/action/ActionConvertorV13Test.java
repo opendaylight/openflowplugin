@@ -14,10 +14,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertorUtil;
@@ -118,6 +120,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class ActionConvertorV13Test {
+    private ConvertorManager convertorManager;
+
+    @Before
+    public void setUp() {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+    }
+
     /**
      * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData)}}
      */
@@ -128,7 +137,7 @@ public class ActionConvertorV13Test {
         data.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-                .Action>> mdSalActions = ConvertorManager.getInstance().convert(actions, data);
+                .Action>> mdSalActions = convertorManager.convert(actions, data);
 
         Assert.assertEquals("Wrong number of output actions", 0, mdSalActions.orElse(Collections.emptyList()).size());
     }
@@ -269,7 +278,7 @@ public class ActionConvertorV13Test {
         data.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-                .Action>> mdSalActionsOptional = ConvertorManager.getInstance().convert(actions, data);
+                .Action>> mdSalActionsOptional = convertorManager.convert(actions, data);
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
                 .Action> mdSalActions = mdSalActionsOptional.orElse(Collections.emptyList());
@@ -502,7 +511,7 @@ public class ActionConvertorV13Test {
         data.setDatapathId(new BigInteger("42"));
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
-        Optional<List<Action>> actionsOptional = ConvertorManager.getInstance().convert(salActions, data);
+        Optional<List<Action>> actionsOptional = convertorManager.convert(salActions, data);
         List<Action> actions = actionsOptional.orElse(Collections.emptyList());
 
         Assert.assertEquals("Wrong number of actions", 12, actions.size());

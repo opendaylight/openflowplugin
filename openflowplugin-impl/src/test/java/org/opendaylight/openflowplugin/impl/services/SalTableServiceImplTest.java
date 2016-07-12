@@ -20,6 +20,8 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
@@ -63,8 +65,9 @@ public class SalTableServiceImplTest extends ServiceMocking {
                 .when(mockedOutboundQueue).commitEntry(
                 Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
-                mockedDeviceContext.getPrimaryConnectionContext().getNodeId());
+                convertorManager);
     }
 
     @Test

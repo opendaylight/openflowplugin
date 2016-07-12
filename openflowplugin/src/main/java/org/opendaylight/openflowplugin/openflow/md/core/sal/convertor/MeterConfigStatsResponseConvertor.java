@@ -51,7 +51,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class MeterConfigStatsResponseConvertor implements Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
+public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MeterConfig.class);
 

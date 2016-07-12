@@ -41,7 +41,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class PortConvertor implements Convertor<Port, PortModInput, VersionConvertorData> {
+public class PortConvertor extends Convertor<Port, PortModInput, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Port.class);
 

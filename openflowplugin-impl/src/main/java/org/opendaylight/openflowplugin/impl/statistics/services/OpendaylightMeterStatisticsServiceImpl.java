@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInput;
@@ -33,13 +34,14 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
     public OpendaylightMeterStatisticsServiceImpl(final RequestContextStack requestContextStack,
                                                   final DeviceContext deviceContext,
                                                   final AtomicLong compatibilityXidSeed,
-                                                  final NotificationPublishService notificationPublishService) {
+                                                  final NotificationPublishService notificationPublishService,
+                                                  final ConvertorExecutor convertorExecutor) {
         this.notificationPublishService = notificationPublishService;
 
-        allMeterConfig = new AllMeterConfigStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
-        allMeterStats = new AllMeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
+        allMeterConfig = new AllMeterConfigStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        allMeterStats = new AllMeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
         meterFeatures = new MeterFeaturesService(requestContextStack, deviceContext, compatibilityXidSeed);
-        meterStats = new MeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed);
+        meterStats = new MeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
     @Override

@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +19,6 @@ import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -56,7 +54,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
+public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(FlowStats.class);
 
@@ -66,8 +64,7 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
      * @param actionsList list of action
      * @return OF10 actions as an instructions
      */
-    @VisibleForTesting
-    static Instructions wrapOF10ActionsToInstruction(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionsList, final short version) {
+    private Instructions wrapOF10ActionsToInstruction(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionsList, final short version) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
         actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
@@ -77,7 +74,7 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
         ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
-        final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> actions = ConvertorManager.getInstance().convert(
+        final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>> actions = getConvertorExecutor().convert(
                 actionsList, actionResponseConvertorData);
 
         applyActionsBuilder.setAction(FlowConvertorUtil.wrapActionList(actions.orElse(Collections.emptyList())));
@@ -123,7 +120,7 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
             salFlowStatsBuilder.setTableId(flowStats.getTableId());
 
             if (flowStats.getMatchV10() != null) {
-                final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(flowStats.getMatchV10(), data);
+                final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(flowStats.getMatchV10(), data);
 
                 if (matchBuilderOptional.isPresent()) {
                     salFlowStatsBuilder.setMatch(matchBuilderOptional.get().build());
@@ -135,7 +132,7 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
             }
 
             if (flowStats.getMatch() != null) {
-                final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(flowStats.getMatch(), data);
+                final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(flowStats.getMatch(), data);
 
                 if (matchBuilderOptional.isPresent()) {
                     final MatchBuilder matchBuilder = matchBuilderOptional.get();
@@ -164,7 +161,7 @@ public class FlowStatsResponseConvertor implements Convertor<List<FlowStats>, Li
 
             if (flowStats.getInstruction() != null) {
                 final VersionConvertorData simpleConvertorData = new VersionConvertorData(data.getVersion());
-                final Optional<Instructions> instructions = ConvertorManager.getInstance().convert(
+                final Optional<Instructions> instructions = getConvertorExecutor().convert(
                         flowStats.getInstruction(), simpleConvertorData);
 
                 salFlowStatsBuilder.setInstructions(instructions.orElse(new InstructionsBuilder()

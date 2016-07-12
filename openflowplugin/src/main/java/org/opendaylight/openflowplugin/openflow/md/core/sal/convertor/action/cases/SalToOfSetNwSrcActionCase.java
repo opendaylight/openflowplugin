@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -46,7 +47,7 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwSrcActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(@Nonnull final SetNwSrcActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         final ActionBuilder builder = new ActionBuilder();
         final Address address = source.getSetNwSrcAction().getAddress();
 
