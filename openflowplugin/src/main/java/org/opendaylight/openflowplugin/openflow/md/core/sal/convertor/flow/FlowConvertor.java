@@ -13,6 +13,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Ordering;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -512,8 +514,8 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Flow.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Arrays.asList(Flow.class, AddFlowInput.class, RemoveFlowInput.class, UpdatedFlow.class);
     }
 
     @Override

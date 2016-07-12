@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -133,8 +135,8 @@ public class GroupConvertor implements Convertor<Group, GroupModInputBuilder, Ve
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return Group.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
     }
 
     @Override

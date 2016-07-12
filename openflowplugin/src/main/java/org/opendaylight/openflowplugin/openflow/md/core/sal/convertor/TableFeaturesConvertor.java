@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Ordering;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +145,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfield;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTable;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -588,8 +591,8 @@ public class TableFeaturesConvertor implements Convertor<
     }
 
     @Override
-    public Class<? extends DataContainer> getType() {
-        return org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class;
+    public Collection<Class<? extends DataContainer>> getTypes() {
+        return Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class, UpdatedTable.class);
     }
 
     @Override
