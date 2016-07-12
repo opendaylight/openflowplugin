@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
 
+import java.util.Collection;
+import java.util.Collections;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
@@ -21,8 +23,8 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E, VersionConvertorData> {
 
     @Override
-    default Class<? extends DataContainer> getType() {
-        return DataContainer.class;
+    default Collection<Class<? extends DataContainer>> getTypes() {
+        return Collections.singleton(DataContainer.class);
     }
 
     @Override

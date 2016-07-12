@@ -15,7 +15,6 @@ public interface ConvertorRegistrator {
      * Register convertor.
      *
      * @param convertor the convertor
-     * @return previous convertor if already registered or null
      */
-    Convertor registerConvertor(final Convertor convertor);
+    void registerConvertor(final Convertor convertor);
 }
