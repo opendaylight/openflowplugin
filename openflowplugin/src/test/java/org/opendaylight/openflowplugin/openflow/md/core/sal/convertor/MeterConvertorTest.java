@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
@@ -42,6 +43,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 
 public class MeterConvertorTest {
+    private ConvertorManager convertorManager;
+
+    @Before
+    public void setUp() {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+    }
+
     @Test
     public void testMeterModCommandConvertorwithAllParameters() {
         long BURST_SIZE = 10L;
@@ -449,7 +457,7 @@ public class MeterConvertorTest {
     }
 
     private MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
-        Optional<MeterModInputBuilder> outMeterModInputOptional = ConvertorManager.getInstance().convert(source, data);
+        Optional<MeterModInputBuilder> outMeterModInputOptional = convertorManager.convert(source, data);
         return outMeterModInputOptional.orElse(MeterConvertor.defaultResult(data.getVersion()));
     }
 }

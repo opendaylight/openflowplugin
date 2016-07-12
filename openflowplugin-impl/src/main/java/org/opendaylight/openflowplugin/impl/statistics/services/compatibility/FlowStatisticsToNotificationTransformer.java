@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
@@ -34,12 +34,14 @@ public class FlowStatisticsToNotificationTransformer {
      * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
+     * @param convertorExecutor
      * @return notification containing flow stats
      */
     public static FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,
                                                                 final DeviceInfo deviceInfo,
                                                                 final OpenflowVersion ofVersion,
-                                                                final TransactionId emulatedTxId) {
+                                                                final TransactionId emulatedTxId,
+                                                                final ConvertorExecutor convertorExecutor) {
         final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(ofVersion.getVersion());
         data.setDatapathId(deviceInfo.getDatapathId());
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
@@ -55,7 +57,7 @@ public class FlowStatisticsToNotificationTransformer {
             MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpRawReply.getMultipartReplyBody();
             MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
             final Optional<List<FlowAndStatisticsMapList>> outStatsItem =
-                    ConvertorManager.getInstance().convert(replyBody.getFlowStats(), data);
+                    convertorExecutor.convert(replyBody.getFlowStats(), data);
 
 
             if (outStatsItem.isPresent()) {

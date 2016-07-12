@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -33,7 +34,7 @@ public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4Matc
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv4MatchArbitraryBitMask source, VersionConvertorData data) {
+    public Optional<List<MatchEntry>> process(@Nonnull Ipv4MatchArbitraryBitMask source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv4SourceAddressNoMask() != null) {

@@ -43,6 +43,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
@@ -62,11 +63,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     private StatisticsManager statisticsManager;
     private RpcManager rpcManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
+    private final ConvertorExecutor convertorExecutor;
     private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private NotificationPublishService notificationPublishService;
 
-    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
+    LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency, ConvertorExecutor convertorExecutor) {
         this.messageIntelligenceAgency = Preconditions.checkNotNull(messageIntelligenceAgency);
+        this.convertorExecutor = convertorExecutor;
     }
 
     @Override
@@ -166,13 +169,13 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         if (OfpRole.BECOMEMASTER.equals(newRole)) {
             logText = "Start";
             fillDeviceFlowRegistry(deviceInfo, deviceContext.getDeviceFlowRegistry());
-            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
+            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider, convertorExecutor);
 
             if (rpcContext.isStatisticsRpcEnabled()) {
                 MdSalRegistrationUtils.registerStatCompatibilityServices(
                         rpcContext,
                         deviceContext,
-                        notificationPublishService);
+                        notificationPublishService, convertorExecutor);
             }
         } else {
             logText = "Stopp";

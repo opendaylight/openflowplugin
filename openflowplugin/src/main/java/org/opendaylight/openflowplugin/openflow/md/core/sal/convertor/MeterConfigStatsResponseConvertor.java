@@ -46,12 +46,12 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * Example usage:
  * <pre>
  * {@code
- * Optional<List<MeterConfigStats>> salMeterConfigStats = ConvertorManager.getInstance().convert(
- *  ofMeterConfigStats);
+ * VersionConvertorData data = new VersionConvertorData(version);
+ * Optional<List<MeterConfigStats>> salMeterConfigStats = convertorManager.convert(ofMeterConfigStats, data);
  * }
  * </pre>
  */
-public class MeterConfigStatsResponseConvertor implements Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
+public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MeterConfig.class);
 

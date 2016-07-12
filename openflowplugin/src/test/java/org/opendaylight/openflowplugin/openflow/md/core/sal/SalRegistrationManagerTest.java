@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
@@ -36,6 +37,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -101,9 +104,10 @@ public class SalRegistrationManagerTest {
         Mockito.when(features.getVersion()).thenReturn((short) 1);
         context.setFeatures(features);
         context.setNotificationEnqueuer(notificationEnqueuer);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
-	OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
-        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
+        OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
+        mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context, convertorManager);
         registration = new AbstractModelDrivenSwitchRegistration(mdSwitchOF13) {
             @Override
             protected void removeRegistration() {
@@ -119,7 +123,7 @@ public class SalRegistrationManagerTest {
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
-        salRegistrationManager = new SalRegistrationManager();
+        salRegistrationManager = new SalRegistrationManager(convertorManager);
         salRegistrationManager.setPublishService(notificationProviderService);
         salRegistrationManager.setDataService(dataBroker);
         salRegistrationManager.setRpcProviderRegistry(rpcProviderRegistry);

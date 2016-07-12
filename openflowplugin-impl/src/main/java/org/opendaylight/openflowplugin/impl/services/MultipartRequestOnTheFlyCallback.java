@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.statistics.SinglePurposeMultipartReplyTranslator;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<List<MultipartReply>> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartRequestOnTheFlyCallback.class);
-    private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
+    private final SinglePurposeMultipartReplyTranslator multipartReplyTranslator;
     private final DeviceInfo deviceInfo;
     private final DeviceFlowRegistry registry;
     private boolean virgin = true;
@@ -49,12 +50,15 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
                                             final EventIdentifier eventIdentifier,
                                             final DeviceInfo deviceInfo,
                                             final DeviceFlowRegistry registry,
-                                            final TxFacade txFacade) {
+                                            final TxFacade txFacade,
+                                            final ConvertorExecutor convertorExecutor) {
         super(context, requestType, messageSpy, eventIdentifier);
 
         this.deviceInfo = deviceInfo;
         this.registry = registry;
         this.txFacade = txFacade;
+
+        multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
 
         //TODO: this is focused on flow stats only - need more general approach if used for more than flow stats
         doneEventIdentifier = new EventIdentifier(MultipartType.OFPMPFLOW.name(), deviceInfo.getNodeId().toString());
@@ -88,7 +92,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
             final MultipartReply multipartReply = (MultipartReply) result;
 
             final MultipartReply singleReply = multipartReply;
-            final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(
+            final List<? extends DataObject> multipartDataList = multipartReplyTranslator.translate(
                     deviceInfo.getDatapathId(), deviceInfo.getVersion(), singleReply);
             final Iterable<? extends DataObject> allMultipartData = multipartDataList;
 

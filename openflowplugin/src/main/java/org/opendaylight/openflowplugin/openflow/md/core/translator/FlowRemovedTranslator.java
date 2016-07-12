@@ -24,7 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -159,6 +159,11 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     private static final String PREFIX_SEPARATOR = "/";
+    private final ConvertorExecutor convertorExecutor;
+
+    public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
+    }
 
     @Override
     public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sc, final OfHeader msg) {
@@ -203,7 +208,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
                 data.setDatapathId(sc.getFeatures().getDatapathId());
 
-                final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(ofFlow.getMatchV10(), data);
+                final Optional<MatchBuilder> matchBuilderOptional = convertorExecutor.convert(ofFlow.getMatchV10(), data);
                 salFlowRemoved.setMatch(matchBuilderOptional.orElse(new MatchBuilder()).build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()

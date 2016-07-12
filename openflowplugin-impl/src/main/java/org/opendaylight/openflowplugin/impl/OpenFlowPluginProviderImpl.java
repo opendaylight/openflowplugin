@@ -57,6 +57,8 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntell
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
+    private final ConvertorManager convertorManager;
     private long barrierInterval;
     private int barrierCountLimit;
     private long echoReplyTimeout;
@@ -112,7 +115,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
 
-        conductor = new LifecycleConductorImpl(messageIntelligenceAgency);
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+        conductor = new LifecycleConductorImpl(messageIntelligenceAgency, convertorManager);
     }
 
     @Override
@@ -224,7 +228,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierInterval,
                 barrierCountLimit,
                 conductor,
-                isNotificationFlowRemovedOff);
+                isNotificationFlowRemovedOff,
+                convertorManager);
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -232,7 +237,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         conductor.setNotificationPublishService(notificationPublishService);
 
         roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor, convertorManager);
         conductor.setSafelyManager(statisticsManager);
 
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
@@ -256,7 +261,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
-        TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
+        TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager, convertorManager);
         deviceManager.initialize();
 
         startSwitchConnections();

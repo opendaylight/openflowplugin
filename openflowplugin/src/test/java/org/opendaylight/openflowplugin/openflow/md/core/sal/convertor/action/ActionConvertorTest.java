@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -107,9 +108,10 @@ public class ActionConvertorTest {
 
         ActionConvertorData data = new ActionConvertorData((short) 0X4);
         data.setDatapathId(BigInteger.ONE);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>> OFActionsList =
-                ConvertorManager.getInstance().convert(actions, data);
+                convertorManager.convert(actions, data);
 
         outputActions(OFActionsList.orElse(Collections.emptyList()));
 
@@ -208,7 +210,6 @@ public class ActionConvertorTest {
 
             }
             if (action.getActionChoice() instanceof CopyTtlInCase) {
-                CopyTtlInCase copyTtlInCase = (CopyTtlInCase) action.getActionChoice();
                 Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlInCase.class.getName());
 
             }

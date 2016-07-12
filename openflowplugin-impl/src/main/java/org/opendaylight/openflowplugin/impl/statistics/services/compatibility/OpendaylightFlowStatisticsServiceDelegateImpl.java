@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.AggregateFlowsIn
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInAllTablesService;
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInTableService;
 import org.opendaylight.openflowplugin.impl.statistics.services.FlowsInTableService;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -47,12 +48,13 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
     public OpendaylightFlowStatisticsServiceDelegateImpl(final RequestContextStack requestContextStack,
                                                          final DeviceContext deviceContext,
                                                          final NotificationPublishService notificationService,
-                                                         final AtomicLong compatibilityXidSeed) {
+                                                         final AtomicLong compatibilityXidSeed,
+                                                         final ConvertorExecutor convertorExecutor) {
         this.notificationService = notificationService;
         aggregateFlowsInTable = AggregateFlowsInTableService.createWithOook(requestContextStack, deviceContext, compatibilityXidSeed);
-        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed);
-        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed);
-        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed);
+        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
     /**

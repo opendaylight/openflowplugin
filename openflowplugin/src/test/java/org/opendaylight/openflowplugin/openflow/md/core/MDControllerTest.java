@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +15,8 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
@@ -35,7 +36,8 @@ public class MDControllerTest {
      */
     @Before
     public void setUp() throws Exception {
-        controller = new MDController();
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        controller = new MDController(convertorManager);
         controller.init();
     }
 
@@ -47,12 +49,6 @@ public class MDControllerTest {
         controller = null;
     }
 
-
-    /**
-     * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.MDController#addMessageListeners}
-     * .
-     */
     @Test
     public void testAddMessageListeners() {
         //clean translators

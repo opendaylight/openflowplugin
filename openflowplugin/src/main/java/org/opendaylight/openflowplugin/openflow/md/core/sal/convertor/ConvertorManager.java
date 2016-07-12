@@ -8,23 +8,15 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.ArrayList;
+import com.google.common.annotations.VisibleForTesting;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowInstructionResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowStatsResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,75 +26,48 @@ import org.slf4j.LoggerFactory;
  */
 public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator {
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorManager.class);
-    private static ConvertorManager INSTANCE;
-
-    static {
-        INSTANCE = new ConvertorManager();
-        // All convertors are registered here
-        INSTANCE.registerConvertor(new TableFeaturesConvertor());
-        INSTANCE.registerConvertor(new TableFeaturesResponseConvertor());
-        INSTANCE.registerConvertor(new MeterConvertor());
-        INSTANCE.registerConvertor(new MeterStatsResponseConvertor());
-        INSTANCE.registerConvertor(new MeterConfigStatsResponseConvertor());
-        INSTANCE.registerConvertor(new PortConvertor());
-        // TODO: Add MatchConvertor
-        INSTANCE.registerConvertor(new MatchResponseConvertor());
-        INSTANCE.registerConvertor(new MatchV10ResponseConvertor());
-        INSTANCE.registerConvertor(new ActionConvertor());
-        INSTANCE.registerConvertor(new ActionResponseConvertor());
-        INSTANCE.registerConvertor(new GroupConvertor());
-        INSTANCE.registerConvertor(new GroupDescStatsResponseConvertor());
-        INSTANCE.registerConvertor(new GroupStatsResponseConvertor());
-        INSTANCE.registerConvertor(new PacketOutConvertor());
-        INSTANCE.registerConvertor(new FlowConvertor());
-        INSTANCE.registerConvertor(new FlowInstructionResponseConvertor());
-        INSTANCE.registerConvertor(new FlowStatsResponseConvertor());
-    }
-
-    // Actual convertor keys
-    private List<Class<? extends DataContainer>> convertorKeys = new ArrayList<>();
 
     // Cache, that holds all registered convertors, but they can have multiple keys,
     // based on instanceof checks in the convert method
-    private Map<Class<? extends DataContainer>, Convertor> convertors = new ConcurrentHashMap<>();
-
-    private ConvertorManager() {
-        // Hiding implicit constructor
-    }
+    private Map<Short, Map<Class<? extends DataContainer>, Convertor<?, ?, ? extends ConvertorData>>> convertors =
+            new ConcurrentHashMap<>();
 
     /**
-     * Gets instance of Convertor Manager.
-     *
-     * @return the instance
+     * Create new instance of Convertor Manager
+     * @param supportedVersions supported versions
      */
-    public static ConvertorManager getInstance() {
-        return INSTANCE;
+    public ConvertorManager(final Short... supportedVersions) {
+        Arrays.stream(supportedVersions)
+                .forEach(version -> convertors.putIfAbsent(version, new ConcurrentHashMap<>()));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void registerConvertor(final Convertor convertor) {
-        for (final Object typeRaw : convertor.getTypes()) {
-            final Class<? extends DataContainer> type = (Class<? extends DataContainer>)typeRaw;
-            final Convertor result = convertors.get(type);
+    public ConvertorManager registerConvertor(final short version, final Convertor<?, ?, ? extends ConvertorData> convertor) {
+        final Map<Class<? extends DataContainer>, Convertor<?, ?, ? extends ConvertorData>> convertorsForVersion =
+                convertors.get(version);
 
-            if (Objects.isNull(result)) {
-                convertorKeys.add(type);
-                convertors.put(type, convertor);
-                LOG.debug("{} is now converted by {}", type, convertor);
-            } else {
-                LOG.warn("Convertor for type {} is already registered", type);
+        if (Objects.nonNull(convertorsForVersion)) {
+            for (final Class<? extends DataContainer> type : convertor.getTypes()) {
+                final Convertor<?, ?, ? extends ConvertorData> result = convertorsForVersion.get(type);
+
+                if (Objects.isNull(result)) {
+                    convertor.setConvertorExecutor(this);
+                    convertorsForVersion.put(type, convertor);
+                    LOG.debug("{} for version {} is now converted by {}", type, version, convertor);
+                } else {
+                    LOG.warn("{} for version {} have already registered convertor", type, version);
+                }
             }
+        } else {
+            LOG.warn("{} do not supports version {}", this, version);
         }
-    }
 
-    public <FROM extends DataContainer, TO> Optional<TO> convert(final FROM source) {
-        return convert(source, null);
+        return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final FROM source, @Nullable final DATA data) {
+    public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final FROM source, final DATA data) {
         Optional<TO> result = Optional.empty();
 
         if (Objects.isNull(source)) {
@@ -113,26 +78,17 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         final Class<? extends DataContainer> type = source.getImplementedInterface();
 
         if (Objects.isNull(type)) {
-            LOG.warn("Cannot extract type from source, because getImplementedInterface() returns null");
+            LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
             return result;
         }
 
-        final Optional<Convertor> convertor = findConvertor(type);
-
-        if (convertor.isPresent()) {
-            result = Optional.of((TO) convertor.get().convert(source, data));
-        }
-
-        return result;
-    }
-
-    public <FROM extends DataContainer, TO> Optional<TO> convert(final Collection<FROM> source) {
-        return convert(source, null);
+         return findConvertor(data.getVersion(), type)
+                .map(convertor -> (TO)convertor.convert(source, data));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, @Nullable final DATA data) {
+    public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data) {
         Optional<TO> result = Optional.empty();
 
         if (Objects.isNull(source)) {
@@ -150,17 +106,12 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         final Class<? extends DataContainer> type = first.get().getImplementedInterface();
 
         if (Objects.isNull(type)) {
-            LOG.warn("Cannot extract type from source, because getImplementedInterface() returns null");
+            LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
             return result;
         }
 
-        final Optional<Convertor> convertor = findConvertor(type);
-
-        if (convertor.isPresent()) {
-            result = Optional.of((TO) convertor.get().convert(source, data));
-        }
-
-        return result;
+        return findConvertor(data.getVersion(), type)
+                .map(convertor -> (TO)convertor.convert(source, data));
     }
 
     /**
@@ -170,23 +121,36 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
      * @param type input type
      * @return found convertor
      */
-    private Optional<Convertor> findConvertor(final Class<? extends DataContainer> type) {
-        Optional<Convertor> convertor = Optional.ofNullable(convertors.get(type));
+    @VisibleForTesting
+    Optional<Convertor> findConvertor(final short version, final Class<? extends DataContainer> type) {
+        final Map<Class<? extends DataContainer>, Convertor<?, ?, ? extends ConvertorData>> convertorsForVersion =
+                convertors.get(version);
 
-        if (!convertor.isPresent()) {
-            for (final Class<? extends DataContainer> key : convertorKeys) {
-                if (key.isAssignableFrom(type)) {
-                    final Convertor foundConvertor = convertors.get(key);
-                    convertor = Optional.ofNullable(foundConvertor);
-                    convertors.put(type, foundConvertor);
-                    LOG.warn("{} is now converted by {} using last resort method", type, foundConvertor);
-                    break;
-                }
-            }
+        Optional<Convertor> convertor = Optional.empty();
+
+        if (Objects.nonNull(convertorsForVersion)) {
+            convertor = Optional.ofNullable(convertorsForVersion.get(type));
 
             if (!convertor.isPresent()) {
-                LOG.warn("Convertor for {} not found", type);
+                for (final Class<? extends DataContainer> convertorType : convertorsForVersion.keySet()) {
+                    if (type.isAssignableFrom(convertorType)) {
+                        final Convertor<?, ?, ? extends ConvertorData> foundConvertor = convertorsForVersion.get(convertorType);
+                        convertor = Optional.ofNullable(foundConvertor);
+
+                        if (convertor.isPresent()) {
+                            convertorsForVersion.put(type, foundConvertor);
+                            LOG.warn("{} for version {} is now converted by {} using last resort method", type, version, foundConvertor);
+                            break;
+                        }
+                    }
+                }
+
+                if (!convertor.isPresent()) {
+                    LOG.warn("Convertor for {} for version {} not found", type, version);
+                }
             }
+        } else {
+            LOG.warn("{} do not supports version {}", this, version);
         }
 
         return convertor;

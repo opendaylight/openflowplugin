@@ -13,7 +13,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -147,6 +148,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public class MatchConvertorImpl2Test {
 
     private static final MatchConvertorImpl convertor = new MatchConvertorImpl();
+    private ConvertorManager convertorManager;
 
     /**
      * Initializes OpenflowPortsUtil
@@ -154,26 +156,21 @@ public class MatchConvertorImpl2Test {
     @Before
     public void startUp() {
         OpenflowPortsUtil.init();
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testEmptyAndNullInput() {
         MatchBuilder builder = new MatchBuilder();
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(null);
+        List<MatchEntry> entries = convertor.convert(null, convertorManager);
         Assert.assertEquals("Wrong entries size", 0, entries.size());
 
-        entries = convertor.convert(match);
+        entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 0, entries.size());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -234,7 +231,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 24, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, InPort.class, false);
@@ -343,9 +340,6 @@ public class MatchConvertorImpl2Test {
         Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithNoMask(){
         MatchBuilder builder = new MatchBuilder();
@@ -355,7 +349,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -366,9 +360,6 @@ public class MatchConvertorImpl2Test {
         Assert.assertEquals("wrong Ipv4Address destination", "10.1.1.1",((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv4MatchArbitraryBitMaskwithMask(){
         MatchBuilder builder = new MatchBuilder();
@@ -380,7 +371,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -391,9 +382,6 @@ public class MatchConvertorImpl2Test {
         Assert.assertEquals("wrong Ipv4Adress destination", "10.1.1.1",((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testUdpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -403,7 +391,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(udpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, UdpSrc.class, false);
@@ -415,9 +403,6 @@ public class MatchConvertorImpl2Test {
                 .getUdpDst().getPort().getValue().intValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testTunnelIpv4MatchConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -427,7 +412,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(tunnelIpv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv4Src.class, false);
@@ -439,9 +424,6 @@ public class MatchConvertorImpl2Test {
                 .getIpv4Address().getValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testSctpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -451,7 +433,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(sctpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, SctpSrc.class, false);
@@ -463,9 +445,6 @@ public class MatchConvertorImpl2Test {
                 .getSctpDst().getPort().getValue().intValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testArpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -482,7 +461,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 5, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, ArpOp.class, false);
@@ -506,9 +485,6 @@ public class MatchConvertorImpl2Test {
                 .getArpTha().getMacAddress().getValue());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testArpMatchConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
@@ -527,7 +503,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 4, entries.size());
         MatchEntry entry = entries.get(0);
         entry = entries.get(0);
@@ -556,9 +532,6 @@ public class MatchConvertorImpl2Test {
                 ((ArpThaCase) entry.getMatchEntryValue()).getArpTha().getMask());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv6MatchConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -577,7 +550,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 7, entries.size());
         MatchEntry entry = entries.get(0);
         /* Due to conversion ambiguities, we always get "has mask" because 
@@ -612,9 +585,6 @@ public class MatchConvertorImpl2Test {
                 true, false, true, false), ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv6MatchConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
@@ -624,7 +594,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
@@ -641,9 +611,6 @@ public class MatchConvertorImpl2Test {
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getMask());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv6ExtHeaderConversion() {
         MatchBuilder builder = new MatchBuilder();
@@ -655,7 +622,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Exthdr.class, true);
@@ -665,9 +632,6 @@ public class MatchConvertorImpl2Test {
                 ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getMask());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
@@ -707,7 +671,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 8, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Metadata.class, true);
@@ -761,9 +725,6 @@ public class MatchConvertorImpl2Test {
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getMask());
     }
 
-    /**
-     * Test {@link Convertor#convert(Object)}
-     */
     @Test
     public void testIpv6MatchArbitraryBitMask(){
         MatchBuilder builder = new MatchBuilder();
@@ -775,7 +736,7 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntry> entries = convertor.convert(match);
+        List<MatchEntry> entries = convertor.convert(match, convertorManager);
         Assert.assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
