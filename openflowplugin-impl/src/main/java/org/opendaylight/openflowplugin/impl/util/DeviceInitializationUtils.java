@@ -39,6 +39,7 @@ import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -93,9 +94,10 @@ public class DeviceInitializationUtils {
      *
      * @param deviceContext
      * @param switchFeaturesMandatory
+     * @param convertorExecutor
      * @return future - recommended to have blocking call for this future
      */
-    public static ListenableFuture<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
+    public static ListenableFuture<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory, final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
@@ -144,7 +146,7 @@ public class DeviceInitializationUtils {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
             LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            deviceFeaturesFuture = createDeviceFeaturesForOF13(deviceContext, deviceState, switchFeaturesMandatory);
+            deviceFeaturesFuture = createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor);
         } else {
             deviceFeaturesFuture = Futures.immediateFailedFuture(new ConnectionException("Unsupported version "
                     + version));
@@ -192,7 +194,7 @@ public class DeviceInitializationUtils {
     }
 
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(
-            final DeviceContext deviceContext, final DeviceState deviceState, final boolean switchFeaturesMandatory) {
+            final DeviceContext deviceContext, final boolean switchFeaturesMandatory, final ConvertorExecutor convertorExecutor) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
@@ -205,32 +207,32 @@ public class DeviceInitializationUtils {
                             final RpcResult<List<MultipartReply>> rpcResult) throws Exception {
 
                         translateAndWriteReply(MultipartType.OFPMPDESC, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), rpcResult.getResult());
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), rpcResult.getResult(), convertorExecutor);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(
                                 MultipartType.OFPMPMETERFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
                         createSuccessProcessingCallback(MultipartType.OFPMPMETERFEATURES, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyMeterFeature);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyMeterFeature, convertorExecutor);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(
                                 MultipartType.OFPMPGROUPFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPGROUPFEATURES, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroupFeatures);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroupFeatures, convertorExecutor);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(
                                 MultipartType.OFPMPTABLEFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPTABLEFEATURES, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyTableFeatures);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyTableFeatures, convertorExecutor);
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(
                                 MultipartType.OFPMPPORTDESC, deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
                                 deviceContext.getDeviceInfo().getVersion());
                         createSuccessProcessingCallback(MultipartType.OFPMPPORTDESC, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyPortDescription);
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyPortDescription, convertorExecutor);
                         if (switchFeaturesMandatory) {
                             return Futures.allAsList(Arrays.asList(replyMeterFeature, replyGroupFeatures,
                                     replyTableFeatures, replyPortDescription));
@@ -244,7 +246,8 @@ public class DeviceInitializationUtils {
     }
 
     static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
-                                       final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
+                                       final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result,
+                                       final ConvertorExecutor convertorExecutor) {
         try {
             for (final MultipartReply reply : result) {
                 final MultipartReplyBody body = reply.getMultipartReplyBody();
@@ -263,7 +266,7 @@ public class DeviceInitializationUtils {
                         final MultipartReplyTableFeatures tableFeaturesMP = ((MultipartReplyTableFeaturesCase) body)
                                 .getMultipartReplyTableFeatures();
                         final List<TableFeatures> tableFeatures = NodeStaticReplyTranslatorUtil
-                                .nodeTableFeatureTranslator(tableFeaturesMP);
+                                .nodeTableFeatureTranslator(tableFeaturesMP, dContext.getDeviceInfo().getVersion(), convertorExecutor);
                         for (final TableFeatures tableFeature : tableFeatures) {
                             final Short tableId = tableFeature.getTableId();
                             final KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII =
@@ -394,14 +397,15 @@ public class DeviceInitializationUtils {
 
     static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext,
                                                 final InstanceIdentifier<Node> nodeII,
-                                                final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
+                                                final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture,
+                                                final ConvertorExecutor convertorExecutor) {
         Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
                 final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
                     LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo().getNodeId(), type);
-                    translateAndWriteReply(type, deviceContext, nodeII, result);
+                    translateAndWriteReply(type, deviceContext, nodeII, result, convertorExecutor);
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {

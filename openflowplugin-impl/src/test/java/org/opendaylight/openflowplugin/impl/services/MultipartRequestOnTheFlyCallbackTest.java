@@ -44,6 +44,8 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -128,6 +130,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
         when(mockedDeviceInfo.getNodeId()).thenReturn(mockedNodeId);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(mockedDeviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
@@ -148,9 +151,11 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 //NOOP
             }
         };
+
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
                 mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceInfo,
-                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext);
+                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext, convertorManager);
     }
 
 

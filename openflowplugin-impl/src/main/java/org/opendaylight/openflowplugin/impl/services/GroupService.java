@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
@@ -20,17 +20,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class GroupService<I extends Group, O extends DataObject> extends AbstractSimpleService<I, O> {
-    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final ConvertorExecutor convertorExecutor;
+    private final VersionDatapathIdConvertorData data;
+
+    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
+        this.convertorExecutor = convertorExecutor;
+        data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) {
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
-        data.setDatapathId(getDatapathId());
-        final Optional<GroupModInputBuilder> ofGroupModInput = ConvertorManager
-                .getInstance()
-                .convert(input, data);
+        final Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(input, data);
 
         final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
                 .orElse(GroupConvertor.defaultResult(getVersion()))

@@ -16,10 +16,13 @@ import com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
@@ -61,7 +64,7 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("21");
     private static final Long DUMMY_XID = 1L;
-    private static final SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator = new SinglePurposeMultipartReplyTranslator();
+    private SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator;
     private static final BigInteger DUMMY_BYTE_COUNT = new BigInteger("31");
     private static final BigInteger DUMMY_PACKET_COUNT = new BigInteger("41");
     private static final Long DUMMY_FLOW_COUNT = 51L;
@@ -85,6 +88,12 @@ public class SinglePurposeMultipartReplyTranslatorTest {
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
     private static final Long GROUP_ACTION_BITMAP = 0b00000000000000000000000000000000000001111111111111001100000000001L;
+
+    @Before
+    public void setUp() {
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        singlePurposeMultipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorManager);
+    }
 
     @Test
     public void testTranslateFlow() {

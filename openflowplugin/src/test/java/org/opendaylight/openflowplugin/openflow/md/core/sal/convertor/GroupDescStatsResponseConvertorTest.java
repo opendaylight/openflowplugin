@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -38,6 +39,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public class GroupDescStatsResponseConvertorTest {
+    private ConvertorManager convertorManager;
+
+    @Before
+    public void setUp() {
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
+    }
 
     /**
      * Test empty GroupDescStats conversion
@@ -236,7 +243,7 @@ public class GroupDescStatsResponseConvertorTest {
     }
 
     private List<GroupDescStats> convert(List<GroupDesc> groupDescStats,VersionConvertorData data) {
-        Optional<List<GroupDescStats>> statsListOptional = ConvertorManager.getInstance().convert(groupDescStats, data);
+        Optional<List<GroupDescStats>> statsListOptional = convertorManager.convert(groupDescStats, data);
         return  statsListOptional.orElse(Collections.emptyList());
     }
 }

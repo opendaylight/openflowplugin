@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
@@ -34,8 +34,8 @@ public class MatchReactor extends ConvertReactor<Match> {
     }
 
     @Override
-    protected void initMappings(final Map<Short, Convertor<Match, ?, ?>> conversions,
-                                final Map<InjectionKey, ResultInjector<?, ?>> injections) {
+    protected void initMappings(final Map<Short, ConvertReactorConvertor<Match, ?>> conversions,
+                                final Map<ConvertorKey, ResultInjector<?, ?>> injections) {
         MatchReactorMappingFactory.addMatchConvertors(conversions);
         MatchReactorMappingFactory.addMatchIjectors(injections);
     }

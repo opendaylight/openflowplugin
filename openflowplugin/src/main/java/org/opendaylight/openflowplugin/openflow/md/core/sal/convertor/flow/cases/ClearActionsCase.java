@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.case
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCaseBuilder;
@@ -23,7 +24,7 @@ public class ClearActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase source, final ActionConvertorData data) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
         ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         instructionBuilder.setInstructionChoice(clearActionsCaseBuilder.build());

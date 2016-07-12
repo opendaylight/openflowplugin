@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
@@ -161,12 +162,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class MatchResponseConvertor2Test {
 
+    private ConvertorManager convertorManager;
+
     /**
      * Initializes OpenflowPortsUtil
      */
     @Before
     public void startUp() {
         OpenflowPortsUtil.init();
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
     /**
@@ -174,7 +178,7 @@ public class MatchResponseConvertor2Test {
      */
     @Test(expected = NullPointerException.class)
     public void testEmptyMatch() {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
         convert(new MatchBuilder().build(), datapathIdConvertorData);
     }
@@ -191,7 +195,7 @@ public class MatchResponseConvertor2Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
@@ -500,7 +504,7 @@ public class MatchResponseConvertor2Test {
 
         final Match match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
@@ -650,7 +654,7 @@ public class MatchResponseConvertor2Test {
         builder.setMatchEntry(entries);
         final Match match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
@@ -1604,7 +1608,7 @@ public class MatchResponseConvertor2Test {
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
             .MatchBuilder convert(Match match, VersionDatapathIdConvertorData data) {
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+                .MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional
                 .orElse(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder());

@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flow
 
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 
@@ -34,8 +34,8 @@ public class FlowFlagReactor extends ConvertReactor<FlowModFlags> {
     }
 
     @Override
-    protected void initMappings(final Map<Short, Convertor<FlowModFlags, ?, ?>> conversions,
-                                final Map<InjectionKey, ResultInjector<?, ?>> injections) {
+    protected void initMappings(final Map<Short, ConvertReactorConvertor<FlowModFlags, ?>> conversions,
+                                final Map<ConvertorKey, ResultInjector<?, ?>> injections) {
         FlowFlagReactorMappingFactory.addFlowFlagsConvertors(conversions);
         FlowFlagReactorMappingFactory.addFlowFlagsIjectors(injections);
     }

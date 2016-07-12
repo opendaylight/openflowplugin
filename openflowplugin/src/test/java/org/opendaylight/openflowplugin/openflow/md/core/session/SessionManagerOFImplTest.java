@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import static org.mockito.Matchers.any;
+
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -34,6 +35,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessio
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.SalRegistrationManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -91,7 +94,8 @@ public class SessionManagerOFImplTest {
         });
 
         // session listener - prepare registration and notification mockery
-        final SalRegistrationManager sessionListener = new SalRegistrationManager();
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final SalRegistrationManager sessionListener = new SalRegistrationManager(convertorManager);
         sessionListener.setPublishService(notificationProviderService);
         sessionListener.setRpcProviderRegistry(rpcProviderRegistry);
         sessionListener.setDataService(dataService);

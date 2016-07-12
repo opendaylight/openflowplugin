@@ -38,6 +38,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -92,8 +94,9 @@ public class LifecycleConductorImplTest {
     @Before
     public void setUp() {
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
-        lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
+        lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency, convertorManager);
         lifecycleConductor.setSafelyManager(deviceManager);
         lifecycleConductor.setSafelyManager(statisticsManager);
         lifecycleConductor.setSafelyManager(rpcManager);
