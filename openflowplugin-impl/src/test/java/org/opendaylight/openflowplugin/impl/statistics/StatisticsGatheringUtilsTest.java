@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +50,8 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -167,12 +168,16 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private TxFacade txFacade;
 
+    private SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator;
+
     public StatisticsGatheringUtilsTest() {
         OpenflowPortsUtil.init();
     }
 
     @Before
     public void setUp() throws Exception {
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        singlePurposeMultipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorManager);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
@@ -190,11 +195,6 @@ public class StatisticsGatheringUtilsTest {
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
     }
 
     @Test
@@ -499,7 +499,8 @@ public class StatisticsGatheringUtilsTest {
                 type,
                 txFacade,
                 deviceContext,
-                false);
+                false,
+                singlePurposeMultipartReplyTranslator);
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
         verify(txFacade).submitTransaction();
     }

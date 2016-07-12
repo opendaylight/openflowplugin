@@ -13,16 +13,18 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdated;
@@ -49,6 +51,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author michal.polkorab
  *
  */
+@RunWith(MockitoJUnitRunner.class)
 public class MultipartReplyTranslatorSecondTest {
 
     @Mock SwitchConnectionDistinguisher cookie;
@@ -56,14 +59,15 @@ public class MultipartReplyTranslatorSecondTest {
     @Mock ConnectionConductor conductor;
     @Mock GetFeaturesOutput features;
 
-    MultipartReplyTranslator translator = new MultipartReplyTranslator();
+    MultipartReplyTranslator translator;
 
     /**
      * Initializes mocks
      */
     @Before
     public void startUp() {
-        MockitoAnnotations.initMocks(this);
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        translator = new MultipartReplyTranslator(convertorManager);
         when(sc.getPrimaryConductor()).thenReturn(conductor);
         when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
         when(sc.getFeatures()).thenReturn(features);

@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorV10Translator;
@@ -106,6 +107,7 @@ import org.slf4j.LoggerFactory;
 public class MDController implements IMDController, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDController.class);
+    private final ConvertorExecutor convertorExecutor;
 
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
@@ -119,6 +121,10 @@ public class MDController implements IMDController, AutoCloseable {
     private ErrorHandlerSimpleImpl errorHandler;
 
     private ExtensionConverterProvider extensionConverterProvider;
+
+    public MDController(ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
+    }
 
     /**
      * @return translator mapping
@@ -140,19 +146,19 @@ public class MDController implements IMDController, AutoCloseable {
         //TODO: move registration to factory
         addMessageTranslator(ErrorMessage.class, OF10, new ErrorV10Translator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
-        addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator());
-        addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator(convertorExecutor));
+        addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator(convertorExecutor));
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInV10Translator());
-        addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
+        addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator(convertorExecutor));
         addMessageTranslator(PortStatusMessage.class,OF10, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(PortStatusMessage.class,OF13, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultiPartReplyPortToNodeConnectorUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF10, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
-        addMessageTranslator(MultipartReplyMessage.class,OF10, new MultipartReplyTranslator());
-        addMessageTranslator(MultipartReplyMessage.class,OF13, new MultipartReplyTranslator());
-        addMessageTranslator(MultipartReplyMessage.class,OF13,new MultipartReplyTableFeaturesToTableUpdatedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class,OF10, new MultipartReplyTranslator(convertorExecutor));
+        addMessageTranslator(MultipartReplyMessage.class,OF13, new MultipartReplyTranslator(convertorExecutor));
+        addMessageTranslator(MultipartReplyMessage.class,OF13,new MultipartReplyTableFeaturesToTableUpdatedTranslator(convertorExecutor));
         addMessageTranslator(GetFeaturesOutput.class,OF10, new FeaturesV10ToNodeConnectorUpdatedTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF10, new NotificationPlainTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF13, new NotificationPlainTranslator());

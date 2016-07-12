@@ -21,6 +21,8 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInputBuilder;
@@ -64,8 +66,9 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     private OpendaylightMeterStatisticsServiceImpl meterStatisticsService;
 
     public void setUp() {
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
-                new AtomicLong(), notificationPublishService);
+                new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));

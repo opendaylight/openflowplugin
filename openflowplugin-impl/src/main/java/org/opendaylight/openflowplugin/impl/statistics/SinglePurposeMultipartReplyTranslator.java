@@ -13,8 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -109,14 +108,18 @@ public class SinglePurposeMultipartReplyTranslator {
 
     protected static final Logger logger = LoggerFactory
             .getLogger(SinglePurposeMultipartReplyTranslator.class);
+    private final ConvertorExecutor convertorExecutor;
+
+    public SinglePurposeMultipartReplyTranslator(ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
+    }
 
     public List<DataObject> translate(final BigInteger datapathId, final short version, final OfHeader msg) {
 
-        List<DataObject> listDataObject = new ArrayList<>();
-        VersionDatapathIdConvertorData groupFlowConvertorData = new VersionDatapathIdConvertorData(version);
-        groupFlowConvertorData.setDatapathId(datapathId);
-        VersionConvertorData simpleConvertorData = new VersionConvertorData(version);
-        OpenflowVersion ofVersion = OpenflowVersion.get(version);
+        final List<DataObject> listDataObject = new ArrayList<>();
+        final OpenflowVersion ofVersion = OpenflowVersion.get(version);
+        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);
+        data.setDatapathId(datapathId);
 
         if (msg instanceof MultipartReplyMessage) {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
@@ -131,7 +134,7 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                     MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
                     final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists =
-                            ConvertorManager.getInstance().convert(replyBody.getFlowStats(), groupFlowConvertorData);
+                            convertorExecutor.convert(replyBody.getFlowStats(), data);
 
                     message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());
@@ -216,8 +219,8 @@ public class SinglePurposeMultipartReplyTranslator {
                     message.setTransactionId(generateTransactionId(mpReply.getXid()));
                     MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
                     MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                    final Optional<List<GroupStats>> groupStatsList = ConvertorManager.getInstance().convert(
-                            replyBody.getGroupStats());
+                    final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
+                            replyBody.getGroupStats(), data);
 
                     message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());
@@ -232,8 +235,8 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
                     MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-                    final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(
-                            replyBody.getGroupDesc(), simpleConvertorData);
+                    final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
+                            replyBody.getGroupDesc(), data);
 
                     message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());
@@ -297,7 +300,7 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
 
                     final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>> meterStatsList =
-                            ConvertorManager.getInstance().convert(replyBody.getMeterStats());
+                            convertorExecutor.convert(replyBody.getMeterStats(), data);
 
                     message.setMeterStats(meterStatsList.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());
@@ -313,7 +316,7 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
                     MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
-                    final Optional<List<MeterConfigStats>> meterConfigStatsList = ConvertorManager.getInstance().convert(replyBody.getMeterConfig());
+                    final Optional<List<MeterConfigStats>> meterConfigStatsList = convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
                     message.setMeterConfigStats(meterConfigStatsList.orElse(Collections.emptyList()));
                     listDataObject.add(message.build());

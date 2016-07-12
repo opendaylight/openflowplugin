@@ -40,6 +40,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -56,6 +57,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
+    private final ConvertorExecutor convertorExecutor;
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
@@ -80,7 +82,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean shuttingDownStatisticsPolling,
-                                 final LifecycleConductor lifecycleConductor) {
+                                 final LifecycleConductor lifecycleConductor,
+                                 final ConvertorExecutor convertorExecutor) {
+        this.convertorExecutor = convertorExecutor;
         Preconditions.checkArgument(rpcProviderRegistry != null);
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry.addRpcImplementation(
                 StatisticsManagerControlService.class, this));
@@ -93,7 +97,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor, convertorExecutor);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
