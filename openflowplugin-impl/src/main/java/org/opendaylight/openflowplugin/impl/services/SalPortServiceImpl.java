@@ -25,8 +25,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
-    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    private final ConvertorManager convertorManager;
+    private final VersionConvertorData data;
+
+    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, UpdatePortOutput.class);
+        this.convertorManager = convertorManager;
+        data = new VersionConvertorData(getVersion());
     }
 
     @Override
@@ -37,9 +42,7 @@ public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortIn
     @Override
     protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) {
         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-        final Optional<PortModInput> ofPortModInput = ConvertorManager
-                .getInstance()
-                .convert(inputPort, new VersionConvertorData(getVersion()));
+        final Optional<PortModInput> ofPortModInput = convertorManager.convert(inputPort, data);
 
         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
                 .orElse(PortConvertor.defaultResult(getVersion())))

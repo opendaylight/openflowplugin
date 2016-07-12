@@ -49,7 +49,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     private SalTableServiceImpl salTableService;
 
     @Override
-    public void setup() {
+    public void setUp() {
         handleResultFuture = SettableFuture.create();
         when(mockedRequestContext.getFuture()).thenReturn(handleResultFuture);
         Mockito.doAnswer(new Answer<Void>() {
@@ -64,7 +64,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                 Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
-                mockedDeviceContext.getPrimaryConnectionContext().getNodeId());
+                getConvertorManager());
     }
 
     @Test

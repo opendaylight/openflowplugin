@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -37,6 +38,11 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 
     private static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTableFeaturesToTableUpdatedTranslator.class);
+    private final ConvertorManager convertorManager;
+
+    public MultipartReplyTableFeaturesToTableUpdatedTranslator(ConvertorManager convertorManager) {
+        this.convertorManager = convertorManager;
+    }
 
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
@@ -46,7 +52,7 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 
             List<DataObject> listDataObject = new CopyOnWriteArrayList<>();
 
-            TableUpdatedBuilder message = new TableUpdatedBuilder() ;
+            TableUpdatedBuilder message = new TableUpdatedBuilder();
             message.setNode((new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
                     .getDatapathId()))));
             message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -54,7 +60,8 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
             MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) mpReply.getMultipartReplyBody();
             MultipartReplyTableFeatures body = caseBody.getMultipartReplyTableFeatures();
 
-            final Optional<List<TableFeatures>> tableFeaturesList = ConvertorManager.getInstance().convert(body);
+            final VersionConvertorData data = new VersionConvertorData(sc.getPrimaryConductor().getVersion());
+            final Optional<List<TableFeatures>> tableFeaturesList = convertorManager.convert(body, data);
             message.setTableFeatures(tableFeaturesList.orElse(Collections.emptyList()));
             listDataObject.add( message.build()) ;
 

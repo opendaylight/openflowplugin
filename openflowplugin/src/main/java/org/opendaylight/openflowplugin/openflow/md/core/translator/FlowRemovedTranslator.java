@@ -159,6 +159,11 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     private static final String PREFIX_SEPARATOR = "/";
+    private final ConvertorManager convertorManager;
+
+    public FlowRemovedTranslator(ConvertorManager convertorManager) {
+        this.convertorManager = convertorManager;
+    }
 
     @Override
     public List<DataObject> translate(final SwitchConnectionDistinguisher cookie, final SessionContext sc, final OfHeader msg) {
@@ -203,7 +208,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
                 data.setDatapathId(sc.getFeatures().getDatapathId());
 
-                final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(ofFlow.getMatchV10(), data);
+                final Optional<MatchBuilder> matchBuilderOptional = convertorManager.convert(ofFlow.getMatchV10(), data);
                 salFlowRemoved.setMatch(matchBuilderOptional.orElse(new MatchBuilder()).build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()

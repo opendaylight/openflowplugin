@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
     private static final short OFP_VERSION_ALL = 0x00;
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorProcessor.class);
 
-    private final Map<InjectionKey, ConvertorCase<?, TO, DATA>> conversions = new ConcurrentHashMap<>();
+    private final Map<ConvertorKey, ConvertorCase<?, TO, DATA>> conversions = new ConcurrentHashMap<>();
     private ConvertorCase<?, TO, DATA> defaultCase;
 
     /**
@@ -38,11 +39,11 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      */
     public ConvertorProcessor<FROM, TO, DATA> addCase(final ConvertorCase<?, TO, DATA> processorCase) {
         if (processorCase.getSupportedVersions().isEmpty()) {
-            final InjectionKey key = new InjectionKey(OFP_VERSION_ALL, processorCase.getType());
+            final ConvertorKey key = new ConvertorKey(OFP_VERSION_ALL, processorCase.getType());
             conversions.putIfAbsent(key, processorCase);
         } else {
             for (short supportedVersion : processorCase.getSupportedVersions()) {
-                final InjectionKey key = new InjectionKey(supportedVersion, processorCase.getType());
+                final ConvertorKey key = new ConvertorKey(supportedVersion, processorCase.getType());
                 conversions.putIfAbsent(key, processorCase);
             }
         }
@@ -56,8 +57,8 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      * @param source the source
      * @return the optional
      */
-    public Optional<TO> process(final FROM source) {
-        return process(source, null);
+    public Optional<TO> process(final ConvertorManager convertorManager, final FROM source) {
+        return process(convertorManager, source, null);
     }
 
     /**
@@ -67,7 +68,7 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
      * @param data   the data
      * @return the optional
      */
-    public Optional<TO> process(final FROM source, final DATA data) {
+    public Optional<TO> process(final ConvertorManager convertorManager, final FROM source, final DATA data) {
         Optional<TO> result = Optional.empty();
         final short version = data != null ? data.getVersion() : OFP_VERSION_ALL;
 
@@ -77,12 +78,12 @@ public class ConvertorProcessor<FROM extends DataContainer, TO, DATA extends Con
         }
 
         final Class<?> clazz = source.getImplementedInterface();
-        final InjectionKey key = new InjectionKey(version, clazz);
+        final ConvertorKey key = new ConvertorKey(version, clazz);
         final Optional<ConvertorCase<?, TO, DATA>> caseOptional = Optional.ofNullable(conversions.get(key));
         final ConvertorCase<?, TO, DATA> processorCase = caseOptional.orElse(defaultCase);
 
         if (Objects.nonNull(processorCase)) {
-            result = processorCase.processRaw(source, data);
+            result = processorCase.processRaw(convertorManager, source, data);
 
             if (processorCase.isErrorOnEmpty() && !result.isPresent()) {
                 LOG.warn("Failed to process {} for version {}", clazz, version);

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
@@ -26,7 +27,7 @@ public class OfToSalArpTpaCase extends ConvertorCase<ArpTpaCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull ArpTpaCase source, MatchResponseConvertorData data) {
+    public Optional<MatchBuilder> process(ConvertorManager convertorManager, @Nonnull ArpTpaCase source, MatchResponseConvertorData data) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ArpMatchBuilder arpMatchBuilder = data.getArpMatchBuilder();
 

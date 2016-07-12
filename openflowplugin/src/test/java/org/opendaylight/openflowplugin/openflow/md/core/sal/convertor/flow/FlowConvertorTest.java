@@ -16,7 +16,7 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
@@ -73,7 +73,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @author michal.polkorab
  *
  */
-public class FlowConvertorTest {
+public class FlowConvertorTest extends ConvertorManagerInitialization {
 
     /**
      * Tests {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
@@ -264,7 +264,7 @@ public class FlowConvertorTest {
     }
 
     private List<FlowModInputBuilder> convert(Flow flow, VersionDatapathIdConvertorData data) {
-        Optional<List<FlowModInputBuilder>> flowModOptional = ConvertorManager.getInstance().convert(flow, data);
+        Optional<List<FlowModInputBuilder>> flowModOptional = getConvertorManager().convert(flow, data);
         Assert.assertTrue("Flow convertor not found", flowModOptional.isPresent());
         return flowModOptional.get();
     }

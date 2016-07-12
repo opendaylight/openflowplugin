@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -48,7 +49,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull ArpMatch source, VersionConvertorData data) {
+    public Optional<List<MatchEntry>> process(ConvertorManager convertorManager, @Nonnull ArpMatch source, VersionConvertorData data) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getArpOp() != null) {

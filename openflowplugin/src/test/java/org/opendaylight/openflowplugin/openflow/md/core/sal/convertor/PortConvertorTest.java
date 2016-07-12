@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
 
-public class PortConvertorTest {
+public class PortConvertorTest extends ConvertorManagerInitialization {
 
     /** defautl mac address */
     private static final String DEFAULT_MAC_ADDRESS = "01:02:03:04:05:06";
@@ -63,7 +63,7 @@ public class PortConvertorTest {
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
-        Optional<PortModInput> portOutOptional = ConvertorManager.getInstance().convert(portBld.build(), data);
+        Optional<PortModInput> portOutOptional = getConvertorManager().convert(portBld.build(), data);
         PortModInput portOut = portOutOptional.orElse(PortConvertor.defaultResult(OFConstants.OFP_VERSION_1_3));
 
         PortConfigV10 portConfV10 = new PortConfigV10(false, false, false, false, true, true, false);

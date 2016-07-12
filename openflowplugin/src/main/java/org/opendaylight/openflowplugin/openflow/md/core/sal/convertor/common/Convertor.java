@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -17,8 +18,28 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  *
  * @param <FROM> type of source
  * @param <TO>   type of result
+ * @param <DATA> the type parameter
  */
-public interface Convertor<FROM, TO, DATA extends ConvertorData> {
+public abstract class Convertor<FROM, TO, DATA extends ConvertorData> {
+    private ConvertorManager convertorManager;
+
+    /**
+     * Gets convertor manager.
+     *
+     * @return the convertor manager
+     */
+    protected ConvertorManager getConvertorManager() {
+        return convertorManager;
+    }
+
+    /**
+     * Sets convertor manager.
+     *
+     * @param convertorManager the convertor manager
+     */
+    public void setConvertorManager(ConvertorManager convertorManager) {
+        this.convertorManager = convertorManager;
+    }
 
     /**
      * Gets type of convertor, used in
@@ -26,7 +47,7 @@ public interface Convertor<FROM, TO, DATA extends ConvertorData> {
      *
      * @return the type of convertor
      */
-    Collection<Class<? extends DataContainer>> getTypes();
+    public abstract Collection<Class<? extends DataContainer>> getTypes();
 
     /**
      * Converts source to result
@@ -35,5 +56,5 @@ public interface Convertor<FROM, TO, DATA extends ConvertorData> {
      * @param data   convertor data
      * @return converted source
      */
-    TO convert(FROM source, @Nullable DATA data);
+    public abstract TO convert(FROM source, @Nullable DATA data);
 }

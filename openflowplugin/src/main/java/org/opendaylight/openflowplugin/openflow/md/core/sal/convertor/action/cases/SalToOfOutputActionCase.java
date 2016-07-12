@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -35,7 +36,7 @@ public class SalToOfOutputActionCase extends ConvertorCase<OutputActionCase, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final OutputActionCase source, final ActionConvertorData data) {
         final OutputAction outputAction = source.getOutputAction();
         final OutputActionBuilder outputBuilder = new OutputActionBuilder();
 

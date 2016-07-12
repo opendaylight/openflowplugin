@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
@@ -158,13 +157,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * @author michal.polkorab
  */
-public class MatchResponseConvertor2Test {
+public class MatchResponseConvertor2Test extends ConvertorManagerInitialization {
 
     /**
      * Initializes OpenflowPortsUtil
      */
-    @Before
-    public void startUp() {
+    @Override
+    public void setUp() {
         OpenflowPortsUtil.init();
     }
 
@@ -1331,7 +1330,7 @@ public class MatchResponseConvertor2Test {
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
             .MatchBuilder convert(Match match, VersionDatapathIdConvertorData data) {
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder> salMatchOptional = ConvertorManager.getInstance().convert(match, data);
+                .MatchBuilder> salMatchOptional = getConvertorManager().convert(match, data);
 
         return salMatchOptional
                 .orElse(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder());

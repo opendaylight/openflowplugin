@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
@@ -81,7 +80,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>, VersionDatapathIdConvertorData> {
+public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, VersionDatapathIdConvertorData> {
     /**
      * Default idle timeout
      */
@@ -165,7 +164,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
         VLAN_MATCH_TRUE = vlanMatchBuilder2.build();
     }
 
-    private static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
+    private FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
 
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
         salToOFFlowCookie(flow, flowMod);
@@ -180,10 +179,10 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
         salToOFFlowOutGroup(flow, flowMod);
 
         // convert and inject flowFlags
-        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod);
+        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod, getConvertorManager());
 
         // convert and inject match
-        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod);
+        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod, getConvertorManager());
 
         if (flow.getInstructions() != null) {
             flowMod.setInstruction(toInstructions(flow, version, datapathid));
@@ -279,7 +278,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
         }
     }
 
-    private static List<Instruction> toInstructions(Flow flow, short version, BigInteger datapathid) {
+    private List<Instruction> toInstructions(Flow flow, short version, BigInteger datapathid) {
         final List<Instruction> instructionsList = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
@@ -292,7 +291,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
 
-            Optional<Instruction> result = PROCESSOR.process(curInstruction, data);
+            Optional<Instruction> result = PROCESSOR.process(getConvertorManager(), curInstruction, data);
 
             if (result.isPresent()) {
                 instructionsList.add(result.get());
@@ -302,7 +301,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
         return instructionsList;
     }
 
-    private static List<Action> getActions(short version, BigInteger datapathid, Flow flow) {
+    private List<Action> getActions(short version, BigInteger datapathid, Flow flow) {
         Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> sortedInstructions =
                 INSTRUCTION_ORDERING.sortedCopy(instructions.getInstruction());
@@ -318,7 +317,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
                 final ActionConvertorData data = new ActionConvertorData(version);
                 data.setDatapathId(datapathid);
                 data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
-                Optional<List<Action>> result = ConvertorManager.getInstance().convert(applyActions.getAction(), data);
+                Optional<List<Action>> result = getConvertorManager().convert(applyActions.getAction(), data);
                 return result.orElse(Collections.emptyList());
             }
         }
@@ -361,7 +360,7 @@ public class FlowConvertor implements Convertor<Flow, List<FlowModInputBuilder>,
      *     1) Match on (OFPVID_NONE ) without mask + action [push vlan tag + set_field]
      *     2) Match on (OFPVID_PRESENT) with mask (OFPVID_PRESENT ) + action [ set_field]
      */
-    private static List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, short version, BigInteger datapathId) {
+    private List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, short version, BigInteger datapathId) {
         List<FlowModInputBuilder> list = new ArrayList<>(2);
 
         final Match srcMatch = Preconditions.checkNotNull(srcFlow.getMatch());

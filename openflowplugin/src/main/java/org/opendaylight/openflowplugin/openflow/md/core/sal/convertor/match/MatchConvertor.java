@@ -8,33 +8,20 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.util.Collection;
-import java.util.Collections;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * converting from MD-SAL match model into appropriate OF-API match model
  *
  * @param <E> type of converted match
  */
-public interface MatchConvertor<E> extends Convertor<Match, E, VersionConvertorData> {
-
-    @Override
-    default Collection<Class<? extends DataContainer>> getTypes() {
-        return Collections.singleton(DataContainer.class);
-    }
-
-    @Override
-    default E convert(Match source, VersionConvertorData data) {
-        return convert(source);
-    }
-    
+public interface MatchConvertor<E> extends ConvertReactorConvertor<Match, E> {
     /**
      * @param source match input
+     * @param convertorManager
      * @return converted match (into OF-API model)
      */
-    E convert(Match source);
+    E convert(Match source, ConvertorManager convertorManager);
 }

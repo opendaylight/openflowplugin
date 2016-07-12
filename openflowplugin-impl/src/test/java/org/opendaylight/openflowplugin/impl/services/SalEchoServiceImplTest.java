@@ -33,7 +33,7 @@ public class SalEchoServiceImplTest extends ServiceMocking {
     SalEchoServiceImpl salEchoService;
 
     @Override
-    protected void setup() {
+    protected void setUp() {
         salEchoService = new SalEchoServiceImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 

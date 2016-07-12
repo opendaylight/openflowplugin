@@ -38,10 +38,9 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     SalMeterServiceImpl salMeterService;
 
     @Override
-    public void initialization() {
-        super.initialization();
+    public void setUp() {
         when(mockedDeviceContext.getDeviceMeterRegistry()).thenReturn(mockedDeviceMeterRegistry);
-        salMeterService = new SalMeterServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        salMeterService = new SalMeterServiceImpl(mockedRequestContextStack, mockedDeviceContext, getConvertorManager());
     }
 
     @Test

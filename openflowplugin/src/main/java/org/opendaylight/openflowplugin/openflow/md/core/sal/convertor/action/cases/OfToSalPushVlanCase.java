@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -25,7 +26,7 @@ public class OfToSalPushVlanCase extends ConvertorCase<PushVlanCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PushVlanCase source, final ActionResponseConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final PushVlanCase source, final ActionResponseConvertorData data) {
         PushVlanAction pushVlanActionFromOF = source.getPushVlanAction();
         PushVlanActionBuilder pushVlanAction = new PushVlanActionBuilder();
         pushVlanAction.setEthernetType(pushVlanActionFromOF.getEthertype().getValue());

@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class PortConvertor implements Convertor<Port, PortModInput, VersionConvertorData> {
+public class PortConvertor extends Convertor<Port, PortModInput, VersionConvertorData> {
 
     /**
      * Create default empty port mod input

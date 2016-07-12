@@ -13,19 +13,24 @@ import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public abstract class AbstractMultipartOnTheFlyService<I> extends AbstractService<I, List<MultipartReply>> {
-    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    private final ConvertorManager convertorManager;
+
+    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext);
+        this.convertorManager = convertorManager;
     }
 
     @Override
     protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType) {
         return new MultipartRequestOnTheFlyCallback(context, requestType,
                 getMessageSpy(), getEventIdentifier(), getDeviceInfo(),
-                getDeviceContext().getDeviceFlowRegistry(), getTxFacade());
+                getDeviceContext().getDeviceFlowRegistry(), getTxFacade(),
+                convertorManager);
     }
 
 

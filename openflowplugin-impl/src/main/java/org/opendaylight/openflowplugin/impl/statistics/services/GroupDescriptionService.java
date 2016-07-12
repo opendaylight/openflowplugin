@@ -37,9 +37,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 final class GroupDescriptionService
         extends AbstractCompatibleStatService<GetGroupDescriptionInput, GetGroupDescriptionOutput, GroupDescStatsUpdated> {
     private static final MultipartRequestGroupDescCase GROUP_DESC_CASE = new MultipartRequestGroupDescCaseBuilder().build();
+    private final ConvertorManager convertorManager;
 
-    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
+        this.convertorManager = convertorManager;
     }
 
     @Override
@@ -68,7 +70,7 @@ final class GroupDescriptionService
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
-            final Optional<List<GroupDescStats>> groupDescStatsList = ConvertorManager.getInstance().convert(
+            final Optional<List<GroupDescStats>> groupDescStatsList = convertorManager.convert(
                     replyBody.getGroupDesc(), data);
 
             if (groupDescStatsList.isPresent()) {

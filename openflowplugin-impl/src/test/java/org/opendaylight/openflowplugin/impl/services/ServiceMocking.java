@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -23,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public abstract class ServiceMocking {
+public abstract class ServiceMocking extends ConvertorManagerInitialization{
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
     private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final Long DUMMY_XID_VALUE = 2121L;
@@ -76,8 +76,8 @@ public abstract class ServiceMocking {
     @Mock
     protected DataBroker dataBroker;
 
-    @Before
-    public void initialization() {
+    @Override
+    public void init() throws Exception {
         when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
         when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
 
@@ -103,11 +103,7 @@ public abstract class ServiceMocking {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
 
-        setup();
-    }
-
-    protected void setup() {
-        //NOOP - to be overloaded
+        super.init();
     }
 
 

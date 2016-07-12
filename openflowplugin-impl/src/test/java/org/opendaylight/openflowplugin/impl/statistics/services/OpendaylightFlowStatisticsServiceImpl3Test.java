@@ -33,7 +33,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
     public void setUp() {
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext);
+        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, getConvertorManager());
         flowStatisticsService.setDelegate(flowStatisticsDelegate);
     }
 

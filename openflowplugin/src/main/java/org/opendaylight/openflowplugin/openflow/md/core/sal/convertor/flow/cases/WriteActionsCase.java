@@ -29,13 +29,12 @@ public class WriteActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase source, final ActionConvertorData data) {
+    public Optional<Instruction> process(ConvertorManager convertorManager, final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase source, final ActionConvertorData data) {
         WriteActions writeActions = source.getWriteActions();
         WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
         WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
 
-        final Optional<List<Action>> actions = ConvertorManager.getInstance().convert(
-                writeActions.getAction(), data);
+        final Optional<List<Action>> actions = convertorManager.convert(writeActions.getAction(), data);
 
         writeActionsBuilder.setAction(actions.orElse(Collections.emptyList()));
         writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());

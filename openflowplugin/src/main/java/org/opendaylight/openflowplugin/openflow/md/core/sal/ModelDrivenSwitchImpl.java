@@ -111,6 +111,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private final NodeId nodeId;
     private final IMessageDispatchService messageService;
     private short version = 0;
+    private final ConvertorManager convertorManager;
     private OFRpcTaskContext rpcTaskContext;
 
     // TODO:read timeout from configSubsystem
@@ -118,11 +119,12 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     protected TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
 
     protected ModelDrivenSwitchImpl(final NodeId nodeId, final InstanceIdentifier<Node> identifier,
-                                    final SessionContext sessionContext) {
+                                    final SessionContext sessionContext, final ConvertorManager convertorManager) {
         super(identifier, sessionContext);
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService();
         version = sessionContext.getPrimaryConductor().getVersion();
+        this.convertorManager = convertorManager;
         final NotificationProviderService rpcNotificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
 
         rpcTaskContext = new OFRpcTaskContext();
@@ -143,7 +145,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> task =
-                OFRpcTaskFactory.createAddFlowTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createAddFlowTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
@@ -158,7 +160,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> task =
-                OFRpcTaskFactory.createAddGroupTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createAddGroupTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddGroupOutput());
@@ -172,7 +174,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> task =
-                OFRpcTaskFactory.createAddMeterTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createAddMeterTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddMeterOutput());
@@ -185,7 +187,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> task =
-                OFRpcTaskFactory.createRemoveFlowTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createRemoveFlowTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
@@ -197,7 +199,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> task =
-                OFRpcTaskFactory.createRemoveGroupTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createRemoveGroupTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
@@ -209,7 +211,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> task =
-                OFRpcTaskFactory.createRemoveMeterTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createRemoveMeterTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
 
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
@@ -223,7 +225,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         data.setDatapathId(sessionContext.getFeatures().getDatapathId());
         data.setXid(sessionContext.getNextXid());
 
-        final java.util.Optional<PacketOutInput> message = ConvertorManager.getInstance().convert(input, data);
+        final java.util.Optional<PacketOutInput> message = convertorManager.convert(input, data);
 
         SwitchConnectionDistinguisher cookie = null;
         ConnectionCookie connectionCookie = input.getConnectionCookie();
@@ -244,7 +246,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
         final ReadWriteTransaction rwTx = OFSessionUtil.getSessionManager().getDataBroker().newReadWriteTransaction();
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task =
-                OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie, rwTx);
+                OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie, rwTx, convertorManager);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
         return result;
@@ -258,7 +260,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> task =
-                OFRpcTaskFactory.createUpdateGroupTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createUpdateGroupTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
 
         return result;
@@ -272,7 +274,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> task =
-                OFRpcTaskFactory.createUpdateMeterTask(rpcTaskContext, input, cookie);
+                OFRpcTaskFactory.createUpdateMeterTask(rpcTaskContext, input, cookie, convertorManager);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
 
         return result;
@@ -390,7 +392,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
 
         OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task =
-                OFRpcTaskFactory.createUpdatePortTask(rpcTaskContext, input, null);
+                OFRpcTaskFactory.createUpdatePortTask(rpcTaskContext, input, null, convertorManager);
         return task.submit();
     }
 
@@ -399,7 +401,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("Calling the updateTable RPC method on MessageDispatchService");
 
         OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> task =
-                OFRpcTaskFactory.createUpdateTableTask(rpcTaskContext, input, null);
+                OFRpcTaskFactory.createUpdateTableTask(rpcTaskContext, input, null, convertorManager);
         return task.submit();
     }
 
@@ -429,7 +431,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("Calling the getFlowStatisticsFromFlowTable RPC method on MessageDispatchService");
 
         OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>> task =
-                OFRpcTaskFactory.createGetFlowStatisticsFromFlowTableTask(rpcTaskContext, input, null);
+                OFRpcTaskFactory.createGetFlowStatisticsFromFlowTableTask(rpcTaskContext, input, null, convertorManager);
         return task.submit();
     }
 
@@ -449,7 +451,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("Calling the getAggregateFlowStatisticsFromFlowTableForGivenMatch RPC method on MessageDispatchService");
 
         OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> task =
-                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(rpcTaskContext, input, null);
+                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(rpcTaskContext, input, null, convertorManager);
         return task.submit();
     }
 

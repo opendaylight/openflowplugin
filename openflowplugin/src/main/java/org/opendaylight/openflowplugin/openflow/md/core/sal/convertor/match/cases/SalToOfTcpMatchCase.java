@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -31,7 +32,7 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull TcpMatch source, VersionConvertorData data) {
+    public Optional<List<MatchEntry>> process(ConvertorManager convertorManager, @Nonnull TcpMatch source, VersionConvertorData data) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getTcpSourcePort() != null) {

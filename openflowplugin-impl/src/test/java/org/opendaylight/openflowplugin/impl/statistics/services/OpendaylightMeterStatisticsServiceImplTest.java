@@ -65,7 +65,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
     public void setUp() {
         meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
-                new AtomicLong(), notificationPublishService);
+                new AtomicLong(), notificationPublishService, getConvertorManager());
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));

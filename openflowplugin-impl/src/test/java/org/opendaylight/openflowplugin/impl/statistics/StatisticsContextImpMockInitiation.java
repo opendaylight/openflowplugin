@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import org.junit.Before;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -24,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -35,7 +35,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 
-class StatisticsContextImpMockInitiation {
+class StatisticsContextImpMockInitiation extends ConvertorManagerInitialization {
     Boolean isTable = false;
     Boolean isFlow = false;
     Boolean isGroup = false;
@@ -56,8 +56,8 @@ class StatisticsContextImpMockInitiation {
 
     LifecycleConductor mockConductor;
 
-    @Before
-    public void initialize() {
+    @Override
+    public void init() throws Exception {
         mockedDeviceContext = mock(DeviceContext.class);
         mockedStatisticsGatheringService = mock(StatisticsGatheringService.class);
         mockedStatisticsOnFlyGatheringService = mock(StatisticsGatheringOnTheFlyService.class);
@@ -100,5 +100,6 @@ class StatisticsContextImpMockInitiation {
         mockConductor.setSafelyManager(mockedDeviceManager);
         when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
 
+        super.init();
     }
 }

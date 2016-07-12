@@ -43,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 
-public class MeterConvertorTest {
+public class MeterConvertorTest extends ConvertorManagerInitialization {
     @Test
     public void testMeterModCommandConvertorwithAllParameters() {
         long BURST_SIZE = 10L;
@@ -451,7 +451,7 @@ public class MeterConvertorTest {
     }
 
     private MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
-        Optional<MeterModInputBuilder> outMeterModInputOptional = ConvertorManager.getInstance().convert(source, data);
+        Optional<MeterModInputBuilder> outMeterModInputOptional = getConvertorManager().convert(source, data);
         return outMeterModInputOptional.orElse(MeterConvertor.defaultResult(data.getVersion()));
     }
 }

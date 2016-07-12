@@ -33,6 +33,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
  * Created by tkubas on 4/1/15.
  */
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
+    private final ConvertorManager convertorManager;
+
+    public PacketReceivedTranslator(ConvertorManager convertorManager) {
+        this.convertorManager = convertorManager;
+    }
+
     @Override
     public PacketReceived translate(final PacketInMessage input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
 
@@ -73,11 +79,11 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
     }
 
     @VisibleForTesting
-    static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
+    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(input.getVersion());
         datapathIdConvertorData.setDatapathId(datapathId);
 
-        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = ConvertorManager.getInstance().convert(input.getMatch(), datapathIdConvertorData);
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = convertorManager.convert(input.getMatch(), datapathIdConvertorData);
         final MatchBuilder matchBuilder = matchOptional.isPresent() ?
                 new MatchBuilder(matchOptional.get().build()) :
                 new MatchBuilder();

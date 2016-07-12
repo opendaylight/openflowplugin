@@ -27,7 +27,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -41,6 +40,7 @@ import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerIm
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +57,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private final ListenableFuture<Boolean> emptyFuture;
     private final boolean shuttingDownStatisticsPolling;
     private final Object COLLECTION_STAT_TYPE_LOCK = new Object();
+    private final SinglePurposeMultipartReplyTranslator multipartReplyTranslator;
     @GuardedBy("COLLECTION_STAT_TYPE_LOCK")
     private List<MultipartType> collectingStatType;
 
@@ -67,13 +68,14 @@ class StatisticsContextImpl implements StatisticsContext {
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE contextState;
 
-    StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor) {
+    StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor, final ConvertorManager convertorManager) {
         this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorManager);
         emptyFuture = Futures.immediateFuture(false);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
-        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, convertorManager);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         contextState = CONTEXT_STATE.WORKING;
@@ -290,7 +292,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPFLOW*/ multipartType,
                 deviceContext,
                 deviceContext,
-                initial) : emptyFuture;
+                initial, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
@@ -300,7 +302,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPTABLE*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
@@ -310,7 +312,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPPORTSTATS*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
@@ -320,7 +322,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPQUEUE*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false);
+                false, multipartReplyTranslator);
     }
 
     private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
@@ -330,7 +332,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPGROUPDESC*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
@@ -340,7 +342,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPGROUP*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
@@ -350,7 +352,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
@@ -360,7 +362,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 /*MultipartType.OFPMPMETER*/ multipartType,
                 deviceContext,
                 deviceContext,
-                false) : emptyFuture;
+                false, multipartReplyTranslator) : emptyFuture;
     }
 
     @VisibleForTesting

@@ -20,12 +20,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
+    public FlowRemovedV10Translator(ConvertorManager convertorManager) {
+        super(convertorManager);
+    }
+
     @Override
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
 
-        final Optional<MatchBuilder> matchBuilderOptional = ConvertorManager.getInstance().convert(
+        final Optional<MatchBuilder> matchBuilderOptional = getConvertorManager().convert(
                 flowRemoved.getMatchV10(),
                 datapathIdConvertorData);
 

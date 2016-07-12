@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionCase;
@@ -27,7 +28,7 @@ public class SalToOfSetNwTosActionV10Case extends ConvertorCase<SetNwTosActionCa
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwTosActionCase source, final ActionConvertorData data) {
+    public Optional<Action> process(ConvertorManager convertorManager, @Nonnull final SetNwTosActionCase source, final ActionConvertorData data) {
         SetNwTosAction setnwtosaction = source.getSetNwTosAction();
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
         SetNwTosCaseBuilder setNwTosCaseBuilder = new SetNwTosCaseBuilder();

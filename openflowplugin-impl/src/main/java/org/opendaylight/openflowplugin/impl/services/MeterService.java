@@ -21,14 +21,18 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class MeterService<I extends Meter, O extends DataObject> extends AbstractSimpleService<I, O> {
 
-    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final ConvertorManager convertorManager;
+    private final VersionConvertorData data;
+
+    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorManager convertorManager) {
         super(requestContextStack, deviceContext, clazz);
+        this.convertorManager = convertorManager;
+        data = new VersionConvertorData(getVersion());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) {
-        final VersionConvertorData data = new VersionConvertorData(getVersion());
-        final Optional<MeterModInputBuilder> ofMeterModInput = ConvertorManager.getInstance().convert(input, data);
+        final Optional<MeterModInputBuilder> ofMeterModInput = convertorManager.convert(input, data);
         final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
                 .orElse(MeterConvertor.defaultResult(getVersion()));
 

@@ -47,14 +47,14 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     private StatisticsContextImpl statisticsContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup() throws Exception {
         when(mockedDeviceContext.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         when(mockConductor.getDeviceContext(mockedDeviceInfo)).thenReturn(mockedDeviceContext);
         initStatisticsContext();
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor);
+        statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor, getConvertorManager());
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
@@ -72,7 +72,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor);
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor, getConvertorManager());
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {

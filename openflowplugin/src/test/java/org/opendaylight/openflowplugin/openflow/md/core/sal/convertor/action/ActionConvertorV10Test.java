@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerInitialization;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertorUtil;
@@ -77,7 +77,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  *
  */
-public class ActionConvertorV10Test {
+public class ActionConvertorV10Test extends ConvertorManagerInitialization {
 
     /**
      * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData)}}
@@ -206,7 +206,7 @@ public class ActionConvertorV10Test {
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>> actionsOptional =
-                ConvertorManager.getInstance().convert(salActions, data);
+                getConvertorManager().convert(salActions, data);
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actions = actionsOptional.orElse(Collections.emptyList());
         
@@ -305,7 +305,7 @@ public class ActionConvertorV10Test {
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
         .Action>> mdSalActionsOptional =
-                ConvertorManager.getInstance().convert(
+                getConvertorManager().convert(
                         actions, data);
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action

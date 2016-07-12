@@ -49,14 +49,18 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Flow direct statistics service.
  */
 public class FlowDirectStatisticsService extends AbstractDirectStatisticsService<GetFlowStatisticsInput, GetFlowStatisticsOutput> {
+    private final VersionDatapathIdConvertorData data;
+
     /**
      * Instantiates a new Flow direct statistics service.
-     *
-     * @param requestContextStack the request context stack
+     *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
+     * @param convertorManager
      */
-    public FlowDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext) {
-        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext);
+    public FlowDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorManager convertorManager) {
+        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, convertorManager);
+        data = new VersionDatapathIdConvertorData(getVersion());
+        data.setDatapathId(getDatapathId());
     }
 
     @Override
@@ -93,7 +97,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder);
+        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder, getConvertorManager());
 
         return new MultipartRequestFlowCaseBuilder()
                 .setMultipartRequestFlow(mprFlowRequestBuilder.build())
@@ -103,14 +107,12 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
     @Override
     protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(getVersion());
-        data.setDatapathId(getDatapathId());
 
         if (success) {
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                final Optional<List<FlowAndStatisticsMapList>> statsListPart = ConvertorManager.getInstance().convert(
+                final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorManager().convert(
                         replyBody.getFlowStats(), data);
 
                 if (statsListPart.isPresent()) {
