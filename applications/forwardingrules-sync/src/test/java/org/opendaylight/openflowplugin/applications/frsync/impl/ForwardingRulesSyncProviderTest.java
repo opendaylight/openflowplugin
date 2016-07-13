@@ -20,7 +20,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.singleton.binding.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
@@ -40,7 +42,9 @@ public class ForwardingRulesSyncProviderTest {
     @Mock
     private BindingAwareBroker broker;
     @Mock
-    private BindingAwareBroker.ProviderContext providerContext;
+    private ProviderContext providerContext;
+    @Mock
+    private ClusterSingletonServiceProvider clusterSingletonService;
 
     @Before
     public void setUp() throws Exception {
@@ -53,7 +57,7 @@ public class ForwardingRulesSyncProviderTest {
                     }
                 });
 
-        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry);
+        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry, clusterSingletonService);
         Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalFlatBatchService.class);
         Mockito.verify(broker).registerProvider(provider);
