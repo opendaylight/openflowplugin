@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -32,18 +33,21 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao configSnapshot;
     private final FlowCapableNodeDao operationalDao;
+    private final ReconciliationRegistry reconciliationRegistry;
 
     public SimplifiedConfigListener(final SyncReactor reactor,
                                     final FlowCapableNodeSnapshotDao configSnapshot,
-                                    final FlowCapableNodeDao operationalDao) {
+                                    final FlowCapableNodeDao operationalDao,
+                                    final ReconciliationRegistry reconciliationRegistry) {
         this.reactor = reactor;
         this.configSnapshot = configSnapshot;
         this.operationalDao = operationalDao;
+        this.reconciliationRegistry = reconciliationRegistry;
     }
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        LOG.trace("Inventory Config changes {}", modifications.size());
+        LOG.trace("Config changes: {}", modifications.size());
         super.onDataTreeChanged(modifications);
     }
 
@@ -59,43 +63,32 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
         configSnapshot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
 
-
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
-        if (!operationalNode.isPresent()) {
-            LOG.info("Skip syncup, {} operational is not present", nodeId.getValue());
-            return Optional.absent();
-        }
 
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
         final FlowCapableNode dataBefore = configModification.getDataBefore();
         final FlowCapableNode dataAfter = configModification.getDataAfter();
-        final ListenableFuture<Boolean> endResult;
+        final Optional<ListenableFuture<Boolean>> endResult;
         if (dataBefore == null && dataAfter != null) {
-            endResult = onNodeAdded(nodePath, dataAfter, operationalNode.get());
+            endResult = onNodeAdded(nodePath);
         } else if (dataBefore != null && dataAfter == null) {
             endResult = onNodeDeleted(nodePath, dataBefore);
         } else {
             endResult = onNodeUpdated(nodePath, dataBefore, dataAfter);
         }
 
-        return Optional.of(endResult);
+        return endResult;
     }
 
     /**
-     * Add only what is missing in operational store. Config. node could be added in two situations:
-     * <ul>
-     * <li>Note very first time after restart was handled by operational listener. Syncup should
-     * calculate no delta (we don want to reconfigure switch if not necessary).</li>
-     * <li>But later the config. node could be deleted, after that config node added again. Syncup
-     * should calculate that everything needs to be added. Operational store should be empty in
-     * optimal case (but the switch could be reprogrammed by another person/system.</li>
-     * </ul>
+     * If node was added in config DS, register it for reconciliation. Reconciliation should be done when
+     * device connects and appears in operational DS. Add only what is missing in operational store.
      */
-    private ListenableFuture<Boolean> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
-                           FlowCapableNode dataAfter, FlowCapableNode operationalNode) throws InterruptedException {
+    private Optional<ListenableFuture<Boolean>> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath) {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId);
-        return reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
+        reconciliationRegistry.register(nodeId);
+        return Optional.absent();
     }
 
     /**
@@ -105,11 +98,11 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * system which is updating operational store (that components is also trying to solve
      * scale/performance issues on several layers).
      */
-    private ListenableFuture<Boolean> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
+    private Optional<ListenableFuture<Boolean>> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
                           FlowCapableNode dataBefore, FlowCapableNode dataAfter) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeUpdated {}", nodeId);
-        return reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
+        return Optional.of(reactor.syncup(nodePath, dataAfter, dataBefore, dsType()));
     }
 
     /**
@@ -117,11 +110,11 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * probably optimized using dedicated wipe-out RPC, but it has impact on switch if it is
      * programmed by two person/system
      */
-    private ListenableFuture<Boolean> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
+    private Optional<ListenableFuture<Boolean>> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
                                                     FlowCapableNode dataBefore) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeDeleted {}", nodeId);
-        return reactor.syncup(nodePath, null, dataBefore, dsType());
+        return Optional.of(reactor.syncup(nodePath, null, dataBefore, dsType()));
     }
 
     @Override
