@@ -16,13 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Holder of registration request for fresh operational.
+ * Holder of registration request for reconciliation (fresh operational).
  */
 public class ReconciliationRegistry {
-
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationRegistry.class);
     private final Map<NodeId, Date> registration = new ConcurrentHashMap<>();
-    public static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     public Date register(NodeId nodeId) {
         Date timestamp = new Date();
@@ -43,7 +41,7 @@ public class ReconciliationRegistry {
         return registration.get(nodeId) != null;
     }
 
-    public Date getRegistration(NodeId nodeId) {
+    public Date getRegistrationTimestamp(NodeId nodeId) {
         return registration.get(nodeId);
     }
 

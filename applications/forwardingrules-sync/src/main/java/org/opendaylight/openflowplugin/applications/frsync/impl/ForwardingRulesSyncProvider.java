@@ -21,6 +21,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.singleton.binding.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -49,6 +50,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
 
     private final DataBroker dataService;
+    private final ClusterSingletonServiceProvider clusterSingletonService;
     private final SalTableService salTableService;
     private final SalFlatBatchService flatBatchService;
 
@@ -69,9 +71,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry) {
-        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
+                                       final RpcConsumerRegistry rpcRegistry,
+                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
+                "ClusterSingletonServiceProvider can not be null!");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
         this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
@@ -99,6 +104,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setTableForwarder(tableForwarder);
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
+        final ClusteringServiceManager clusteringServiceManager =
+                new ClusteringServiceManager(clusterSingletonService, reconciliationRegistry);
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
@@ -115,9 +122,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
         final NodeListener<FlowCapableNode> nodeListenerConfig =
-                new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+                new SimplifiedConfigListener(reactor, configSnapshot, operationalDao, clusteringServiceManager);
         final NodeListener<Node> nodeListenerOperational =
-                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry);
+                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry, clusteringServiceManager);
 
         dataTreeConfigChangeListener =
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
