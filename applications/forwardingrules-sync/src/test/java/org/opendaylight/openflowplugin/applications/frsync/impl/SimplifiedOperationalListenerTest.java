@@ -35,7 +35,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEnd;
@@ -75,11 +75,11 @@ public class SimplifiedOperationalListenerTest {
     @Mock
     private FlowCapableNode fcOperationalNode;
     @Mock
-    private ReconciliationRegistry reconciliationRegistry;
-    @Mock
     private FlowCapableStatisticsGatheringStatus statisticsGatheringStatus;
     @Mock
     private SnapshotGatheringStatusEnd snapshotGatheringStatusEnd;
+    @Mock
+    private DeviceManager deviceManager;
 
     @Before
     public void setUp() throws Exception {
@@ -89,7 +89,7 @@ public class SimplifiedOperationalListenerTest {
         final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.CONFIGURATION));
 
-        nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry);
+        nodeListenerOperational = new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, deviceManager);
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
 
@@ -161,7 +161,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileNotRegistered() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(false);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -172,7 +172,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotStarted() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
@@ -184,7 +184,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotFinished() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(null);
 
@@ -197,7 +197,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotSuccessful() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(false);
@@ -212,13 +212,13 @@ public class SimplifiedOperationalListenerTest {
         final DateAndTime timestamp = Mockito.mock(DateAndTime.class);
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(true);
         Mockito.when(snapshotGatheringStatusEnd.getEnd()).thenReturn(timestamp);
         Mockito.when(snapshotGatheringStatusEnd.getEnd().getValue()).thenReturn(timestampBefore);
-        Mockito.when(reconciliationRegistry.getRegistration(NODE_ID)).thenReturn(simpleDateFormat.parse(timestampAfter));
+        Mockito.when(deviceManager.getReconciliationRegistry().getRegistration(NODE_ID)).thenReturn(simpleDateFormat.parse(timestampAfter));
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -234,13 +234,13 @@ public class SimplifiedOperationalListenerTest {
                 Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.getReconciliationRegistry().isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(true);
         Mockito.when(snapshotGatheringStatusEnd.getEnd()).thenReturn(timestamp);
         Mockito.when(snapshotGatheringStatusEnd.getEnd().getValue()).thenReturn(timestampAfter);
-        Mockito.when(reconciliationRegistry.getRegistration(NODE_ID)).thenReturn(simpleDateFormat.parse(timestampBefore));
+        Mockito.when(deviceManager.getReconciliationRegistry().getRegistration(NODE_ID)).thenReturn(simpleDateFormat.parse(timestampBefore));
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -252,11 +252,12 @@ public class SimplifiedOperationalListenerTest {
     @Test
     public void testOnDataTreeChangedReconcileAndNodeDeleted() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(DataObjectModification.ModificationType.DELETE);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
+        Mockito.verify(deviceManager.getReconciliationRegistry()).unregisterIfRegistered(NODE_ID);
         Mockito.verifyZeroInteractions(reactor);
     }
 }

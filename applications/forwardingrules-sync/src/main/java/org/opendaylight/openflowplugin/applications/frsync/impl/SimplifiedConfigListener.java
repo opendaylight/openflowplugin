@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.ModificationUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -32,13 +33,16 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao configSnaphot;
     private final FlowCapableNodeDao operationalDao;
+    private final DeviceManager deviceManager;
 
     public SimplifiedConfigListener(final SyncReactor reactor,
                                     final FlowCapableNodeSnapshotDao configSnaphot,
-                                    final FlowCapableNodeDao operationalDao) {
+                                    final FlowCapableNodeDao operationalDao,
+                                    final DeviceManager deviceManager) {
         this.reactor = reactor;
         this.configSnaphot = configSnaphot;
         this.operationalDao = operationalDao;
+        this.deviceManager = deviceManager;
     }
 
     @Override
@@ -59,6 +63,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
         configSnaphot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
 
+        if (!deviceManager.isDeviceMastered(nodeId)) {
+            return Optional.absent();
+        }
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {

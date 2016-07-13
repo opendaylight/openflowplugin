@@ -46,21 +46,20 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao operationalSnapshot;
     private final FlowCapableNodeDao configDao;
-    private final ReconciliationRegistry reconciliationRegistry;
+    private final DeviceManager deviceManager;
 
     public SimplifiedOperationalListener(final SyncReactor reactor,
                                          final FlowCapableNodeSnapshotDao operationalSnapshot,
                                          final FlowCapableNodeDao configDao,
-                                         final ReconciliationRegistry reconciliationRegistry) {
+                                         final DeviceManager deviceManager) {
         this.reactor = reactor;
         this.operationalSnapshot = operationalSnapshot;
         this.configDao = configDao;
-        this.reconciliationRegistry = reconciliationRegistry;
+        this.deviceManager = deviceManager;
     }
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<Node>> modifications) {
-        // TODO return for clustered listener if not master for device
         LOG.trace("Inventory Operational changes {}", modifications.size());
         super.onDataTreeChanged(modifications);
     }
@@ -77,10 +76,18 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             DataTreeModification<Node> modification) throws InterruptedException {
-
+        final NodeId nodeId = ModificationUtil.nodeId(modification);
         updateCache(modification);
-        // TODO register cluster service if node added
-        if (isReconciliationNeeded(modification)) {
+
+        if (!deviceManager.isDeviceMastered(nodeId)) {
+            return Optional.absent();
+        }
+
+        if (isAdd(modification) || isAddLogical(modification)) {
+            deviceManager.onDeviceConnected(nodeId);
+        }
+
+        if (isRegisteredAndConsistentForReconcile(modification)) {
             return reconciliation(modification);
         }
         return skipModification(modification);
@@ -96,8 +103,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         NodeId nodeId = ModificationUtil.nodeId(modification);
         if (isDelete(modification) || isDeleteLogical(modification)) {
             operationalSnapshot.updateCache(nodeId, Optional.absent());
-            // TODO unregister/close cluster service if node deleted
-            reconciliationRegistry.unregisterIfRegistered(nodeId);
+            deviceManager.onDeviceDisconnected(nodeId);
             return false;
         }
         operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
@@ -162,10 +168,6 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return false;
     }
 
-    protected boolean isReconciliationNeeded(DataTreeModification<Node> modification) {
-        return isAdd(modification) || isAddLogical(modification) || isRegisteredAndConsistentForReconcile(modification);
-    }
-
     private Optional<ListenableFuture<Boolean>> reconciliation(DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
@@ -185,7 +187,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     private boolean isRegisteredAndConsistentForReconcile(DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
 
-        if (!reconciliationRegistry.isRegistered(nodeId)) {
+        if (!deviceManager.getReconciliationRegistry().isRegistered(nodeId)) {
             return false;
         }
 
@@ -210,11 +212,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
 
         try {
-            Date timestampOfRegistration = reconciliationRegistry.getRegistration(nodeId);
+            Date timestampOfRegistration = deviceManager.getReconciliationRegistry().getRegistration(nodeId);
             final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ReconciliationRegistry.DATE_AND_TIME_FORMAT);
             Date timestampOfStatistics = simpleDateFormat.parse(gatheringStatusEnd.getEnd().getValue());
             if (timestampOfStatistics.after(timestampOfRegistration)) {
-                LOG.debug("Fresh operational present for: {} -> going retry!", nodeId.getValue());
+                LOG.debug("Fresh operational present for: {}", nodeId.getValue());
                 return true;
             }
         } catch (ParseException e) {

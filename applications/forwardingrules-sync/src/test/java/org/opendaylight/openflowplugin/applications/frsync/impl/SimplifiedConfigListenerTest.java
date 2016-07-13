@@ -60,6 +60,8 @@ public class SimplifiedConfigListenerTest {
     private FlowCapableNode dataBefore;
     @Mock
     private FlowCapableNode dataAfter;
+    @Mock
+    private DeviceManager deviceManager;
 
     @Before
     public void setUp() throws Exception {
@@ -69,7 +71,7 @@ public class SimplifiedConfigListenerTest {
         final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
 
-        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao, deviceManager);
         fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
 
