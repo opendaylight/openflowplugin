@@ -65,7 +65,7 @@ public class SyncReactorRetryDecoratorTest {
 
         Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verifyNoMoreInteractions(delegate);
-        Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
+        Mockito.verify(reconciliationRegistry).unregisterReconcileIfRegistered(NODE_ID);
     }
 
     @Test
@@ -77,12 +77,12 @@ public class SyncReactorRetryDecoratorTest {
 
         Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verifyNoMoreInteractions(delegate);
-        Mockito.verify(reconciliationRegistry).register(NODE_ID);
+        Mockito.verify(reconciliationRegistry).registerReconcile(NODE_ID);
     }
 
     @Test
     public void testSyncupConfigIgnoreInRetry() throws InterruptedException {
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(reconciliationRegistry.isRegisteredForReconcile(NODE_ID)).thenReturn(true);
 
         reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
 

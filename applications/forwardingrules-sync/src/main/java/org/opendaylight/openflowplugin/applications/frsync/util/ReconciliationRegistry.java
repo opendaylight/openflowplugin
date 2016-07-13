@@ -24,14 +24,14 @@ public class ReconciliationRegistry {
     private final Map<NodeId, Date> registration = new ConcurrentHashMap<>();
     public static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
-    public Date register(NodeId nodeId) {
+    public Date registerReconcile(NodeId nodeId) {
         Date timestamp = new Date();
         registration.put(nodeId, timestamp);
         LOG.debug("Registered for next consistent operational: {}", nodeId.getValue());
         return timestamp;
     }
 
-    public Date unregisterIfRegistered(NodeId nodeId) {
+    public Date unregisterReconcileIfRegistered(NodeId nodeId) {
         Date timestamp = registration.remove(nodeId);
         if (timestamp != null) {
             LOG.debug("Unregistered for next consistent operational: {}", nodeId.getValue());
@@ -39,11 +39,11 @@ public class ReconciliationRegistry {
         return timestamp;
     }
 
-    public boolean isRegistered(NodeId nodeId) {
+    public boolean isRegisteredForReconcile(NodeId nodeId) {
         return registration.get(nodeId) != null;
     }
 
-    public Date getRegistration(NodeId nodeId) {
+    public Date getReconcileRegistrationTimestamp(NodeId nodeId) {
         return registration.get(nodeId);
     }
 }

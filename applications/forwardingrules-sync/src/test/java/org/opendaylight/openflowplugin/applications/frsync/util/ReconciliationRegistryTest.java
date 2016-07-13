@@ -32,23 +32,23 @@ public class ReconciliationRegistryTest {
 
     @Test
     public void testRegister() {
-        Date timestamp = reconciliationRegistry.register(NODE_ID);
-        Assert.assertEquals(true, reconciliationRegistry.isRegistered(NODE_ID));
+        Date timestamp = reconciliationRegistry.registerReconcile(NODE_ID);
+        Assert.assertEquals(true, reconciliationRegistry.isRegisteredForReconcile(NODE_ID));
         Assert.assertNotNull(timestamp);
     }
 
     @Test
     public void testUnregisterIfRegistered() {
-        reconciliationRegistry.register(NODE_ID);
-        Date timestamp = reconciliationRegistry.unregisterIfRegistered(NODE_ID);
-        Assert.assertEquals(false, reconciliationRegistry.isRegistered(NODE_ID));
+        reconciliationRegistry.registerReconcile(NODE_ID);
+        Date timestamp = reconciliationRegistry.unregisterReconcileIfRegistered(NODE_ID);
+        Assert.assertEquals(false, reconciliationRegistry.isRegisteredForReconcile(NODE_ID));
         Assert.assertNotNull(timestamp);
     }
 
     @Test
     public void testUnregisterIfNotRegistered() {
-        Date timestamp = reconciliationRegistry.unregisterIfRegistered(NODE_ID);
-        Assert.assertEquals(false, reconciliationRegistry.isRegistered(NODE_ID));
+        Date timestamp = reconciliationRegistry.unregisterReconcileIfRegistered(NODE_ID);
+        Assert.assertEquals(false, reconciliationRegistry.isRegisteredForReconcile(NODE_ID));
         Assert.assertNull(timestamp);
     }
 
