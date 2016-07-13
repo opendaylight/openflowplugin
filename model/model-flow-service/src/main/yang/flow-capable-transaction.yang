@@ -3,7 +3,7 @@ module flow-capable-transaction {
     prefix type;
 
     import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
-    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
 
     revision "2015-03-04" {
