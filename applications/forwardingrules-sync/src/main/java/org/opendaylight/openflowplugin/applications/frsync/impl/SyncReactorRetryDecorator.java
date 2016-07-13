@@ -31,7 +31,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
     private final SyncReactor delegate;
     private final ReconciliationRegistry reconciliationRegistry;
 
-    public SyncReactorRetryDecorator(final SyncReactor delegate, ReconciliationRegistry reconciliationRegistry) {
+    public SyncReactorRetryDecorator(final SyncReactor delegate, final ReconciliationRegistry reconciliationRegistry) {
         this.delegate = delegate;
         this.reconciliationRegistry = reconciliationRegistry;
     }

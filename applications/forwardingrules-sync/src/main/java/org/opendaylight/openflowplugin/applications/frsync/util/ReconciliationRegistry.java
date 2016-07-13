@@ -43,7 +43,7 @@ public class ReconciliationRegistry {
         return registration.get(nodeId) != null;
     }
 
-    public Date getRegistration(NodeId nodeId) {
+    public Date getRegistrationTimestamp(NodeId nodeId) {
         return registration.get(nodeId);
     }
 }
