@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -39,7 +38,7 @@ public class SyncReactorRetryDecoratorTest {
     @Mock
     private SyncReactorImpl delegate;
     @Mock
-    private ReconciliationRegistry reconciliationRegistry;
+    private DeviceManager deviceManager;
     @Mock
     private FlowCapableNode fcConfigNode;
     @Mock
@@ -47,7 +46,7 @@ public class SyncReactorRetryDecoratorTest {
 
     @Before
     public void setUp() {
-        reactor = new SyncReactorRetryDecorator(delegate, reconciliationRegistry);
+        reactor = new SyncReactorRetryDecorator(delegate, deviceManager);
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
 
@@ -65,7 +64,7 @@ public class SyncReactorRetryDecoratorTest {
 
         Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verifyNoMoreInteractions(delegate);
-        Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
+        Mockito.verify(deviceManager).unregisterReconcileIfRegistered(NODE_ID);
     }
 
     @Test
@@ -77,12 +76,12 @@ public class SyncReactorRetryDecoratorTest {
 
         Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verifyNoMoreInteractions(delegate);
-        Mockito.verify(reconciliationRegistry).register(NODE_ID);
+        Mockito.verify(deviceManager).registerReconcile(NODE_ID);
     }
 
     @Test
     public void testSyncupConfigIgnoreInRetry() throws InterruptedException {
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        Mockito.when(deviceManager.isRegisteredForReconcile(NODE_ID)).thenReturn(true);
 
         reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
 
