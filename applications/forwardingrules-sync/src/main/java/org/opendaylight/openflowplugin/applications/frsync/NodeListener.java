@@ -9,11 +9,11 @@
 package org.opendaylight.openflowplugin.applications.frsync;
 
 import java.util.EventListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * Unifying listener for data and event changes on node.
  */
-public interface NodeListener<T extends DataObject> extends EventListener, DataTreeChangeListener<T> {
+public interface NodeListener<T extends DataObject> extends EventListener, ClusteredDataTreeChangeListener<T> {
 }
