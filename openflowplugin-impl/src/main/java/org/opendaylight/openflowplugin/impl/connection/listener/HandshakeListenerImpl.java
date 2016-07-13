@@ -58,7 +58,11 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
         final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, 0L);
-        Futures.addCallback(barrier, new FutureCallback<RpcResult<BarrierOutput>>() {
+        Futures.addCallback(barrier, addBarrierCallback());
+    }
+
+    private FutureCallback<RpcResult<BarrierOutput>> addBarrierCallback() {
+        return new FutureCallback<RpcResult<BarrierOutput>>() {
             @Override
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 LOG.debug("succeeded by getting sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
@@ -81,7 +85,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                 LOG.error("failed to get sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
                 connectionContext.closeConnection(false);
             }
-        });
+        };
     }
 
     protected ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final long xid) {
