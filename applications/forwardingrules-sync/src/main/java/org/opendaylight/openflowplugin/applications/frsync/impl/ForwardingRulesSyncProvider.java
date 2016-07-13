@@ -99,6 +99,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setTableForwarder(tableForwarder);
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
+        final ClusteringServiceManager clusteringServiceManager = new ClusteringServiceManager(/* TODO add provider*/reconciliationRegistry);
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
@@ -115,9 +116,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
         final NodeListener<FlowCapableNode> nodeListenerConfig =
-                new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+                new SimplifiedConfigListener(reactor, configSnapshot, operationalDao, clusteringServiceManager);
         final NodeListener<Node> nodeListenerOperational =
-                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry);
+                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry, clusteringServiceManager);
 
         dataTreeConfigChangeListener =
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
