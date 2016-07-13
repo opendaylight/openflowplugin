@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -60,6 +61,10 @@ public class SimplifiedConfigListenerTest {
     private FlowCapableNode dataBefore;
     @Mock
     private FlowCapableNode dataAfter;
+    @Mock
+    private ReconciliationRegistry reconciliationRegistry;
+    @Mock
+    private ClusterServiceManager clusterServiceManager;
 
     @Before
     public void setUp() throws Exception {
@@ -69,7 +74,7 @@ public class SimplifiedConfigListenerTest {
         final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
 
-        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
+        nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao, reconciliationRegistry, clusterServiceManager);
         fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
 
@@ -90,8 +95,10 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSyncupAdd() throws InterruptedException {
+        Mockito.when(clusterServiceManager.isDeviceMastered(NODE_ID)).thenReturn(true);
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.when(configModification.getDataBefore()).thenReturn(null);
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
@@ -103,6 +110,7 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSyncupUpdate() throws InterruptedException {
+        Mockito.when(clusterServiceManager.isDeviceMastered(NODE_ID)).thenReturn(true);
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
         Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
@@ -117,9 +125,11 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSyncupDelete() throws InterruptedException {
+        Mockito.when(clusterServiceManager.isDeviceMastered(NODE_ID)).thenReturn(true);
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
         Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
+        Mockito.when(configModification.getDataAfter()).thenReturn(null);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -130,6 +140,7 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSkip() {
+        Mockito.when(clusterServiceManager.isDeviceMastered(NODE_ID)).thenReturn(true);
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath)).
                 thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
 
@@ -138,4 +149,12 @@ public class SimplifiedConfigListenerTest {
         Mockito.verifyZeroInteractions(reactor);
         Mockito.verify(roTx).close();
     }
+
+    @Test
+    public void testOnDataTreeChangedSlave() {
+        Mockito.when(clusterServiceManager.isDeviceMastered(NODE_ID)).thenReturn(false);
+        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        Mockito.verifyZeroInteractions(reactor);
+    }
+
 }

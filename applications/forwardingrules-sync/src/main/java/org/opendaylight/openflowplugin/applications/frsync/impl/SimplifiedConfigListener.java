@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -32,18 +33,24 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao configSnapshot;
     private final FlowCapableNodeDao operationalDao;
+    private final ReconciliationRegistry reconciliationRegistry;
+    private final ClusterServiceManager clusterServiceManager;
 
     public SimplifiedConfigListener(final SyncReactor reactor,
                                     final FlowCapableNodeSnapshotDao configSnapshot,
-                                    final FlowCapableNodeDao operationalDao) {
+                                    final FlowCapableNodeDao operationalDao,
+                                    final ReconciliationRegistry reconciliationRegistry,
+                                    final ClusterServiceManager clusterServiceManager) {
         this.reactor = reactor;
         this.configSnapshot = configSnapshot;
         this.operationalDao = operationalDao;
+        this.reconciliationRegistry = reconciliationRegistry;
+        this.clusterServiceManager = clusterServiceManager;
     }
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        LOG.trace("Inventory Config changes {}", modifications.size());
+        LOG.trace("Config changes: {}", modifications.size());
         super.onDataTreeChanged(modifications);
     }
 
@@ -59,6 +66,10 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
         configSnapshot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
 
+        if (!clusterServiceManager.isDeviceMastered(nodeId)) {
+            LOG.trace("Skip modification since not master for: {}", nodeId.getValue());
+            return Optional.absent();
+        }
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
@@ -95,6 +106,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                            FlowCapableNode dataAfter, FlowCapableNode operationalNode) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId);
+        // unregister cause this is reconciliation basically
+        reconciliationRegistry.unregisterIfRegistered(nodeId);
         return reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
     }
 
