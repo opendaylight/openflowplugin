@@ -77,7 +77,7 @@ public class SyncReactorRetryDecoratorTest {
 
         Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verifyNoMoreInteractions(delegate);
-        Mockito.verify(reconciliationRegistry).register(NODE_ID);
+        Mockito.verify(reconciliationRegistry).registerIfNotRegistered(NODE_ID);
     }
 
     @Test
