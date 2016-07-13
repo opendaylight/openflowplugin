@@ -57,59 +57,65 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
-        threadPool.execute(() -> {
-            boolean shouldBeDisconnected = true;
+        threadPool.execute(this::executeOnSwitchIdleEvent);
+    }
 
-            final InetSocketAddress remoteAddress = connectionContext.getConnectionAdapter().getRemoteAddress();
+    private void executeOnSwitchIdleEvent() {
+        boolean shouldBeDisconnected = true;
 
-            if (ConnectionContext.CONNECTION_STATE.WORKING.equals(connectionContext.getConnectionState())) {
-                FeaturesReply features = connectionContext.getFeatures();
-                LOG.info("Switch Idle state occurred, node={}|auxId={}", remoteAddress, features.getAuxiliaryId());
-                connectionContext.changeStateToTimeouting();
-                EchoInputBuilder builder = new EchoInputBuilder();
-                builder.setVersion(features.getVersion());
-                Xid xid = new Xid(0L);
-                builder.setXid(xid.getValue());
+        final InetSocketAddress remoteAddress = connectionContext.getConnectionAdapter().getRemoteAddress();
 
-                Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter().echo(builder.build());
+        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(connectionContext.getConnectionState())) {
+            FeaturesReply features = connectionContext.getFeatures();
+            LOG.info("Switch Idle state occurred, node={}|auxId={}", remoteAddress, features.getAuxiliaryId());
+            connectionContext.changeStateToTimeouting();
+            EchoInputBuilder builder = new EchoInputBuilder();
+            builder.setVersion(features.getVersion());
+            Xid xid = new Xid(0L);
+            builder.setXid(xid.getValue());
 
-                try {
-                    RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(echoReplyTimeout, TimeUnit.MILLISECONDS);
-                    if (echoReplyValue.isSuccessful()) {
-                        connectionContext.changeStateToWorking();
-                        shouldBeDisconnected = false;
-                    } else {
-                        for (RpcError replyError : echoReplyValue.getErrors()) {
-                            Throwable cause = replyError.getCause();
-                            if (LOG.isWarnEnabled()) {
-                                LOG.warn("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause.getMessage());
-                            }
+            Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter().echo(builder.build());
 
-                            if (LOG.isTraceEnabled()) {
-                                LOG.trace("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause);
-                            }
-
-                        }
-                    }
-                } catch (Exception e) {
-                    if (LOG.isWarnEnabled()) {
-                        LOG.warn("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e.getMessage());
-                    }
-
-                    if (LOG.isTraceEnabled()) {
-                        LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e);
-                    }
-
+            try {
+                RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(echoReplyTimeout, TimeUnit.MILLISECONDS);
+                if (echoReplyValue.isSuccessful()) {
+                    connectionContext.changeStateToWorking();
+                    shouldBeDisconnected = false;
+                } else {
+                    logErrors(remoteAddress, echoReplyValue);
                 }
-            }
-            if (shouldBeDisconnected) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("ConnectionEvent:Closing connection as device is idle. Echo sent at {}. Device:{}, NodeId:{}",
-                            new Date(System.currentTimeMillis() - echoReplyTimeout), remoteAddress, connectionContext.getNodeId());
+            } catch (Exception e) {
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e.getMessage());
                 }
 
-                connectionContext.closeConnection(true);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e);
+                }
+
             }
-        });
+        }
+        if (shouldBeDisconnected) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info("ConnectionEvent:Closing connection as device is idle. Echo sent at {}. Device:{}, NodeId:{}",
+                        new Date(System.currentTimeMillis() - echoReplyTimeout), remoteAddress, connectionContext.getNodeId());
+            }
+
+            connectionContext.closeConnection(true);
+        }
+    }
+
+    private void logErrors(InetSocketAddress remoteAddress, RpcResult<EchoOutput> echoReplyValue) {
+        for (RpcError replyError : echoReplyValue.getErrors()) {
+            Throwable cause = replyError.getCause();
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause.getMessage());
+            }
+
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause);
+            }
+
+        }
     }
 }
