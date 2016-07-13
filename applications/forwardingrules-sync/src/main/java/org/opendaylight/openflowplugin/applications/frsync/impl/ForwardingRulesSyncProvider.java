@@ -21,6 +21,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -28,6 +29,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCa
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
+import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
@@ -49,6 +51,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
 
     private final DataBroker dataService;
+    private final ClusterSingletonServiceProvider clusterSingletonService;
     private final SalTableService salTableService;
     private final SalFlatBatchService flatBatchService;
 
@@ -69,9 +72,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry) {
-        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
+                                       final RpcConsumerRegistry rpcRegistry,
+                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
+                "ClusterSingletonServiceProvider can not be null!");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
         this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
@@ -99,13 +105,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setTableForwarder(tableForwarder);
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
+        final DeviceMastershipManager deviceMastershipManager =
+                new DeviceMastershipManager(clusterSingletonService, reconciliationRegistry);
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
         final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
                 new SemaphoreKeeperGuavaImpl<>(1, true));
+        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
-        final SyncReactor reactor = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
+        final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
 
         final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
@@ -117,7 +126,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final NodeListener<FlowCapableNode> nodeListenerConfig =
                 new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
         final NodeListener<Node> nodeListenerOperational =
-                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry);
+                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry, deviceMastershipManager);
 
         dataTreeConfigChangeListener =
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);

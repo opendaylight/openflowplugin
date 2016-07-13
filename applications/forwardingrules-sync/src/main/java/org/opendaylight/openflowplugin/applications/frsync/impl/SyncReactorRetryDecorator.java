@@ -31,7 +31,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
     private final SyncReactor delegate;
     private final ReconciliationRegistry reconciliationRegistry;
 
-    public SyncReactorRetryDecorator(final SyncReactor delegate, ReconciliationRegistry reconciliationRegistry) {
+    public SyncReactorRetryDecorator(final SyncReactor delegate, final ReconciliationRegistry reconciliationRegistry) {
         this.delegate = delegate;
         this.reconciliationRegistry = reconciliationRegistry;
     }
@@ -44,7 +44,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
         LOG.trace("syncup retry {}", nodeId.getValue());
 
         if (dsType == LogicalDatastoreType.CONFIGURATION && reconciliationRegistry.isRegistered(nodeId)) {
-            LOG.trace("Config change ignored because device is in retry [{}]", nodeId);
+            LOG.debug("Config change ignored because {} is in reconcile.", nodeId.getValue());
             return Futures.immediateFuture(Boolean.FALSE);
         }
 
@@ -58,9 +58,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
                     reconciliationRegistry.unregisterIfRegistered(nodeId);
                     return true;
                 } else {
-                    reconciliationRegistry.register(nodeId);
-                    // TODO  elicit statistics gathering if not running actually
-                    // triggerStatisticsGathering(nodeId);
+                    reconciliationRegistry.registerIfNotRegistered(nodeId);
                     return false;
                 }
             }

@@ -43,7 +43,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        LOG.trace("Inventory Config changes {}", modifications.size());
+        LOG.trace("Config changes: {}", modifications.size());
         super.onDataTreeChanged(modifications);
     }
 
@@ -58,7 +58,6 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
         configSnapshot.updateCache(nodeId, Optional.fromNullable(modification.getRootNode().getDataAfter()));
-
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
@@ -91,8 +90,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * optimal case (but the switch could be reprogrammed by another person/system.</li>
      * </ul>
      */
-    private ListenableFuture<Boolean> onNodeAdded(InstanceIdentifier<FlowCapableNode> nodePath,
-                           FlowCapableNode dataAfter, FlowCapableNode operationalNode) throws InterruptedException {
+    private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
+                                                  final FlowCapableNode dataAfter,
+                                                  final FlowCapableNode operationalNode) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId);
         return reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
@@ -105,8 +105,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * system which is updating operational store (that components is also trying to solve
      * scale/performance issues on several layers).
      */
-    private ListenableFuture<Boolean> onNodeUpdated(InstanceIdentifier<FlowCapableNode> nodePath,
-                          FlowCapableNode dataBefore, FlowCapableNode dataAfter) throws InterruptedException {
+    private ListenableFuture<Boolean> onNodeUpdated(final InstanceIdentifier<FlowCapableNode> nodePath,
+                                                    final FlowCapableNode dataBefore,
+                                                    final FlowCapableNode dataAfter) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeUpdated {}", nodeId);
         return reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
@@ -117,8 +118,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * probably optimized using dedicated wipe-out RPC, but it has impact on switch if it is
      * programmed by two person/system
      */
-    private ListenableFuture<Boolean> onNodeDeleted(InstanceIdentifier<FlowCapableNode> nodePath,
-                                                    FlowCapableNode dataBefore) throws InterruptedException {
+    private ListenableFuture<Boolean> onNodeDeleted(final InstanceIdentifier<FlowCapableNode> nodePath,
+                                                    final FlowCapableNode dataBefore) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeDeleted {}", nodeId);
         return reactor.syncup(nodePath, null, dataBefore, dsType());
