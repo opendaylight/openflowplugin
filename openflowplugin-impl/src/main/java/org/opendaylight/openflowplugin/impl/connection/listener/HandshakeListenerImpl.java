@@ -58,30 +58,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
         final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, 0L);
-        Futures.addCallback(barrier, new FutureCallback<RpcResult<BarrierOutput>>() {
-            @Override
-            public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
-                LOG.debug("succeeded by getting sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
-                try {
-                    if (!deviceConnectedHandler.deviceConnected(connectionContext)) {
-                        connectionContext.closeConnection(true);
-                    }
-                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
-                            SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
-                } catch (final Exception e) {
-                    LOG.error("ConnectionContext initial processing failed: {}", e.getMessage());
-                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
-                            SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
-                    connectionContext.closeConnection(true);
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.error("failed to get sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
-                connectionContext.closeConnection(false);
-            }
-        });
+        new HandshakeSuccessfulCallback(barrier).invoke();
     }
 
     protected ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final long xid) {
@@ -112,5 +89,40 @@ public class HandshakeListenerImpl implements HandshakeListener {
     @Override
     public void setHandshakeContext(final HandshakeContext handshakeContext) {
         this.handshakeContext = handshakeContext;
+    }
+
+    private class HandshakeSuccessfulCallback {
+        private ListenableFuture<RpcResult<BarrierOutput>> barrier;
+
+        public HandshakeSuccessfulCallback(ListenableFuture<RpcResult<BarrierOutput>> barrier) {
+            this.barrier = barrier;
+        }
+
+        public void invoke() {
+            Futures.addCallback(barrier, new FutureCallback<RpcResult<BarrierOutput>>() {
+                @Override
+                public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
+                    LOG.debug("succeeded by getting sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
+                    try {
+                        if (!deviceConnectedHandler.deviceConnected(connectionContext)) {
+                            connectionContext.closeConnection(true);
+                        }
+                        SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                                SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
+                    } catch (final Exception e) {
+                        LOG.error("ConnectionContext initial processing failed: ", e);
+                        SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                                SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
+                        connectionContext.closeConnection(true);
+                    }
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.error("failed to get sweep barrier after posthandshake for device {}", connectionContext.getNodeId());
+                    connectionContext.closeConnection(false);
+                }
+            });
+        }
     }
 }

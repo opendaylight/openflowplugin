@@ -24,35 +24,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestExperimenterCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
@@ -141,6 +126,8 @@ public final class MultipartRequestInputFactory {
                     case OFConstants.OFP_VERSION_1_3:
                         multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
                         break;
+                    default:
+                        throw new IllegalArgumentException("Unknown version " + version);
                 }
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
                 return multipartRequestFlowCaseBuilder.build();
@@ -196,46 +183,6 @@ public final class MultipartRequestInputFactory {
                 return new MultipartRequestPortDescCaseBuilder().build();
             case OFPMPEXPERIMENTER:
                 return new MultipartRequestExperimenterCaseBuilder().build();
-            default:
-                throw new IllegalArgumentException("Unknown MultipartType " + type);
-        }
-    }
-
-    private static boolean validationOfMultipartTypeAndRequestBody(@CheckForNull final MultipartType type,
-                                                                   @CheckForNull final MultipartRequestBody body) {
-        Preconditions.checkArgument(type != null, "Multipart Request can not by build without type!");
-        Preconditions.checkArgument(body != null, "Multipart Request can not by build without body!");
-        switch (type) {
-            case OFPMPDESC:
-                return body instanceof MultipartRequestDescCase;
-            case OFPMPFLOW:
-                return body instanceof MultipartRequestFlowCase;
-            case OFPMPAGGREGATE:
-                return body instanceof MultipartRequestAggregateCase;
-            case OFPMPTABLE:
-                return body instanceof MultipartRequestTableCase;
-            case OFPMPPORTSTATS:
-                return body instanceof MultipartRequestPortStatsCase;
-            case OFPMPQUEUE:
-                return body instanceof MultipartRequestQueueCase;
-            case OFPMPGROUP:
-                return body instanceof MultipartRequestGroupCase;
-            case OFPMPGROUPDESC:
-                return body instanceof MultipartRequestGroupDescCase;
-            case OFPMPGROUPFEATURES:
-                return body instanceof MultipartRequestGroupFeaturesCase;
-            case OFPMPMETER:
-                return body instanceof MultipartRequestMeterCase;
-            case OFPMPMETERCONFIG:
-                return body instanceof MultipartRequestMeterConfigCase;
-            case OFPMPMETERFEATURES:
-                return body instanceof MultipartRequestMeterFeaturesCase;
-            case OFPMPTABLEFEATURES:
-                return body instanceof MultipartRequestTableFeaturesCase;
-            case OFPMPPORTDESC:
-                return body instanceof MultipartRequestPortDescCase;
-            case OFPMPEXPERIMENTER:
-                return body instanceof MultipartRequestExperimenterCase;
             default:
                 throw new IllegalArgumentException("Unknown MultipartType " + type);
         }
