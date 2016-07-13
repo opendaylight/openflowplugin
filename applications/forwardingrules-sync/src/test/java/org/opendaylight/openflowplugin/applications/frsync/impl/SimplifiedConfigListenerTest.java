@@ -92,6 +92,7 @@ public class SimplifiedConfigListenerTest {
     public void testOnDataTreeChangedSyncupAdd() throws InterruptedException {
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.when(configModification.getDataBefore()).thenReturn(null);
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
@@ -120,6 +121,7 @@ public class SimplifiedConfigListenerTest {
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
         Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
+        Mockito.when(configModification.getDataAfter()).thenReturn(null);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -138,4 +140,5 @@ public class SimplifiedConfigListenerTest {
         Mockito.verifyZeroInteractions(reactor);
         Mockito.verify(roTx).close();
     }
+
 }
