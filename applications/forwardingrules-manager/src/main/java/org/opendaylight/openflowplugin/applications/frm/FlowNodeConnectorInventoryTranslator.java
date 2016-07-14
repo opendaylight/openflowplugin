@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import java.math.BigInteger;
+
 public interface FlowNodeConnectorInventoryTranslator {
 
-    public boolean isNodeConnectorUpdated(long dpId, String portName);
+    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName);
 }
