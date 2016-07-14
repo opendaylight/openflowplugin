@@ -220,12 +220,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path, final T data) throws TransactionChainClosedException {
+                                                          final InstanceIdentifier<T> path,
+                                                          final T data){
         transactionChainManager.writeToTransaction(store, path, data, false);
     }
 
     @Override
-    public <T extends DataObject> void writeToTransactionWithParentsSlow(LogicalDatastoreType store, InstanceIdentifier<T> path, T data) throws TransactionChainClosedException {
+    public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
+                                                                         final InstanceIdentifier<T> path,
+                                                                         final T data){
         transactionChainManager.writeToTransaction(store, path, data, true);
     }
 
@@ -328,7 +331,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             submitTransaction();
         } catch (final Exception e) {
-            LOG.warn("Error processing port status message: {}", e.getMessage());
+            LOG.warn("Error processing port status message: ", e);
         }
     }
 

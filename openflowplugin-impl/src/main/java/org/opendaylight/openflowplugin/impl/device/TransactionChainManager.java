@@ -206,7 +206,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                             final InstanceIdentifier<T> path) throws TransactionChainClosedException {
+                                                             final InstanceIdentifier<T> path){
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             LOG.trace("addDeleteOperation called with path {} ", path);
@@ -220,7 +220,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                    final InstanceIdentifier<T> path,
                                                    final T data,
-                                                   final boolean createParents) throws TransactionChainClosedException {
+                                                   final boolean createParents){
         final WriteTransaction writeTx = getTransactionSafely();
         if (writeTx != null) {
             LOG.trace("writeToTransaction called with path {} ", path);
