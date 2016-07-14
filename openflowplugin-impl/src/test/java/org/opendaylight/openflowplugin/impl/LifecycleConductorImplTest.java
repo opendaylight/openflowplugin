@@ -87,10 +87,11 @@ public class LifecycleConductorImplTest {
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
     private OfpRole ofpRole = OfpRole.NOCHANGE;
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
     @Before
     public void setUp() {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
         lifecycleConductor = new LifecycleConductorImpl(messageIntelligenceAgency);
         lifecycleConductor.setSafelyManager(deviceManager);
@@ -177,7 +178,7 @@ public class LifecycleConductorImplTest {
         final DataBroker dataBroker = mock(DataBroker.class);
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker));
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier));
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMEMASTER)).thenReturn(listenableFuture);
         lifecycleConductor.roleChangeOnDevice(deviceInfo,OfpRole.BECOMEMASTER);
@@ -192,7 +193,7 @@ public class LifecycleConductorImplTest {
         final DataBroker dataBroker = mock(DataBroker.class);
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker));
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier));
         when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
         when(deviceManager.onClusterRoleChange(deviceInfo, OfpRole.BECOMESLAVE)).thenReturn(listenableFuture);
 

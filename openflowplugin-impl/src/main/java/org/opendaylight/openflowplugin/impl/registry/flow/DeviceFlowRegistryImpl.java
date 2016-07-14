@@ -52,6 +52,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
     private final DataBroker dataBroker;
+    private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
 
     // Specifies what to do with flow read from datastore
@@ -68,12 +69,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     };
 
 
-    public DeviceFlowRegistryImpl(final DataBroker dataBroker) {
+    public DeviceFlowRegistryImpl(final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
+        this.instanceIdentifier = instanceIdentifier;
     }
 
     @Override
-    public ListenableFuture<List<Optional<FlowCapableNode>>> fill(final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public ListenableFuture<List<Optional<FlowCapableNode>>> fill() {
         LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier);
 
         // Prepare path for read transaction

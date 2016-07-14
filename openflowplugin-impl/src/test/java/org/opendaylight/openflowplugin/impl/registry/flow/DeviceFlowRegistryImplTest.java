@@ -45,6 +45,7 @@ public class DeviceFlowRegistryImplTest {
     private DeviceFlowRegistryImpl deviceFlowRegistry;
     private FlowRegistryKey key;
     private FlowDescriptor descriptor;
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -52,9 +53,10 @@ public class DeviceFlowRegistryImplTest {
 
     @Before
     public void setUp() throws Exception {
+        nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
-        deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker);
+        deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(flowStats);
         descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
@@ -66,10 +68,9 @@ public class DeviceFlowRegistryImplTest {
 
     @Test
     public void testFill() throws Exception {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
-        deviceFlowRegistry.fill(nodeInstanceIdentifier).get();
+        deviceFlowRegistry.fill().get();
 
         verify(dataBroker, times(2)).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);

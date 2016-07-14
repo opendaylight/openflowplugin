@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
-    ListenableFuture<List<Optional<FlowCapableNode>>> fill(KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+    ListenableFuture<List<Optional<FlowCapableNode>>> fill();
 
     FlowDescriptor retrieveIdForFlow(FlowRegistryKey flowRegistryKey);
 
