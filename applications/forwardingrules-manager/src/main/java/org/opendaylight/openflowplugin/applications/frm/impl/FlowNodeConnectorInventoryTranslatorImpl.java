@@ -9,8 +9,14 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
-import org.opendaylight.controller.md.sal.binding.api.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import java.math.BigInteger;
+import java.util.concurrent.Callable;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeConnectorInventoryTranslator;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -24,8 +30,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Callable;
 
 public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector> implements FlowNodeConnectorInventoryTranslator {
 
@@ -42,7 +46,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             .augmentation(FlowCapableNodeConnector.class)
             .build();
 
-    private Multimap<Long,String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.<Long,String>create());
+    private Multimap<BigInteger,String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.<BigInteger,String>create());
 
     public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker){
         super(manager, FlowCapableNodeConnector.class);
@@ -117,7 +121,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
 
             String portName = add.getName();
             if(!dpnToPortMultiMap.containsEntry(nDpId,sNodeConnectorIdentifier)) {
-                dpnToPortMultiMap.put(nDpId, sNodeConnectorIdentifier);
+                dpnToPortMultiMap.put(BigInteger.valueOf(nDpId), sNodeConnectorIdentifier);
             }else{
                 LOG.error("Duplicate Event.Node Connector already added");
             }
@@ -130,7 +134,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
     @Override
-    public boolean isNodeConnectorUpdated(long dpId, String portName){
+    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName){
         return dpnToPortMultiMap.containsEntry(dpId,portName) ;
     }
 
