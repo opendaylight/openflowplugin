@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_3378f1f1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/NodeStaticReplyTranslatorUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-15T07:30:29Z",
+      "side": 1,
+      "message": "use final parameters",
+      "range": {
+        "startLine": 184,
+        "startChar": 45,
+        "endLine": 184,
+        "endChar": 144
+      },
+      "revId": "fd197d17f6d480deddca2f08aab223378f8cfa09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_7361c938",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/NodeStaticReplyTranslatorUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-15T07:30:29Z",
+      "side": 1,
+      "message": "use final parameters",
+      "range": {
+        "startLine": 199,
+        "startChar": 43,
+        "endLine": 199,
+        "endChar": 141
+      },
+      "revId": "fd197d17f6d480deddca2f08aab223378f8cfa09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
