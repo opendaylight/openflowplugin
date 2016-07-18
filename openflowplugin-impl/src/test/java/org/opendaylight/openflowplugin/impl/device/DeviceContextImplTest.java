@@ -75,6 +75,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -175,6 +176,8 @@ public class DeviceContextImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private DeviceManager deviceManager;
+    @Mock
+    private ConvertorExecutor convertorExecutor;
 
     private InOrder inOrderDevState;
 
@@ -225,7 +228,16 @@ public class DeviceContextImplTest {
                 .thenReturn(messageTranslatorFlowRemoved);
         Mockito.when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager);
+        deviceContext = new DeviceContextImpl(
+                connectionContext,
+                deviceState,
+                dataBroker,
+                lifecycleConductor,
+                outboundQueueProvider,
+                translatorLibrary,
+		        deviceManager,
+                deviceInfo,
+                convertorExecutor);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -236,17 +248,17 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo, convertorExecutor).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo, convertorExecutor).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo, convertorExecutor).close();
     }
 
     @Test
