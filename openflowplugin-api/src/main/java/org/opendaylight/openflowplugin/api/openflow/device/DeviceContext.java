@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -37,11 +38,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * a request to the switch will fail immediately, with proper error indication.
  * </p>
  */
-public interface DeviceContext extends AutoCloseable,
+public interface DeviceContext extends
+        OFPContext,
+        AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
         XidSequencer,
-        OFPContext,
         DeviceRegistry{
 
     /**
@@ -69,8 +71,6 @@ public interface DeviceContext extends AutoCloseable,
      * @return {@link DeviceState}
      */
     DeviceState getDeviceState();
-
-    DeviceInfo getDeviceInfo();
 
     /**
      * Method has to close TxManager ASAP we are notified about Closed Connection
@@ -133,5 +133,8 @@ public interface DeviceContext extends AutoCloseable,
 
     @Override
     void close();
+
+    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
 }
 

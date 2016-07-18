@@ -18,19 +18,23 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -61,6 +65,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -98,7 +103,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper{
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
@@ -129,25 +134,23 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
-
+    private boolean switchFeaturesMandatory;
     private final DeviceInfo deviceInfo;
+    private volatile CONTEXT_STATE state;
 
-    private volatile CONTEXT_STATE contextState;
-
-    @VisibleForTesting
-    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
+    public DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final LifecycleConductor conductor,
                       @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary) {
+                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      @Nonnull final DeviceInfo deviceInfo) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         Preconditions.checkNotNull(conductor);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        deviceInfo = primaryConnectionContext.getDeviceInfo();
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo, conductor);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo , conductor);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, deviceInfo.getNodeInstanceIdentifier());
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -169,7 +172,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-        contextState = CONTEXT_STATE.INITIALIZATION;
+        this.deviceInfo = deviceInfo;
+        this.state = CONTEXT_STATE.INITIALIZATION;
     }
 
     /**
@@ -199,18 +203,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
         LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                .getRemoteAddress(), deviceInfo.getNodeId());
+                .getRemoteAddress(), getDeviceInfo().getNodeId());
         auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
     public DeviceState getDeviceState() {
         return deviceState;
-    }
-
-    @Override
-    public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
     }
 
     @Override
@@ -284,7 +283,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
         //1. translate to general flow (table, priority, match, cookie)
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
-                flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
+                flowRemovedTranslator.translate(flowRemoved, getDeviceInfo(), null);
         // Trigger off a notification
         notificationPublishService.offerNotification(flowRemovedNotification);
 
@@ -313,7 +312,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, deviceInfo, null);
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, getDeviceInfo(), null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         try {
@@ -333,8 +332,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
-        final InstanceIdentifier<Node> iiToNodes = deviceInfo.getNodeInstanceIdentifier();
-        final BigInteger dataPathId = deviceInfo.getDatapathId();
+        final InstanceIdentifier<Node> iiToNodes = getDeviceInfo().getNodeInstanceIdentifier();
+        final BigInteger dataPathId = getDeviceInfo().getDatapathId();
         final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(dataPathId.toString(), portNo, version);
         return iiToNodes.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
     }
@@ -343,7 +342,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
-        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, deviceInfo, null);
+        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
@@ -391,13 +390,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         // lookup converter
         final ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
         final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
-                deviceInfo.getVersion(),
+                getDeviceInfo().getVersion(),
                 (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
         final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter = extensionConverterProvider.getMessageConverter(key);
         if (messageConverter == null) {
             LOG.warn("custom converter for {}[OF:{}] not found",
                     notification.getExperimenterDataOfChoice().getImplementedInterface(),
-                    deviceInfo.getVersion());
+                    getDeviceInfo().getVersion());
             return;
         }
         // build notification
@@ -405,7 +404,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
             final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
-                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
+                .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
@@ -450,8 +449,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
-        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(contextState));
-        contextState = CONTEXT_STATE.WORKING;
+        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
+        setState(CONTEXT_STATE.WORKING);
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
@@ -485,15 +484,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public synchronized void shutdownConnection() {
-        LOG.debug("Shutdown method for node {}", deviceInfo.getNodeId());
-        if (CONTEXT_STATE.TERMINATION.equals(contextState)) {
-            LOG.debug("DeviceCtx for Node {} is in termination process.", deviceInfo.getNodeId());
+        LOG.debug("Shutdown method for node {}", getDeviceInfo().getNodeId());
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+            LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getNodeId());
             return;
         }
-        contextState = CONTEXT_STATE.TERMINATION;
+        setState(CONTEXT_STATE.TERMINATION);
 
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
-            LOG.debug("ConnectionCtx for Node {} is in RIP state.", deviceInfo.getNodeId());
+            LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getNodeId());
             return;
         }
         /* Terminate Auxiliary Connection */
@@ -520,7 +519,40 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
+    }
+
+    @Override
     public CONTEXT_STATE getState() {
-        return this.contextState;
+        return this.state;
+    }
+
+    @Override
+    public void setState(CONTEXT_STATE state) {
+        this.state = state;
+    }
+
+    @Override
+    public void startupClusterServices() throws ExecutionException, InterruptedException {
+        LOG.debug("Initializing transaction chain manager for node {}", getDeviceInfo().getNodeId());
+        this.transactionChainManager.activateTransactionManager();
+        LOG.debug("Waiting to get node {} information", getDeviceInfo().getNodeId());
+        DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory).get();
+    }
+
+    @Override
+    public ListenableFuture<Void> stopClusterServices() {
+        return this.transactionChainManager.deactivateTransactionManager();
+    }
+
+    @Override
+    public ServiceGroupIdentifier getServiceIdentifier() {
+        return this.deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
     }
 }
