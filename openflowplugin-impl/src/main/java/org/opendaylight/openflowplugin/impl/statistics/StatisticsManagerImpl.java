@@ -91,8 +91,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
-
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
 
@@ -139,7 +137,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 LOG.trace("Statistics gathering for single node was not successful.. ", throwable);
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
-                    /** This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
+                    /* This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
                     conductor.closeConnection(deviceInfo);
                 } else {
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);

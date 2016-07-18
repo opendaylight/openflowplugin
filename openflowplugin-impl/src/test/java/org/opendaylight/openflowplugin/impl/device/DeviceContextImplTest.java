@@ -225,7 +225,15 @@ public class DeviceContextImplTest {
                 .thenReturn(messageTranslatorFlowRemoved);
         Mockito.when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager);
+        deviceContext = new DeviceContextImpl(
+                connectionContext,
+                deviceState,
+                dataBroker,
+                lifecycleConductor,
+                outboundQueueProvider,
+                translatorLibrary,
+		deviceManager,
+                deviceInfo);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -236,17 +244,17 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
     }
 
     @Test

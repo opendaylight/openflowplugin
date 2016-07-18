@@ -138,7 +138,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Preconditions.checkArgument(connectionContext != null);
 
         DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-        /**
+        /*
          * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
@@ -176,9 +176,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 conductor,
                 outboundQueueProvider,
                 translatorLibrary,
-                this);
+                this,
+                connectionContext.getDeviceInfo());
 
         Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
+
+        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(conductor.getNotificationPublishService());

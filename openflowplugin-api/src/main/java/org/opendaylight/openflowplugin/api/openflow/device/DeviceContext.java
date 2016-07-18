@@ -37,11 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * a request to the switch will fail immediately, with proper error indication.
  * </p>
  */
-public interface DeviceContext extends AutoCloseable,
+public interface DeviceContext extends
+        OFPContext,
+        AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
         XidSequencer,
-        OFPContext,
         DeviceRegistry{
 
     /**
@@ -51,15 +52,13 @@ public interface DeviceContext extends AutoCloseable,
 
     /**
      * Method add auxiliary connection contexts to this context representing single device connection.
-     *
-     * @param connectionContext
+     * @param connectionContext new connection context
      */
     void addAuxiliaryConnectionContext(ConnectionContext connectionContext);
 
     /**
      * Method removes auxiliary connection context from this context representing single device connection.
-     *
-     * @param connectionContext
+     * @param connectionContext connection which need to be removed
      */
     void removeAuxiliaryConnectionContext(ConnectionContext connectionContext);
 
@@ -70,8 +69,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     DeviceState getDeviceState();
 
-    DeviceInfo getDeviceInfo();
-
     /**
      * Method has to close TxManager ASAP we are notified about Closed Connection
      * @return sync. future for Slave and MD-SAL completition for Master
@@ -79,16 +76,12 @@ public interface DeviceContext extends AutoCloseable,
     ListenableFuture<Void> shuttingDownDataStoreTransactions();
 
     /**
-     * Method provides current devices connection context.
-     *
-     * @return
+     * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
 
     /**
-     * Method provides current devices auxiliary connection contexts.
-     *
-     * @return
+     * @return current devices auxiliary connection contexts
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
 
@@ -133,5 +126,8 @@ public interface DeviceContext extends AutoCloseable,
 
     @Override
     void close();
+
+    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
 }
 

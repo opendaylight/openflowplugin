@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -106,7 +107,6 @@ public class LifecycleConductorImplTest {
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        when(rpcManager.gainContext(Mockito.any())).thenReturn(rpcContext);
     }
 
     @Test
