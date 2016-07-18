@@ -10,8 +10,10 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 
 /**
@@ -63,12 +65,6 @@ public interface RoleContext extends  RequestContextStack, AutoCloseable, OFPCon
      * @return
      */
     Entity getTxEntity();
-
-    /**
-     * Actual nodeId
-     * @return
-     */
-    DeviceInfo getDeviceInfo();
 
     /**
      * Returns true if main entity is registered

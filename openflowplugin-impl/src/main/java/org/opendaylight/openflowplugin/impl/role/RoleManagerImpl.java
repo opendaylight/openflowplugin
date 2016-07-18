@@ -413,7 +413,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @Override
-    public <T extends OFPContext> T gainContext(DeviceInfo deviceInfo) {
+    public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
         return (T) contexts.get(deviceInfo);
     }
 }
