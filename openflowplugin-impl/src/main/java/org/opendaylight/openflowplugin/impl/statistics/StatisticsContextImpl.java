@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -64,11 +64,15 @@ class StatisticsContextImpl implements StatisticsContext {
     private StatisticsGatheringService statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
+    private final DeviceInfo deviceInfo;
 
     private volatile boolean schedulingEnabled;
-    private volatile CONTEXT_STATE contextState;
+    private volatile CONTEXT_STATE state;
 
-    StatisticsContextImpl(@CheckForNull final DeviceInfo deviceInfo, final boolean shuttingDownStatisticsPolling, final LifecycleConductor lifecycleConductor, final ConvertorExecutor convertorExecutor) {
+    StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
+                          @Nonnull final boolean shuttingDownStatisticsPolling,
+                          @Nonnull final LifecycleConductor lifecycleConductor,
+			  @Nonnull final ConvertorExecutor convertorExecutor) {
         this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
@@ -78,7 +82,8 @@ class StatisticsContextImpl implements StatisticsContext {
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, convertorExecutor);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
-        contextState = CONTEXT_STATE.WORKING;
+        setState(CONTEXT_STATE.INITIALIZATION);
+        this.deviceInfo = deviceInfo;
     }
 
     @Override
@@ -122,7 +127,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> gatherDynamicData(final boolean initial) {
         if (shuttingDownStatisticsPolling) {
-            LOG.debug("Statistics for device {} is not enabled.", deviceContext.getDeviceInfo().getNodeId());
+            LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId());
             return Futures.immediateFuture(Boolean.TRUE);
         }
         final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
@@ -192,12 +197,12 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(contextState)) {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Statistics context is already in state TERMINATION.");
             }
         } else {
-            contextState = CONTEXT_STATE.TERMINATION;
+            setState(CONTEXT_STATE.TERMINATION);
             schedulingEnabled = false;
             for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
                  iterator.hasNext(); ) {
@@ -232,19 +237,19 @@ class StatisticsContextImpl implements StatisticsContext {
     private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture, final boolean initial) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
-                    deviceContext.getDeviceInfo().getNodeId());
+                    getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
             resultFuture.setException(new IllegalStateException(errMsg));
             return;
         }
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
-            LOG.debug("Stats collection successfully finished for node {}", deviceContext.getDeviceInfo().getNodeId());
+            LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getNodeId());
             return;
         }
 
         final MultipartType nextType = iterator.next();
-        LOG.debug("Stats iterating to next type for node {} of type {}", deviceContext.getDeviceInfo().getNodeId(), nextType);
+        LOG.debug("Stats iterating to next type for node {} of type {}", getDeviceInfo().getNodeId(), nextType);
 
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType, initial);
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -288,7 +293,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType, final boolean initial) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringOnTheFlyService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPFLOW*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -298,7 +303,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
         return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPTABLE*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -308,7 +313,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
         return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPPORTSTATS*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -318,7 +323,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
         return !devState.isQueueStatisticsAvailable() ? emptyFuture : StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPQUEUE*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -328,7 +333,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPGROUPDESC*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -338,7 +343,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPGROUP*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -348,7 +353,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -358,7 +363,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
                 statisticsGatheringService,
-                deviceContext.getDeviceInfo(),
+                getDeviceInfo(),
                 /*MultipartType.OFPMPMETER*/ multipartType,
                 deviceContext,
                 deviceContext,
@@ -383,6 +388,21 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public CONTEXT_STATE getState() {
-        return contextState;
+        return this.state;
+    }
+
+    @Override
+    public void setState(CONTEXT_STATE state) {
+        this.state = state;
+    }
+
+    @Override
+    public ServiceGroupIdentifier getServiceIdentifier() {
+        return this.deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
     }
 }

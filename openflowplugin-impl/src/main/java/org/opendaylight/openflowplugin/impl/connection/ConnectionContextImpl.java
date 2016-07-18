@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -249,6 +250,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         final private KeyedInstanceIdentifier<Node, NodeKey> nodeII;
         final private Short version;
         final private BigInteger datapathId;
+        final private ServiceGroupIdentifier serviceGroupIdentifier;
 
         DeviceInfoImpl(
                 final NodeId nodeId,
@@ -259,6 +261,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             this.nodeII = nodeII;
             this.version = version;
             this.datapathId = datapathId;
+            this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
         }
 
         @Override
@@ -279,6 +282,11 @@ public class ConnectionContextImpl implements ConnectionContext {
         @Override
         public BigInteger getDatapathId() {
             return datapathId;
+        }
+
+        @Override
+        public ServiceGroupIdentifier getServiceIdentifier() {
+            return this.serviceGroupIdentifier;
         }
 
         @Override
