@@ -142,6 +142,7 @@ public class SalFlowServiceImplTest extends TestCase {
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
+        mockingFlowRegistryLookup();
         final Future<RpcResult<AddFlowOutput>> rpcResultFuture = salFlowService.addFlow(mockedAddFlowInput);
 
         assertNotNull(rpcResultFuture);
@@ -173,6 +174,7 @@ public class SalFlowServiceImplTest extends TestCase {
         AddFlowInput mockedAddFlowInput = createFlowMock(AddFlowInput.class);
         salFlowService.setItemLifecycleListener(itemLifecycleListener);
 
+        mockingFlowRegistryLookup();
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
         if (itemLifecycleListener != null) {
             Mockito.verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
@@ -243,9 +245,11 @@ public class SalFlowServiceImplTest extends TestCase {
 
     private void mockingFlowRegistryLookup() {
         FlowDescriptor mockedFlowDescriptor = mock(FlowDescriptor.class);
-        when(mockedFlowDescriptor.getFlowId()).thenReturn(new FlowId(DUMMY_FLOW_ID));
+        FlowId flowId = new FlowId(DUMMY_FLOW_ID);
+        when(mockedFlowDescriptor.getFlowId()).thenReturn(flowId);
         when(mockedFlowDescriptor.getTableKey()).thenReturn(new TableKey(DUMMY_TABLE_ID));
 
+        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class))).thenReturn(flowId);
         when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 

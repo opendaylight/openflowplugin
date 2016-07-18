@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -25,7 +26,6 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -76,16 +76,20 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        final FlowId flowId;
-        if (null != input.getFlowRef()) {
-            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-        } else {
-            flowId = FlowUtil.createAlienFlowId(input.getTableId());
-        }
-        LOG.trace("Calling add flow for flow with ID ={}.", flowId);
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-        deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+        final FlowId flowId;
+        final FlowDescriptor flowDescriptor;
+
+        if (Objects.nonNull(input.getFlowRef())) {
+            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+            flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+            deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+        } else {
+            flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
+            flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+        }
+
+        LOG.trace("Calling add flow for flow with ID ={}.", flowId);
         final ListenableFuture<RpcResult<AddFlowOutput>> future =
                 flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {

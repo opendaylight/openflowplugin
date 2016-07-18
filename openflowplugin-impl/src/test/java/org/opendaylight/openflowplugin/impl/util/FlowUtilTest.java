@@ -11,15 +11,10 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,32 +39,10 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class FlowUtilTest {
-
-    public static final Pattern INDEX_PATTERN = Pattern.compile("^#UF\\$TABLE\\*1-([0-9]+)$");
     public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     public static final FlowId DUMMY_FLOW_ID = new FlowId("dummyFlowId");
     public static final FlowId DUMMY_FLOW_ID_2 = new FlowId("dummyFlowId_2");
     public static final Short DUMMY_TABLE_ID = 1;
-
-    @Test
-    public void createAlienFlowIdTest() {
-        final String alienFlowId1 = FlowUtil.createAlienFlowId(DUMMY_TABLE_ID).getValue();
-        final Integer index1 = parseIndex(alienFlowId1);
-        final String alienFlowId2 = FlowUtil.createAlienFlowId(DUMMY_TABLE_ID).getValue();
-        final Integer index2 = parseIndex(alienFlowId2);
-
-        assertNotNull("index1 parsing failed: " + alienFlowId1, index1);
-        assertNotNull("index2 parsing failed: " + alienFlowId2, index2);
-        assertTrue(index1 < index2);
-    }
-
-    private static Integer parseIndex(String alienFlowIdValue) {
-        final Matcher mach = INDEX_PATTERN.matcher(alienFlowIdValue);
-        if (mach.find()) {
-            return Integer.valueOf(mach.group(1));
-        }
-        return null;
-    }
 
     @Test
     public void testBuildFlowPath() throws Exception {

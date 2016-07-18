@@ -21,9 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public class FlowRegistryKeyFactory {
-
-
-    public FlowRegistryKeyFactory() {
+    private FlowRegistryKeyFactory() {
+        // Hide implicit constructor
     }
 
     public static FlowRegistryKey create(final Flow flow) {
@@ -31,13 +30,12 @@ public class FlowRegistryKeyFactory {
     }
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
-
         private final short tableId;
         private final int priority;
         private final BigInteger cookie;
         private final Match match;
 
-        public FlowRegistryKeyDto(final Flow flow) {
+        private FlowRegistryKeyDto(final Flow flow) {
             //TODO: mandatory flow input values (or default values) should be specified via yang model
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
