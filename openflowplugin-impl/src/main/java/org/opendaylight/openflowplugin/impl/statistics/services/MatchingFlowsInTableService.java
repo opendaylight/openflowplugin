@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -34,7 +35,7 @@ final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggr
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws ServiceException {
         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
         final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL).shortValue();
