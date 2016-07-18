@@ -55,7 +55,7 @@ public class RpcContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private BindingAwareBroker.RoutedRpcRegistration routedRpcReg;
+    private BindingAwareBroker.RoutedRpcRegistration<TestRpcService> routedRpcReg;
     @Mock
     private NotificationPublishService notificationPublishService;
     @Mock
@@ -74,7 +74,13 @@ public class RpcContextImplTest {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
 
-        rpcContext = new RpcContextImpl(rpcProviderRegistry,deviceContext, messageSpy, MAX_REQUESTS,nodeInstanceIdentifier);
+        rpcContext = new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                deviceContext,
+                messageSpy,
+                MAX_REQUESTS,
+                nodeInstanceIdentifier);
 
         when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance)).thenReturn(routedRpcReg);
 
@@ -82,8 +88,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, xidSequencer,
-                messageSpy, 100, nodeInstanceIdentifier)) {
+        try (final RpcContext rpcContext = new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                xidSequencer,
+                messageSpy,
+                100,
+                nodeInstanceIdentifier)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -91,8 +102,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, xidSequencer,
-                messageSpy, 0, nodeInstanceIdentifier)) {
+        try (final RpcContext rpcContext = new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                xidSequencer,
+                messageSpy,
+                0,
+                nodeInstanceIdentifier)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -100,8 +116,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreAndCloseOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, deviceContext, messageSpy,
-                100, nodeInstanceIdentifier)) {
+        try (final RpcContext rpcContext = new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                deviceContext,
+                messageSpy,
+                100,
+                nodeInstanceIdentifier)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
