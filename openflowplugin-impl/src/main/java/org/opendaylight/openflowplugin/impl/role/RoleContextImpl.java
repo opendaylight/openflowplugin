@@ -16,7 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlready
 import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
@@ -35,7 +35,6 @@ class RoleContextImpl implements RoleContext {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
     private static final int TIMEOUT = 12;
 
-    private final DeviceInfo deviceInfo;
     private final EntityOwnershipService entityOwnershipService;
     private volatile EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration = null;
     private volatile EntityOwnershipCandidateRegistration txEntityOwnershipCandidateRegistration = null;
@@ -48,27 +47,32 @@ class RoleContextImpl implements RoleContext {
     private final Semaphore roleChangeGuard = new Semaphore(1, true);
 
     private final LifecycleConductor conductor;
-    private volatile CONTEXT_STATE contextState;
+    private final DeviceInfo deviceInfo;
+    private CONTEXT_STATE state;
 
-    RoleContextImpl(final DeviceInfo deviceInfo, final EntityOwnershipService entityOwnershipService, final Entity entity, final Entity txEntity, final LifecycleConductor lifecycleConductor) {
+    RoleContextImpl(final DeviceInfo deviceInfo,
+                    final EntityOwnershipService entityOwnershipService,
+                    final Entity entity,
+                    final Entity txEntity,
+                    final LifecycleConductor lifecycleConductor) {
         this.entityOwnershipService = entityOwnershipService;
         this.entity = entity;
         this.txEntity = txEntity;
-        this.deviceInfo = deviceInfo;
         this.conductor = lifecycleConductor;
-        contextState = CONTEXT_STATE.INITIALIZATION;
+        this.deviceInfo = deviceInfo;
+        state = CONTEXT_STATE.INITIALIZATION;
     }
 
     @Override
     public boolean initialization() {
-        LOG.info("Initialization main candidate for node {}", deviceInfo.getNodeId());
-        contextState = CONTEXT_STATE.WORKING;
+        LOG.info("Initialization main candidate for node {}", getDeviceInfo().getNodeId());
+        setState(CONTEXT_STATE.WORKING);
         return registerCandidate(this.entity);
     }
 
     @Override
     public void unregisterAllCandidates() {
-        LOG.info("Role context closed, unregistering all candidates for ownership for node {}", deviceInfo.getNodeId());
+        LOG.info("Role context closed, unregistering all candidates for ownership for node {}", getDeviceInfo().getNodeId());
         if (isMainCandidateRegistered()) {
             unregisterCandidate(this.entity);
         }
@@ -80,7 +84,7 @@ class RoleContextImpl implements RoleContext {
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(deviceInfo)) {
+        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(getDeviceInfo())) {
             @Override
             public void close() {
             }
@@ -106,11 +110,6 @@ class RoleContextImpl implements RoleContext {
     @Override
     public Entity getTxEntity() {
         return this.txEntity;
-    }
-
-    @Override
-    public DeviceInfo getDeviceInfo() {
-        return deviceInfo;
     }
 
     @Override
@@ -187,7 +186,7 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public void close() {
-        contextState = CONTEXT_STATE.TERMINATION;
+        setState(CONTEXT_STATE.TERMINATION);
         unregisterAllCandidates();
     }
 
@@ -197,7 +196,22 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public CONTEXT_STATE getState() {
-        return contextState;
+        return this.state;
+    }
+
+    @Override
+    public void setState(CONTEXT_STATE state) {
+        this.state = state;
+    }
+
+    @Override
+    public ServiceGroupIdentifier getServiceIdentifier() {
+        return this.deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
     }
 
     @Override
