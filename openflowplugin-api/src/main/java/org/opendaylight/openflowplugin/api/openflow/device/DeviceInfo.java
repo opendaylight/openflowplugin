@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import java.math.BigInteger;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -38,5 +39,10 @@ public interface DeviceInfo {
      * @return datapathId
      */
     BigInteger getDatapathId();
+
+    /**
+     * @return clustering service identifier
+     */
+    ServiceGroupIdentifier getServiceIdentifier();
 
 }
