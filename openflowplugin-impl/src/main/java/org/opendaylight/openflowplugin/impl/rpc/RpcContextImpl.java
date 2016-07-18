@@ -17,7 +17,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -38,24 +39,26 @@ class RpcContextImpl implements RpcContext {
     private final XidSequencer xidSequencer;
     private boolean isStatisticsRpcEnabled;
 
-    private volatile CONTEXT_STATE contextState;
-
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    private CONTEXT_STATE state;
+    private final DeviceInfo deviceInfo;
 
-    RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry,
-                          final XidSequencer xidSequencer,
-                          final MessageSpy messageSpy,
-                          final int maxRequests,
-                          final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
+    RpcContextImpl(final DeviceInfo deviceInfo,
+                   final RpcProviderRegistry rpcProviderRegistry,
+                   final XidSequencer xidSequencer,
+                   final MessageSpy messageSpy,
+                   final int maxRequests,
+                   final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
         this.xidSequencer = Preconditions.checkNotNull(xidSequencer);
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
 
         tracker = new Semaphore(maxRequests, true);
-        contextState = CONTEXT_STATE.WORKING;
+        setState(CONTEXT_STATE.WORKING);
+        this.deviceInfo = deviceInfo;
     }
 
     /**
@@ -88,12 +91,12 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(contextState)){
+        if (CONTEXT_STATE.TERMINATION.equals(getState())){
             if (LOG.isDebugEnabled()) {
                 LOG.debug("RpcContext is already in TERMINATION state.");
             }
         } else {
-            contextState = CONTEXT_STATE.TERMINATION;
+            setState(CONTEXT_STATE.TERMINATION);
             for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
                     .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
                 final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
@@ -160,6 +163,21 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public CONTEXT_STATE getState() {
-        return contextState;
+        return this.state;
+    }
+
+    @Override
+    public void setState(CONTEXT_STATE state) {
+        this.state = state;
+    }
+
+    @Override
+    public ServiceGroupIdentifier getServiceIdentifier() {
+        return this.deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
     }
 }

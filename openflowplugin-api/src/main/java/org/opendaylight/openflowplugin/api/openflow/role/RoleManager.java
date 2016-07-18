@@ -8,16 +8,21 @@
 package org.opendaylight.openflowplugin.api.openflow.role;
 
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 
 /**
- * Created by kramesha on 8/31/15.
+ * Manager for role change on device
  */
-public interface RoleManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler, AutoCloseable,
-        DeviceTerminationPhaseHandler, OFPManager {
+public interface RoleManager extends
+        DeviceLifecycleSupervisor,
+        DeviceInitializationPhaseHandler,
+        AutoCloseable,
+        DeviceTerminationPhaseHandler,
+        OFPManager {
     String ENTITY_TYPE = "openflow";
     String TX_ENTITY_TYPE = "ofTransaction";
 
