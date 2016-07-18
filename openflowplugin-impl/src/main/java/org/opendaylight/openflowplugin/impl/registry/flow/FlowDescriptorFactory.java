@@ -18,6 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
  */
 public class FlowDescriptorFactory {
+    private FlowDescriptorFactory() {
+        // Hide implicit constructor
+    }
 
     public static FlowDescriptor create(final short tableId, final FlowId fLowId) {
         final TableKey tableKey = new TableKey(tableId);
@@ -29,7 +32,7 @@ public class FlowDescriptorFactory {
         private final FlowId flowId;
         private final TableKey tableKey;
 
-        public FlowDescriptorDto(final TableKey tableKey, final FlowId flowId) {
+        private FlowDescriptorDto(final TableKey tableKey, final FlowId flowId) {
             Preconditions.checkNotNull(tableKey);
             Preconditions.checkNotNull(flowId);
             this.flowId = flowId;

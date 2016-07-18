@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -49,9 +48,6 @@ import org.slf4j.LoggerFactory;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public final class FlowUtil {
-
-    private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
-    private static final AtomicInteger unaccountedFlowsCounter = new AtomicInteger(0);
     private static final Logger LOG = LoggerFactory.getLogger(FlowUtil.class);
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
@@ -149,20 +145,6 @@ public final class FlowUtil {
                     .withRpcErrors(batchFlowsCumulativeResult.getErrors());
         }
         return resultBld;
-    }
-
-    /**
-     * Create alien flow id
-     *
-     * @param tableId the table id
-     * @return the flow id
-     */
-    public static FlowId createAlienFlowId(final short tableId) {
-        final StringBuilder sBuilder = new StringBuilder(ALIEN_SYSTEM_FLOW_ID)
-                .append(tableId).append('-').append(unaccountedFlowsCounter.incrementAndGet());
-        String alienId = sBuilder.toString();
-        return new FlowId(alienId);
-
     }
 
     /**
