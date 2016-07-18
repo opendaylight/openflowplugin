@@ -73,20 +73,14 @@ public class RoleContextImplTest {
             }
         });
 
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LOG.info("Starting thread 1");
-                Assert.assertTrue(roleContext.initialization());
-            }
+        Thread t1 = new Thread(() -> {
+            LOG.info("Starting thread 1");
+            Assert.assertTrue(roleContext.initialization());
         });
 
-        Thread t2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LOG.info("Starting thread 2");
-                Assert.assertFalse(roleContext.initialization());
-            }
+        Thread t2 = new Thread(() -> {
+            LOG.info("Starting thread 2");
+            Assert.assertFalse(roleContext.initialization());
         });
 
         t1.start();

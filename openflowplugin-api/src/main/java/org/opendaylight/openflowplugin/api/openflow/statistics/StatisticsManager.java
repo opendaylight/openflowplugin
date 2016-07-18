@@ -25,4 +25,5 @@ public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInit
 
     @Override
     void close();
+
 }

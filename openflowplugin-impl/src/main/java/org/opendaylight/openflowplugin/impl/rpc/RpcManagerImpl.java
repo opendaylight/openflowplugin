@@ -38,9 +38,10 @@ public class RpcManagerImpl implements RpcManager {
 
     private final LifecycleConductor conductor;
 
-    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
-                          final int quotaValue,
-                          final LifecycleConductor lifecycleConductor) {
+    public RpcManagerImpl(
+            final RpcProviderRegistry rpcProviderRegistry,
+            final int quotaValue,
+            final LifecycleConductor lifecycleConductor) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
         this.conductor = lifecycleConductor;
@@ -57,6 +58,7 @@ public class RpcManagerImpl implements RpcManager {
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
         final RpcContext rpcContext = new RpcContextImpl(
+                deviceInfo,
                 rpcProviderRegistry,
                 deviceContext,
                 deviceContext.getMessageSpy(),
