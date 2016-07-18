@@ -37,21 +37,28 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
     }
 
     @Override
-    protected OfHeader buildRequest(Xid xid, SendExperimenterInput input) throws ConversionException {
+    protected OfHeader buildRequest(Xid xid, SendExperimenterInput input) throws ServiceException {
         final TypeVersionKey key = new TypeVersionKey(input.getExperimenterMessageOfChoice().getImplementedInterface(), getVersion());
         final ConvertorMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice> messageConverter =
                 extensionConverterProvider.getMessageConverter(key);
 
         if (messageConverter == null) {
-            throw new ConverterNotFoundException(key.toString());
+            throw new ServiceException(new ConverterNotFoundException(key.toString()));
         }
-        
-        final ExperimenterInputBuilder experimenterInputBld = new ExperimenterInputBuilder()
-                .setExperimenter(messageConverter.getExperimenterId())
-                .setExpType(messageConverter.getType())
-                .setExperimenterDataOfChoice(messageConverter.convert(input.getExperimenterMessageOfChoice()))
-                .setVersion(getVersion())
-                .setXid(xid.getValue());
+
+        final ExperimenterInputBuilder experimenterInputBld;
+
+        try {
+            experimenterInputBld = new ExperimenterInputBuilder()
+                    .setExperimenter(messageConverter.getExperimenterId())
+                    .setExpType(messageConverter.getType())
+                    .setExperimenterDataOfChoice(messageConverter.convert(input.getExperimenterMessageOfChoice()))
+                    .setVersion(getVersion())
+                    .setXid(xid.getValue());
+        } catch (ConversionException e) {
+            throw new ServiceException(e);
+        }
+
         return experimenterInputBld.build();
     }
 

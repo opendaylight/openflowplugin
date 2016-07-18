@@ -40,7 +40,7 @@ public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortIn
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) {
+    protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) throws ServiceException {
         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
         final Optional<PortModInput> ofPortModInput = convertorExecutor.convert(inputPort, data);
 

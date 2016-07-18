@@ -51,7 +51,7 @@ public class SalPortServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testBuildRequest() {
+    public void testBuildRequest() throws Exception {
         final OfHeader ofHeader = salPortService.buildRequest(new Xid(DUMMY_XID), dummyUpdatePortInput());
     }
 
