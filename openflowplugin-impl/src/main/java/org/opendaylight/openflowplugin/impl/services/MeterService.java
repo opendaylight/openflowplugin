@@ -23,7 +23,7 @@ final class MeterService<I extends Meter, O extends DataObject> extends Abstract
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final I input) {
+    protected OfHeader buildRequest(final Xid xid, final I input) throws ServiceException {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input, getVersion());
         ofMeterModInput.setXid(xid.getValue());
         return ofMeterModInput.build();

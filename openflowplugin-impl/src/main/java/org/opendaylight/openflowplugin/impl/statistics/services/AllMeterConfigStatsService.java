@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -59,7 +60,7 @@ final class AllMeterConfigStatsService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllMeterConfigStatisticsInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAllMeterConfigStatisticsInput input) throws ServiceException {
         MultipartRequestInputBuilder mprInput = RequestInputUtils
                 .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), getVersion());
         return mprInput.setMultipartRequestBody(METER_CONFIG_CASE).build();

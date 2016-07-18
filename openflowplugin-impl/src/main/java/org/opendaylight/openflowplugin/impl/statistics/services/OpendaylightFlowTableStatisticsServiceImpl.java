@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -61,7 +62,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetFlowTablesStatisticsInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetFlowTablesStatisticsInput input) throws ServiceException {
         // Create multipart request body for fetch all the group stats
         final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
         final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();

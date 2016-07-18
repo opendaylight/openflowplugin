@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.StoreStatsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -99,7 +100,7 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
     }
 
     @Override
-    protected OfHeader buildRequest(Xid xid, I input) throws Exception {
+    protected OfHeader buildRequest(Xid xid, I input) throws ServiceException {
         return RequestInputUtils.createMultipartHeader(multipartType, xid.getValue(), getVersion())
                 .setMultipartRequestBody(buildRequestBody(input))
                 .build();

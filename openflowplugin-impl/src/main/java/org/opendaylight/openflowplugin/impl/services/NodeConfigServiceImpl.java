@@ -30,7 +30,7 @@ public final class NodeConfigServiceImpl extends AbstractSimpleService<SetConfig
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SetConfigInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SetConfigInput input) throws ServiceException {
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
 

@@ -47,7 +47,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) {
+    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) throws ServiceException {
         input.setXid(xid.getValue());
         return input.build();
     }

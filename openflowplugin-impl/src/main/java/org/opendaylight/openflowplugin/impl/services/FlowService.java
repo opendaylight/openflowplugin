@@ -33,7 +33,7 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) {
+    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) throws ServiceException {
         input.setXid(xid.getValue());
         return input.build();
     }

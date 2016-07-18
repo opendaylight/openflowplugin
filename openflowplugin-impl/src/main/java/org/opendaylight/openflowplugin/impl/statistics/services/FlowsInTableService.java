@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
@@ -37,7 +38,7 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetFlowStatisticsFromFlowTableInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetFlowStatisticsFromFlowTableInput input) throws ServiceException {
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
 
