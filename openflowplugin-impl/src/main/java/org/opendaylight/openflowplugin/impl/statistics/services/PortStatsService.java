@@ -13,6 +13,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.NodeConnectorStatisticsToNotificationTransformer;
@@ -37,7 +38,7 @@ final class PortStatsService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetNodeConnectorStatisticsInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetNodeConnectorStatisticsInput input) throws ConversionException {
         MultipartRequestPortStatsCaseBuilder caseBuilder =
                 new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder mprPortStatsBuilder =

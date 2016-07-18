@@ -13,6 +13,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.QueueStatisticsToNotificationTransformer;
@@ -51,7 +52,7 @@ final class AllQueuesAllPortsService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromAllPortsInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromAllPortsInput input) throws ConversionException {
         // Set request body to main multipart request
         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPQUEUE, xid.getValue(), getVersion());

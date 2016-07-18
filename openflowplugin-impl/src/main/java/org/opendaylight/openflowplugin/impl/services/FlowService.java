@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -33,7 +34,7 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) {
+    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) throws ConversionException {
         input.setXid(xid.getValue());
         return input.build();
     }

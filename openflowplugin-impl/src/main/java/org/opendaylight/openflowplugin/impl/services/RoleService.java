@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
@@ -47,7 +48,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) {
+    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) throws ConversionException {
         input.setXid(xid.getValue());
         return input.build();
     }

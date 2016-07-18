@@ -13,6 +13,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
@@ -52,7 +53,7 @@ public final class AllFlowsInAllTablesService extends AbstractCompatibleStatServ
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAllFlowsStatisticsFromAllFlowTablesInput input) throws ConversionException {
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(flowCase);

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
@@ -23,7 +24,7 @@ final class MeterService<I extends Meter, O extends DataObject> extends Abstract
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final I input) {
+    protected OfHeader buildRequest(final Xid xid, final I input) throws ConversionException {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input, getVersion());
         ofMeterModInput.setXid(xid.getValue());
         return ofMeterModInput.build();

@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
@@ -54,7 +55,7 @@ public final class AggregateFlowsInTableService extends AbstractCompatibleStatSe
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) throws ConversionException {
         // Create multipart request body for fetch all the group stats
         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();

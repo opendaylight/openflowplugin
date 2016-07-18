@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
@@ -22,7 +23,7 @@ final class GroupService<I extends Group, O extends DataObject> extends Abstract
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final I input) {
+    protected OfHeader buildRequest(final Xid xid, final I input) throws ConversionException {
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, getVersion(), getDatapathId());
         ofGroupModInput.setXid(xid.getValue());
 

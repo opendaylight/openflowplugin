@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
@@ -30,7 +31,7 @@ public final class NodeConfigServiceImpl extends AbstractSimpleService<SetConfig
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SetConfigInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SetConfigInput input) throws ConversionException {
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
 

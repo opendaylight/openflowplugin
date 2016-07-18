@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
@@ -28,7 +29,7 @@ public class FlowCapableTransactionServiceImpl extends AbstractVoidService<SendB
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) throws ConversionException {
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
         barrierInputOFJavaBuilder.setVersion(getVersion());
         barrierInputOFJavaBuilder.setXid(xid.getValue());

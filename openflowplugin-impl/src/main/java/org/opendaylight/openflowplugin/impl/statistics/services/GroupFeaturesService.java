@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -56,7 +57,7 @@ final class GroupFeaturesService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetGroupFeaturesInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetGroupFeaturesInput input) throws ConversionException {
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(GROUP_FEAT_CASE);

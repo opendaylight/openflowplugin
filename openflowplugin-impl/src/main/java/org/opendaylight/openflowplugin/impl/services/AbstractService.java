@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -34,8 +35,6 @@ import org.slf4j.LoggerFactory;
 
 abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
-    private static final long WAIT_TIME = 2000;
-    private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
 
     private final short version;
     private final BigInteger datapathId;
@@ -89,7 +88,7 @@ abstract class AbstractService<I, O> {
         return messageSpy;
     }
 
-    protected abstract OfHeader buildRequest(Xid xid, I input) throws Exception;
+    protected abstract OfHeader buildRequest(Xid xid, I input) throws ConversionException;
 
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 

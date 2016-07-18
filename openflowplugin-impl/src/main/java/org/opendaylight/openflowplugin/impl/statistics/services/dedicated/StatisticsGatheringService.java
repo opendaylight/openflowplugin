@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
@@ -45,7 +46,7 @@ public class StatisticsGatheringService extends AbstractMultipartService<Multipa
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
+    protected OfHeader buildRequest(final Xid xid, final MultipartType input) throws ConversionException {
         return MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), getVersion(), input);
     }
 }
