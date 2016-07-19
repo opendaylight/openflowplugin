@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -400,5 +401,16 @@ class StatisticsContextImpl implements StatisticsContext {
     @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
+    }
+
+    @Override
+    public void startupClusterServices() throws ExecutionException, InterruptedException {
+        this.statListForCollectingInitialization();
+        this.initialGatherDynamicData();
+    }
+
+    @Override
+    public ListenableFuture<Void> stopClusterServices() {
+        return Futures.immediateFuture(null);
     }
 }
