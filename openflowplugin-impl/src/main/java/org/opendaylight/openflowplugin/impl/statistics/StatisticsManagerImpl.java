@@ -125,8 +125,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                LOG.trace("Statistics gathering for single node was not successful.. ", throwable);
+                LOG.warn("Statistics gathering for single node was not successful: {}", throwable);
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /* This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
@@ -138,15 +137,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         });
 
         final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
-        final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
+        final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), STATS_TIMEOUT_SEC);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), statsTimeoutSec);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
 
-        hashedWheelTimer.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
+        hashedWheelTimer.newTimeout(timerTask, statsTimeoutSec, TimeUnit.SECONDS);
     }
 
     private void scheduleNextPolling(final DeviceState deviceState,
