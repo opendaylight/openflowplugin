@@ -21,8 +21,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +37,19 @@ public class RpcManagerImpl implements RpcManager {
     private final int maxRequestsQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     private final LifecycleConductor conductor;
 
     public RpcManagerImpl(
             final RpcProviderRegistry rpcProviderRegistry,
             final int quotaValue,
-            final LifecycleConductor lifecycleConductor) {
+            final LifecycleConductor lifecycleConductor,
+            final ExtensionConverterProvider extensionConverterProvider) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
         this.conductor = lifecycleConductor;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     @Override
@@ -53,7 +58,7 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
@@ -63,14 +68,16 @@ public class RpcManagerImpl implements RpcManager {
                 deviceContext,
                 deviceContext.getMessageSpy(),
                 maxRequestsQuota,
-                deviceInfo.getNodeInstanceIdentifier());
+                deviceInfo.getNodeInstanceIdentifier(),
+                deviceContext,
+                extensionConverterProvider);
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
-
+        lifecycleService.setRpcContext(rpcContext);
         rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         // finish device initialization cycle back to DeviceManager
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Override
