@@ -235,7 +235,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
         conductor.setSafelyManager(statisticsManager);
 
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, conductor);
         conductor.setSafelyManager(rpcManager);
 
         roleManager.addRoleChangeListener((RoleChangeListener) conductor);

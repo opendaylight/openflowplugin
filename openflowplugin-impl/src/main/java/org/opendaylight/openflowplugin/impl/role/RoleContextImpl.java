@@ -8,6 +8,12 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -17,12 +23,20 @@ import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,6 +226,41 @@ class RoleContextImpl implements RoleContext {
     @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
+    }
+
+    public void startupClusterServices() throws ExecutionException, InterruptedException {
+        sendRoleChangeToDevice(OfpRole.BECOMEMASTER).get();
+    }
+
+    @Override
+    public ListenableFuture<Void> stopClusterServices() {
+        return Futures.immediateFuture(null);
+    }
+
+    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+        LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
+        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+        final Short version = deviceInfo.getVersion();
+        if (null == version) {
+            LOG.debug("Device version is null");
+            return Futures.immediateFuture(null);
+        }
+        if (version < OFConstants.OFP_VERSION_1_3) {
+            LOG.debug("Device version not support ROLE");
+            return Futures.immediateFuture(null);
+        } else {
+            final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
+                    .setNode(new NodeRef(DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()))).build();
+            setRoleOutputFuture = getSalRoleService().setRole(setRoleInput);
+            final TimerTask timerTask = timeout -> {
+                if (!setRoleOutputFuture.isDone()) {
+                    LOG.warn("New role {} was not propagated to device {} during 10 sec", newRole, deviceInfo.getNodeId());
+                    setRoleOutputFuture.cancel(true);
+                }
+            };
+            conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);
+        }
+        return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
 
 }
