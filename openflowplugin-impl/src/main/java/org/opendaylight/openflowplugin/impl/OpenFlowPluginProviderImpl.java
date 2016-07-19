@@ -33,6 +33,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -93,6 +94,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
+    private ClusterSingletonServiceProvider singletonServicesProvider;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
                                       final long globalNotificationQuota,
@@ -178,6 +180,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
     }
 
+    public void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider) {
+        this.singletonServicesProvider = singletonServicesProvider;
+    }
+
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -208,6 +214,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         Preconditions.checkNotNull(dataBroker, "missing data broker");
         Preconditions.checkNotNull(rpcProviderRegistry, "missing RPC provider registry");
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
+        Preconditions.checkNotNull(singletonServicesProvider, "missing singleton services provider");
 
         extensionConverterManager = new ExtensionConverterManagerImpl();
         // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
@@ -224,7 +231,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierInterval,
                 barrierCountLimit,
                 conductor,
-                isNotificationFlowRemovedOff);
+                isNotificationFlowRemovedOff,
+                singletonServicesProvider);
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -235,7 +243,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
         conductor.setSafelyManager(statisticsManager);
 
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor, extensionConverterManager);
         conductor.setSafelyManager(rpcManager);
 
         roleManager.addRoleChangeListener((RoleChangeListener) conductor);

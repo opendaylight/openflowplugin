@@ -20,8 +20,18 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInitializationPhaseHandler,
         DeviceTerminationPhaseHandler, AutoCloseable, OFPManager {
 
-    void startScheduling(DeviceInfo deviceInfo);
-    void stopScheduling(DeviceInfo deviceInfo);
+    /**
+     * Start scheduling statistic gathering for given device info
+     * @param deviceInfo for this device should be running statistics gathering
+     */
+    void startScheduling(final DeviceInfo deviceInfo);
+
+    /**
+     * Stop scheduling statistic gathering for given device info
+     * @param deviceInfo for this device should be stopped statistics gathering
+     */
+
+    void stopScheduling(final DeviceInfo deviceInfo);
 
     @Override
     void close();
