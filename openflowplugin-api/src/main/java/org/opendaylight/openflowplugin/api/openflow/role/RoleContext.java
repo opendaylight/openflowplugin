@@ -93,8 +93,7 @@ public interface RoleContext extends  RequestContextStack, AutoCloseable, OFPCon
     boolean unregisterCandidate(final Entity entity);
 
     /**
-     * Returns true if we hold both registrations
-     * @return
+     * @return true if we hold both registrations
      */
     boolean isMaster();
 

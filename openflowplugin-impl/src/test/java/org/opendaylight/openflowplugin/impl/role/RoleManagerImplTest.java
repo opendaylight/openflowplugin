@@ -44,6 +44,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -112,6 +113,9 @@ public class RoleManagerImplTest {
     @Mock
     GetFeaturesOutput featuresOutput;
 
+    @Mock
+    LifecycleService lifecycleService;
+
     private RoleManagerImpl roleManager;
     private RoleManagerImpl roleManagerSpy;
     private RoleContext roleContextSpy;
@@ -143,7 +147,7 @@ public class RoleManagerImplTest {
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(new BigInteger("1"));
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
-        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any());
+        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any(), Mockito.<LifecycleService>any());
         Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
@@ -155,7 +159,7 @@ public class RoleManagerImplTest {
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         roleManagerSpy = Mockito.spy(roleManager);
-        roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
+        roleManagerSpy.onDeviceContextLevelUp(deviceInfo, lifecycleService);
         Mockito.doNothing().when(roleManagerSpy).makeDeviceRoleChange(Mockito.<OfpRole>any(), Mockito.<RoleContext>any(), Mockito.anyBoolean());
         roleContextSpy = Mockito.spy(roleManager.getRoleContext(deviceInfo));
         Mockito.when(roleContextSpy.getDeviceInfo()).thenReturn(deviceInfo);
@@ -169,8 +173,8 @@ public class RoleManagerImplTest {
 
     @Test(expected = VerifyException.class)
     public void testOnDeviceContextLevelUp() throws Exception {
-        roleManagerSpy.onDeviceContextLevelUp(deviceInfo);
-        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(deviceInfo);
+        roleManagerSpy.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+        inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(deviceInfo, lifecycleService);
         inOrder.verifyNoMoreInteractions();
     }
 
