@@ -92,10 +92,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final LifecycleConductor conductor;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
-                             final long globalNotificationQuota, final boolean switchFeaturesMandatory,
-                             final long barrierInterval, final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff,
-                             final ConvertorExecutor convertorExecutor) {
+                             final long globalNotificationQuota,
+                             final boolean switchFeaturesMandatory,
+                             final long barrierInterval,
+                             final int barrierCountLimit,
+                             final LifecycleConductor lifecycleConductor,
+                             boolean isNotificationFlowRemovedOff,
+			     final ConvertorExecutor convertorExecutor) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
