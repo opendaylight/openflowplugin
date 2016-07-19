@@ -52,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.BytesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.PacketsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
@@ -118,310 +119,382 @@ public class SinglePurposeMultipartReplyTranslator {
         if (msg instanceof MultipartReplyMessage) {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
             NodeId node = SinglePurposeMultipartReplyTranslator.nodeIdFromDatapathId(datapathId);
-            switch (mpReply.getType()) {
-                case OFPMPFLOW: {
-                    FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                    MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                    message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), datapathId, ofVersion));
 
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPAGGREGATE: {
-                    AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyAggregate replyBody = caseBody.getMultipartReplyAggregate();
-                    message.setByteCount(new Counter64(replyBody.getByteCount()));
-                    message.setPacketCount(new Counter64(replyBody.getPacketCount()));
-                    message.setFlowCount(new Counter32(replyBody.getFlowCount()));
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPPORTSTATS: {
-
-
-                    NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
-
-                    List<NodeConnectorStatisticsAndPortNumberMap> statsMap =
-                            new ArrayList<NodeConnectorStatisticsAndPortNumberMap>();
-                    for (PortStats portStats : replyBody.getPortStats()) {
-
-                        NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
-                                new NodeConnectorStatisticsAndPortNumberMapBuilder();
-                        statsBuilder.setNodeConnectorId(
-                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
-                                        portStats.getPortNo(), ofVersion));
-
-                        BytesBuilder bytesBuilder = new BytesBuilder();
-                        bytesBuilder.setReceived(portStats.getRxBytes());
-                        bytesBuilder.setTransmitted(portStats.getTxBytes());
-                        statsBuilder.setBytes(bytesBuilder.build());
-
-                        PacketsBuilder packetsBuilder = new PacketsBuilder();
-                        packetsBuilder.setReceived(portStats.getRxPackets());
-                        packetsBuilder.setTransmitted(portStats.getTxPackets());
-                        statsBuilder.setPackets(packetsBuilder.build());
-
-                        DurationBuilder durationBuilder = new DurationBuilder();
-                        if (portStats.getDurationSec() != null) {
-                            durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
-                        }
-                        if (portStats.getDurationNsec() != null) {
-                            durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
-                        }
-                        statsBuilder.setDuration(durationBuilder.build());
-                        statsBuilder.setCollisionCount(portStats.getCollisions());
-                        statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
-                        statsBuilder.setReceiveCrcError(portStats.getRxCrcErr());
-                        statsBuilder.setReceiveDrops(portStats.getRxDropped());
-                        statsBuilder.setReceiveErrors(portStats.getRxErrors());
-                        statsBuilder.setReceiveFrameError(portStats.getRxFrameErr());
-                        statsBuilder.setReceiveOverRunError(portStats.getRxOverErr());
-                        statsBuilder.setTransmitDrops(portStats.getTxDropped());
-                        statsBuilder.setTransmitErrors(portStats.getTxErrors());
-
-                        statsMap.add(statsBuilder.build());
-                    }
-                    message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
-
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPGROUP: {
-                    GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                    MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                    message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPGROUPDESC: {
-
-                    GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                    MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
-
-                    message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPGROUPFEATURES: {
-                    GroupFeaturesUpdatedBuilder message = new GroupFeaturesUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                    MultipartReplyGroupFeaturesCase caseBody = (MultipartReplyGroupFeaturesCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyGroupFeatures replyBody = caseBody.getMultipartReplyGroupFeatures();
-                    List<Class<? extends GroupType>> supportedGroups =
-                            new ArrayList<Class<? extends GroupType>>();
-
-                    if (replyBody.getTypes().isOFPGTALL()) {
-                        supportedGroups.add(GroupAll.class);
-                    }
-                    if (replyBody.getTypes().isOFPGTSELECT()) {
-                        supportedGroups.add(GroupSelect.class);
-                    }
-                    if (replyBody.getTypes().isOFPGTINDIRECT()) {
-                        supportedGroups.add(GroupIndirect.class);
-                    }
-                    if (replyBody.getTypes().isOFPGTFF()) {
-                        supportedGroups.add(GroupFf.class);
-                    }
-                    message.setGroupTypesSupported(supportedGroups);
-                    message.setMaxGroups(replyBody.getMaxGroups());
-
-                    List<Class<? extends GroupCapability>> supportedCapabilities =
-                            new ArrayList<Class<? extends GroupCapability>>();
-
-                    if (replyBody.getCapabilities().isOFPGFCCHAINING()) {
-                        supportedCapabilities.add(Chaining.class);
-                    }
-                    if (replyBody.getCapabilities().isOFPGFCCHAININGCHECKS()) {
-                        supportedCapabilities.add(ChainingChecks.class);
-                    }
-                    if (replyBody.getCapabilities().isOFPGFCSELECTLIVENESS()) {
-                        supportedCapabilities.add(SelectLiveness.class);
-                    }
-                    if (replyBody.getCapabilities().isOFPGFCSELECTWEIGHT()) {
-                        supportedCapabilities.add(SelectWeight.class);
-                    }
-
-                    message.setGroupCapabilitiesSupported(supportedCapabilities);
-
-                    message.setActions(getGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
-                    listDataObject.add(message.build());
-
-                    return listDataObject;
-                }
-                case OFPMPMETER: {
-                    MeterStatisticsUpdatedBuilder message = new MeterStatisticsUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                    message.setMeterStats(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPMETERCONFIG: {
-
-                    MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
-                    message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPMETERFEATURES: {
-                    //Convert OF message and send it to SAL listener
-                    MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
-                    message.setMaxBands(replyBody.getMaxBands());
-                    message.setMaxColor(replyBody.getMaxColor());
-                    message.setMaxMeter(new Counter32(replyBody.getMaxMeter()));
-
-                    List<Class<? extends MeterCapability>> supportedCapabilities =
-                            new ArrayList<Class<? extends MeterCapability>>();
-                    if (replyBody.getCapabilities().isOFPMFBURST()) {
-                        supportedCapabilities.add(MeterBurst.class);
-                    }
-                    if (replyBody.getCapabilities().isOFPMFKBPS()) {
-                        supportedCapabilities.add(MeterKbps.class);
-
-                    }
-                    if (replyBody.getCapabilities().isOFPMFPKTPS()) {
-                        supportedCapabilities.add(MeterPktps.class);
-
-                    }
-                    if (replyBody.getCapabilities().isOFPMFSTATS()) {
-                        supportedCapabilities.add(MeterStats.class);
-
-                    }
-                    message.setMeterCapabilitiesSupported(supportedCapabilities);
-
-                    List<Class<? extends MeterBand>> supportedMeterBand =
-                            new ArrayList<Class<? extends MeterBand>>();
-                    if (replyBody.getBandTypes().isOFPMBTDROP()) {
-                        supportedMeterBand.add(MeterBandDrop.class);
-                    }
-                    if (replyBody.getBandTypes().isOFPMBTDSCPREMARK()) {
-                        supportedMeterBand.add(MeterBandDscpRemark.class);
-                    }
-                    message.setMeterBandSupported(supportedMeterBand);
-                    listDataObject.add(message.build());
-
-                    return listDataObject;
-                }
-                case OFPMPTABLE: {
-
-                    FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyTableCase caseBody = (MultipartReplyTableCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
-                    List<TableStats> swTablesStats = replyBody.getTableStats();
-
-                    List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<FlowTableAndStatisticsMap>();
-                    for (TableStats swTableStats : swTablesStats) {
-                        FlowTableAndStatisticsMapBuilder statisticsBuilder = new FlowTableAndStatisticsMapBuilder();
-
-                        statisticsBuilder.setActiveFlows(new Counter32(swTableStats.getActiveCount()));
-                        statisticsBuilder.setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()));
-                        statisticsBuilder.setPacketsMatched(new Counter64(swTableStats.getMatchedCount()));
-                        statisticsBuilder.setTableId(new TableId(swTableStats.getTableId()));
-                        salFlowStats.add(statisticsBuilder.build());
-                    }
-
-                    message.setFlowTableAndStatisticsMap(salFlowStats);
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-                case OFPMPQUEUE: {
-
-                    QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
-                    message.setId(node);
-                    message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-                    message.setTransactionId(generateTransactionId(mpReply.getXid()));
-
-                    MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
-                    MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
-
-                    List<QueueIdAndStatisticsMap> statsMap =
-                            new ArrayList<QueueIdAndStatisticsMap>();
-
-                    for (QueueStats queueStats : replyBody.getQueueStats()) {
-
-                        QueueIdAndStatisticsMapBuilder statsBuilder =
-                                new QueueIdAndStatisticsMapBuilder();
-                        statsBuilder.setNodeConnectorId(
-                                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
-                                        queueStats.getPortNo(), ofVersion));
-                        statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
-                        statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
-                        statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
-
-                        DurationBuilder durationBuilder = new DurationBuilder();
-                        durationBuilder.setSecond(new Counter32(queueStats.getDurationSec()));
-                        durationBuilder.setNanosecond(new Counter32(queueStats.getDurationNsec()));
-                        statsBuilder.setDuration(durationBuilder.build());
-
-                        statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
-                        statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
-                                queueStats.getPortNo(), ofVersion));
-
-                        statsMap.add(statsBuilder.build());
-                    }
-                    message.setQueueIdAndStatisticsMap(statsMap);
-
-                    listDataObject.add(message.build());
-                    return listDataObject;
-                }
-
-                default:
-                    return listDataObject;
-            }
+            translateFlow(listDataObject, mpReply, node, ofVersion, datapathId);
+            translateAggregate(listDataObject, mpReply, node);
+            translatePortStats(listDataObject, mpReply, node, ofVersion, datapathId);
+            translateGroup(listDataObject, mpReply, node);
+            translateGroupDesc(listDataObject, mpReply, node, ofVersion);
+            translateGroupFeatures(listDataObject, mpReply, node);
+            translateMeter(listDataObject, mpReply, node);
+            translateMeterConfig(listDataObject, mpReply, node);
+            translateMeterFeatures(listDataObject, mpReply, node);
+            translateTable(listDataObject, mpReply, node);
+            translateQueue(listDataObject, mpReply, node, ofVersion, datapathId);
         }
 
         return listDataObject;
+    }
+
+    private static void translateFlow(final List<DataObject> listDataObject,
+                                      final MultipartReplyMessage mpReply,
+                                      final NodeId node,
+                                      final OpenflowVersion ofVersion,
+                                      final BigInteger datapathId) {
+        if (!MultipartType.OFPMPFLOW.equals(mpReply.getType())) {
+            return;
+        }
+
+        FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+        MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
+        MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
+        message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), datapathId, ofVersion));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateAggregate(final List<DataObject> listDataObject,
+                                           final MultipartReplyMessage mpReply,
+                                           final NodeId node) {
+        if (!MultipartType.OFPMPAGGREGATE.equals(mpReply.getType())) {
+            return;
+        }
+
+        AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase) mpReply.getMultipartReplyBody();
+        MultipartReplyAggregate replyBody = caseBody.getMultipartReplyAggregate();
+        message.setByteCount(new Counter64(replyBody.getByteCount()));
+        message.setPacketCount(new Counter64(replyBody.getPacketCount()));
+        message.setFlowCount(new Counter32(replyBody.getFlowCount()));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translatePortStats(final List<DataObject> listDataObject,
+                                           final MultipartReplyMessage mpReply,
+                                           final NodeId node,
+                                           final OpenflowVersion ofVersion,
+                                           final BigInteger datapathId) {
+        if (!MultipartType.OFPMPPORTSTATS.equals(mpReply.getType())) {
+            return;
+        }
+
+        NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
+        MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
+
+        List<NodeConnectorStatisticsAndPortNumberMap> statsMap =
+                new ArrayList<>();
+        for (PortStats portStats : replyBody.getPortStats()) {
+
+            NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
+                    new NodeConnectorStatisticsAndPortNumberMapBuilder();
+            statsBuilder.setNodeConnectorId(
+                    InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
+                            portStats.getPortNo(), ofVersion));
+
+            BytesBuilder bytesBuilder = new BytesBuilder();
+            bytesBuilder.setReceived(portStats.getRxBytes());
+            bytesBuilder.setTransmitted(portStats.getTxBytes());
+            statsBuilder.setBytes(bytesBuilder.build());
+
+            PacketsBuilder packetsBuilder = new PacketsBuilder();
+            packetsBuilder.setReceived(portStats.getRxPackets());
+            packetsBuilder.setTransmitted(portStats.getTxPackets());
+            statsBuilder.setPackets(packetsBuilder.build());
+
+            DurationBuilder durationBuilder = new DurationBuilder();
+            if (portStats.getDurationSec() != null) {
+                durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
+            }
+            if (portStats.getDurationNsec() != null) {
+                durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
+            }
+            statsBuilder.setDuration(durationBuilder.build());
+            statsBuilder.setCollisionCount(portStats.getCollisions());
+            statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
+            statsBuilder.setReceiveCrcError(portStats.getRxCrcErr());
+            statsBuilder.setReceiveDrops(portStats.getRxDropped());
+            statsBuilder.setReceiveErrors(portStats.getRxErrors());
+            statsBuilder.setReceiveFrameError(portStats.getRxFrameErr());
+            statsBuilder.setReceiveOverRunError(portStats.getRxOverErr());
+            statsBuilder.setTransmitDrops(portStats.getTxDropped());
+            statsBuilder.setTransmitErrors(portStats.getTxErrors());
+
+            statsMap.add(statsBuilder.build());
+        }
+        message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
+
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateGroup(final List<DataObject> listDataObject,
+                                       final MultipartReplyMessage mpReply,
+                                       final NodeId node) {
+        if (!MultipartType.OFPMPGROUP.equals(mpReply.getType())) {
+            return;
+        }
+
+        GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+        MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
+        MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
+        message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateGroupDesc(final List<DataObject> listDataObject,
+                                           final MultipartReplyMessage mpReply,
+                                           final NodeId node,
+                                           final OpenflowVersion ofVersion) {
+        if (!MultipartType.OFPMPGROUPDESC.equals(mpReply.getType())) {
+            return;
+        }
+
+        GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+        MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
+        MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
+
+        message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateGroupFeatures(final List<DataObject> listDataObject,
+                                               final MultipartReplyMessage mpReply,
+                                               final NodeId node) {
+        if (!MultipartType.OFPMPGROUPFEATURES.equals(mpReply.getType())) {
+            return;
+        }
+
+        GroupFeaturesUpdatedBuilder message = new GroupFeaturesUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+        MultipartReplyGroupFeaturesCase caseBody = (MultipartReplyGroupFeaturesCase) mpReply.getMultipartReplyBody();
+        MultipartReplyGroupFeatures replyBody = caseBody.getMultipartReplyGroupFeatures();
+        List<Class<? extends GroupType>> supportedGroups =
+                new ArrayList<>();
+
+        if (replyBody.getTypes().isOFPGTALL()) {
+            supportedGroups.add(GroupAll.class);
+        }
+        if (replyBody.getTypes().isOFPGTSELECT()) {
+            supportedGroups.add(GroupSelect.class);
+        }
+        if (replyBody.getTypes().isOFPGTINDIRECT()) {
+            supportedGroups.add(GroupIndirect.class);
+        }
+        if (replyBody.getTypes().isOFPGTFF()) {
+            supportedGroups.add(GroupFf.class);
+        }
+        message.setGroupTypesSupported(supportedGroups);
+        message.setMaxGroups(replyBody.getMaxGroups());
+
+        List<Class<? extends GroupCapability>> supportedCapabilities =
+                new ArrayList<>();
+
+        if (replyBody.getCapabilities().isOFPGFCCHAINING()) {
+            supportedCapabilities.add(Chaining.class);
+        }
+        if (replyBody.getCapabilities().isOFPGFCCHAININGCHECKS()) {
+            supportedCapabilities.add(ChainingChecks.class);
+        }
+        if (replyBody.getCapabilities().isOFPGFCSELECTLIVENESS()) {
+            supportedCapabilities.add(SelectLiveness.class);
+        }
+        if (replyBody.getCapabilities().isOFPGFCSELECTWEIGHT()) {
+            supportedCapabilities.add(SelectWeight.class);
+        }
+
+        message.setGroupCapabilitiesSupported(supportedCapabilities);
+
+        message.setActions(getGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
+        listDataObject.add(message.build());
+    }
+
+    private static void translateMeter(final List<DataObject> listDataObject,
+                                       final MultipartReplyMessage mpReply,
+                                       final NodeId node) {
+        if (!MultipartType.OFPMPMETER.equals(mpReply.getType())) {
+            return;
+        }
+
+        MeterStatisticsUpdatedBuilder message = new MeterStatisticsUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
+        MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
+        message.setMeterStats(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateMeterConfig(final List<DataObject> listDataObject,
+                                             final MultipartReplyMessage mpReply,
+                                             final NodeId node) {
+        if (!MultipartType.OFPMPMETERCONFIG.equals(mpReply.getType())) {
+            return;
+        }
+
+        MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
+        MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
+        message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
+
+        listDataObject.add(message.build());
+    }
+
+    private static void translateMeterFeatures(final List<DataObject> listDataObject,
+                                               final MultipartReplyMessage mpReply,
+                                               final NodeId node) {
+        if (!MultipartType.OFPMPMETERFEATURES.equals(mpReply.getType())) {
+            return;
+        }
+
+        //Convert OF message and send it to SAL listener
+        MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase) mpReply.getMultipartReplyBody();
+        MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
+        message.setMaxBands(replyBody.getMaxBands());
+        message.setMaxColor(replyBody.getMaxColor());
+        message.setMaxMeter(new Counter32(replyBody.getMaxMeter()));
+
+        List<Class<? extends MeterCapability>> supportedCapabilities =
+                new ArrayList<>();
+        if (replyBody.getCapabilities().isOFPMFBURST()) {
+            supportedCapabilities.add(MeterBurst.class);
+        }
+        if (replyBody.getCapabilities().isOFPMFKBPS()) {
+            supportedCapabilities.add(MeterKbps.class);
+
+        }
+        if (replyBody.getCapabilities().isOFPMFPKTPS()) {
+            supportedCapabilities.add(MeterPktps.class);
+
+        }
+        if (replyBody.getCapabilities().isOFPMFSTATS()) {
+            supportedCapabilities.add(MeterStats.class);
+
+        }
+        message.setMeterCapabilitiesSupported(supportedCapabilities);
+
+        List<Class<? extends MeterBand>> supportedMeterBand =
+                new ArrayList<>();
+        if (replyBody.getBandTypes().isOFPMBTDROP()) {
+            supportedMeterBand.add(MeterBandDrop.class);
+        }
+        if (replyBody.getBandTypes().isOFPMBTDSCPREMARK()) {
+            supportedMeterBand.add(MeterBandDscpRemark.class);
+        }
+        message.setMeterBandSupported(supportedMeterBand);
+        listDataObject.add(message.build());
+    }
+
+    private static void translateTable(final List<DataObject> listDataObject,
+                                       final MultipartReplyMessage mpReply,
+                                       final NodeId node) {
+        if (!MultipartType.OFPMPTABLE.equals(mpReply.getType())) {
+            return;
+        }
+
+        FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyTableCase caseBody = (MultipartReplyTableCase) mpReply.getMultipartReplyBody();
+        MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
+        List<TableStats> swTablesStats = replyBody.getTableStats();
+
+        List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<FlowTableAndStatisticsMap>();
+        for (TableStats swTableStats : swTablesStats) {
+            FlowTableAndStatisticsMapBuilder statisticsBuilder = new FlowTableAndStatisticsMapBuilder();
+
+            statisticsBuilder.setActiveFlows(new Counter32(swTableStats.getActiveCount()));
+            statisticsBuilder.setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()));
+            statisticsBuilder.setPacketsMatched(new Counter64(swTableStats.getMatchedCount()));
+            statisticsBuilder.setTableId(new TableId(swTableStats.getTableId()));
+            salFlowStats.add(statisticsBuilder.build());
+        }
+
+        message.setFlowTableAndStatisticsMap(salFlowStats);
+        listDataObject.add(message.build());
+    }
+
+    private static void translateQueue(final List<DataObject> listDataObject,
+                                       final MultipartReplyMessage mpReply,
+                                       final NodeId node,
+                                       final OpenflowVersion ofVersion,
+                                       final BigInteger datapathId) {
+        if (!MultipartType.OFPMPQUEUE.equals(mpReply.getType())) {
+            return;
+        }
+
+        QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
+        message.setId(node);
+        message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+        message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+        MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
+        MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
+
+        List<QueueIdAndStatisticsMap> statsMap =
+                new ArrayList<QueueIdAndStatisticsMap>();
+
+        for (QueueStats queueStats : replyBody.getQueueStats()) {
+
+            QueueIdAndStatisticsMapBuilder statsBuilder =
+                    new QueueIdAndStatisticsMapBuilder();
+            statsBuilder.setNodeConnectorId(
+                    InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
+                            queueStats.getPortNo(), ofVersion));
+            statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
+            statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
+            statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
+
+            DurationBuilder durationBuilder = new DurationBuilder();
+            durationBuilder.setSecond(new Counter32(queueStats.getDurationSec()));
+            durationBuilder.setNanosecond(new Counter32(queueStats.getDurationNsec()));
+            statsBuilder.setDuration(durationBuilder.build());
+
+            statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
+            statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
+                    queueStats.getPortNo(), ofVersion));
+
+            statsMap.add(statsBuilder.build());
+        }
+        message.setQueueIdAndStatisticsMap(statsMap);
+
+        listDataObject.add(message.build());
     }
 
     private static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
