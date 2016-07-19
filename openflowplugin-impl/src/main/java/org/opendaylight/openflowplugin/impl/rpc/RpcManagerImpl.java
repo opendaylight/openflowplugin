@@ -23,6 +23,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +37,21 @@ public class RpcManagerImpl implements RpcManager {
     private final int maxRequestsQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
-
+    private final ExtensionConverterProvider extensionConverterProvider;
     private final LifecycleConductor conductor;
+    private final ConvertorExecutor convertorExecutor;
 
     public RpcManagerImpl(
             final RpcProviderRegistry rpcProviderRegistry,
             final int quotaValue,
-            final LifecycleConductor lifecycleConductor) {
+            ExtensionConverterProvider extensionConverterProvider,
+            final LifecycleConductor lifecycleConductor,
+            final ConvertorExecutor convertorExecutor) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
+        this.extensionConverterProvider = extensionConverterProvider;
         this.conductor = lifecycleConductor;
+        this.convertorExecutor = convertorExecutor;
     }
 
     @Override
@@ -63,7 +70,10 @@ public class RpcManagerImpl implements RpcManager {
                 deviceContext,
                 deviceContext.getMessageSpy(),
                 maxRequestsQuota,
-                deviceInfo.getNodeInstanceIdentifier());
+                deviceInfo.getNodeInstanceIdentifier(),
+                deviceContext,
+                extensionConverterProvider,
+                convertorExecutor);
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
 
