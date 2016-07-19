@@ -92,8 +92,8 @@ module opendaylight-match-types {
 
         leaf ip-proto {
            description "IP Proto (IPv4 or IPv6 Protocol Number).";
-	       type inet:ip-version;
-		}
+           type inet:ip-version;
+        }
     }
 
     grouping "ipv4-match-fields" {
@@ -164,9 +164,15 @@ module opendaylight-match-types {
             description "UDP source port.";
             type inet:port-number;
         }
+        leaf udp-source-mask {
+            type uint16;
+        }
         leaf udp-destination-port {
             description "UDP destination port.";
                 type inet:port-number;
+        }
+        leaf udp-destination-mask {
+            type uint16;
         }
     }
 
@@ -205,9 +211,15 @@ module opendaylight-match-types {
             description "TCP source port.";
             type inet:port-number;
         }
+        leaf tcp-source-mask {
+            type uint16;
+        }
         leaf tcp-destination-port {
             description "TCP destination port.";
             type inet:port-number;
+        }
+        leaf tcp-destination-mask {
+            type uint16;
         }
     }
 

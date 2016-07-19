@@ -765,11 +765,16 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                     TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
                     TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
+                    boolean hasMask = false;
                     tcpSrcBuilder.setPort(tcpMatch.getTcpSourcePort());
+                    if (null != tcpMatch.getTcpSourceMask()) {
+                        tcpSrcBuilder.setMask(tcpMatch.getTcpSourceMask());
+                        hasMask = true;
+                    }
                     tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
 
                     matchEntryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
+                    matchEntryBuilder.setHasMask(hasMask);
                     matchEntryList.add(matchEntryBuilder.build());
                 }
                 if (tcpMatch.getTcpDestinationPort() != null) {
@@ -779,10 +784,16 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                     TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
                     TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
+                    boolean hasMask = false;
                     tcpDstBuilder.setPort(tcpMatch.getTcpDestinationPort());
+                    if (null != tcpMatch.getTcpDestinationMask()) {
+                        tcpDstBuilder.setMask(tcpMatch.getTcpDestinationMask());
+                        hasMask = true;
+                    }
+
                     tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
                     matchEntryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
+                    matchEntryBuilder.setHasMask(hasMask);
                     matchEntryList.add(matchEntryBuilder.build());
                 }
             } else if (layer4Match instanceof UdpMatch) {
@@ -796,6 +807,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
                     boolean hasMask = false;
                     udpSrcBuilder.setPort(udpMatch.getUdpSourcePort());
+                    if (null != udpMatch.getUdpSourceMask()) {
+                        udpSrcBuilder.setMask(udpMatch.getUdpSourceMask());
+                        hasMask = true;
+                    }
                     udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
                     matchEntryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
                     matchEntryBuilder.setHasMask(hasMask);
@@ -809,10 +824,15 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
                     UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
                     UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
+                    boolean hasMask = false;
                     udpDstBuilder.setPort(udpMatch.getUdpDestinationPort());
+                    if (null != udpMatch.getUdpDestinationMask()) {
+                        udpDstBuilder.setMask(udpMatch.getUdpDestinationMask());
+                        hasMask = true;
+                    }
                     udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
                     matchEntryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
-                    matchEntryBuilder.setHasMask(false);
+                    matchEntryBuilder.setHasMask(hasMask);
                     matchEntryList.add(matchEntryBuilder.build());
                 }
             } else if (layer4Match instanceof SctpMatch) {
