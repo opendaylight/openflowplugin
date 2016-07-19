@@ -105,19 +105,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         final TimeCounter timeCounter,
                         final DeviceInfo deviceInfo) {
 
-        if (!statisticsContext.isSchedulingEnabled()) {
-            LOG.debug("Disabling statistics scheduling for device: {}", deviceInfo.getNodeId());
-            return;
-        }
-        
-        if (!deviceState.isValid()) {
-            LOG.debug("Session is not valid for device: {}", deviceInfo.getNodeId());
-            return;
-        }
-
-        if (!deviceState.isStatisticsPollingEnabled()) {
-            LOG.debug("Statistics polling is currently disabled for device: {}", deviceInfo.getNodeId());
-            scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+        if (!canPollStatistics(deviceState, deviceInfo, statisticsContext, timeCounter)) {
             return;
         }
 
@@ -135,12 +123,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                LOG.trace("Statistics gathering for single node was not successful.. ", throwable);
+                LOG.warn("Statistics gathering for single node was not successful: {}", throwable);
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
-                    /** This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
-                    conductor.closeConnection(deviceInfo);
+                    conductor.closeConnection(deviceInfo); // This often happens when something wrong with akka or DS, so closing connection will help to restart device
                 } else {
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
@@ -148,15 +134,40 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         });
 
         final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
-        final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
+        final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getNodeId(), STATS_TIMEOUT_SEC);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getNodeId(), statsTimeoutSec);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
 
-        conductor.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
+        conductor.newTimeout(timerTask, statsTimeoutSec, TimeUnit.SECONDS);
+    }
+
+    private boolean canPollStatistics(final DeviceState deviceState,
+                                      final DeviceInfo deviceInfo,
+                                      final StatisticsContext statisticsContext,
+                                      final TimeCounter timeCounter) {
+        boolean canPoll = true;
+
+        if (!statisticsContext.isSchedulingEnabled()) {
+            LOG.debug("Disabling statistics scheduling for device: {}", deviceInfo.getNodeId());
+            canPoll = false;
+        }
+
+        if (!deviceState.isValid()) {
+            LOG.debug("Session is not valid for device: {}", deviceInfo.getNodeId());
+            canPoll = false;
+        }
+
+        if (canPoll && !deviceState.isStatisticsPollingEnabled()) {
+            LOG.debug("Statistics polling is currently disabled for device: {}", deviceInfo.getNodeId());
+            scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+            canPoll = false;
+        }
+
+        return canPoll;
     }
 
     private void scheduleNextPolling(final DeviceState deviceState,
