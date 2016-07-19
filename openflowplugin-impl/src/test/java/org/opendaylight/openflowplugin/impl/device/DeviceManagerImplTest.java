@@ -40,6 +40,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
@@ -55,6 +57,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -100,6 +103,10 @@ public class DeviceManagerImplTest {
     private MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
     private DeviceInfo deviceInfo;
+    @Mock
+    private LifecycleService lifecycleService;
+    @Mock
+    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -143,8 +150,15 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, true);
+        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
+                mockedDataBroker,
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
+                false,
+                barrierIntervalNanos,
+                barrierCountLimit,
+                lifecycleConductor,
+                true,
+                clusterSingletonServiceProvider);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
@@ -161,7 +175,7 @@ public class DeviceManagerImplTest {
             doThrow(new IllegalStateException("dummy")).when(mockedDeviceContext).initialSubmitTransaction();
         }
         deviceManager.addDeviceContextToMap(deviceInfo, mockedDeviceContext);
-        deviceManager.onDeviceContextLevelUp(deviceInfo);
+        deviceManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
         if (withException) {
             verify(mockedDeviceContext).close();
         } else {
@@ -181,7 +195,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any(), Mockito.<LifecycleService>any());
     }
 
     @Test
@@ -204,7 +218,7 @@ public class DeviceManagerImplTest {
         order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
         order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
                 Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any());
+        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any(), Mockito.<LifecycleService>any());
     }
 
     @Test

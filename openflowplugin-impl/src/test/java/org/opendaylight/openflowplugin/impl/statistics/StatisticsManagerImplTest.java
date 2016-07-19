@@ -52,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
@@ -135,6 +136,8 @@ public class StatisticsManagerImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private LifecycleService lifecycleService;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -202,8 +205,8 @@ public class StatisticsManagerImplTest {
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(deviceInfo);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(deviceInfo);
+        statisticsManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test

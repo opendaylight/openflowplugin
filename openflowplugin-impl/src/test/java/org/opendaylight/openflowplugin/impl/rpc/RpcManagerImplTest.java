@@ -33,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -82,6 +83,8 @@ public class RpcManagerImplTest {
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
+    private LifecycleService lifecycleService;
+    @Mock
     private ExtensionConverterProvider extensionConverterProvider;
 
     @Rule
@@ -94,7 +97,7 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, extensionConverterProvider, conductor);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor, extensionConverterProvider);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
@@ -125,33 +128,33 @@ public class RpcManagerImplTest {
 
     @Test
     public void onDeviceContextLevelUp() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
         verify(conductor).getDeviceContext(deviceInfo);
     }
 
     @Test
     public void onDeviceContextLevelUpTwice() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
         expectedException.expect(VerifyException.class);
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test
     public void testOnDeviceContextLevelUpMaster() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test
     public void testOnDeviceContextLevelUpSlave() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test
     public void testOnDeviceContextLevelUpOther() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo);
+        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test
