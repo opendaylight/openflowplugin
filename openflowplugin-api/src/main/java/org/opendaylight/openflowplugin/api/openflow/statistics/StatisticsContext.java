@@ -62,6 +62,15 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable, O
     @Override
     void close();
 
-    void setSchedulingEnabled(boolean schedulingEnabled);
+    /**
+     * On / Off scheduling
+     * @param schedulingEnabled true if scheduling should be enabled
+     */
+    void setSchedulingEnabled(final boolean schedulingEnabled);
+
+    /**
+     * Check status
+     * @return true if scheduling is enabled
+     */
     boolean isSchedulingEnabled();
 }

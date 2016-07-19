@@ -16,10 +16,11 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
+ * Plugin services provider
  */
 public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
@@ -79,4 +80,5 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
 
     void update(Map<String,Object> props);
+    void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
 }
