@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -46,11 +47,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
+import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -81,6 +84,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, LifecycleService> lifecycleServices = new ConcurrentHashMap<>();
 
     private final long barrierIntervalNanos;
     private final int barrierCountLimit;
@@ -88,6 +92,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ScheduledThreadPoolExecutor spyPool;
     private Set<DeviceSynchronizeListener> deviceSynchronizedListeners;
     private Set<DeviceValidListener> deviceValidListeners;
+    private final ClusterSingletonServiceProvider singletonServiceProvider;
 
     private final LifecycleConductor conductor;
 
@@ -98,7 +103,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final int barrierCountLimit,
                              final LifecycleConductor lifecycleConductor,
                              boolean isNotificationFlowRemovedOff,
-			     final ConvertorExecutor convertorExecutor) {
+			     final ConvertorExecutor convertorExecutor,
+			     final ClusterSingletonServiceProvider singletonServiceProvider) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
@@ -124,6 +130,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         spyPool = new ScheduledThreadPoolExecutor(1);
         this.deviceSynchronizedListeners = new HashSet<>();
         this.deviceValidListeners = new HashSet<>();
+        this.singletonServiceProvider = singletonServiceProvider;
     }
 
 
@@ -133,11 +140,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo) throws Exception {
+    public void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
         // final phase - we have to add new Device to MD-SAL DataStore
         LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
+        lifecycleService.registerService(this.singletonServiceProvider);
     }
 
     @Override
@@ -187,7 +195,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionContext.getDeviceInfo(),
                 convertorExecutor);
 
+        final LifecycleService lifecycleService = new LifecycleServiceImpl();
+        lifecycleService.setDeviceContext(deviceContext);
+
         Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
+        lifecycleServices.putIfAbsent(deviceInfo, lifecycleService);
 
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
 
@@ -201,7 +213,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         notifyDeviceValidListeners(deviceInfo, true);
 
-        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo());
+        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleServices.get(deviceInfo));
 
         notifyDeviceSynchronizeListeners(deviceInfo, true);
 
@@ -255,6 +267,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         LOG.debug("onDeviceContextClosed for Node {}", deviceInfo.getNodeId());
         deviceContexts.remove(deviceInfo);
         updatePacketInRateLimiters();
+        LifecycleService lifecycleService = lifecycleServices.remove(deviceInfo);
+        try {
+            lifecycleService.close();
+        } catch (Exception e) {
+            LOG.warn("Closing service for node {} was unsuccessful ", deviceInfo.getNodeId().getValue(), e);
+        }
     }
 
     @Override

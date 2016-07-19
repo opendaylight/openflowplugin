@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
@@ -30,11 +31,14 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderFactoryImpl.class);
 
     @Override
-    public OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig, DataBroker dataBroker,
-            RpcProviderRegistry rpcRegistry, NotificationService notificationService,
-            NotificationPublishService notificationPublishService,
-            EntityOwnershipService entityOwnershipService,
-            List<SwitchConnectionProvider> switchConnectionProviders) {
+    public OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
+                                              DataBroker dataBroker,
+                                              RpcProviderRegistry rpcRegistry,
+                                              NotificationService notificationService,
+                                              NotificationPublishService notificationPublishService,
+                                              EntityOwnershipService entityOwnershipService,
+                                              List<SwitchConnectionProvider> switchConnectionProviders,
+                                              ClusterSingletonServiceProvider singletonServiceProvider) {
 
         LOG.info("Initializing new OFP southbound.");
 
@@ -59,6 +63,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
         openflowPluginProvider.setNotificationFlowRemovedOff(providerConfig.isNotificationFlowRemovedOff());
+        openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
 
         openflowPluginProvider.initialize();
 

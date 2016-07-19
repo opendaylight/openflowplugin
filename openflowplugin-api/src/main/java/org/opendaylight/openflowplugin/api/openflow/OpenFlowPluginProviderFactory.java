@@ -13,18 +13,18 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 /**
  * Factory for creating OpenFlowPluginProvider instances.
- *
- * @author Thomas Pantelis
  */
 public interface OpenFlowPluginProviderFactory {
     OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig, DataBroker dataBroker,
-            RpcProviderRegistry rpcRegistry, NotificationService notificationService,
-            NotificationPublishService notificationPublishService,
-            EntityOwnershipService entityOwnershipService,
-            List<SwitchConnectionProvider> switchConnectionProviders);
+                                       RpcProviderRegistry rpcRegistry, NotificationService notificationService,
+                                       NotificationPublishService notificationPublishService,
+                                       EntityOwnershipService entityOwnershipService,
+                                       List<SwitchConnectionProvider> switchConnectionProviders,
+                                       ClusterSingletonServiceProvider singletonServiceProvider);
 }
