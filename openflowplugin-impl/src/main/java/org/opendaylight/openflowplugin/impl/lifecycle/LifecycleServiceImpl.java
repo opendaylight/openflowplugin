@@ -10,11 +10,9 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.slf4j.Logger;
@@ -29,7 +27,7 @@ class LifecycleServiceImpl implements LifecycleService {
     private final RoleContext roleContext;
     private final StatisticsContext statContext;
 
-    public LifecycleServiceImpl(
+    LifecycleServiceImpl(
             final DeviceContext deviceContext,
             final RpcContext rpcContext,
             final RoleContext roleContext,
@@ -42,17 +40,29 @@ class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting device context cluster services for node {}", this.deviceContext.getServiceIdentifier());
         try {
+
+            LOG.info("Starting device context cluster services for node {}", getIdentifier());
             this.deviceContext.startupClusterServices();
+
+            LOG.info("Starting statistics context cluster services for node {}", getIdentifier());
+            this.statContext.startupClusterServices();
+
+            LOG.info("Starting rpc context cluster services for node {}", getIdentifier());
+            this.rpcContext.startupClusterServices();
+
+            LOG.info("Starting role context cluster services for node {}", getIdentifier());
+            this.roleContext.startupClusterServices();
+
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Cluster service {} was unable to start.", this.getIdentifier());
         }
-        LOG.info("Starting statistics context cluster services for node {}", this.deviceContext.getServiceIdentifier());
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
+        statContext.stopClusterServices();
+        rpcContext.stopClusterServices();
         return deviceContext.stopClusterServices();
     }
 
