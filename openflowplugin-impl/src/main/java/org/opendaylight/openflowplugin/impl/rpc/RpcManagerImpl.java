@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -44,8 +45,9 @@ public class RpcManagerImpl implements RpcManager {
     public RpcManagerImpl(
             final RpcProviderRegistry rpcProviderRegistry,
             final int quotaValue,
-            ExtensionConverterProvider extensionConverterProvider,
+            
             final LifecycleConductor lifecycleConductor,
+	    ExtensionConverterProvider extensionConverterProvider,
             final ConvertorExecutor convertorExecutor) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
@@ -60,7 +62,7 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
 
@@ -76,11 +78,11 @@ public class RpcManagerImpl implements RpcManager {
                 convertorExecutor);
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
-
+        lifecycleService.setRpcContext(rpcContext);
         rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         // finish device initialization cycle back to DeviceManager
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo);
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Override

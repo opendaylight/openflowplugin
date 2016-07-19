@@ -9,6 +9,7 @@
   <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
   <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
   <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
+  <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
 
   <reference id="switchConnProviderFactory"
           interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
@@ -77,6 +78,7 @@
     <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
                            update-strategy="component-managed"
                            update-method="update"/>
+    <argument ref="clusterSingletonServiceProvider"/>
   </bean>
 
   <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
