@@ -40,7 +40,11 @@ public class LifecycleServiceImplTest {
 
     @Before
     public void setUp() {
-        lifecycleService = new LifecycleServiceImpl(deviceContext, rpcContext, roleContext, statContext);
+        lifecycleService = new LifecycleServiceImpl();
+        lifecycleService.setDeviceContext(deviceContext);
+        lifecycleService.setRpcContext(rpcContext);
+        lifecycleService.setRoleContext(roleContext);
+        lifecycleService.setStatContext(statContext);
         Mockito.when(deviceInfo.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
     }
 
