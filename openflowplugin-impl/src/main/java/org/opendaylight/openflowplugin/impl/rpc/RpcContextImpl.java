@@ -10,19 +10,25 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -44,21 +50,27 @@ class RpcContextImpl implements RpcContext {
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private CONTEXT_STATE state;
     private final DeviceInfo deviceInfo;
+    private final DeviceContext deviceContext;
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     RpcContextImpl(final DeviceInfo deviceInfo,
                    final RpcProviderRegistry rpcProviderRegistry,
                    final XidSequencer xidSequencer,
                    final MessageSpy messageSpy,
                    final int maxRequests,
-                   final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
+                   final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier,
+                   final DeviceContext deviceContext,
+                   final ExtensionConverterProvider extensionConverterProvider) {
         this.xidSequencer = Preconditions.checkNotNull(xidSequencer);
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
 
         tracker = new Semaphore(maxRequests, true);
+        this.extensionConverterProvider = extensionConverterProvider;
         setState(CONTEXT_STATE.WORKING);
         this.deviceInfo = deviceInfo;
+        this.deviceContext = deviceContext;
     }
 
     /**
@@ -179,5 +191,16 @@ class RpcContextImpl implements RpcContext {
     @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
+    }
+
+    @Override
+    public void startupClusterServices() throws ExecutionException, InterruptedException {
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider);
+    }
+
+    @Override
+    public ListenableFuture<Void> stopClusterServices() {
+        MdSalRegistrationUtils.unregisterServices(this);
+        return Futures.immediateFuture(null);
     }
 }
