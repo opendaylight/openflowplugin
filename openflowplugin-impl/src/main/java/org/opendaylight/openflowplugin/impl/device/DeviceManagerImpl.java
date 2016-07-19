@@ -69,6 +69,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
+    private boolean isNotificationFlowRemovedOff;
 
     private final int spyRate = 10;
 
@@ -91,9 +92,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor) {
+                             final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -174,7 +176,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 dataBroker,
                 conductor,
                 outboundQueueProvider,
-                translatorLibrary);
+                translatorLibrary,
+                this);
 
         Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
 
@@ -349,6 +352,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         for (DeviceValidListener listener : deviceValidListeners) {
             listener.deviceIsValid(deviceInfo, deviceValid);
         }
+    }
+
+    @Override
+    public void setIsNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    }
+
+    @Override
+    public boolean getIsNotificationFlowRemovedOff() {
+        return this.isNotificationFlowRemovedOff;
     }
 
     private ListenableFuture<Void> onDeviceTakeClusterLeadership(final DeviceInfo deviceInfo) {

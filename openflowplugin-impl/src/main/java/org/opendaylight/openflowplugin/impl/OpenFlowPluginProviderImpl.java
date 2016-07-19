@@ -17,6 +17,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +88,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
+    private boolean isNotificationFlowRemovedOff = false;
+    private Map<String,Object>  managedProperties;
 
     private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
@@ -170,6 +173,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.echoReplyTimeout = echoReplyTimeout;
     }
 
+    @Override
+    public void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    }
+
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -215,7 +223,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 switchFeaturesMandatory,
                 barrierInterval,
                 barrierCountLimit,
-                conductor);
+                conductor,
+                isNotificationFlowRemovedOff);
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -251,6 +260,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.initialize();
 
         startSwitchConnections();
+    }
+
+    @Override
+    public void update(Map<String,Object> props) {
+        LOG.debug("Update managed properties = {}", props.toString());
+        this.managedProperties = props;
+
+        if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
+            deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {

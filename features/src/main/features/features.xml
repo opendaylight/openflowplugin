@@ -49,6 +49,7 @@
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/{{VERSION}}</bundle>
+        <configfile finalname="etc/org.opendaylight.openflowplugin.cfg">mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/{{VERSION}}/cfg/config</configfile>
         <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/{{VERSION}}/xml/config-Li</configfile>
     </feature>
 
