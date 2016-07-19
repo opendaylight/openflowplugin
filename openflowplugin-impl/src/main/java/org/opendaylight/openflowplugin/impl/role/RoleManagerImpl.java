@@ -44,6 +44,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
@@ -99,7 +100,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
     }
 
     @Override
-    public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo) throws Exception {
+    public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
         final RoleContext roleContext = new RoleContextImpl(deviceInfo, entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
@@ -108,7 +109,8 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         /* First start to watch entity so we don't miss any notification, and then try to register in EOS */
         watchingEntities.put(roleContext.getEntity(), roleContext);
         notifyListenersRoleInitializationDone(roleContext.getDeviceInfo(), roleContext.initialization());
-        deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo);
+        lifecycleService.setRoleContext(roleContext);
+        deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Override

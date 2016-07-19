@@ -29,6 +29,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
@@ -59,6 +60,9 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     SwitchConnectionProvider switchConnectionProvider;
 
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+
     private static final long RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
     private static final int THREAD_POOL_MIN_THREADS = 1;
@@ -87,6 +91,7 @@ public class OpenFlowPluginProviderImplTest {
         provider.setNotificationProviderService(notificationService);
         provider.setEntityOwnershipService(entityOwnershipService);
         provider.setSwitchConnectionProviders(Lists.newArrayList(switchConnectionProvider));
+        provider.setClusteringSingletonServicesProvider(clusterSingletonServiceProvider);
     }
 
     @After
