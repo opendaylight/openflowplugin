@@ -49,15 +49,12 @@ import org.slf4j.LoggerFactory;
  * Manager and middle point for whole module.
  * It contains ActiveNodeHolder and provide all RPC services.
  *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Aug 25, 2014
  */
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
-    public static final int STARTUP_LOOP_TICK = 500;
-    public static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    static final int STARTUP_LOOP_TICK = 500;
+    static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final AtomicLong txNum = new AtomicLong();
     private final Object lockObj = new Object();

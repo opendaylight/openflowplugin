@@ -12,6 +12,8 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -45,18 +47,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 /**
  * FlowForwarder
  * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
  * for WildCardedPath to {@link Flow} and ForwardingRulesCommiter interface for methods:
  *  add, update and remove {@link Flow} processing for
  *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
  */
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 

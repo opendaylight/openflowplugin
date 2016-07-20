@@ -8,13 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import java.util.concurrent.Future;
 
 /**
  * forwardingrules-manager
@@ -25,9 +24,6 @@ import java.util.concurrent.Future;
  * SalRpcService for device. Every implementation has to be registered for
  * Configurational/DS tree path.
  *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Aug 25, 2014
  */
 public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, ClusteredDataTreeChangeListener<D> {
 

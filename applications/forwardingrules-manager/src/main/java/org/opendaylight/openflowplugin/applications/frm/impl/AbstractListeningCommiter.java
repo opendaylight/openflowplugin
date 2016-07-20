@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -18,8 +19,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 /**
  * AbstractChangeListner implemented basic {@link AsyncDataChangeEvent} processing for
@@ -32,9 +31,9 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
 
-    protected ForwardingRulesManager provider;
+    ForwardingRulesManager provider;
 
-    protected final Class<T> clazz;
+    private final Class<T> clazz;
 
     public AbstractListeningCommiter (ForwardingRulesManager provider, Class<T> clazz) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
