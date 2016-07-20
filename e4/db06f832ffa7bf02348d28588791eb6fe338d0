@@ -1,0 +1,9 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Shuva Jyoti Kar <shuva.jyoti.kar@ericsson.com>
+Code-Review+1: Andrej Leitner <anleitne@cisco.com>
+Code-Review+2: Jozef Bacigal <jbacigal@cisco.com>
+Submitted-by: Jozef Bacigal <jbacigal@cisco.com>
+Submitted-at: Wed, 20 Jul 2016 08:11:50 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/41861
+Project: openflowplugin
+Branch: refs/heads/stable/beryllium
