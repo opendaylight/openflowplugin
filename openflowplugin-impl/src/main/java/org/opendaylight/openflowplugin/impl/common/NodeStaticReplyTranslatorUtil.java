@@ -147,34 +147,13 @@ public class NodeStaticReplyTranslatorUtil {
         Preconditions.checkArgument(reply != null);
         final GroupFeaturesBuilder groupFeature = new GroupFeaturesBuilder();
         groupFeature.setMaxGroups(reply.getMaxGroups());
+
         final List<Class<? extends GroupType>> supportedGroups = new ArrayList<>();
-        if (reply.getTypes().isOFPGTALL()) {
-            supportedGroups.add(GroupAll.class);
-        }
-        if (reply.getTypes().isOFPGTSELECT()) {
-            supportedGroups.add(GroupSelect.class);
-        }
-        if (reply.getTypes().isOFPGTINDIRECT()) {
-            supportedGroups.add(GroupIndirect.class);
-        }
-        if (reply.getTypes().isOFPGTFF()) {
-            supportedGroups.add(GroupFf.class);
-        }
+        addSupportedGroups(reply, supportedGroups);
         groupFeature.setGroupTypesSupported(supportedGroups);
 
         final List<Class<? extends GroupCapability>> gCapability = new ArrayList<>();
-        if (reply.getCapabilities().isOFPGFCCHAINING()) {
-            gCapability.add(Chaining.class);
-        }
-        if (reply.getCapabilities().isOFPGFCCHAININGCHECKS()) {
-            gCapability.add(ChainingChecks.class);
-        }
-        if (reply.getCapabilities().isOFPGFCSELECTLIVENESS()) {
-            gCapability.add(SelectLiveness.class);
-        }
-        if (reply.getCapabilities().isOFPGFCSELECTWEIGHT()) {
-            gCapability.add(SelectWeight.class);
-        }
+        addGroupCapabilities(reply, gCapability);
         groupFeature.setGroupCapabilitiesSupported(gCapability);
 
         final List<Long> supportActionByGroups = new ArrayList<>();
@@ -200,6 +179,36 @@ public class NodeStaticReplyTranslatorUtil {
         }
         groupFeature.setActions(supportActionByGroups);
         return new NodeGroupFeaturesBuilder().setGroupFeatures(groupFeature.build()).build();
+    }
+
+    private static void addGroupCapabilities(final MultipartReplyGroupFeatures reply, final List<Class<? extends GroupCapability>> gCapability) {
+        if (reply.getCapabilities().isOFPGFCCHAINING()) {
+            gCapability.add(Chaining.class);
+        }
+        if (reply.getCapabilities().isOFPGFCCHAININGCHECKS()) {
+            gCapability.add(ChainingChecks.class);
+        }
+        if (reply.getCapabilities().isOFPGFCSELECTLIVENESS()) {
+            gCapability.add(SelectLiveness.class);
+        }
+        if (reply.getCapabilities().isOFPGFCSELECTWEIGHT()) {
+            gCapability.add(SelectWeight.class);
+        }
+    }
+
+    private static void addSupportedGroups(final MultipartReplyGroupFeatures reply, final List<Class<? extends GroupType>> supportedGroups) {
+        if (reply.getTypes().isOFPGTALL()) {
+            supportedGroups.add(GroupAll.class);
+        }
+        if (reply.getTypes().isOFPGTSELECT()) {
+            supportedGroups.add(GroupSelect.class);
+        }
+        if (reply.getTypes().isOFPGTINDIRECT()) {
+            supportedGroups.add(GroupIndirect.class);
+        }
+        if (reply.getTypes().isOFPGTFF()) {
+            supportedGroups.add(GroupFf.class);
+        }
     }
 
     /**
