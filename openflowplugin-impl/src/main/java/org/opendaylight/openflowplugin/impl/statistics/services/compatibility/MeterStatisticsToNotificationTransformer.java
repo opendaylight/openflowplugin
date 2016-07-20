@@ -28,6 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MeterStatisticsToNotificationTransformer {
 
+    private MeterStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state

@@ -29,6 +29,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * pulled out flow stats to notification transformation
  */
 public class FlowStatisticsToNotificationTransformer {
+
+    private FlowStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpResult      raw multipart response from device
      * @param deviceInfo   device state
