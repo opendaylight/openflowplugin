@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_76c07b2a",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T22:13:59Z",
+      "side": 1,
+      "message": "you mean ipv6?",
+      "range": {
+        "startLine": 215,
+        "startChar": 30,
+        "endLine": 215,
+        "endChar": 94
+      },
+      "revId": "5617c3270b18f99842e81aeace7f7bb6e642db77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_16377f4f",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T22:13:59Z",
+      "side": 1,
+      "message": "please put it in the bracket.",
+      "range": {
+        "startLine": 537,
+        "startChar": 15,
+        "endLine": 537,
+        "endChar": 59
+      },
+      "revId": "5617c3270b18f99842e81aeace7f7bb6e642db77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_5640d7a4",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorHelper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T22:13:59Z",
+      "side": 1,
+      "message": "Failed to convert string mask value to ipv6 format.",
+      "range": {
+        "startLine": 542,
+        "startChar": 33,
+        "endLine": 542,
+        "endChar": 91
+      },
+      "revId": "5617c3270b18f99842e81aeace7f7bb6e642db77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
