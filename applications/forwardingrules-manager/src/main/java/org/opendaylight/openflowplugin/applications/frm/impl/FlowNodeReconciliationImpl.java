@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -236,7 +237,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public void run() {
 
             String sNode = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
-            long nDpId = getDpnIdFromNodeName(sNode);
+            BigInteger nDpId = getDpnIdFromNodeName(sNode);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode = Optional.absent();
@@ -379,9 +380,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             trans.close();
         }
     }
-    private long getDpnIdFromNodeName(String nodeName) {
+    private BigInteger getDpnIdFromNodeName(String nodeName) {
         String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-        return Long.parseLong(dpId);
+        return new BigInteger(dpId);
     }
 
     private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {

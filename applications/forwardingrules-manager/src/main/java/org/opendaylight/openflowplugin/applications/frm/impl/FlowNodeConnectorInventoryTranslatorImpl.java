@@ -25,6 +25,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.concurrent.Callable;
 
 public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector> implements FlowNodeConnectorInventoryTranslator {
@@ -42,7 +43,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             .augmentation(FlowCapableNodeConnector.class)
             .build();
 
-    private Multimap<Long,String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.<Long,String>create());
+    private Multimap<BigInteger,String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.<BigInteger,String>create());
 
     public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker){
         super(manager, FlowCapableNodeConnector.class);
@@ -92,7 +93,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             LOG.info("Node Connector removed");
             String sNodeConnectorIdentifier = nodeConnIdent
                     .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
-            long nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
+            BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
             String portName = del.getName();
 
             dpnToPortMultiMap.remove(nDpId, sNodeConnectorIdentifier);
@@ -113,7 +114,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             LOG.info("Node Connector added");
             String sNodeConnectorIdentifier = nodeConnIdent
                     .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
-            long nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
+            BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
 
             String portName = add.getName();
             if(!dpnToPortMultiMap.containsEntry(nDpId,sNodeConnectorIdentifier)) {
@@ -130,14 +131,14 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
     @Override
-    public boolean isNodeConnectorUpdated(long dpId, String portName){
+    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName){
         return dpnToPortMultiMap.containsEntry(dpId,portName) ;
     }
 
 
-    private long getDpIdFromPortName(String portName) {
+    private BigInteger getDpIdFromPortName(String portName) {
         String dpId = portName.substring(portName.indexOf(SEPARATOR) + 1, portName.lastIndexOf(SEPARATOR));
-        return Long.parseLong(dpId);
+        return new BigInteger(dpId);
     }
 }
 
