@@ -71,7 +71,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final boolean switchFeaturesMandatory;
     private boolean isNotificationFlowRemovedOff;
 
-    private final int spyRate = 10;
+    private static final int spyRate = 10;
 
     private final DataBroker dataBroker;
     private TranslatorLibrary translatorLibrary;
@@ -391,29 +391,35 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     }
                 });
 
-        return Futures.transform(statPollFuture, new Function<Boolean, Void>() {
+        return Futures.transform(statPollFuture, getInitialDeviceInformation(deviceContext));
+    }
 
-            @Override
-            public Void apply(final Boolean input) {
-                if (ConnectionContext.CONNECTION_STATE.RIP.equals(conductor.gainConnectionStateSafely(deviceInfo))) {
-                    final String errMsg = String.format("We lost connection for Device %s, context has to be closed.",
-                            deviceInfo.getNodeId());
-                    LOG.warn(errMsg);
-                    throw new IllegalStateException(errMsg);
-                }
-                if (!input) {
-                    final String errMsg = String.format("Get Initial Device %s information fails",
-                            deviceInfo.getNodeId());
-                    LOG.warn(errMsg);
-                    throw new IllegalStateException(errMsg);
-                }
-                LOG.debug("Get Initial Device {} information is successful", deviceInfo.getNodeId());
-                notifyDeviceSynchronizeListeners(deviceInfo, true);
-                ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
-                deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
-                return null;
+    private Function<Boolean, Void> getInitialDeviceInformation(final DeviceContext deviceContext) {
+        return input -> {
+            if (ConnectionContext.CONNECTION_STATE.RIP.equals(
+                    conductor.gainConnectionStateSafely(deviceContext.getDeviceInfo())
+            )) {
+                final String errMsg =
+                        String.format("We lost connection for Device %s, context has to be closed.",
+                        deviceContext.getDeviceInfo().getNodeId());
+                LOG.warn(errMsg);
+                throw new IllegalStateException(errMsg);
             }
-        });
+
+            if (input == null || !input) {
+                final String errMsg =
+                        String.format("Get Initial Device %s information fails",
+                        deviceContext.getDeviceInfo().getNodeId());
+                LOG.warn(errMsg);
+                throw new IllegalStateException(errMsg);
+            }
+            LOG.debug("Get Initial Device {} information is successful",
+                    deviceContext.getDeviceInfo().getNodeId());
+            notifyDeviceSynchronizeListeners(deviceContext.getDeviceInfo(), true);
+            ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
+            deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
+            return null;
+        };
     }
 
 }

@@ -283,15 +283,20 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             DeviceInfoImpl that = (DeviceInfoImpl) o;
 
-            return  nodeId.equals(that.nodeId) &&
+            return  (nodeId.equals(that.nodeId) &&
                     nodeII.equals(that.nodeII) &&
                     version.equals(that.version) &&
-                    datapathId.equals(that.datapathId);
+                    datapathId.equals(that.datapathId));
 
         }
 
