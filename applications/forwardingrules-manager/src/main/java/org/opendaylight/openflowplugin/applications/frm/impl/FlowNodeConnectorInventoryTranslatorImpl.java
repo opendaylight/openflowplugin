@@ -90,7 +90,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     @Override
     public void remove(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector del, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
-            LOG.info("Node Connector removed");
+            LOG.debug("Node Connector removed");
             String sNodeConnectorIdentifier = nodeConnIdent
                     .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
             BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
@@ -103,7 +103,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     @Override
     public void update(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector original, FlowCapableNodeConnector update, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
-            LOG.info("Node Connector updated");
+            LOG.debug("Node Connector updated");
             //donot need to do anything as we are not considering updates here
         }
     }
@@ -111,7 +111,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     @Override
     public void add(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector add, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
-            LOG.info("Node Connector added");
+            LOG.debug("Node Connector added");
             String sNodeConnectorIdentifier = nodeConnIdent
                     .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
             BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
