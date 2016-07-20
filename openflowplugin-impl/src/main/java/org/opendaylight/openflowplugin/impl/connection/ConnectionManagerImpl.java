@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionManagerImpl implements ConnectionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
-    private static final int HELLO_LIMIT = 20;
-    private final boolean bitmapNegotiationEnabled = true;
+    private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
     private DeviceConnectedHandler deviceConnectedHandler;
     private final long echoReplyTimeout;
     private final ThreadPoolExecutor threadPool;
@@ -85,18 +84,11 @@ public class ConnectionManagerImpl implements ConnectionManager {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0),
                 ConnectionConductor.versionOrder);
-        handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnabled());
+        handshakeManager.setUseVersionBitmap(BITMAP_NEGOTIATION_ENABLED);
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setErrorHandler(new ErrorHandlerSimpleImpl());
 
         return handshakeManager;
-    }
-
-    /**
-     * @return parameter dedicated to hello message content
-     */
-    public boolean isBitmapNegotiationEnabled() {
-        return bitmapNegotiationEnabled;
     }
 
     @Override
