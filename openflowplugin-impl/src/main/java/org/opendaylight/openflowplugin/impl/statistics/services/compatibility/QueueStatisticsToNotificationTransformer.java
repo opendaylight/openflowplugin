@@ -32,6 +32,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
  */
 public class QueueStatisticsToNotificationTransformer {
 
+    private QueueStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state

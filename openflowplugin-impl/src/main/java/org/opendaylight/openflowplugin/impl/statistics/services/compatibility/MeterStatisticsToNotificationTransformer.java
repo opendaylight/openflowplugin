@@ -28,6 +28,10 @@ public class MeterStatisticsToNotificationTransformer {
 
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
+    private MeterStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state

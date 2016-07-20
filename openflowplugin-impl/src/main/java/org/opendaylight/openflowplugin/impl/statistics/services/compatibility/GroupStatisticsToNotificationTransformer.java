@@ -27,6 +27,10 @@ public class GroupStatisticsToNotificationTransformer {
 
     private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
 
+    private GroupStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state

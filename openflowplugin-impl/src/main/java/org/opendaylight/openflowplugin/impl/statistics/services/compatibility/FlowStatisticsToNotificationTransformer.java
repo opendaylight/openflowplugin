@@ -30,6 +30,10 @@ public class FlowStatisticsToNotificationTransformer {
 
     private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
 
+    private FlowStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpResult      raw multipart response from device
      * @param deviceInfo   device state
