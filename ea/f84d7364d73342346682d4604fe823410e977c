@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Andrej Leitner <anleitne@cisco.com>
+Code-Review+2: Jozef Bacigal <jbacigal@cisco.com>
+Submitted-by: Jozef Bacigal <jbacigal@cisco.com>
+Submitted-at: Wed, 20 Jul 2016 08:11:14 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/42092
+Project: openflowplugin
+Branch: refs/heads/master
