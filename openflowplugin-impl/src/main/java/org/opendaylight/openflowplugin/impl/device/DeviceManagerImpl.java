@@ -71,7 +71,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final boolean switchFeaturesMandatory;
     private boolean isNotificationFlowRemovedOff;
 
-    private static final int spyRate = 10;
+    private static final int SPY_RATE = 10;
 
     private final DataBroker dataBroker;
     private TranslatorLibrary translatorLibrary;
@@ -249,7 +249,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void initialize() {
-        spyPool.scheduleAtFixedRate(conductor.getMessageIntelligenceAgency(), spyRate, spyRate, TimeUnit.SECONDS);
+        spyPool.scheduleAtFixedRate(conductor.getMessageIntelligenceAgency(), SPY_RATE, SPY_RATE, TimeUnit.SECONDS);
     }
 
     @Override
