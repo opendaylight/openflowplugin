@@ -121,44 +121,7 @@ public final class GroupUtil {
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> createCumulatingFunction(
             final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups,
             final int sizeOfInputBatch) {
-        return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>>() {
-            @Nullable
-            @Override
-            public RpcResult<List<BatchFailedGroupsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                final int sizeOfFutures = innerInput.size();
-                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
-
-                final List<BatchFailedGroupsOutput> batchGroups = new ArrayList<>();
-                final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
-                        batchGroupIterator = inputBatchGroups.iterator();
-
-                Collection<RpcError> groupErrors = new ArrayList<>(sizeOfFutures);
-
-                int batchOrder = 0;
-                for (RpcResult<O> groupModOutput : innerInput) {
-                    final GroupId groupId = batchGroupIterator.next().getGroupId();
-
-                    if (!groupModOutput.isSuccessful()) {
-                        batchGroups.add(new BatchFailedGroupsOutputBuilder()
-                                .setGroupId(groupId)
-                                .setBatchOrder(batchOrder)
-                                .build());
-                        groupErrors.addAll(groupModOutput.getErrors());
-                    }
-                    batchOrder++;
-                }
-
-                final RpcResultBuilder<List<BatchFailedGroupsOutput>> resultBuilder;
-                if (!groupErrors.isEmpty()) {
-                    resultBuilder = RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
-                            .withRpcErrors(groupErrors).withResult(batchGroups);
-                } else {
-                    resultBuilder = SUCCESSFUL_GROUP_OUTPUT_RPC_RESULT;
-                }
-                return resultBuilder.build();
-            }
-        };
+        return new CumulatingFunction<O>(inputBatchGroups, sizeOfInputBatch).invoke();
     }
 
     /**
@@ -204,7 +167,7 @@ public final class GroupUtil {
      * @return batch group operation output of given type containing list of group-ids and corresponding success flag
      */
     private static <T extends BatchGroupOutputListGrouping>
-    RpcResultBuilder<T> createCumulativeRpcResult(final @Nullable RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulativeResult,
+    RpcResultBuilder<T> createCumulativeRpcResult(@Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulativeResult,
                                                   final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchGroupsCumulativeResult.isSuccessful()) {
@@ -215,5 +178,56 @@ public final class GroupUtil {
                     .withRpcErrors(batchGroupsCumulativeResult.getErrors());
         }
         return resultBld;
+    }
+
+    private static class CumulatingFunction<O> {
+        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups;
+        private final int sizeOfInputBatch;
+
+        public CumulatingFunction(Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups, int sizeOfInputBatch) {
+            this.inputBatchGroups = inputBatchGroups;
+            this.sizeOfInputBatch = sizeOfInputBatch;
+        }
+
+        public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> invoke() {
+            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>>() {
+                @Nullable
+                @Override
+                public RpcResult<List<BatchFailedGroupsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
+                    final int sizeOfFutures = innerInput.size();
+                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+
+                    final List<BatchFailedGroupsOutput> batchGroups = new ArrayList<>();
+                    final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                            batchGroupIterator = inputBatchGroups.iterator();
+
+                    Collection<RpcError> groupErrors = new ArrayList<>(sizeOfFutures);
+
+                    int batchOrder = 0;
+                    for (RpcResult<O> groupModOutput : innerInput) {
+                        final GroupId groupId = batchGroupIterator.next().getGroupId();
+
+                        if (!groupModOutput.isSuccessful()) {
+                            batchGroups.add(new BatchFailedGroupsOutputBuilder()
+                                    .setGroupId(groupId)
+                                    .setBatchOrder(batchOrder)
+                                    .build());
+                            groupErrors.addAll(groupModOutput.getErrors());
+                        }
+                        batchOrder++;
+                    }
+
+                    final RpcResultBuilder<List<BatchFailedGroupsOutput>> resultBuilder;
+                    if (!groupErrors.isEmpty()) {
+                        resultBuilder = RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
+                                .withRpcErrors(groupErrors).withResult(batchGroups);
+                    } else {
+                        resultBuilder = SUCCESSFUL_GROUP_OUTPUT_RPC_RESULT;
+                    }
+                    return resultBuilder.build();
+                }
+            };
+        }
     }
 }

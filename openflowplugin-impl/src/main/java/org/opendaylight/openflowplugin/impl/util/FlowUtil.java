@@ -42,17 +42,11 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
- */
 public final class FlowUtil {
 
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger unaccountedFlowsCounter = new AtomicInteger(0);
-    private static final Logger LOG = LoggerFactory.getLogger(FlowUtil.class);
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
 
@@ -227,43 +221,55 @@ public final class FlowUtil {
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(
             final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
-        return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>>() {
-            @Nullable
-            @Override
-            public RpcResult<List<BatchFailedFlowsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                final int sizeOfFutures = innerInput.size();
-                final int sizeOfInputBatch = inputBatchFlows.size();
-                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+        return new CumulatingFunction<O>(inputBatchFlows).invoke();
+    }
 
-                final ArrayList<BatchFailedFlowsOutput> batchFlows = new ArrayList<>(sizeOfFutures);
-                final Iterator<? extends BatchFlowIdGrouping> batchFlowIterator = inputBatchFlows.iterator();
+    private static class CumulatingFunction<O> {
+        private final List<? extends BatchFlowIdGrouping> inputBatchFlows;
 
-                Collection<RpcError> flowErrors = new ArrayList<>(sizeOfFutures);
+        public CumulatingFunction(List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+            this.inputBatchFlows = inputBatchFlows;
+        }
 
-                int batchOrder = 0;
-                for (RpcResult<O> flowModOutput : innerInput) {
-                    final FlowId flowId = batchFlowIterator.next().getFlowId();
+        public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> invoke() {
+            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>>() {
+                @Nullable
+                @Override
+                public RpcResult<List<BatchFailedFlowsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
+                    final int sizeOfFutures = innerInput.size();
+                    final int sizeOfInputBatch = inputBatchFlows.size();
+                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
 
-                    if (!flowModOutput.isSuccessful()) {
-                        batchFlows.add(new BatchFailedFlowsOutputBuilder()
-                                .setFlowId(flowId)
-                                .setBatchOrder(batchOrder)
-                                .build());
-                        flowErrors.addAll(flowModOutput.getErrors());
+                    final ArrayList<BatchFailedFlowsOutput> batchFlows = new ArrayList<>(sizeOfFutures);
+                    final Iterator<? extends BatchFlowIdGrouping> batchFlowIterator = inputBatchFlows.iterator();
+
+                    Collection<RpcError> flowErrors = new ArrayList<>(sizeOfFutures);
+
+                    int batchOrder = 0;
+                    for (RpcResult<O> flowModOutput : innerInput) {
+                        final FlowId flowId = batchFlowIterator.next().getFlowId();
+
+                        if (!flowModOutput.isSuccessful()) {
+                            batchFlows.add(new BatchFailedFlowsOutputBuilder()
+                                    .setFlowId(flowId)
+                                    .setBatchOrder(batchOrder)
+                                    .build());
+                            flowErrors.addAll(flowModOutput.getErrors());
+                        }
+                        batchOrder++;
                     }
-                    batchOrder++;
-                }
 
-                final RpcResultBuilder<List<BatchFailedFlowsOutput>> resultBuilder;
-                if (!flowErrors.isEmpty()) {
-                    resultBuilder = RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
-                            .withRpcErrors(flowErrors).withResult(batchFlows);
-                } else {
-                    resultBuilder = SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT;
+                    final RpcResultBuilder<List<BatchFailedFlowsOutput>> resultBuilder;
+                    if (!flowErrors.isEmpty()) {
+                        resultBuilder = RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
+                                .withRpcErrors(flowErrors).withResult(batchFlows);
+                    } else {
+                        resultBuilder = SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT;
+                    }
+                    return resultBuilder.build();
                 }
-                return resultBuilder.build();
-            }
-        };
+            };
+        }
     }
 }

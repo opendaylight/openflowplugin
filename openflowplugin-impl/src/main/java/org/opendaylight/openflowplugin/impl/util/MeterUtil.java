@@ -121,44 +121,7 @@ public final class MeterUtil {
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> createCumulativeFunction(
             final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters,
             final int sizeOfInputBatch) {
-        return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>>() {
-            @Nullable
-            @Override
-            public RpcResult<List<BatchFailedMetersOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                final int sizeOfFutures = innerInput.size();
-                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
-
-                final List<BatchFailedMetersOutput> batchMeters = new ArrayList<>();
-                final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
-                        batchMeterIterator = inputBatchMeters.iterator();
-
-                Collection<RpcError> meterErrors = new ArrayList<>(sizeOfFutures);
-
-                int batchOrder = 0;
-                for (RpcResult<O> meterModOutput : innerInput) {
-                    final MeterId meterId = batchMeterIterator.next().getMeterId();
-
-                    if (!meterModOutput.isSuccessful()) {
-                        batchMeters.add(new BatchFailedMetersOutputBuilder()
-                                .setBatchOrder(batchOrder)
-                                .setMeterId(meterId)
-                                .build());
-                        meterErrors.addAll(meterModOutput.getErrors());
-                    }
-                    batchOrder++;
-                }
-
-                final RpcResultBuilder<List<BatchFailedMetersOutput>> resultBuilder;
-                if (!meterErrors.isEmpty()) {
-                    resultBuilder = RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
-                            .withRpcErrors(meterErrors).withResult(batchMeters);
-                } else {
-                    resultBuilder = SUCCESSFUL_METER_OUTPUT_RPC_RESULT;
-                }
-                return resultBuilder.build();
-            }
-        };
+        return new CumulativeFunction<O>(inputBatchMeters, sizeOfInputBatch).invoke();
     }
 
     /**
@@ -215,5 +178,56 @@ public final class MeterUtil {
                     .withRpcErrors(batchMetersCumulativeResult.getErrors());
         }
         return resultBld;
+    }
+
+    private static class CumulativeFunction<O> {
+        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters;
+        private final int sizeOfInputBatch;
+
+        public CumulativeFunction(Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters, int sizeOfInputBatch) {
+            this.inputBatchMeters = inputBatchMeters;
+            this.sizeOfInputBatch = sizeOfInputBatch;
+        }
+
+        public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> invoke() {
+            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>>() {
+                @Nullable
+                @Override
+                public RpcResult<List<BatchFailedMetersOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
+                    final int sizeOfFutures = innerInput.size();
+                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+
+                    final List<BatchFailedMetersOutput> batchMeters = new ArrayList<>();
+                    final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
+                            batchMeterIterator = inputBatchMeters.iterator();
+
+                    Collection<RpcError> meterErrors = new ArrayList<>(sizeOfFutures);
+
+                    int batchOrder = 0;
+                    for (RpcResult<O> meterModOutput : innerInput) {
+                        final MeterId meterId = batchMeterIterator.next().getMeterId();
+
+                        if (!meterModOutput.isSuccessful()) {
+                            batchMeters.add(new BatchFailedMetersOutputBuilder()
+                                    .setBatchOrder(batchOrder)
+                                    .setMeterId(meterId)
+                                    .build());
+                            meterErrors.addAll(meterModOutput.getErrors());
+                        }
+                        batchOrder++;
+                    }
+
+                    final RpcResultBuilder<List<BatchFailedMetersOutput>> resultBuilder;
+                    if (!meterErrors.isEmpty()) {
+                        resultBuilder = RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
+                                .withRpcErrors(meterErrors).withResult(batchMeters);
+                    } else {
+                        resultBuilder = SUCCESSFUL_METER_OUTPUT_RPC_RESULT;
+                    }
+                    return resultBuilder.build();
+                }
+            };
+        }
     }
 }
