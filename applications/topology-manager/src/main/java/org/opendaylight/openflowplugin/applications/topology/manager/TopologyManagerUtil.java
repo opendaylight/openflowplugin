@@ -25,6 +25,8 @@ public class TopologyManagerUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyManagerUtil.class);
 
+    private TopologyManagerUtil() {}
+
     static void removeAffectedLinks(final NodeId id, final ReadWriteTransaction transaction, InstanceIdentifier<Topology> topology) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
