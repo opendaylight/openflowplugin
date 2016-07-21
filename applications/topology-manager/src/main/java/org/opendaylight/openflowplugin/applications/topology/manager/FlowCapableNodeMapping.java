@@ -66,35 +66,35 @@ public final class FlowCapableNodeMapping {
 
     public static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node toTopologyNode(
             final NodeId nodeId, final NodeRef invNodeRef) {
-        return new NodeBuilder() //
-                .setNodeId(nodeId) //
-                .addAugmentation(InventoryNode.class, new InventoryNodeBuilder() //
-                        .setInventoryNodeRef(invNodeRef) //
-                        .build()) //
+        return new NodeBuilder()
+                .setNodeId(nodeId)
+                .addAugmentation(InventoryNode.class, new InventoryNodeBuilder()
+                        .setInventoryNodeRef(invNodeRef)
+                        .build())
                 .build();
     }
 
     public static TerminationPoint toTerminationPoint(final TpId id, final NodeConnectorRef invNodeConnectorRef) {
-        return new TerminationPointBuilder() //
-                .setTpId(id) //
-                .addAugmentation(InventoryNodeConnector.class, new InventoryNodeConnectorBuilder() //
-                        .setInventoryNodeConnectorRef(invNodeConnectorRef) //
-                        .build()) //
+        return new TerminationPointBuilder()
+                .setTpId(id)
+                .addAugmentation(InventoryNodeConnector.class, new InventoryNodeConnectorBuilder()
+                    .setInventoryNodeConnectorRef(invNodeConnectorRef)
+                    .build())
                 .build();
     }
 
     public static Link toTopologyLink(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.Link link) {
-        return new LinkBuilder() //
-                .setSource(new SourceBuilder() //
-                        .setSourceNode(toTopologyNodeId(link.getSource())) //
-                        .setSourceTp(toTerminationPointId(link.getSource())) //
-                        .build()) //
-                .setDestination(new DestinationBuilder() //
-                        .setDestNode(toTopologyNodeId(link.getDestination())) //
-                        .setDestTp(toTerminationPointId(link.getDestination())) //
-                        .build()) //
-                .setLinkId(new LinkId(getNodeConnectorKey(link.getSource()).getId())) //
+        return new LinkBuilder()
+                .setSource(new SourceBuilder()
+                        .setSourceNode(toTopologyNodeId(link.getSource()))
+                        .setSourceTp(toTerminationPointId(link.getSource()))
+                        .build())
+                .setDestination(new DestinationBuilder()
+                        .setDestNode(toTopologyNodeId(link.getDestination()))
+                        .setDestTp(toTerminationPointId(link.getDestination()))
+                        .build())
+                .setLinkId(new LinkId(getNodeConnectorKey(link.getSource()).getId()))
                 .build();
     }
 }

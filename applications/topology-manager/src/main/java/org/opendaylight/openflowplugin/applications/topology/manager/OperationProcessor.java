@@ -77,16 +77,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable, Transa
                     } while (op != null);
 
                     LOG.debug("Processed {} operations, submitting transaction", ops);
-
-                    try {
-                        tx.submit().checkedGet();
-                    } catch (final TransactionCommitFailedException e) {
-                        LOG.warn("Stat DataStoreOperation unexpected State!", e);
-                        transactionChain.close();
-                        transactionChain = dataBroker.createTransactionChain(this);
-                        cleanDataStoreOperQueue();
-                    }
-
+                    submitTransaction(tx);
                 } catch (final IllegalStateException e) {
                     LOG.warn("Stat DataStoreOperation unexpected State!", e);
                     transactionChain.close();
@@ -94,7 +85,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable, Transa
                     cleanDataStoreOperQueue();
                 } catch (final InterruptedException e) {
                     // This should mean we're shutting down.
-                    LOG.debug("Stat Manager DS Operation thread interupted!", e);
+                    LOG.debug("Stat Manager DS Operation thread interrupted!", e);
                     finishing = true;
                 } catch (final Exception e) {
                     LOG.warn("Stat DataStore Operation executor fail!", e);
@@ -102,6 +93,17 @@ public final class OperationProcessor implements AutoCloseable, Runnable, Transa
             }
         // Drain all events, making sure any blocked threads are unblocked
         cleanDataStoreOperQueue();
+    }
+
+    private void submitTransaction(ReadWriteTransaction tx) {
+        try {
+            tx.submit().checkedGet();
+        } catch (final TransactionCommitFailedException e) {
+            LOG.warn("Stat DataStoreOperation unexpected State!", e);
+            transactionChain.close();
+            transactionChain = dataBroker.createTransactionChain(this);
+            cleanDataStoreOperQueue();
+        }
     }
 
     private void cleanDataStoreOperQueue() {

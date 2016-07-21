@@ -45,7 +45,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     }
 
     /**
-     * @param removedPaths
+     * @param removedNodes
      */
     private void processRemovedNode(final Set<InstanceIdentifier<?>> removedNodes) {
         for (InstanceIdentifier<?> removedNode : removedNodes) {
@@ -66,17 +66,17 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
         }
     }
 
-    /**
-     * @param updatedData
-     */
-    // private void processUpdatedNode(Map<InstanceIdentifier<?>, DataObject> updatedData) {
-    // //TODO: only node id is used from incomming data object.
-    // //if it is changed what should happen? Listener is on FlocCapableNode so change
-    // //of node id (only data which are used) isn't caught.
-    // }
+//    /**
+//     * @param updatedData
+//     */
+//     private void processUpdatedNode(Map<InstanceIdentifier<?>, DataObject> updatedData) {
+//         //TODO: only node id is used from incoming data object.
+//         //if it is changed what should happen? Listener is on FlowCapableNode so change
+//         //of node id (only data which are used) isn't caught.
+//     }
 
     /**
-     * @param createdData
+     * @param addedDatas
      */
     private void processAddedNode(final Map<InstanceIdentifier<?>, DataObject> addedDatas) {
         for (Entry<InstanceIdentifier<?>, DataObject> addedData : addedDatas.entrySet()) {
@@ -97,7 +97,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     /**
      * @param nodeIdInTopology
      * @param iiToNodeInInventory
-     * @return
+     * @return Node
      */
     private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node prepareTopologyNode(final NodeId nodeIdInTopology, final InstanceIdentifier<?> iiToNodeInInventory) {
         final InventoryNode inventoryNode = new InventoryNodeBuilder()
