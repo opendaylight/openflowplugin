@@ -8,11 +8,27 @@
 
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.*;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeConnKey;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newLink;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newNodeConnID;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newSourceTp;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedSubmit;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForSubmit;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +38,9 @@ import org.mockito.MockitoAnnotations;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableTopologyExporter;
-import org.opendaylight.openflowplugin.applications.topology.manager.OperationProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -36,17 +51,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public class FlowCapableTopologyExporterTest {
 

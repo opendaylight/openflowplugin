@@ -115,8 +115,6 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
         return tpPath(toTopologyNodeId(invNodeKey.getId()), toTerminationPointId(invNodeConnectorKey.getId()));
     }
 
-
-
     private InstanceIdentifier<Node> getNodePath(final NodeId nodeId) {
         return iiToTopology.child(Node.class, new NodeKey(nodeId));
     }
