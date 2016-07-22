@@ -13,7 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
  * @author msunal
  */
 public final class NiciraUtil {
-
+    private NiciraUtil() { }
 
     public static final ActionSerializerKey<?> createOfJavaKeyFrom(NiciraActionSerializerKey key) {
         return new ActionSerializerKey<>(key.getVersion(), key.getSubtype(), NiciraConstants.NX_VENDOR_ID);

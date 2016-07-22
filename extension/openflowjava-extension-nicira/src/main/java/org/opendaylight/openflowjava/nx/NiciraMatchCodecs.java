@@ -47,6 +47,7 @@ import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
  * @author Josh Hershberg (jhershbe@redhat.com)
  */
 public class NiciraMatchCodecs {
+    private NiciraMatchCodecs () { }
 
     public static final Reg0Codec REG0_CODEC = new Reg0Codec();
     public static final Reg1Codec REG1_CODEC = new Reg1Codec();

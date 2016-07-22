@@ -31,7 +31,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
     private AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private AtomicInteger countDpnWriteCompletion = new AtomicInteger(0);
     private AtomicLong taskCompletionTime = new AtomicLong(0);
-    private final String UNITS = "ns";
+    private static final String UNITS = "ns";
 
     public FlowWriterSequential(final DataBroker dataBroker, ExecutorService flowPusher) {
         this.dataBroker = dataBroker;

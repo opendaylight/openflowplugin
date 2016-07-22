@@ -40,7 +40,7 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     private final boolean isConfigDs;
     private AtomicLong flowCount = new AtomicLong(0);
     private AtomicInteger readOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
-    private final String UNITS = "ns";
+    private static final String UNITS = "ns";
 
     private FlowReader(final DataBroker dataBroker,
                       final Integer dpnCount,

@@ -247,7 +247,6 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
                         LOG.debug("Trying to remove from operational node: {}", roleContext.getDeviceInfo().getNodeId());
                         removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
                     } else {
-                        final NodeId nodeId = roleContext.getDeviceInfo().getNodeId();
                         contexts.remove(roleContext.getDeviceInfo(), roleContext);
                         roleContext.close();
                         conductor.closeConnection(roleContext.getDeviceInfo());
