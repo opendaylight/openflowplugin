@@ -49,18 +49,23 @@ public class SwitchSessionKeyOF {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SwitchSessionKeyOF other = (SwitchSessionKeyOF) obj;
         if (datapathId == null) {
-            if (other.datapathId != null)
+            if (other.datapathId != null) {
                 return false;
-        } else if (!datapathId.equals(other.datapathId))
+            }
+        } else if (!datapathId.equals(other.datapathId)) {
             return false;
+        }
         return true;
     }
 }

@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
  * Codec for the NX_RESUBMIT and NX_RESUBMIT_TABLE
  */
 public class ResubmitCodec extends AbstractActionCodec {
+
     public static final int LENGTH = 16;
     public static final byte NXAST_RESUBMIT_SUBTYPE = 1;
     public static final byte NXAST_RESUBMIT_TABLE_SUBTYPE = 14;

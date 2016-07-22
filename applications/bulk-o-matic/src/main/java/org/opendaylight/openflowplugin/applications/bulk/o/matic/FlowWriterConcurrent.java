@@ -24,23 +24,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class FlowWriterConcurrent implements FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterConcurrent.class);
+    public static final String USING_CONCURRENT_IMPLEMENTATION_OF_FLOW_WRITER = "Using Concurrent implementation of Flow Writer.";
     private final DataBroker dataBroker;
     private final ExecutorService flowPusher;
     private long startTime;
     private AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private AtomicInteger countDpnWriteCompletion = new AtomicInteger(0);
     private AtomicLong taskCompletionTime = new AtomicLong(0);
-    private final String UNITS = "ns";
+    private static final String UNITS = "ns";
 
     public FlowWriterConcurrent(final DataBroker dataBroker, ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
         this.flowPusher = flowPusher;
-        LOG.info("Using Concurrent implementation of Flow Writer.");
+        LOG.info(USING_CONCURRENT_IMPLEMENTATION_OF_FLOW_WRITER);
     }
 
     public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize,
                          int sleepMillis, int sleepAfter, short startTableId, short endTableId) {
-        LOG.info("Using Concurrent implementation of Flow Writer.");
+        LOG.info(USING_CONCURRENT_IMPLEMENTATION_OF_FLOW_WRITER);
         countDpnWriteCompletion.set(dpnCount);
         startTime = System.nanoTime();
         for (int i = 1; i <= dpnCount; i++) {
@@ -52,7 +53,7 @@ public class FlowWriterConcurrent implements FlowCounterMBean {
 
     public void deleteFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize,
                             short startTableId, short endTableId) {
-        LOG.info("Using Concurrent implementation of Flow Writer.");
+        LOG.info(USING_CONCURRENT_IMPLEMENTATION_OF_FLOW_WRITER);
         countDpnWriteCompletion.set(dpnCount);
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, false, batchSize,
