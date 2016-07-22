@@ -120,7 +120,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         LOG.debug("Notifying registered listeners for service change, no. of listeners {}", serviceChangeListeners.size());
         for (final Map.Entry<DeviceInfo, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
             if (nodeIdServiceChangeListenerEntry.getKey().equals(deviceInfo)) {
-                LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), deviceInfo, success);
+                LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), deviceInfo.getNodeId().getValue(), success);
                 nodeIdServiceChangeListenerEntry.getValue().servicesChangeDone(deviceInfo, success);
                 serviceChangeListeners.remove(deviceInfo);
             }
@@ -130,10 +130,10 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     @Override
     public void roleInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in role context was NOT successful, closing connection.", deviceInfo);
+            LOG.warn("Initialization phase for node {} in role context was NOT successful, closing connection.", deviceInfo.getNodeId().getValue());
             closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in role context was successful, continuing to next context.", deviceInfo);
+            LOG.info("initialization phase for node {} in role context was successful, continuing to next context.", deviceInfo.getNodeId().getValue());
         }
     }
 
@@ -151,15 +151,15 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
         final DeviceContext deviceContext = Preconditions.checkNotNull(
                 deviceManager.gainContext(deviceInfo),
-                "Something went wrong, device context for nodeId: %s doesn't exists", deviceInfo.getNodeId()
+                "Something went wrong, device context for nodeId: %s doesn't exists", deviceInfo.getNodeId().getValue()
         );
 
         final RpcContext rpcContext =  Preconditions.checkNotNull(
                 rpcManager.gainContext(deviceInfo),
-                "Something went wrong, rpc context for nodeId: %s doesn't exists", deviceInfo.getNodeId()
+                "Something went wrong, rpc context for nodeId: %s doesn't exists", deviceInfo.getNodeId().getValue()
         );
 
-        LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo);
+        LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo.getNodeId().getValue());
 
         final String logText;
 
@@ -198,7 +198,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo);
+                LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo.getNodeId().getValue());
                 closeConnection(deviceInfo);
             }
         });
@@ -223,7 +223,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                             .flatMap(table -> table.getFlow().stream())
                             .count();
 
-                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getNodeId());
+                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getNodeId().getValue());
                 }
 
                 statisticsManager.startScheduling(deviceInfo);
@@ -233,9 +233,9 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
             public void onFailure(Throwable t) {
                 // If we manually cancelled this future, do not start scheduling of statistics
                 if (deviceFlowRegistryFill.isCancelled()) {
-                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getNodeId());
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getNodeId().getValue());
                 } else {
-                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getNodeId(), t);
+                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getNodeId().getValue(), t);
                     statisticsManager.startScheduling(deviceInfo);
                 }
             }
@@ -273,20 +273,20 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     @Override
     public void deviceStartInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo);
+            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo.getNodeId().getValue());
             closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in device context was successful. Continuing to next context.", deviceInfo);
+            LOG.info("initialization phase for node {} in device context was successful. Continuing to next context.", deviceInfo.getNodeId().getValue());
         }
     }
 
     @Override
     public void deviceInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
         if (!success) {
-            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo);
+            LOG.warn("Initialization phase for node {} in device context was NOT successful, closing connection.", deviceInfo.getNodeId().getValue());
             closeConnection(deviceInfo);
         } else {
-            LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", deviceInfo);
+            LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", deviceInfo.getNodeId().getValue());
         }
     }
 

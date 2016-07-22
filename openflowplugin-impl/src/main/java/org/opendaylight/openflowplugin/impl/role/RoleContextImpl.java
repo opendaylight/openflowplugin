@@ -199,4 +199,9 @@ class RoleContextImpl implements RoleContext {
     public CONTEXT_STATE getState() {
         return contextState;
     }
+
+    @Override
+    public void setState(CONTEXT_STATE contextState) {
+        this.contextState = contextState;
+    }
 }
