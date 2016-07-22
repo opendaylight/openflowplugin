@@ -121,11 +121,6 @@ public class DeviceManagerImplTest {
         when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void onDeviceContextLevelUpFailTest() throws Exception {
-        onDeviceContextLevelUp(true);
-    }
-
     @Test
     public void onDeviceContextLevelUpSuccessTest() throws Exception {
         onDeviceContextLevelUp(false);
@@ -170,7 +165,6 @@ public class DeviceManagerImplTest {
         if (withException) {
             verify(mockedDeviceContext).close();
         } else {
-            verify(mockedDeviceContext).initialSubmitTransaction();
             verify(mockedDeviceContext).onPublished();
         }
     }
