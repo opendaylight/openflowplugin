@@ -12,6 +12,10 @@ package org.opendaylight.openflowplugin.api.openflow;
  */
 public interface OFPContext {
 
+    default void setState(CONTEXT_STATE contextState) {
+        //NOOP
+    }
+
     /**
      * distinguished device context states
      */

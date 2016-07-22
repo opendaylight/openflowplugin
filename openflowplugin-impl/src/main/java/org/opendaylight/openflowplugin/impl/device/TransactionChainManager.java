@@ -45,10 +45,6 @@ import org.slf4j.LoggerFactory;
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#submit()})
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         </p>
- *         Created: Apr 2, 2015
  */
 class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
@@ -254,7 +250,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @Nullable
     private WriteTransaction getTransactionSafely() {
-        if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
             synchronized (txLock) {
                 if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
                     if (wTx == null && txChainFactory != null) {
@@ -262,7 +257,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
                 }
             }
-        }
         return wTx;
     }
 
