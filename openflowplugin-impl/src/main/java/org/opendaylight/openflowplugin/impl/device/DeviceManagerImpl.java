@@ -130,7 +130,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         // final phase - we have to add new Device to MD-SAL DataStore
         LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
-        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
         deviceContext.onPublished();
     }
 
@@ -322,7 +321,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role) {
-        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
+        DeviceContext deviceContext = deviceContexts.get(deviceInfo);
         LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
         if (OfpRole.BECOMEMASTER.equals(role)) {
             return onDeviceTakeClusterLeadership(deviceInfo);
@@ -373,10 +372,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.warn(errMsg);
             return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
         }
-        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
+        DeviceContext deviceContext = deviceContexts.get(deviceInfo);
         /* Prepare init info collecting */
         notifyDeviceSynchronizeListeners(deviceInfo, false);
         ((DeviceContextImpl)deviceContext).getTransactionChainManager().activateTransactionManager();
+        ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         /* Init Collecting NodeInfo */
         final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
                 deviceContext, switchFeaturesMandatory);
@@ -416,7 +416,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.debug("Get Initial Device {} information is successful",
                     deviceContext.getDeviceInfo().getNodeId());
             notifyDeviceSynchronizeListeners(deviceContext.getDeviceInfo(), true);
-            ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
             deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
             return null;
         };
