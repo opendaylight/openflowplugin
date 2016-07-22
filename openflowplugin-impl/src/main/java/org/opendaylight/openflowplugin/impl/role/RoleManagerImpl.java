@@ -20,6 +20,7 @@ import io.netty.util.TimerTask;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -99,6 +100,7 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
 
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo) throws Exception {
+        LOG.debug("onDeviceContextLevelUp ROLE MANAGER with device info: {}", deviceInfo);
         final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
         final RoleContext roleContext = new RoleContextImpl(deviceInfo, entityOwnershipService, makeEntity(deviceInfo.getNodeId()), makeTxEntity(deviceInfo.getNodeId()), conductor);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
@@ -122,26 +124,26 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
             watchingEntities.remove(roleContext.getTxEntity());
             contexts.remove(roleContext.getDeviceInfo());
             if (roleContext.isTxCandidateRegistered()) {
-                LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.");
+                LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.", roleContext.getDeviceInfo().getNodeId().getValue());
                 removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
-            } else {
-                roleContext.close();
             }
+            roleContext.close();
         }
     }
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         LOG.trace("onDeviceContextLevelDown for node {}", deviceInfo.getNodeId());
-        final RoleContext roleContext = contexts.get(deviceInfo);
+        final RoleContext roleContext = contexts.remove(deviceInfo);
         if (roleContext != null) {
             LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", deviceInfo.getNodeId());
-            if (roleContext.isMainCandidateRegistered()) {
-                roleContext.unregisterCandidate(roleContext.getEntity());
-            } else {
-                contexts.remove(deviceInfo.getNodeId(), roleContext);
-                roleContext.close();
+            roleContext.setState(OFPContext.CONTEXT_STATE.TERMINATION);
+            roleContext.unregisterCandidate(roleContext.getEntity());
+            if (roleContext.isTxCandidateRegistered()) {
+                LOG.info("Node {} was holder txEntity, so trying to remove device from operational DS.", deviceInfo.getNodeId().getValue());
+                removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
             }
+            roleContext.close();
         }
         deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
@@ -162,19 +164,24 @@ public class RoleManagerImpl implements RoleManager, EntityOwnershipListener, Se
         Preconditions.checkArgument(ownershipChange != null);
         final RoleContext roleContext = watchingEntities.get(ownershipChange.getEntity());
 
-        LOG.debug("Received EOS message: wasOwner:{} isOwner:{} hasOwner:{} inJeopardy:{} for entity type {} and node {}",
-                ownershipChange.wasOwner(), ownershipChange.isOwner(), ownershipChange.hasOwner(), ownershipChange.inJeopardy(),
-                ownershipChange.getEntity().getType(),
-                roleContext != null ? roleContext.getDeviceInfo().getNodeId() : "-> no watching entity, disregarding notification <-");
+        if (Objects.nonNull(roleContext) && !roleContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
 
-        if (roleContext != null) {
+            LOG.debug("Received EOS message: wasOwner:{} isOwner:{} hasOwner:{} inJeopardy:{} for entity type {} and node {}",
+                    ownershipChange.wasOwner(), ownershipChange.isOwner(), ownershipChange.hasOwner(), ownershipChange.inJeopardy(),
+                    ownershipChange.getEntity().getType(),
+                    roleContext.getDeviceInfo().getNodeId());
+
             if (ownershipChange.getEntity().equals(roleContext.getEntity())) {
                 changeOwnershipForMainEntity(ownershipChange, roleContext);
             } else {
                 changeOwnershipForTxEntity(ownershipChange, roleContext);
             }
+
         } else {
-            LOG.debug("OwnershipChange {}", ownershipChange);
+
+            LOG.debug("Role context for entity type {} is in state closing, disregarding ownership change notification.", ownershipChange.getEntity().getType());
+            watchingEntities.remove(ownershipChange.getEntity());
+
         }
 
     }
