@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 public class FlowRegistryKeyFactory {
 
 
-    public FlowRegistryKeyFactory() {
+    private FlowRegistryKeyFactory() {
     }
 
     public static FlowRegistryKey create(final Flow flow) {
