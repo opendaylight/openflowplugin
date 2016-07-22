@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -135,7 +136,7 @@ public class DeviceInitializationUtils {
                 try {
                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                 } catch (final Exception e) {
-                    LOG.debug("Failed to write node {} to DS ", deviceInfo.getNodeId().toString(),
+                    LOG.debug("initializeNodeInformation: Failed to write node {} to DS ", deviceInfo.getNodeId().toString(),
                             e);
                 }
 
@@ -153,7 +154,7 @@ public class DeviceInitializationUtils {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                LOG.debug("All init data for node {} is in submited.", deviceInfo.getNodeId());
+                LOG.debug("All init data for node {} is in submitted.", deviceInfo.getNodeId());
                 returnFuture.set(null);
             }
 
@@ -171,14 +172,13 @@ public class DeviceInitializationUtils {
 
     private static void addNodeToOperDS(final DeviceContext deviceContext, final SettableFuture<Void> future) {
         Preconditions.checkArgument(deviceContext != null);
-        final DeviceState deviceState = deviceContext.getDeviceState();
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceContext.getDeviceInfo().getNodeId()).setNodeConnector(
                 Collections.<NodeConnector>emptyList());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
                     nodeBuilder.build());
         } catch (final Exception e) {
-            LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
+            LOG.warn("addNodeToOperDS: Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
             future.cancel(true);
         }
     }
@@ -342,7 +342,7 @@ public class DeviceInitializationUtils {
                 }
             }
         } catch (final Exception e) {
-            LOG.debug("Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
+            LOG.debug("translateAndWriteReply: Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
@@ -353,7 +353,7 @@ public class DeviceInitializationUtils {
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
         } catch (final Exception e) {
-            LOG.debug("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId().toString(), e);
+            LOG.debug("createEmptyFlowCapableNodeInDs: Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
@@ -386,7 +386,7 @@ public class DeviceInitializationUtils {
             try {
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBuilder.build());
             } catch (final Exception e) {
-                LOG.debug("Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
+                LOG.debug("makeEmptyTables: Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
             }
 
         }
@@ -479,24 +479,23 @@ public class DeviceInitializationUtils {
 
     static void chainTableTrunkWriteOF10(final DeviceContext deviceContext,
                                          final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
-        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
-            @Override
-            public void onSuccess(final List<RpcResult<List<MultipartReply>>> results) {
-                boolean allSucceeded = true;
-                for (final RpcResult<List<MultipartReply>> rpcResult : results) {
-                    allSucceeded &= rpcResult.isSuccessful();
-                }
-                if (allSucceeded) {
-                    createEmptyFlowCapableNodeInDs(deviceContext);
-                    makeEmptyTables(deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
-                            deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
-                }
-            }
 
-            @Override
-            public void onFailure(final Throwable t) {
-                //NOOP
+        try {
+            LOG.trace("Waiting for protocol version 1.0");
+            List<RpcResult<List<MultipartReply>>> results = deviceFeaturesFuture.get();
+            boolean allSucceeded = true;
+            for (final RpcResult<List<MultipartReply>> rpcResult : results) {
+                allSucceeded &= rpcResult.isSuccessful();
             }
-        });
+            if (allSucceeded) {
+                LOG.debug("Creating emtpy flow capable node: {}", deviceContext.getDeviceInfo().getNodeId().getValue());
+                createEmptyFlowCapableNodeInDs(deviceContext);
+                LOG.debug("Creating emtpy tables for {}", deviceContext.getDeviceInfo().getNodeId().getValue());
+                makeEmptyTables(deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
+                        deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceContext.getDeviceInfo().getNodeId().getValue());
+        }
     }
 }
