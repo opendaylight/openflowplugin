@@ -30,11 +30,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class BulkOMaticUtils {
 
-    public final static int DEFUALT_STATUS = FlowCounter.OperationStatus.INIT.status();
-    public final static int DEFAULT_FLOW_COUNT = 0;
-    public final static long DEFAULT_COMPLETION_TIME = 0;
-    public final static String DEFAULT_UNITS = "ns";
-    public final static String DEVICE_TYPE_PREFIX = "openflow:";
+    private BulkOMaticUtils () { }
+
+    public static final int DEFUALT_STATUS = FlowCounter.OperationStatus.INIT.status();
+    public static final int DEFAULT_FLOW_COUNT = 0;
+    public static final long DEFAULT_COMPLETION_TIME = 0;
+    public static final String DEFAULT_UNITS = "ns";
+    public static final String DEVICE_TYPE_PREFIX = "openflow:";
 
     public static String ipIntToStr (int k) {
         return new StringBuilder().append(((k >> 24) & 0xFF)).append(".")

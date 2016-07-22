@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public class FlowRegistryKeyFactory {
+
     private FlowRegistryKeyFactory() {
         // Hide implicit constructor
     }

@@ -119,7 +119,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private ListenerRegistration<FlowNodeReconciliationImpl> listenerRegistration;
 
-    private final int THREAD_POOL_SIZE = 4;
+    private static final int THREAD_POOL_SIZE = 4;
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE
@@ -604,7 +604,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete){
         ImmutableList.Builder<InstanceIdentifier<StaleFlow>> builder = ImmutableList.builder();
-        ImmutableList<InstanceIdentifier<StaleFlow>> bulkDelFlows = builder.addAll(flowsForBulkDelete.iterator()).build();
 
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
@@ -618,7 +617,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete){
         ImmutableList.Builder<InstanceIdentifier<StaleGroup>> builder = ImmutableList.builder();
-        ImmutableList<InstanceIdentifier<StaleGroup>> bulkDelGroups = builder.addAll(groupsForBulkDelete.iterator()).build();
 
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
@@ -633,7 +631,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete){
         ImmutableList.Builder<InstanceIdentifier<StaleMeter>> builder = ImmutableList.builder();
-        ImmutableList<InstanceIdentifier<StaleMeter>> bulkDelGroups = builder.addAll(metersForBulkDelete.iterator()).build();
 
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
@@ -670,7 +667,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private void handleStaleEntityDeletionResultFuture(CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
         Futures.addCallback(submitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void result) { LOG.debug("Stale entity removal success");
+            public void onSuccess(Void result) {
+                LOG.debug("Stale entity removal success");
             }
 
             @Override
