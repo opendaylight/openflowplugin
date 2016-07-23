@@ -4,8 +4,6 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributor: usha.m.s@ericsson.com
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
@@ -35,14 +33,14 @@ public class PortConvertorTest {
 
     private PortFeatures features = new PortFeatures(true, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null);
-    
+
     private PortConfig config = new PortConfig(false, false, false, false);
-    
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures portf31= 
+
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures portf31=
             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures(
                     null, null, null, null, null, null, null, null, null, null, true, null, null, null, null, null);
-    
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig config31 = 
+
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig config31 =
             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig(
                     false, false, false, false);
 
@@ -52,47 +50,47 @@ public class PortConvertorTest {
     @Test
     public void testtoPortModInputwithAllParameters()
     {
-        
+
         PortBuilder portBld = new PortBuilder();
         portBld.setAdvertisedFeatures(features);
         portBld.setConfiguration(config);
         portBld.setPortNumber(new PortNumberUni(42L));
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
-        
+
         PortModInput portOut = PortConvertor.toPortModInput(portBld.build(), EncodeConstants.OF13_VERSION_ID);
-        
+
         PortConfigV10 portConfV10 = new PortConfigV10(false, false, false, false, true, true, false);
-        
+
         PortModInputBuilder portModInputBld = new PortModInputBuilder();
-        
+
         portModInputBld.setConfig(config31);
         portModInputBld.setMask(config31);
         portModInputBld.setPortNo(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(42L));
         portModInputBld.setHwAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         portModInputBld.setAdvertise(portf31);
-        
+
         portModInputBld.setConfigV10(portConfV10);
         portModInputBld.setMaskV10(portConfV10);
         portModInputBld.setAdvertiseV10(
                 new PortFeaturesV10(null, null, null, null, null, null, null, true, null, null, null, null));
-        
+
         portModInputBld.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        
+
         Assert.assertEquals(portModInputBld.build(), portOut);
     }
-    
+
     /**
      * test of {@link PortConvertor#toPortDesc(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort , short)}
      */
     @Test
     public void testtoPortDescwithAllParameters(){
-        
+
         State state = new StateBuilder().setBlocked(false).setLinkDown(false).setLive(false).build();
         PortState state31= new PortState(false, false, false);
-        
+
         FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder = new FlowCapableNodeConnectorBuilder();
-        
+
         flowCapableNodeConnectorBuilder.setAdvertisedFeatures(features);
         flowCapableNodeConnectorBuilder.setConfiguration(config);
         flowCapableNodeConnectorBuilder.setCurrentFeature(features);
@@ -104,11 +102,11 @@ public class PortConvertorTest {
         flowCapableNodeConnectorBuilder.setPortNumber(new PortNumberUni(42L));
         flowCapableNodeConnectorBuilder.setState(state);
         flowCapableNodeConnectorBuilder.setSupported(features);
-        
+
         Ports portsOut = PortConvertor.toPortDesc(flowCapableNodeConnectorBuilder.build(), EncodeConstants.OF13_VERSION_ID);
-        
+
         PortsBuilder portsB = new PortsBuilder();
-        
+
         portsB.setAdvertisedFeatures(portf31);
         portsB.setConfig(config31);
         portsB.setCurrentFeatures(portf31);
@@ -120,8 +118,8 @@ public class PortConvertorTest {
         portsB.setPortNo(42L);
         portsB.setState(state31);
         portsB.setSupportedFeatures(portf31);
-        
+
         Assert.assertEquals(portsB.build(), portsOut);
     }
-    
+
 }

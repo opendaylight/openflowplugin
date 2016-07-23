@@ -32,7 +32,7 @@ public class TimeCounterTest {
      * - tm1 at time 2 ms
      * - tm2 at time 4 ms
      * - tm3 at time 9 ms
-     * 
+     *
      * awaited average time:
      * - tm1 = 2/1 = 2 ms
      * - tm2 = 4/2 = 2 ms
