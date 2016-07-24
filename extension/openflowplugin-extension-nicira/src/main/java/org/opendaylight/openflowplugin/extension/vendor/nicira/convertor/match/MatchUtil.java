@@ -54,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpFlagGrouping;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
@@ -109,6 +110,8 @@ public class MatchUtil {
             NxmOfUdpSrcGrouping.class);
     public final static GroupingResolver<NxmOfUdpDstGrouping, Extension> udpDstResolver = new GroupingResolver<>(
             NxmOfUdpDstGrouping.class);
+    public final static GroupingResolver<NxmOfTcpFlagGrouping, Extension> tcpFlagResolver = new GroupingResolver<>(
+            NxmOfTcpFlagGrouping.class);
     public final static GroupingResolver<NxmNxCtStateGrouping, Extension> ctStateResolver = new GroupingResolver<>(
             NxmNxCtStateGrouping.class);
     public final static GroupingResolver<NxmNxCtZoneGrouping, Extension> ctZoneResolver = new GroupingResolver<>(
@@ -146,6 +149,7 @@ public class MatchUtil {
         tcpDstResolver.setAugmentations(augmentationsOfExtension);
         udpSrcResolver.setAugmentations(augmentationsOfExtension);
         udpDstResolver.setAugmentations(augmentationsOfExtension);
+        tcpFlagResolver.setAugmentations(augmentationsOfExtension);
         ctStateResolver.setAugmentations(augmentationsOfExtension);
         ctZoneResolver.setAugmentations(augmentationsOfExtension);
 

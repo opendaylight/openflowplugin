@@ -103,6 +103,9 @@ module openflowplugin-extension-nicira-match {
     identity nxm-of-tcp-dst-key {
         base ext-gen:extension-key;
     }
+    identity nxm-of-tcp-flag-key {
+        base ext-gen:extension-key;
+    }
     identity nxm-of-udp-src-key {
         base ext-gen:extension-key;
     }
@@ -192,6 +195,16 @@ module openflowplugin-extension-nicira-match {
         container nxm-of-tcp-dst {
             leaf port {
                 type inet:port-number;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping nxm-of-tcp-flag-grouping {
+        container nxm-of-tcp-flag {
+            leaf tcp-flag {
+               type uint16;
             }
             leaf mask {
                type uint16;
@@ -350,6 +363,7 @@ module openflowplugin-extension-nicira-match {
         uses nxm-nx-nshc-4-grouping;
         uses nxm-of-tcp-src-grouping;
         uses nxm-of-tcp-dst-grouping;
+        uses nxm-of-tcp-flag-grouping;
         uses nxm-of-udp-src-grouping;
         uses nxm-of-udp-dst-grouping;
         uses nxm-nx-ct-state-grouping;

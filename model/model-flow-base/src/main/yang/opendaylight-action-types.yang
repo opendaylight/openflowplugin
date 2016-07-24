@@ -321,6 +321,13 @@ module opendaylight-action-types {
              }
 
             }
+            case set-tp-flag-action-case {
+                container set-tp-flag-action {
+                 leaf tcp-flag {
+                     type uint16;
+                 }
+               }
+            }
             case set-vlan-cfi-action-case {
                 container set-vlan-cfi-action {
                  leaf vlan-cfi {

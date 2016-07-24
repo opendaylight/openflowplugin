@@ -102,6 +102,9 @@ module nicira-match {
     identity nxm-of-tcp-dst {
         base ofoxm:match-field;
     }
+    identity nxm-of-tcp-flag {
+        base ofoxm:match-field;
+    }
     identity nxm-of-udp-src {
         base ofoxm:match-field;
     }
@@ -271,7 +274,17 @@ module nicira-match {
             }
         }
     }
-     grouping ofj-nxm-of-match-udp-src-grouping {
+    grouping ofj-nxm-of-match-tcp-flag-grouping {
+        container tcp-flag-values {
+            leaf tcp-flag {
+               type uint16;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-udp-src-grouping {
         container udp-src-values {
             leaf port {
                type inet:port-number;
@@ -392,6 +405,9 @@ module nicira-match {
         }
         case tcp-dst-case-value {
             uses ofj-nxm-of-match-tcp-dst-grouping;
+        }
+        case tcp-flag-case-value {
+            uses ofj-nxm-of-match-tcp-flag-grouping;
         }
         case udp-src-case-value {
             uses ofj-nxm-of-match-udp-src-grouping;

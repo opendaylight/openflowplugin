@@ -134,6 +134,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
@@ -549,6 +550,7 @@ public class TableFeaturesReplyConvertor {
         builder.put(SctpDst.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpDst.class);
         builder.put(SctpSrc.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpSrc.class);
         builder.put(TcpDst.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpDst.class);
+        builder.put(TcpFlag.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class);
         builder.put(TcpSrc.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.class);
         builder.put(TunnelId.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelId.class);
         builder.put(UdpDst.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class);
@@ -571,6 +573,9 @@ public class TableFeaturesReplyConvertor {
                 .getMatchEntry()) {
             ofMatchField = currMatch.getOxmMatchField();
             Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> salMatchField = null;
+            if (ofMatchField.equals(TcpFlag.class)) {
+               salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class;
+            }
             setFieldMatchBuilder.setMatchType(salMatchField);
             if (setHasMask) {
                 setFieldMatchBuilder.setHasMask(currMatch.isHasMask());

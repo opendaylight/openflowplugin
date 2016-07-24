@@ -36,6 +36,7 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpFlagCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
@@ -82,4 +83,5 @@ public class NiciraMatchCodecs {
     public static final IpSrcCodec IP_SRC_CODEC = new IpSrcCodec();
     public static final IpDstCodec IP_DST_CODEC = new IpDstCodec();
     public static final IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
+    public static final TcpFlagCodec TCP_FLAG_CODEC = new TcpFlagCodec();
 }

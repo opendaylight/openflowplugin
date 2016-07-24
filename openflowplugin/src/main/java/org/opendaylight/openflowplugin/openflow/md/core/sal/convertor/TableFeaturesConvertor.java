@@ -111,6 +111,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
@@ -545,6 +546,7 @@ public class TableFeaturesConvertor {
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpDst.class, SctpDst.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpSrc.class, SctpSrc.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpDst.class, TcpDst.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class, TcpFlag.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.class, TcpSrc.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelId.class, TunnelId.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class, UdpDst.class);
@@ -570,6 +572,10 @@ public class TableFeaturesConvertor {
             Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> ofTableFeatureClass
                     = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
             setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.isHasMask());
+            if(currMatchType
+               .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class)) {
+              setMatchEntry(matchEntryBuilder, TcpFlag.class, currMatch.isHasMask());
+            }
 
             matchEntriesList.add(matchEntryBuilder.build());
         }

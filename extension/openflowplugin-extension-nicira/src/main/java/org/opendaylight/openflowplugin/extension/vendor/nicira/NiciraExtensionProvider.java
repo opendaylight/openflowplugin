@@ -53,6 +53,7 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TcpFlagCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
@@ -96,6 +97,7 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.N
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.RegConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpSrcConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpFlagConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4SrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIdConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.UdpDstConvertor;
@@ -246,6 +248,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpFlagKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
@@ -294,6 +297,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private final static TunIPv4DstConvertor TUN_IPV4_DST_CONVERTOR = new TunIPv4DstConvertor();
     private final static TcpSrcConvertor TCP_SRC_CONVERTOR = new TcpSrcConvertor();
     private final static TcpDstConvertor TCP_DST_CONVERTOR = new TcpDstConvertor();
+    private final static TcpFlagConvertor TCP_FLAG_CONVERTOR = new TcpFlagConvertor();
     private final static UdpSrcConvertor UDP_SRC_CONVERTOR = new UdpSrcConvertor();
     private final static UdpDstConvertor UDP_DST_CONVERTOR = new UdpDstConvertor();
     private final static ConntrackConvertor CONNTRACK_CONVERTOR = new ConntrackConvertor();
@@ -525,6 +529,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfUdpDstKey.class, EncodeConstants.OF13_VERSION_ID), UDP_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(UdpDstCodec.SERIALIZER_KEY, UDP_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxCtStateKey.class, EncodeConstants.OF13_VERSION_ID), CT_STATE_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfTcpFlagKey.class, EncodeConstants.OF13_VERSION_ID), TCP_FLAG_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(TcpFlagCodec.SERIALIZER_KEY, TCP_FLAG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(CtStateCodec.SERIALIZER_KEY, CT_STATE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxCtZoneKey.class, EncodeConstants.OF13_VERSION_ID), CT_ZONE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(CtZoneCodec.SERIALIZER_KEY, CT_ZONE_CONVERTOR));

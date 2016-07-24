@@ -65,6 +65,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpFlagActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCase;
@@ -84,6 +85,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.flag.action._case.SetTpFlagAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
@@ -111,6 +113,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetTpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetTpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetTpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetTpFlagCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanVidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.StripVlanCaseBuilder;
@@ -133,6 +137,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.queue._case.SetQueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.tp.dst._case.SetTpDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.tp.src._case.SetTpSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.tp.flag._case.SetTpFlagActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.vlan.pcp._case.SetVlanPcpActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.vlan.vid._case.SetVlanVidActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -148,6 +153,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid;
@@ -162,6 +168,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpFlagCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
@@ -173,6 +180,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.type._case.Icmpv6TypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.flag._case.TcpFlagBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
@@ -282,6 +290,8 @@ public final class ActionConvertor {
             } else if (action instanceof SetTpDstActionCase) {
                 ofAction = salToOFSetTpDst(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
                         getIpMatch().getIpProtocol()));
+            } else if (action instanceof SetTpFlagActionCase) {
+                ofAction = salToOFSetTpFlag(action, actionBuilder, version);
             } else if (action instanceof SetNwTosActionCase) {
                 ofAction = salToOFSetNwTos(action, actionBuilder, version);
             } else if (action instanceof GeneralExtensionGrouping) {
@@ -834,6 +844,44 @@ public final class ActionConvertor {
                     LOG.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);
                     break;
             }
+            List<MatchEntry> entries = new ArrayList<MatchEntry>();
+            entries.add(matchBuilder.build());
+            setFieldBuilder.setMatchEntry(entries);
+            setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
+            actionBuilder.setActionChoice(setFieldCaseBuilder.build());
+            return actionBuilder.build();
+        }
+        LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
+        return null;
+    }
+
+
+    private static Action salToOFSetTpFlag(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
+            final ActionBuilder actionBuilder, final short version) {
+
+        SetTpFlagActionCase settpflagcase = (SetTpFlagActionCase) action;
+        SetTpFlagAction settpflagaction = settpflagcase.getSetTpFlagAction();
+        if (version == OFConstants.OFP_VERSION_1_0) {
+            SetTpFlagCaseBuilder setTpFlagCaseBuilder = new SetTpFlagCaseBuilder();
+            SetTpFlagActionBuilder setTpFlagActionBuilder = new SetTpFlagActionBuilder();
+            setTpFlagActionBuilder.setTcpFlag(settpflagaction.getTcpFlag());
+            setTpFlagCaseBuilder.setSetTpFlagAction(setTpFlagActionBuilder.build());
+            actionBuilder.setActionChoice(setTpFlagCaseBuilder.build());
+            return actionBuilder.build();
+        } else if (version == OFConstants.OFP_VERSION_1_3) {
+            SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
+            SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
+
+            MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
+            matchBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchBuilder.setHasMask(false);
+	    matchBuilder.setOxmMatchField(TcpFlag.class);
+            TcpFlagCaseBuilder tcpFlagCaseBuilder = new TcpFlagCaseBuilder();
+            TcpFlagBuilder tcpFlagBuilder = new TcpFlagBuilder();
+            tcpFlagBuilder.setFlag(settpflagaction.getTcpFlag().intValue());
+            tcpFlagCaseBuilder.setTcpFlag(tcpFlagBuilder.build());
+            matchBuilder.setMatchEntryValue(tcpFlagCaseBuilder.build());
             List<MatchEntry> entries = new ArrayList<MatchEntry>();
             entries.add(matchBuilder.build());
             setFieldBuilder.setMatchEntry(entries);
