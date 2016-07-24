@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_506a8db3",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-ipv6-arbitrary-bitmask-fields.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-24T04:10:27Z",
+      "side": 1,
+      "message": "Most of the yang files do break these patter in multiple line .. here is an example \n\ntypedef ipv6-address {\n     type string {\n       pattern \u0027((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}\u0027\n             + \u0027((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|\u0027\n             + \u0027(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}\u0027\n             + \u0027(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))\u0027\n             + \u0027(%[\\p{N}\\p{L}]+)?\u0027;\n       pattern \u0027(([^:]+:){6}(([^:]+:[^:]+)|(.*\\..*)))|\u0027\n             + \u0027((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)\u0027\n             + \u0027(%.+)?\u0027;\n     }a\n\nfrom \nhttps://tools.ietf.org/html/rfc6021",
+      "parentUuid": "9a561d44_6c9b8c72",
+      "range": {
+        "startLine": 15,
+        "startChar": 16,
+        "endLine": 15,
+        "endChar": 21
+      },
+      "revId": "aaa7ed563ede86d6eb70cb75859174e0ee8ff2d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_02bbbe72",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
         "patchSetId": 3
@@ -272,6 +296,30 @@
       "side": 1,
       "message": "Inorder to use Bitset here, we need to find the masklength, for which we need to iterate the arrayList any way atleast once. Bitset functionality here would be overhead since if used, we need to iterate the arraylist atleast twice.",
       "parentUuid": "9a561d44_3678c32a",
+      "range": {
+        "startLine": 774,
+        "startChar": 1,
+        "endLine": 784,
+        "endChar": 9
+      },
+      "revId": "aaa7ed563ede86d6eb70cb75859174e0ee8ff2d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_306719eb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 784,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-24T04:10:27Z",
+      "side": 1,
+      "message": "okay make sense",
+      "parentUuid": "9a561d44_4ca4c8a5",
       "range": {
         "startLine": 774,
         "startChar": 1,
