@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_732fdb88",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-ipv6-arbitrary-bitmask-fields.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1602
+      },
+      "writtenOn": "2016-07-24T18:01:27Z",
+      "side": 1,
+      "message": "Thanks Anil for the explanation. It works !!!",
+      "parentUuid": "9a561d44_506a8db3",
+      "range": {
+        "startLine": 15,
+        "startChar": 16,
+        "endLine": 15,
+        "endChar": 21
+      },
+      "revId": "aaa7ed563ede86d6eb70cb75859174e0ee8ff2d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_02bbbe72",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/IpConversionUtil.java",
         "patchSetId": 3
