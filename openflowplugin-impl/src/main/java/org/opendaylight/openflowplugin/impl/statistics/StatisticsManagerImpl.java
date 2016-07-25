@@ -107,11 +107,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             LOG.debug("Disabling statistics scheduling for device: {}", deviceInfo.getNodeId());
             return;
         }
-        
-        if (!deviceState.isValid()) {
-            LOG.debug("Session is not valid for device: {}", deviceInfo.getNodeId());
-            return;
-        }
 
         if (!deviceState.isStatisticsPollingEnabled()) {
             LOG.debug("Statistics polling is currently disabled for device: {}", deviceInfo.getNodeId());
