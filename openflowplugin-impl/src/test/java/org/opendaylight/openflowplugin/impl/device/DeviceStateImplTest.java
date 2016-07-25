@@ -32,17 +32,7 @@ public class DeviceStateImplTest {
 
     @Before
     public void initialization() {
-        deviceState = new DeviceStateImpl(deviceInfo);
-    }
-
-    @Test
-    public void testIsValid_initialValue(){
-        Assert.assertFalse(deviceState.isValid());
-    }
-
-    @Test
-    public void testDeviceSynchronized_initialValue(){
-        Assert.assertFalse(deviceState.deviceSynchronized());
+        deviceState = new DeviceStateImpl();
     }
 
     @Test
