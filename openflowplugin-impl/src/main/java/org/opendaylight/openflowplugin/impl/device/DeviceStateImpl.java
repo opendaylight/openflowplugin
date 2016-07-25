@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -23,26 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 class DeviceStateImpl implements DeviceState {
 
-    private final DeviceInfo deviceInfo;
-    private boolean valid;
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
-    private boolean deviceSynchronized;
     private boolean flowStatisticsAvailable;
     private boolean tableStatisticsAvailable;
     private boolean portStatisticsAvailable;
     private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
 
-    public DeviceStateImpl(final DeviceInfo deviceInfo) {
-        this.deviceInfo = deviceInfo;
+    public DeviceStateImpl() {
         statPollEnabled = false;
-        deviceSynchronized = false;
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
     }
 
     @Override
@@ -63,11 +52,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setGroupAvailable(final boolean available) {
         groupIsAvailable = available;
-    }
-
-    @Override
-    public boolean deviceSynchronized() {
-        return deviceSynchronized;
     }
 
     @Override
@@ -116,22 +100,4 @@ class DeviceStateImpl implements DeviceState {
         return statPollEnabled;
     }
 
-    @Override
-    public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
-        this.statPollEnabled = statPollEnabled;
-    }
-
-    @Override
-    public void deviceIsSynchronized(final DeviceInfo deviceInfo, final boolean isSynchronized) {
-        if (this.deviceInfo.equals(deviceInfo)) {
-            this.deviceSynchronized = isSynchronized;
-        }
-    }
-
-    @Override
-    public void deviceIsValid(final DeviceInfo deviceInfo, final boolean isValid) {
-        if (this.deviceInfo.equals(deviceInfo)) {
-            this.valid = isValid;
-        }
-    }
 }
