@@ -19,28 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalR
 /**
  * Role context for change role on cluster
  */
-public interface RoleContext extends  RequestContextStack, AutoCloseable, OFPContext {
-
-    /**
-     * Initialization method is responsible for a registration of
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listener
-     * for notification from service
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService}
-     * returns Role which has to be applied for responsible Device Context suite. Any Exception
-     * state has to close Device connection channel.
-     * @return true if initialization done ok
-     */
-    boolean initialization();
-
-    /**
-     * Termination method is responsible for an unregistration of
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.Entity} and listener
-     * for notification from service
-     * {@link org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService}
-     * returns notification "Someone else take Leadership" or "I'm last"
-     * and we need to clean Oper. DS.
-     */
-    void unregisterAllCandidates();
+public interface RoleContext extends  RequestContextStack, OFPContext {
 
     /**
      * Setter for sal role service
@@ -54,49 +33,4 @@ public interface RoleContext extends  RequestContextStack, AutoCloseable, OFPCon
      */
     SalRoleService getSalRoleService();
 
-    /**
-     * Getter for main entity
-     * @return
-     */
-    Entity getEntity();
-
-    /**
-     * Getter for tx entity
-     * @return
-     */
-    Entity getTxEntity();
-
-    /**
-     * Returns true if main entity is registered
-     * @return
-     */
-    boolean isMainCandidateRegistered();
-
-    /**
-     * Returns true if tx entity is registered
-     * @return
-     */
-    boolean isTxCandidateRegistered();
-
-    /**
-     * Register candidate depending on parameter
-     * @param entity
-     * @return true is registration was successful
-     */
-    boolean registerCandidate(final Entity entity);
-
-    /**
-     * Unregister candidate depending on parameter
-     * @param entity
-     * @return true is registration was successful
-     */
-    boolean unregisterCandidate(final Entity entity);
-
-    /**
-     * @return true if we hold both registrations
-     */
-    boolean isMaster();
-
-    @Override
-    void close();
 }

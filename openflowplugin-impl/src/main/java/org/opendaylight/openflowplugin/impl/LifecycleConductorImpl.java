@@ -19,8 +19,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +31,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceContextChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -50,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeListener, DeviceContextChangeListener, ExtensionConverterProviderKeeper {
+final class LifecycleConductorImpl implements LifecycleConductor, DeviceContextChangeListener, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleConductorImpl.class);
     private static final int TICKS_PER_WHEEL = 500;
@@ -62,7 +59,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     private StatisticsManager statisticsManager;
     private RpcManager rpcManager;
     private final MessageIntelligenceAgency messageIntelligenceAgency;
-    private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners = new ConcurrentHashMap<>();
     private NotificationPublishService notificationPublishService;
 
     LifecycleConductorImpl(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -106,119 +102,12 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         }
     }
 
-    @Override
-    public void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo){
-        LOG.debug("Listener {} for service change for node {} registered.", manager, deviceInfo.getNodeId());
-        serviceChangeListeners.put(deviceInfo, manager);
-    }
-
-    @VisibleForTesting
-    void notifyServiceChangeListeners(final DeviceInfo deviceInfo, final boolean success){
-        if (serviceChangeListeners.size() == 0) {
-            return;
-        }
-        LOG.debug("Notifying registered listeners for service change, no. of listeners {}", serviceChangeListeners.size());
-        for (final Map.Entry<DeviceInfo, ServiceChangeListener> nodeIdServiceChangeListenerEntry : serviceChangeListeners.entrySet()) {
-            if (nodeIdServiceChangeListenerEntry.getKey().equals(deviceInfo)) {
-                LOG.debug("Listener {} for service change for node {} was notified. Success was set on {}", nodeIdServiceChangeListenerEntry.getValue(), deviceInfo.getNodeId().getValue(), success);
-                nodeIdServiceChangeListenerEntry.getValue().servicesChangeDone(deviceInfo, success);
-                serviceChangeListeners.remove(deviceInfo);
-            }
-        }
-    }
-
-    @Override
-    public void roleInitializationDone(final DeviceInfo deviceInfo, final boolean success) {
-        if (!success) {
-            LOG.warn("Initialization phase for node {} in role context was NOT successful, closing connection.", deviceInfo.getNodeId().getValue());
-            closeConnection(deviceInfo);
-        } else {
-            LOG.info("initialization phase for node {} in role context was successful, continuing to next context.", deviceInfo.getNodeId().getValue());
-        }
-    }
-
     public void closeConnection(final DeviceInfo deviceInfo) {
         LOG.debug("Close connection called for node {}", deviceInfo);
         final DeviceContext deviceContext = getDeviceContext(deviceInfo);
         if (null != deviceContext) {
             deviceContext.shutdownConnection();
         }
-    }
-
-    @Override
-    public void roleChangeOnDevice(final DeviceInfo deviceInfo, final OfpRole newRole) {
-
-        final DeviceContext deviceContext = Preconditions.checkNotNull(
-                deviceManager.gainContext(deviceInfo),
-                "Something went wrong, device context for nodeId: %s doesn't exists", deviceInfo.getNodeId().getValue()
-        );
-
-        final RpcContext rpcContext =  Preconditions.checkNotNull(
-                rpcManager.gainContext(deviceInfo),
-                "Something went wrong, rpc context for nodeId: %s doesn't exists", deviceInfo.getNodeId().getValue()
-        );
-
-        LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo.getNodeId().getValue());
-
-        if (OfpRole.BECOMEMASTER.equals(newRole)) {
-            fillDeviceFlowRegistry(deviceInfo, deviceContext.getDeviceFlowRegistry());
-            MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
-
-            if (rpcContext.isStatisticsRpcEnabled()) {
-                MdSalRegistrationUtils.registerStatCompatibilityServices(
-                        rpcContext,
-                        deviceContext,
-                        notificationPublishService);
-            }
-        } else {
-            statisticsManager.stopScheduling(deviceInfo);
-
-            // Clean device flow registry if we became slave
-            if (OfpRole.BECOMESLAVE.equals(newRole)) {
-                deviceContext.getDeviceFlowRegistry().close();
-            }
-
-            MdSalRegistrationUtils.unregisterServices(rpcContext);
-        }
-
-    }
-
-    private void fillDeviceFlowRegistry(final DeviceInfo deviceInfo, final DeviceFlowRegistry deviceFlowRegistry) {
-        // Fill device flow registry with flows from datastore
-        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = deviceFlowRegistry.fill();
-
-        // Start statistics scheduling only after we finished initializing device flow registry
-        Futures.addCallback(deviceFlowRegistryFill, new FutureCallback<List<Optional<FlowCapableNode>>>() {
-            @Override
-            public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
-                if (LOG.isDebugEnabled()) {
-                    // Count all flows we read from datastore for debugging purposes.
-                    // This number do not always represent how many flows were actually added
-                    // to DeviceFlowRegistry, because of possible duplicates.
-                    long flowCount = Optional.fromNullable(result).asSet().stream()
-                            .flatMap(Collection::stream)
-                            .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
-                            .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
-                            .flatMap(table -> table.getFlow().stream())
-                            .count();
-
-                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getNodeId().getValue());
-                }
-
-                statisticsManager.startScheduling(deviceInfo);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                // If we manually cancelled this future, do not start scheduling of statistics
-                if (deviceFlowRegistryFill.isCancelled()) {
-                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getNodeId().getValue());
-                } else {
-                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getNodeId().getValue(), t);
-                    statisticsManager.startScheduling(deviceInfo);
-                }
-            }
-        });
     }
 
     public MessageIntelligenceAgency getMessageIntelligenceAgency() {
@@ -228,11 +117,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
     @Override
     public DeviceContext getDeviceContext(DeviceInfo deviceInfo){
          return deviceManager.gainContext(deviceInfo);
-    }
-
-    @Override
-    public StatisticsContext getStatisticsContext(DeviceInfo deviceInfo){
-        return statisticsManager.gainContext(deviceInfo);
     }
 
     public Timeout newTimeout(@Nonnull TimerTask task, long delay, @Nonnull TimeUnit unit) {
@@ -267,11 +151,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         } else {
             LOG.info("initialization phase for node {} in device context was successful. All phases initialized OK.", deviceInfo.getNodeId().getValue());
         }
-    }
-
-    @VisibleForTesting
-    boolean isServiceChangeListenersEmpty() {
-        return this.serviceChangeListeners.isEmpty();
     }
 
     @Override
