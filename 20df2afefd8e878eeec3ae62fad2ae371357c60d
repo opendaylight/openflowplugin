@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_89efe0e8",
+        "filename": "applications/forwardingrules-sync/pom.xml",
+        "patchSetId": 12
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "just waiting for mdsal project changes. done.",
+      "parentUuid": "9a561d44_e9a81cdd",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_09a47006",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceContext.java",
         "patchSetId": 12
@@ -30,6 +48,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "Please, move this code to new subpackage failover (e.g. org.opendaylight.openflowplugin.applications.frsync.impl.failover).",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_2994d441",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceContext.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done, name of the package changed to clustering",
+      "parentUuid": "9a561d44_09a47006",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_6971ac43",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceContext.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_69b40c35",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_29ae94e6",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceContext.java",
         "patchSetId": 12
@@ -64,6 +118,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "It would be better to have one util project shared by FRM and OF to generate Group Identifier. Try to do this.",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_89e360a3",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceContext.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Sure, but due to the lack of time and the currently ongoing changes in OFP we consider it as -nice to have- for now.",
+      "parentUuid": "9a561d44_29ae94e6",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_e99c9c5f",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_a9a2a4fa",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_c9843860",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
         "patchSetId": 12
@@ -98,6 +188,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "What about renaming this class: DeviceMastershipManger.",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_89ab6074",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_c9843860",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_a9bd84b9",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_a9890477",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_097bd07b",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
         "patchSetId": 12
@@ -132,6 +258,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "lets initialize this on line 27",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_09af507e",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_097bd07b",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_89d9a024",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/ClusterServiceManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_a9f0e4fe",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_69e24c30",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedConfigListener.java",
         "patchSetId": 12
@@ -166,6 +328,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "Avoid modification of Listeners because of Listenres because of FailoverCluster. Please create new Decorator:\n\norg.opendaylight.openflowplugin.applications.frsync.impl.failover.SyncReactorClusterDecorator\n\n\nYou need one more test scenario in junit.",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_04ce17b4",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedConfigListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done, but decorator placed in impl package where all decorators resides",
+      "parentUuid": "9a561d44_69e24c30",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -189,6 +369,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_5f15763e",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedConfigListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "not needed if we register for reconciliation there only",
+      "parentUuid": "9a561d44_a9d7444a",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_49df8869",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
         "patchSetId": 12
@@ -200,6 +398,24 @@
       "writtenOn": "2016-07-25T10:14:42Z",
       "side": 1,
       "message": "Avoid modification of Listeners because of Listenres because of FailoverCluster. Please create new Decorator:\n\norg.opendaylight.openflowplugin.applications.frsync.impl.failover.SyncReactorClusterDecorator",
+      "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_44dc8f73",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-07-25T13:41:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_49df8869",
       "revId": "20df2afefd8e878eeec3ae62fad2ae371357c60d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
