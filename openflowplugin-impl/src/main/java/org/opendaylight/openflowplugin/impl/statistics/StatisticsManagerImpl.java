@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -68,7 +67,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private boolean shuttingDownStatisticsPolling;
+    private boolean isStatisticsPollingEnabled;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
     private final LifecycleConductor conductor;
@@ -78,20 +77,20 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(@CheckForNull final RpcProviderRegistry rpcProviderRegistry,
-                                 final boolean shuttingDownStatisticsPolling,
+    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+                                 final boolean isStatisticsPollingEnabled,
                                  final LifecycleConductor lifecycleConductor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry.addRpcImplementation(
                 StatisticsManagerControlService.class, this));
-        this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        this.isStatisticsPollingEnabled = isStatisticsPollingEnabled;
         this.conductor = lifecycleConductor;
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, LifecycleService lifecycleService) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, shuttingDownStatisticsPolling, conductor);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, isStatisticsPollingEnabled, conductor, this);
         Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
         lifecycleService.setStatContext(statisticsContext);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
@@ -104,13 +103,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         final DeviceInfo deviceInfo) {
 
         if (!statisticsContext.isSchedulingEnabled()) {
-            LOG.debug("Disabling statistics scheduling for device: {}", deviceInfo.getNodeId());
-            return;
-        }
-
-        if (!deviceState.isStatisticsPollingEnabled()) {
-            LOG.debug("Statistics polling is currently disabled for device: {}", deviceInfo.getNodeId());
-            scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+            LOG.debug("Disabled statistics scheduling for device: {}", deviceInfo.getNodeId().getValue());
             return;
         }
 
@@ -157,7 +150,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
         LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
-        if (!shuttingDownStatisticsPolling) {
+        if (!isStatisticsPollingEnabled) {
             final Timeout pollTimeout = conductor.newTimeout(timeout -> pollStatistics(deviceState, statisticsContext, timeCounter, deviceInfo), currentTimerDelay, TimeUnit.MILLISECONDS);
             statisticsContext.setPollTimeout(pollTimeout);
         }
@@ -209,7 +202,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             if (!workMode.equals(targetWorkMode)) {
-                shuttingDownStatisticsPolling = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+                isStatisticsPollingEnabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
                 // iterate through stats-ctx: propagate mode
                 for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     switch (targetWorkMode) {
@@ -246,7 +239,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
-        if (shuttingDownStatisticsPolling) {
+        if (isStatisticsPollingEnabled) {
             LOG.info("Statistics are shut down for device: {}", deviceInfo.getNodeId());
             return;
         }
