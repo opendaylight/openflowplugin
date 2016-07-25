@@ -11,12 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 /**
  * Holder of device's structure
  */
-public interface DeviceState extends DeviceSynchronizeListener, DeviceValidListener {
-
-    /**
-     * @return true if this session is valid
-     */
-    boolean isValid();
+public interface DeviceState {
 
     /**
      * Return true if we have relevant meter information
@@ -43,13 +38,6 @@ public interface DeviceState extends DeviceSynchronizeListener, DeviceValidListe
      * Set information about group statistics availability.
      */
     void setGroupAvailable(boolean available);
-
-    /**
-     * Method returns true if initial statistics data were collected and written to DS.
-     *
-     * @return
-     */
-    boolean deviceSynchronized();
 
     /**
      * Method returns true, if device capabilities provides flow statistics.
@@ -88,7 +76,5 @@ public interface DeviceState extends DeviceSynchronizeListener, DeviceValidListe
     void setQueueStatisticsAvailable(boolean available);
 
     boolean isStatisticsPollingEnabled();
-
-    void setStatisticsPollingEnabledProp(boolean statPollEnabled);
 
 }

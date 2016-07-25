@@ -25,7 +25,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -140,18 +139,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInfo deviceInfo;
     private volatile CONTEXT_STATE state;
 
-    private volatile CONTEXT_STATE contextState;
-
-    public DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DeviceState deviceState,
-                      @Nonnull final DataBroker dataBroker,
-                      @Nonnull final LifecycleConductor conductor,
-                      @Nonnull final OutboundQueueProvider outboundQueueProvider,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      final DeviceManager manager,
-                      @Nonnull final DeviceInfo deviceInfo) {
+    public DeviceContextImpl(
+            @Nonnull final ConnectionContext primaryConnectionContext,
+            @Nonnull final DataBroker dataBroker,
+            @Nonnull final LifecycleConductor conductor,
+            @Nonnull final OutboundQueueProvider outboundQueueProvider,
+            @Nonnull final TranslatorLibrary translatorLibrary,
+            @Nonnull final DeviceManager manager) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
-        this.deviceState = Preconditions.checkNotNull(deviceState);
+        this.deviceInfo = primaryConnectionContext.getDeviceInfo();
+        this.deviceState = new DeviceStateImpl();
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         Preconditions.checkNotNull(conductor);
         this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
@@ -177,7 +174,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-        this.deviceInfo = deviceInfo;
         this.state = CONTEXT_STATE.INITIALIZATION;
     }
 
@@ -185,7 +181,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
      * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
-    void initialSubmitTransaction() {
+    @Override
+    public void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
     }
 
@@ -534,11 +531,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
-    }
-
-    @Override
-    public void registerClusterSingletonServices(ClusterSingletonServiceProvider singletonServiceProvider) {
-
     }
 
     @Override
