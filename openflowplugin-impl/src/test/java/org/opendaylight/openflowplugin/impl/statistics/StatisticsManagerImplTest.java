@@ -163,7 +163,7 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
-        when(mockedDeviceInfo.getNodeId()).thenReturn(new NodeId("ofp-unit-dummy-node-id"));
+        when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
 
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
@@ -379,7 +379,6 @@ public class StatisticsManagerImplTest {
 
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
 
-        when(mockedDeviceContext.getDeviceState().isStatisticsPollingEnabled()).thenReturn(true);
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
 
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
