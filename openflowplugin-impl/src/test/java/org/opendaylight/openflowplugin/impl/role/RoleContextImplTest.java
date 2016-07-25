@@ -35,73 +35,19 @@ public class RoleContextImplTest {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
 
     @Mock
-    private EntityOwnershipService entityOwnershipService;
-
-    @Mock
-    private EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration;
-
-    @Mock
     private LifecycleConductor conductor;
-
     @Mock
     private DeviceInfo deviceInfo;
+    @Mock
+    private RoleManager roleManager;
 
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
-    private final Entity entity = new Entity(RoleManager.ENTITY_TYPE, nodeId.getValue());
-    private final Entity txEntity = new Entity(RoleManager.TX_ENTITY_TYPE, nodeId.getValue());
     private RoleContext roleContext;
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(deviceInfo, entityOwnershipService, entity, txEntity, conductor);
-        Mockito.when(entityOwnershipService.registerCandidate(entity)).thenReturn(entityOwnershipCandidateRegistration);
-        Mockito.when(entityOwnershipService.registerCandidate(txEntity)).thenReturn(entityOwnershipCandidateRegistration);
+        roleContext = new RoleContextImpl(deviceInfo, conductor, roleManager);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
-    }
-
-    //@Test
-    //Run this test only if demanded because it takes 15s to run
-    public void testInitializationThreads() throws Exception {
-
-        /*Setting answer which will hold the answer for 5s*/
-        Mockito.when(entityOwnershipService.registerCandidate(entity)).thenAnswer(new Answer<EntityOwnershipService>() {
-            @Override
-            public EntityOwnershipService answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                LOG.info("Sleeping this thread for 14s");
-                Thread.sleep(14000L);
-                return null;
-            }
-        });
-
-        Thread t1 = new Thread(() -> {
-            LOG.info("Starting thread 1");
-            Assert.assertTrue(roleContext.initialization());
-        });
-
-        Thread t2 = new Thread(() -> {
-            LOG.info("Starting thread 2");
-            Assert.assertFalse(roleContext.initialization());
-        });
-
-        t1.start();
-        LOG.info("Sleeping main thread for 1s to prevent race condition.");
-        Thread.sleep(1000L);
-        t2.start();
-
-        while (t2.isAlive()) {
-            //Waiting
-        }
-
-    }
-
-    @Test
-    public void testTermination() throws Exception {
-        roleContext.registerCandidate(entity);
-        roleContext.registerCandidate(txEntity);
-        Assert.assertTrue(roleContext.isMainCandidateRegistered());
-        Assert.assertTrue(roleContext.isTxCandidateRegistered());
-        roleContext.unregisterAllCandidates();
-        Assert.assertFalse(roleContext.isMainCandidateRegistered());
     }
 
     @Test
@@ -116,27 +62,7 @@ public class RoleContextImplTest {
     }
 
     @Test
-    public void testGetEntity() throws Exception {
-        Assert.assertTrue(roleContext.getEntity().equals(entity));
-    }
-
-    @Test
-    public void testGetTxEntity() throws Exception {
-        Assert.assertTrue(roleContext.getTxEntity().equals(txEntity));
-    }
-
-    @Test
     public void testGetNodeId() throws Exception {
         Assert.assertTrue(roleContext.getDeviceInfo().getNodeId().equals(nodeId));
-    }
-
-    @Test
-    public void testIsMaster() throws Exception {
-        Assert.assertTrue(roleContext.initialization());
-        Assert.assertFalse(roleContext.isMaster());
-        Assert.assertTrue(roleContext.registerCandidate(txEntity));
-        Assert.assertTrue(roleContext.isMaster());
-        Assert.assertTrue(roleContext.unregisterCandidate(entity));
-        Assert.assertFalse(roleContext.isMaster());
     }
 }
