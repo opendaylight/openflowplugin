@@ -328,4 +328,3 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
 }
-}

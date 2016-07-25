@@ -41,11 +41,6 @@ public interface OFPContext {
     CONTEXT_STATE getState();
 
     /**
-     * @param state set state
-     */
-    void setState(final CONTEXT_STATE state);
-
-    /**
      * Starting cluster services for context becoming master
      */
     default void startupClusterServices() throws ExecutionException, InterruptedException {
