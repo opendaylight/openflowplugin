@@ -36,11 +36,6 @@ public class DeviceStateImplTest {
     }
 
     @Test
-    public void testStatPollEnabled_initialValue(){
-        Assert.assertFalse(deviceState.isStatisticsPollingEnabled());
-    }
-
-    @Test
     public void testStatistics_initialValue(){
         Assert.assertFalse(deviceState.isFlowStatisticsAvailable());
         Assert.assertFalse(deviceState.isPortStatisticsAvailable());
