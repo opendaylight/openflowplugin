@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.impl.util.MatchComparatorFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -60,13 +61,15 @@ public class FlowRegistryKeyFactory {
 
             return getPriority() == that.getPriority() &&
                     getTableId() == that.getTableId() &&
-                    getMatch().equals(that.getMatch());
+                    getCookie().equals(that.getCookie()) &&
+                    MatchComparatorFactory.createMatch().areObjectsEqual(getMatch(), that.getMatch());
         }
 
         @Override
         public int hashCode() {
             int result = tableId;
             result = 31 * result + priority;
+            result = 31 * result + cookie.hashCode();
             result = 31 * result + match.hashCode();
             return result;
         }
