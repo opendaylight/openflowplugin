@@ -41,6 +41,9 @@ public class LifecycleServiceImpl implements LifecycleService {
             LOG.info("Starting statistics context cluster services for node {}", getIdentifier());
             this.statContext.startupClusterServices();
 
+            LOG.info("Statistics initial gathering OK, submitting data for node {}", getIdentifier());
+            this.deviceContext.initialSubmitTransaction();
+
             LOG.info("Starting rpc context cluster services for node {}", getIdentifier());
             this.rpcContext.startupClusterServices();
 
