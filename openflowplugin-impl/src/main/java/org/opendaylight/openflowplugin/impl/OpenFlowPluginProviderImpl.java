@@ -39,7 +39,6 @@ import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -90,7 +89,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
-    private Map<String,Object>  managedProperties;
 
     private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
@@ -239,14 +237,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         conductor.setSafelyManager(deviceManager);
         conductor.setNotificationPublishService(notificationPublishService);
 
-        roleManager = new RoleManagerImpl(entityOwnershipService, dataBroker, conductor);
+        roleManager = new RoleManagerImpl(dataBroker, conductor);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
         conductor.setSafelyManager(statisticsManager);
 
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor, extensionConverterManager);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor, extensionConverterManager, notificationPublishService);
         conductor.setSafelyManager(rpcManager);
-
-        roleManager.addRoleChangeListener((RoleChangeListener) conductor);
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
@@ -273,8 +269,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void update(Map<String,Object> props) {
         LOG.debug("Update managed properties = {}", props.toString());
-        this.managedProperties = props;
-
         if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
             deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
         }

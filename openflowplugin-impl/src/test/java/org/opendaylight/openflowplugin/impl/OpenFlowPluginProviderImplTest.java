@@ -103,8 +103,5 @@ public class OpenFlowPluginProviderImplTest {
     public void testInitializeAndClose() throws Exception {
         provider.initialize();
         verify(switchConnectionProvider).startup();
-
-        provider.close();
-        verify(entityOwnershipListenerRegistration, times(2)).close();
     }
 }
