@@ -227,13 +227,11 @@ public class DeviceContextImplTest {
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
-                deviceState,
                 dataBroker,
                 lifecycleConductor,
                 outboundQueueProvider,
                 translatorLibrary,
-		deviceManager,
-                deviceInfo);
+		        deviceManager);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -244,24 +242,12 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, deviceState, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
-        new DeviceContextImpl(connectionContext, null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
+        new DeviceContextImpl(connectionContext, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, deviceState, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, deviceInfo).close();
-    }
-
-    @Test
-    public void testGetDeviceState() {
-        final DeviceState deviceSt = deviceContext.getDeviceState();
-        assertNotNull(deviceSt);
-        assertEquals(deviceState, deviceSt);
+        new DeviceContextImpl(null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager).close();
     }
 
     @Test
@@ -429,8 +415,6 @@ public class DeviceContextImplTest {
 
         final ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
         deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
-        final DeviceTerminationPhaseHandler mockedDeviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
-        when(deviceState.isValid()).thenReturn(true);
         deviceContext.shutdownConnection();
         verify(connectionContext).closeConnection(true);
     }

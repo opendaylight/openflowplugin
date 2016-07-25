@@ -517,7 +517,6 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testDeleteAllKnownFlows() throws Exception {
         final short tableId = 0;
-        when(deviceState.deviceSynchronized()).thenReturn(true);
         final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);
