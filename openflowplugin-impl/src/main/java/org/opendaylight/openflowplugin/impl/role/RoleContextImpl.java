@@ -228,10 +228,6 @@ class RoleContextImpl implements RoleContext {
         return this.deviceInfo;
     }
 
-    @Override
-    public void setState(CONTEXT_STATE contextState) {
-        this.contextState = contextState;
-    }
     public void startupClusterServices() throws ExecutionException, InterruptedException {
         sendRoleChangeToDevice(OfpRole.BECOMEMASTER).get();
     }
