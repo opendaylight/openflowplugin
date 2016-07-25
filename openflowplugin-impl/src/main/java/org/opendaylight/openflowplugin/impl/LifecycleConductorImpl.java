@@ -141,7 +141,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
         LOG.debug("Close connection called for node {}", deviceInfo);
         final DeviceContext deviceContext = getDeviceContext(deviceInfo);
         if (null != deviceContext) {
-            deviceManager.notifyDeviceValidListeners(deviceInfo, false);
             deviceContext.shutdownConnection();
         }
     }
@@ -161,10 +160,7 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
 
         LOG.info("Role change to {} in role context for node {} was successful.", newRole, deviceInfo.getNodeId().getValue());
 
-        final String logText;
-
         if (OfpRole.BECOMEMASTER.equals(newRole)) {
-            logText = "Start";
             fillDeviceFlowRegistry(deviceInfo, deviceContext.getDeviceFlowRegistry());
             MdSalRegistrationUtils.registerServices(rpcContext, deviceContext, this.extensionConverterProvider);
 
@@ -175,7 +171,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
                         notificationPublishService);
             }
         } else {
-            logText = "Stopp";
             statisticsManager.stopScheduling(deviceInfo);
 
             // Clean device flow registry if we became slave
@@ -186,22 +181,6 @@ final class LifecycleConductorImpl implements LifecycleConductor, RoleChangeList
             MdSalRegistrationUtils.unregisterServices(rpcContext);
         }
 
-        final ListenableFuture<Void> onClusterRoleChange = deviceManager.onClusterRoleChange(deviceInfo, newRole);
-        Futures.addCallback(onClusterRoleChange, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable final Void aVoid) {
-                LOG.info("{}ing services for node {} was successful", logText, deviceInfo);
-                if (newRole.equals(OfpRole.BECOMESLAVE)) {
-                    notifyServiceChangeListeners(deviceInfo, true);
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.warn("{}ing services for node {} was NOT successful, closing connection", logText, deviceInfo.getNodeId().getValue());
-                closeConnection(deviceInfo);
-            }
-        });
     }
 
     private void fillDeviceFlowRegistry(final DeviceInfo deviceInfo, final DeviceFlowRegistry deviceFlowRegistry) {

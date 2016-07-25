@@ -377,7 +377,6 @@ public class StatisticsManagerImplTest {
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         verify(mockedDeviceContext).getDeviceState();
 
-        when(mockedDeviceContext.getDeviceState().isValid()).thenReturn(true);
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
 
         when(mockedDeviceContext.getDeviceState().isStatisticsPollingEnabled()).thenReturn(true);
