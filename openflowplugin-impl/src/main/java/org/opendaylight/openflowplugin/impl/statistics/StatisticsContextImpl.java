@@ -36,6 +36,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
@@ -66,6 +67,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
     private final DeviceInfo deviceInfo;
+    private final StatisticsManager myManager;
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
@@ -73,7 +75,8 @@ class StatisticsContextImpl implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
                           @Nonnull final boolean shuttingDownStatisticsPolling,
                           @Nonnull final LifecycleConductor lifecycleConductor,
-			  @Nonnull final ConvertorExecutor convertorExecutor) {
+			  @Nonnull final ConvertorExecutor convertorExecutor,
+			  @Nonnull final StatisticsManager myManager) {
         this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
@@ -85,6 +88,7 @@ class StatisticsContextImpl implements StatisticsContext {
         statListForCollectingInitialization();
         setState(CONTEXT_STATE.INITIALIZATION);
         this.deviceInfo = deviceInfo;
+        this.myManager = myManager;
     }
 
     @Override
@@ -128,7 +132,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> gatherDynamicData(final boolean initial) {
         if (shuttingDownStatisticsPolling) {
-            LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId());
+            LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
         }
         final ListenableFuture<Boolean> errorResultFuture = deviceConnectionCheck();
@@ -409,12 +413,16 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void startupClusterServices() throws ExecutionException, InterruptedException {
-        this.statListForCollectingInitialization();
-        this.initialGatherDynamicData();
+        if (!this.shuttingDownStatisticsPolling) {
+            this.statListForCollectingInitialization();
+            this.initialGatherDynamicData();
+            myManager.startScheduling(deviceInfo);
+        }
     }
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
+        myManager.stopScheduling(deviceInfo);
         return Futures.immediateFuture(null);
     }
 }
