@@ -30,7 +30,6 @@ public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInit
      * Stop scheduling statistic gathering for given device info
      * @param deviceInfo for this device should be stopped statistics gathering
      */
-
     void stopScheduling(final DeviceInfo deviceInfo);
 
     @Override
