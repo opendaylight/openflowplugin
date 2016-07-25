@@ -109,6 +109,7 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
+        ListenableFuture<Void> future;
         try {
             //TODO: Add callback
             sendRoleChangeToDevice(OfpRole.BECOMESLAVE).get();
@@ -116,8 +117,9 @@ class RoleContextImpl implements RoleContext {
             LOG.warn("Send role to device failed ", e);
         } finally {
             myManager.removeDeviceFromOperationalDS(deviceInfo, MAX_CLEAN_DS_RETRIES);
-            return Futures.immediateFuture(null);
+            future = Futures.immediateFuture(null);
         }
+        return future;
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
