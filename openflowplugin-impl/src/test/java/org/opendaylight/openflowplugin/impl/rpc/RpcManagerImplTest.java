@@ -23,6 +23,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -89,6 +90,8 @@ public class RpcManagerImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private NotificationPublishService notificationPublishService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -100,7 +103,7 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor, extensionConverterProvider, convertorExecutor);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor, extensionConverterProvider, convertorExecutor, notificationPublishService);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
