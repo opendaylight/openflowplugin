@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -52,6 +53,7 @@ class RpcContextImpl implements RpcContext {
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
+    private final NotificationPublishService notificationPublishService;
 
     RpcContextImpl(final DeviceInfo deviceInfo,
                    final RpcProviderRegistry rpcProviderRegistry,
@@ -60,7 +62,8 @@ class RpcContextImpl implements RpcContext {
                    final int maxRequests,
                    final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier,
                    final DeviceContext deviceContext,
-                   final ExtensionConverterProvider extensionConverterProvider) {
+                   final ExtensionConverterProvider extensionConverterProvider,
+                   final NotificationPublishService notificationPublishService) {
         this.xidSequencer = Preconditions.checkNotNull(xidSequencer);
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
@@ -68,6 +71,7 @@ class RpcContextImpl implements RpcContext {
 
         tracker = new Semaphore(maxRequests, true);
         this.extensionConverterProvider = extensionConverterProvider;
+        this.notificationPublishService = notificationPublishService;
         setState(CONTEXT_STATE.WORKING);
         this.deviceInfo = deviceInfo;
         this.deviceContext = deviceContext;
@@ -196,6 +200,15 @@ class RpcContextImpl implements RpcContext {
     @Override
     public void startupClusterServices() throws ExecutionException, InterruptedException {
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, this.extensionConverterProvider);
+
+        if (isStatisticsRpcEnabled) {
+            MdSalRegistrationUtils.registerStatCompatibilityServices(
+                    this,
+                    deviceContext,
+                    notificationPublishService);
+        }
+
     }
 
     @Override
