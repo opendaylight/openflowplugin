@@ -74,7 +74,4 @@ public interface DeviceState {
     boolean isQueueStatisticsAvailable();
 
     void setQueueStatisticsAvailable(boolean available);
-
-    boolean isStatisticsPollingEnabled();
-
 }
