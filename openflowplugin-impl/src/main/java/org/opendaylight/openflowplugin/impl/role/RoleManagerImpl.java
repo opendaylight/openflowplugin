@@ -148,43 +148,6 @@ public class RoleManagerImpl implements RoleManager {
         return contexts.get(deviceInfo);
     }
 
-    /**
-     * This method is only for testing
-     */
-    @VisibleForTesting
-    void setRoleContext(DeviceInfo deviceInfo, RoleContext roleContext){
-        if(!contexts.containsKey(deviceInfo)) {
-            contexts.put(deviceInfo, roleContext);
-        }
-    }
-
-    /**
-     * Invoked when initialization phase is done
-     * @param deviceInfo node identification
-     * @param success true if initialization done ok, false otherwise
-     */
-    @VisibleForTesting
-    void notifyListenersRoleInitializationDone(final DeviceInfo deviceInfo, final boolean success){
-        LOG.debug("Notifying registered listeners for role initialization done, no. of listeners {}", listeners.size());
-        for (final RoleChangeListener listener : listeners) {
-            listener.roleInitializationDone(deviceInfo, success);
-        }
-    }
-
-    /**
-     * Notifies registered listener on role change. Role is the new role on device
-     * If initialization phase is true, we may skip service starting
-     * @param deviceInfo
-     * @param role new role meant to be set on device
-     */
-    @VisibleForTesting
-    void notifyListenersRoleChangeOnDevice(final DeviceInfo deviceInfo, final OfpRole role){
-        LOG.debug("Notifying registered listeners for role change, no. of listeners {}", listeners.size());
-        for (final RoleChangeListener listener : listeners) {
-            listener.roleChangeOnDevice(deviceInfo, role);
-        }
-    }
-
     @Override
     public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
         return (T) contexts.get(deviceInfo);
