@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.role;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -23,14 +25,6 @@ public interface RoleManager extends
         AutoCloseable,
         DeviceTerminationPhaseHandler,
         OFPManager {
-    String ENTITY_TYPE = "openflow";
-    String TX_ENTITY_TYPE = "ofTransaction";
 
-    /**
-     * Adding listener to by notified for role changes
-     * API for listener {@link RoleChangeListener}
-     * @param roleChangeListener
-     */
-    void addRoleChangeListener(RoleChangeListener roleChangeListener);
-
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo, final int numRetries);
 }
