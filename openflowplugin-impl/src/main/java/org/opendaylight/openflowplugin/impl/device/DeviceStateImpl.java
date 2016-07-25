@@ -27,11 +27,9 @@ class DeviceStateImpl implements DeviceState {
     private boolean flowStatisticsAvailable;
     private boolean tableStatisticsAvailable;
     private boolean portStatisticsAvailable;
-    private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
 
     public DeviceStateImpl() {
-        statPollEnabled = false;
     }
 
     @Override
@@ -92,12 +90,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setQueueStatisticsAvailable(final boolean available) {
         queueStatisticsAvailable = available;
-
-    }
-
-    @Override
-    public boolean isStatisticsPollingEnabled() {
-        return statPollEnabled;
     }
 
 }
