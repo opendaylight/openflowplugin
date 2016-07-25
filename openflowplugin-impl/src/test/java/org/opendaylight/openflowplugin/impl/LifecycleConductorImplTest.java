@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
 import java.math.BigInteger;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +26,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ServiceChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -55,10 +52,6 @@ public class LifecycleConductorImplTest {
 
     @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
-    @Mock
-    private ServiceChangeListener serviceChangeListener;
-    @Mock
-    private ConcurrentHashMap<DeviceInfo, ServiceChangeListener> serviceChangeListeners;
     @Mock
     private DeviceContext deviceContext;
     @Mock
@@ -107,96 +100,6 @@ public class LifecycleConductorImplTest {
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-    }
-
-    @Test
-    public void addOneTimeListenerWhenServicesChangesDoneTest() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
-        assertEquals(false,lifecycleConductor.isServiceChangeListenersEmpty());
-    }
-
-
-    /**
-     * If serviceChangeListeners is empty NOTHING should happen
-     */
-    @Test
-    public void notifyServiceChangeListenersTest1() {
-        lifecycleConductor.notifyServiceChangeListeners(deviceInfo,true);
-        when(serviceChangeListeners.size()).thenReturn(0);
-        verify(serviceChangeListeners,times(0)).remove(deviceInfo);
-    }
-
-    /**
-     * If serviceChangeListeners is NOT empty remove(nodeID) should be removed
-     */
-    @Test
-    public void notifyServiceChangeListenersTest2() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
-        assertEquals(false,lifecycleConductor.isServiceChangeListenersEmpty());
-        lifecycleConductor.notifyServiceChangeListeners(deviceInfo,true);
-        assertEquals(true,lifecycleConductor.isServiceChangeListenersEmpty());
-    }
-
-
-    /**
-     * When success flag is set to FALSE nodeID connection should be closed
-     */
-    @Test
-    public void roleInitializationDoneTest1() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
-        lifecycleConductor.roleInitializationDone(deviceInfo,false);
-        verify(deviceContext,times(1)).shutdownConnection();
-    }
-
-    /**
-     * When success flag is set to TRUE LOG should be printed
-     */
-    @Test
-    public void roleInitializationDoneTest2() {
-        lifecycleConductor.addOneTimeListenerWhenServicesChangesDone(serviceChangeListener, deviceInfo);
-        lifecycleConductor.roleInitializationDone(deviceInfo,true);
-        verify(deviceContext,times(0)).shutdownConnection();
-    }
-
-    /**
-     * When getDeviceContext returns null raise exception
-     */
-    @Test(expected = NullPointerException.class)
-    public void roleChangeOnDeviceTest1() {
-        when(deviceManager.gainContext(deviceInfo)).thenReturn(null);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,ofpRole);
-        verify(deviceContext,times(0)).shutdownConnection();
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,ofpRole);
-        verify(deviceContext,times(0)).shutdownConnection();
-    }
-
-    /**
-     * When OfpRole == BECOMEMASTER setRole(OfpRole.BECOMEMASTER) should be called
-     */
-    @Test
-    public void roleChangeOnDeviceTest4() {
-        final DataBroker dataBroker = mock(DataBroker.class);
-
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier));
-        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,OfpRole.BECOMEMASTER);
-        verify(statisticsManager).startScheduling(Mockito.<DeviceInfo>any());
-    }
-
-    /**
-     * When OfpRole != BECOMEMASTER setRole(OfpRole.ECOMESLAVE) should be called
-     */
-    @Test
-    public void roleChangeOnDeviceTest5() {
-        final DataBroker dataBroker = mock(DataBroker.class);
-
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier));
-        when(deviceManager.gainContext(deviceInfo)).thenReturn(deviceContext);
-
-        lifecycleConductor.roleChangeOnDevice(deviceInfo,OfpRole.BECOMESLAVE);
-        verify(statisticsManager).stopScheduling(Mockito.<DeviceInfo>any());
     }
 
     /**

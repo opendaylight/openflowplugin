@@ -14,6 +14,7 @@ import com.google.common.collect.Iterators;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -38,17 +39,21 @@ public class RpcManagerImpl implements RpcManager {
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
     private final ExtensionConverterProvider extensionConverterProvider;
+    private final NotificationPublishService notificationPublishService;
+
     private final LifecycleConductor conductor;
 
     public RpcManagerImpl(
             final RpcProviderRegistry rpcProviderRegistry,
             final int quotaValue,
             final LifecycleConductor lifecycleConductor,
-            final ExtensionConverterProvider extensionConverterProvider) {
+            final ExtensionConverterProvider extensionConverterProvider,
+            final NotificationPublishService notificationPublishService) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
         this.extensionConverterProvider = extensionConverterProvider;
         this.conductor = lifecycleConductor;
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -69,7 +74,8 @@ public class RpcManagerImpl implements RpcManager {
                 maxRequestsQuota,
                 deviceInfo.getNodeInstanceIdentifier(),
                 deviceContext,
-                extensionConverterProvider);
+                extensionConverterProvider,
+                notificationPublishService);
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
         lifecycleService.setRpcContext(rpcContext);
