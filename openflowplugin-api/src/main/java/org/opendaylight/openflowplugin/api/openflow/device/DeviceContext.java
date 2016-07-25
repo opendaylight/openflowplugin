@@ -13,7 +13,6 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -50,6 +49,8 @@ public interface DeviceContext extends
      * Method close all auxiliary connections and primary connection.
      */
     void shutdownConnection();
+
+    void initialSubmitTransaction();
 
     /**
      * Method add auxiliary connection contexts to this context representing single device connection.
@@ -129,8 +130,6 @@ public interface DeviceContext extends
     void close();
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
-
-    void registerClusterSingletonServices(ClusterSingletonServiceProvider singletonServiceProvider);
 
 }
 
