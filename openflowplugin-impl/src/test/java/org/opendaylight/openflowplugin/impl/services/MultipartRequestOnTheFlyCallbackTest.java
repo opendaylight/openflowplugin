@@ -127,7 +127,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnection);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
-        when(mockedDeviceState.deviceSynchronized()).thenReturn(true);
         when(mockedDeviceInfo.getNodeId()).thenReturn(mockedNodeId);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         when(mockedDeviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);

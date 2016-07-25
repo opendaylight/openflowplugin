@@ -44,7 +44,6 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
     @Override
     protected void setup() {
         salExperimenterMessageService = new SalExperimenterMessageServiceImpl(mockedRequestContextStack, mockedDeviceContext, extensionConverterProvider);
-        Mockito.when(mockedDeviceContext.getExtensionConverterProvider()).thenReturn(extensionConverterProvider);
         Mockito.when(extensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
                 .thenReturn(extensionConverter);
         Mockito.when(extensionConverter.getExperimenterId()).thenReturn(new ExperimenterId(43L));
