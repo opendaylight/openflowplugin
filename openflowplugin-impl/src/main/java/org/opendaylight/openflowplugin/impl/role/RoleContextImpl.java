@@ -14,20 +14,16 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -47,52 +43,22 @@ import org.slf4j.LoggerFactory;
 class RoleContextImpl implements RoleContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
-    private static final int TIMEOUT = 12;
-
-    private final EntityOwnershipService entityOwnershipService;
-    private volatile EntityOwnershipCandidateRegistration entityOwnershipCandidateRegistration = null;
-    private volatile EntityOwnershipCandidateRegistration txEntityOwnershipCandidateRegistration = null;
-
-    private final Entity entity;
-    private final Entity txEntity;
+    // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
+    private static final int MAX_CLEAN_DS_RETRIES = 3;
 
     private SalRoleService salRoleService = null;
-
-    private final Semaphore roleChangeGuard = new Semaphore(1, true);
-
     private final LifecycleConductor conductor;
     private final DeviceInfo deviceInfo;
     private CONTEXT_STATE state;
+    private final RoleManager myManager;
 
     RoleContextImpl(final DeviceInfo deviceInfo,
-                    final EntityOwnershipService entityOwnershipService,
-                    final Entity entity,
-                    final Entity txEntity,
-                    final LifecycleConductor lifecycleConductor) {
-        this.entityOwnershipService = entityOwnershipService;
-        this.entity = entity;
-        this.txEntity = txEntity;
+                    final LifecycleConductor lifecycleConductor,
+                    final RoleManager myManager) {
         this.conductor = lifecycleConductor;
         this.deviceInfo = deviceInfo;
-        state = CONTEXT_STATE.INITIALIZATION;
-    }
-
-    @Override
-    public boolean initialization() {
-        LOG.info("Initialization main candidate for node {}", getDeviceInfo().getNodeId());
-        setState(CONTEXT_STATE.WORKING);
-        return registerCandidate(this.entity);
-    }
-
-    @Override
-    public void unregisterAllCandidates() {
-        LOG.info("Role context closed, unregistering all candidates for ownership for node {}", getDeviceInfo().getNodeId());
-        if (isMainCandidateRegistered()) {
-            unregisterCandidate(this.entity);
-        }
-        if (isTxCandidateRegistered()) {
-            unregisterCandidate(this.txEntity);
-        }
+        state = CONTEXT_STATE.WORKING;
+        this.myManager = myManager;
     }
 
     @Nullable
@@ -117,98 +83,6 @@ class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public Entity getEntity() {
-        return this.entity;
-    }
-
-    @Override
-    public Entity getTxEntity() {
-        return this.txEntity;
-    }
-
-    @Override
-    public boolean isMainCandidateRegistered() {
-        return entityOwnershipCandidateRegistration != null;
-    }
-
-    @Override
-    public boolean isTxCandidateRegistered() {
-        return txEntityOwnershipCandidateRegistration != null;
-    }
-
-    @Override
-    public boolean registerCandidate(final Entity entity_) {
-        boolean permit = false;
-        try {
-            permit = roleChangeGuard.tryAcquire(TIMEOUT, TimeUnit.SECONDS);
-            if(permit) {
-                LOG.debug("Register candidate for entity {}", entity_);
-                if (entity_.equals(this.entity)) {
-                    entityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity_);
-                } else {
-                    txEntityOwnershipCandidateRegistration = entityOwnershipService.registerCandidate(entity_);
-                }
-            } else {
-                return false;
-            }
-        } catch (final CandidateAlreadyRegisteredException e) {
-            LOG.warn("Candidate for entity {} is already registered.", entity_.getType());
-            return false;
-        } catch (final InterruptedException e) {
-            LOG.warn("Cannot acquire semaphore for register entity {} candidate.", entity_.getType());
-            return false;
-        } finally {
-            if (permit) {
-                roleChangeGuard.release();
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean unregisterCandidate(final Entity entity_) {
-        boolean permit = false;
-        try {
-            permit = roleChangeGuard.tryAcquire(TIMEOUT, TimeUnit.SECONDS);
-            if(permit) {
-                if (entity_.equals(this.entity)) {
-                    if (entityOwnershipCandidateRegistration != null) {
-                        LOG.debug("Unregister candidate for entity {}", entity_);
-                        entityOwnershipCandidateRegistration.close();
-                        entityOwnershipCandidateRegistration = null;
-                    }
-                } else {
-                    if (txEntityOwnershipCandidateRegistration != null) {
-                        LOG.debug("Unregister candidate for tx entity {}", entity_);
-                        txEntityOwnershipCandidateRegistration.close();
-                        txEntityOwnershipCandidateRegistration = null;
-                    }
-                }
-            } else {
-                return false;
-            }
-        } catch (final InterruptedException e) {
-            LOG.warn("Cannot acquire semaphore for unregister entity {} candidate.", entity_.getType());
-            return false;
-        } finally {
-            if (permit) {
-                roleChangeGuard.release();
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void close() {
-        setState(CONTEXT_STATE.TERMINATION);
-        unregisterAllCandidates();
-    }
-
-    public boolean isMaster(){
-        return (txEntityOwnershipCandidateRegistration != null && entityOwnershipCandidateRegistration != null);
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -229,12 +103,21 @@ class RoleContextImpl implements RoleContext {
     }
 
     public void startupClusterServices() throws ExecutionException, InterruptedException {
+        //TODO: Add callback ?
         sendRoleChangeToDevice(OfpRole.BECOMEMASTER).get();
     }
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        return Futures.immediateFuture(null);
+        try {
+            //TODO: Add callback
+            sendRoleChangeToDevice(OfpRole.BECOMESLAVE).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Send role to device failed ", e);
+        } finally {
+            myManager.removeDeviceFromOperationalDS(deviceInfo, MAX_CLEAN_DS_RETRIES);
+            return Futures.immediateFuture(null);
+        }
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
