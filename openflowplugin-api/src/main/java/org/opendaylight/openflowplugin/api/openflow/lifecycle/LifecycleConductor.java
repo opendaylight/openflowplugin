@@ -41,20 +41,6 @@ public interface LifecycleConductor {
     void setSafelyManager(OFPManager manager);
 
     /**
-     * Registers ont time listener for notify when services rpc, statistics are done stop or start
-     * @param manager service change listener
-     * @param deviceInfo node identification
-     */
-    void addOneTimeListenerWhenServicesChangesDone(final ServiceChangeListener manager, final DeviceInfo deviceInfo);
-
-    /**
-     * Returns statistics context from statistics managers contexts maps
-     *
-     * @param deviceInfo@return null if context doesn't exists
-     */
-    StatisticsContext getStatisticsContext(DeviceInfo deviceInfo);
-
-    /**
      * Set new timeout for {@link io.netty.util.HashedWheelTimer}
      * @param task timer task
      * @param delay delay
