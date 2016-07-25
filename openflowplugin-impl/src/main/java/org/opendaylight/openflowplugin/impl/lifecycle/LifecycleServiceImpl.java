@@ -7,16 +7,25 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +58,9 @@ public class LifecycleServiceImpl implements LifecycleService {
 
             LOG.info("Starting role context cluster services for node {}", getIdentifier());
             this.roleContext.startupClusterServices();
+
+            LOG.info("Caching flows IDs ...");
+            fillDeviceFlowRegistry();
 
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Cluster service {} was unable to start.", this.getIdentifier());
@@ -100,4 +112,39 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void setStatContext(final StatisticsContext statContext) {
         this.statContext = statContext;
     }
+
+    private void fillDeviceFlowRegistry() {
+        // Fill device flow registry with flows from datastore
+        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = deviceContext.getDeviceFlowRegistry().fill();
+
+        // Start statistics scheduling only after we finished initializing device flow registry
+        Futures.addCallback(deviceFlowRegistryFill, new FutureCallback<List<Optional<FlowCapableNode>>>() {
+            @Override
+            public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
+                if (LOG.isDebugEnabled()) {
+                    // Count all flows we read from datastore for debugging purposes.
+                    // This number do not always represent how many flows were actually added
+                    // to DeviceFlowRegistry, because of possible duplicates.
+                    long flowCount = Optional.fromNullable(result).asSet().stream()
+                            .flatMap(Collection::stream)
+                            .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                            .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                            .flatMap(table -> table.getFlow().stream())
+                            .count();
+
+                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, getIdentifier());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                if (deviceFlowRegistryFill.isCancelled()) {
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", getIdentifier());
+                } else {
+                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", getIdentifier(), t);
+                }
+            }
+        });
+    }
+
 }
