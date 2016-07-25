@@ -8,19 +8,15 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.TimerTask;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -40,25 +36,19 @@ import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProv
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceSynchronizeListener;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceValidListener;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
-import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +78,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final int barrierCountLimit;
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
-    private Set<DeviceSynchronizeListener> deviceSynchronizedListeners;
-    private Set<DeviceValidListener> deviceValidListeners;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
 
     private final LifecycleConductor conductor;
@@ -124,8 +112,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         this.conductor = lifecycleConductor;
         spyPool = new ScheduledThreadPoolExecutor(1);
-        this.deviceSynchronizedListeners = new HashSet<>();
-        this.deviceValidListeners = new HashSet<>();
         this.singletonServiceProvider = singletonServiceProvider;
     }
 
@@ -177,18 +163,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final DeviceState deviceState = new DeviceStateImpl(deviceInfo);
-        this.addDeviceSynchronizeListener(deviceState);
-        this.addDeviceValidListener(deviceState);
-
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext,
-                deviceState,
                 dataBroker,
                 conductor,
                 outboundQueueProvider,
                 translatorLibrary,
-                this,
-                connectionContext.getDeviceInfo());
+                this);
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
@@ -205,13 +185,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionAdapter, deviceContext);
+
         connectionAdapter.setMessageListener(messageListener);
-        notifyDeviceValidListeners(deviceInfo, true);
-
-        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleServices.get(deviceInfo));
-
-        notifyDeviceSynchronizeListeners(deviceInfo, true);
-
+        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleService);
         return true;
     }
 
@@ -246,7 +222,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         for (final Iterator<DeviceContext> iterator = Iterators.consumingIterator(deviceContexts.values().iterator());
                 iterator.hasNext();) {
             final DeviceContext deviceCtx = iterator.next();
-            notifyDeviceValidListeners(deviceCtx.getDeviceInfo(), false);
             deviceCtx.shutdownConnection();
             deviceCtx.shuttingDownDataStoreTransactions();
         }
@@ -305,7 +280,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             /* Connection is not PrimaryConnection so try to remove from Auxiliary Connections */
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
         } else {
-            notifyDeviceValidListeners(deviceInfo, false);
             /* Device is disconnected and so we need to close TxManager */
             final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
             Futures.addCallback(future, new FutureCallback<Void>() {
@@ -344,40 +318,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role) {
-        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
-        LOG.trace("onClusterRoleChange {} for node:", role, deviceInfo.getNodeId());
-        if (OfpRole.BECOMEMASTER.equals(role)) {
-            return onDeviceTakeClusterLeadership(deviceInfo);
-        }
-        return ((DeviceContextImpl)deviceContext).getTransactionChainManager().deactivateTransactionManager();
-    }
-
-    @Override
-    public void addDeviceSynchronizeListener(final DeviceSynchronizeListener deviceSynchronizeListener) {
-        this.deviceSynchronizedListeners.add(deviceSynchronizeListener);
-    }
-
-    @Override
-    public void notifyDeviceSynchronizeListeners(final DeviceInfo deviceInfo, final boolean deviceSynchronized) {
-        for (DeviceSynchronizeListener listener : deviceSynchronizedListeners) {
-            listener.deviceIsSynchronized(deviceInfo, deviceSynchronized);
-        }
-    }
-
-    @Override
-    public void addDeviceValidListener(final DeviceValidListener deviceValidListener) {
-        this.deviceValidListeners.add(deviceValidListener);
-    }
-
-    @Override
-    public void notifyDeviceValidListeners(final DeviceInfo deviceInfo, final boolean deviceValid) {
-        for (DeviceValidListener listener : deviceValidListeners) {
-            listener.deviceIsValid(deviceInfo, deviceValid);
-        }
-    }
-
-    @Override
     public void setIsNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
     }
@@ -385,64 +325,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public boolean getIsNotificationFlowRemovedOff() {
         return this.isNotificationFlowRemovedOff;
-    }
-
-    private ListenableFuture<Void> onDeviceTakeClusterLeadership(final DeviceInfo deviceInfo) {
-        LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceInfo.getNodeId());
-        /* validation */
-        StatisticsContext statisticsContext = conductor.getStatisticsContext(deviceInfo);
-        if (statisticsContext == null) {
-            final String errMsg = String.format("DeviceCtx %s is up but we are missing StatisticsContext", deviceInfo.getDatapathId());
-            LOG.warn(errMsg);
-            return Futures.immediateFailedFuture(new IllegalStateException(errMsg));
-        }
-        DeviceContext deviceContext = conductor.getDeviceContext(deviceInfo);
-        /* Prepare init info collecting */
-        notifyDeviceSynchronizeListeners(deviceInfo, false);
-        ((DeviceContextImpl)deviceContext).getTransactionChainManager().activateTransactionManager();
-        /* Init Collecting NodeInfo */
-        final ListenableFuture<Void> initCollectingDeviceInfo = DeviceInitializationUtils.initializeNodeInformation(
-                deviceContext, switchFeaturesMandatory);
-        /* Init Collecting StatInfo */
-        final ListenableFuture<Boolean> statPollFuture = Futures.transform(initCollectingDeviceInfo,
-                new AsyncFunction<Void, Boolean>() {
-
-                    @Override
-                    public ListenableFuture<Boolean> apply(@Nonnull final Void input) throws Exception {
-                        statisticsContext.statListForCollectingInitialization();
-                        return statisticsContext.initialGatherDynamicData();
-                    }
-                });
-
-        return Futures.transform(statPollFuture, getInitialDeviceInformation(deviceContext));
-    }
-
-    private Function<Boolean, Void> getInitialDeviceInformation(final DeviceContext deviceContext) {
-        return input -> {
-            if (ConnectionContext.CONNECTION_STATE.RIP.equals(
-                    conductor.gainConnectionStateSafely(deviceContext.getDeviceInfo())
-            )) {
-                final String errMsg =
-                        String.format("We lost connection for Device %s, context has to be closed.",
-                        deviceContext.getDeviceInfo().getNodeId());
-                LOG.warn(errMsg);
-                throw new IllegalStateException(errMsg);
-            }
-
-            if (input == null || !input) {
-                final String errMsg =
-                        String.format("Get Initial Device %s information fails",
-                        deviceContext.getDeviceInfo().getNodeId());
-                LOG.warn(errMsg);
-                throw new IllegalStateException(errMsg);
-            }
-            LOG.debug("Get Initial Device {} information is successful",
-                    deviceContext.getDeviceInfo().getNodeId());
-            notifyDeviceSynchronizeListeners(deviceContext.getDeviceInfo(), true);
-            ((DeviceContextImpl)deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
-            deviceContext.getDeviceState().setStatisticsPollingEnabledProp(true);
-            return null;
-        };
     }
 
 }
