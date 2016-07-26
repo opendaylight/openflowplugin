@@ -59,7 +59,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -153,8 +153,6 @@ public class DeviceContextImplTest {
     @Mock
     HashedWheelTimer timer;
     @Mock
-    MessageIntelligenceAgency messageIntelligenceAgency;
-    @Mock
     OutboundQueueProvider outboundQueueProvider;
     @Mock
     ConnectionAdapter connectionAdapter;
@@ -171,13 +169,14 @@ public class DeviceContextImplTest {
     @Mock
     private MessageTranslator<Object, Object> messageTranslatorFlowRemoved;
     @Mock
-    private LifecycleConductor lifecycleConductor;
-    @Mock
     private DeviceInfo deviceInfo;
     @Mock
     private DeviceManager deviceManager;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    private LifecycleService lifecycleService;
+    @Mock
+    private MessageSpy messageSpy;
 
     private InOrder inOrderDevState;
 
@@ -226,13 +225,11 @@ public class DeviceContextImplTest {
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved.class.getName()))))
                 .thenReturn(messageTranslatorFlowRemoved);
-        Mockito.when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
                 dataBroker,
-                lifecycleConductor,
-                outboundQueueProvider,
+                messageSpy,
                 translatorLibrary,
 		        deviceManager,
                 convertorExecutor);
@@ -246,14 +243,12 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, null, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, convertorExecutor).close();
-
+        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-
-        new DeviceContextImpl(null, dataBroker, lifecycleConductor, outboundQueueProvider, translatorLibrary, deviceManager, convertorExecutor).close();
+        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor).close();
     }
 
     @Test
@@ -273,14 +268,8 @@ public class DeviceContextImplTest {
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
-        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
+        deviceContext.initialSubmitTransaction();
         verify(wTx).submit();
-    }
-
-    @Test
-    public void testGetReservedXid() {
-        deviceContext.reserveXidForDeviceMessage();
-        verify(outboundQueueProvider).reserveEntry();
     }
 
     @Test
@@ -365,10 +354,10 @@ public class DeviceContextImplTest {
     public void testProcessReply() {
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
-        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
         final OfHeader mockedOfHeader = mock(OfHeader.class);
         deviceContext.processReply(mockedOfHeader);
-        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -376,7 +365,7 @@ public class DeviceContextImplTest {
         final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
         final Xid dummyXid = new Xid(DUMMY_XID);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
-        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
     }
 
     @Test
@@ -388,7 +377,7 @@ public class DeviceContextImplTest {
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -400,7 +389,7 @@ public class DeviceContextImplTest {
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageIntelligenceAgency).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
     }
 
     @Test
@@ -436,7 +425,7 @@ public class DeviceContextImplTest {
     @Test
     public void testGetMessageSpy() {
         final MessageSpy pickedMessageSpy = deviceContext.getMessageSpy();
-        assertEquals(messageIntelligenceAgency, pickedMessageSpy);
+        assertEquals(messageSpy, pickedMessageSpy);
     }
 
     @Test

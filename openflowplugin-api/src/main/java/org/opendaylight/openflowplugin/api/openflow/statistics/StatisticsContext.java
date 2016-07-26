@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
@@ -73,4 +74,6 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable, O
      * @return true if scheduling is enabled
      */
     boolean isSchedulingEnabled();
+
+    LifecycleService getLifecycleService();
 }
