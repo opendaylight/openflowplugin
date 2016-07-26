@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,14 +32,12 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -65,6 +64,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
+    private static final int TICKS_PER_WHEEL = 500;
+    private static final long TICK_DURATION = 10; // 0.5 sec.
+
+    private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
@@ -79,18 +82,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private ConnectionManager connectionManager;
     private NotificationService notificationProviderService;
     private NotificationPublishService notificationPublishService;
-    private EntityOwnershipService entityOwnershipService;
-
     private ExtensionConverterManager extensionConverterManager;
-
     private DataBroker dataBroker;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
-
-    private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
 
@@ -111,8 +109,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolMaxThreads),
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
-
-        conductor = new LifecycleConductorImpl(messageIntelligenceAgency);
     }
 
     @Override
@@ -154,11 +150,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setEntityOwnershipService(final EntityOwnershipService entityOwnershipService) {
-        this.entityOwnershipService = entityOwnershipService;
-    }
-
-    @Override
     public void setBarrierCountLimit(final int barrierCountLimit) {
         this.barrierCountLimit = barrierCountLimit;
     }
@@ -181,7 +172,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider) {
         this.singletonServicesProvider = singletonServicesProvider;
     }
-
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -228,21 +218,17 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 switchFeaturesMandatory,
                 barrierInterval,
                 barrierCountLimit,
-                conductor,
+                getMessageIntelligenceAgency(),
                 isNotificationFlowRemovedOff,
-                singletonServicesProvider);
-        ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
+                singletonServicesProvider,
+                notificationPublishService,
+                hashedWheelTimer);
+
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
-        conductor.setSafelyManager(deviceManager);
-        conductor.setNotificationPublishService(notificationPublishService);
-
-        roleManager = new RoleManagerImpl(dataBroker, conductor);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, conductor);
-        conductor.setSafelyManager(statisticsManager);
-
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, conductor, extensionConverterManager, notificationPublishService);
-        conductor.setSafelyManager(rpcManager);
+        roleManager = new RoleManagerImpl(dataBroker, hashedWheelTimer);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, hashedWheelTimer);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, notificationPublishService);
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
