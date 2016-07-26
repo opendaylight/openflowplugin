@@ -34,13 +34,12 @@ public class FlowRegistryKeyFactory {
         private final int priority;
         private final BigInteger cookie;
         private final Match match;
-        private static final Match EMPTY_MATCH = new MatchBuilder().build();
 
         private FlowRegistryKeyDto(final Flow flow) {
             //TODO: mandatory flow input values (or default values) should be specified via yang model
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
-            match = flow.getMatch()==null ? EMPTY_MATCH : flow.getMatch();
+            match = MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH);
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
 
