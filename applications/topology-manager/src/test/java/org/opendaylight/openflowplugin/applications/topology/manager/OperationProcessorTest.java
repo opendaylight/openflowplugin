@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.mockito.Mockito.times;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -13,11 +13,17 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.*;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestNode;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newLink;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newSourceNode;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setReadFutureAsync;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedDeletes;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedSubmit;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.verifyMockTx;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForDeletes;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForSubmit;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
@@ -31,7 +37,9 @@ import org.mockito.ArgumentCaptor;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
@@ -39,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
