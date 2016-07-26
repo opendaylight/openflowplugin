@@ -15,10 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 import javax.annotation.concurrent.GuardedBy;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
-import org.opendaylight.openflowplugin.applications.frsync.util.ZipQueueEntry;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -33,7 +32,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureZipDecorator.class);
 
     @GuardedBy("compressionGuard")
-    private final Map<InstanceIdentifier<FlowCapableNode>, ZipQueueEntry> compressionQueue = new HashMap<>();
+    private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
     private final Semaphore compressionGuard = new Semaphore(1, false);
 
     public SyncReactorFutureZipDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
@@ -41,17 +40,16 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                            final LogicalDatastoreType dsType) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup zip {}", nodeId.getValue());
+        LOG.trace("syncup zip decorator: {}", nodeId.getValue());
 
         try {
             compressionGuard.acquire();
 
-            final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, configTree, operationalTree, dsType);
+            final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
             if (newFutureNecessary) {
-                super.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
+                super.syncup(flowcapableNodePath, syncupEntry);
             }
             return Futures.immediateFuture(true);
         } finally {
@@ -60,17 +58,15 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                                         final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                                         final LogicalDatastoreType dsType) throws InterruptedException {
+                                                         final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture zip {}", nodeId.getValue());
+        LOG.trace("doSyncupInFuture zip decorator: {}", nodeId.getValue());
 
-        final ZipQueueEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
+        final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
         if (lastCompressionState == null) {
             return Futures.immediateFuture(true);
         } else {
-            return super.doSyncupInFuture(flowcapableNodePath,
-                    lastCompressionState.getLeft(), lastCompressionState.getRight(), dsType);
+            return super.doSyncupInFuture(flowcapableNodePath, lastCompressionState);
         }
     }
 
@@ -79,30 +75,24 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
      * update its zip queue entry. Create/replace zip queue entry for the device with operational delta otherwise.
      */
     private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                           final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                           final LogicalDatastoreType dsType) {
-        final ZipQueueEntry previousEntry = compressionQueue.get(flowcapableNodePath);
+                                           final SyncupEntry syncupEntry) {
+        final SyncupEntry previousEntry = compressionQueue.get(flowcapableNodePath);
 
-        if (previousEntry != null && dsType == LogicalDatastoreType.CONFIGURATION
-                && previousEntry.getDsType() == LogicalDatastoreType.CONFIGURATION) {
-            putOptimizedConfigDelta(flowcapableNodePath, configTree, previousEntry);
+        if (previousEntry != null && syncupEntry.isOptimizedConfigDelta() && previousEntry.isOptimizedConfigDelta()) {
+            updateOptimizedConfigDelta(flowcapableNodePath, syncupEntry, previousEntry);
         } else {
-            putLatestOperationalDelta(flowcapableNodePath, configTree, operationalTree, dsType);
+            compressionQueue.put(flowcapableNodePath, syncupEntry);
         }
         return previousEntry == null;
     }
 
-    private void putOptimizedConfigDelta(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, FlowCapableNode configTree,
-                                         ZipQueueEntry previous) {
-        compressionQueue.put(flowcapableNodePath, new ZipQueueEntry(configTree, previous.getRight(), previous.getDsType()));
+    private void updateOptimizedConfigDelta(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, SyncupEntry actual,
+                                            SyncupEntry previous) {
+        compressionQueue.put(flowcapableNodePath, new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
+                                                                  previous.getBefore(), previous.getDsTypeBefore()));
     }
 
-    private void putLatestOperationalDelta(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, FlowCapableNode configTree,
-                                           FlowCapableNode operationalTree, LogicalDatastoreType dsType) {
-        compressionQueue.put(flowcapableNodePath, new ZipQueueEntry(configTree, operationalTree, dsType));
-    }
-
-    private ZipQueueEntry removeLastCompressionState(
+    private SyncupEntry removeLastCompressionState(
             final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
         try {
             try {

@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -37,23 +37,22 @@ public class SyncReactorRetryDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                            final LogicalDatastoreType dsType) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) throws InterruptedException {
 
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup retry {}", nodeId.getValue());
+        LOG.trace("syncup retry decorator: {}", nodeId.getValue());
 
-        if (dsType == LogicalDatastoreType.CONFIGURATION && reconciliationRegistry.isRegistered(nodeId)) {
+        if (syncupEntry.isOptimizedConfigDelta() && reconciliationRegistry.isRegistered(nodeId)) {
             LOG.debug("Config change ignored because {} is in reconcile.", nodeId.getValue());
             return Futures.immediateFuture(Boolean.FALSE);
         }
 
-        ListenableFuture<Boolean> syncupResult = delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
+        ListenableFuture<Boolean> syncupResult = delegate.syncup(flowcapableNodePath,syncupEntry);
 
         return Futures.transform(syncupResult, new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(Boolean result) {
-                LOG.trace("syncup ret in retry {}", result);
+                LOG.trace("syncup return in retry decorator: {} [{}]", nodeId.getValue(), result);
                 if (result) {
                     reconciliationRegistry.unregisterIfRegistered(nodeId);
                     return true;

@@ -10,10 +10,10 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -36,17 +36,15 @@ public class SyncReactorClusterDecorator implements SyncReactor {
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final FlowCapableNode configTree,
-                                            final FlowCapableNode operationalTree,
-                                            final LogicalDatastoreType dsType) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup cluster {}", nodeId.getValue());
+        LOG.trace("Syncup cluster decorator: {}", nodeId.getValue());
 
         if (!deviceMastershipManager.isDeviceMastered(nodeId)) {
             LOG.debug("Skip syncup since not master for: {}", nodeId.getValue());
             return Futures.immediateFuture(Boolean.TRUE);
         } else {
-            return delegate.syncup(flowcapableNodePath, configTree,operationalTree, dsType);
+            return delegate.syncup(flowcapableNodePath, syncupEntry);
         }
     }
 }

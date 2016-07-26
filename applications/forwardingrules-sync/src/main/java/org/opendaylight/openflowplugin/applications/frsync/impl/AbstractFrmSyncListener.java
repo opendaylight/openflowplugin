@@ -38,7 +38,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                 if (optFuture.isPresent()) {
                     final ListenableFuture<Boolean> future = optFuture.get();
                     final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
-                    LOG.debug("syncup ret {} {} {} thread:{}", dsType(), ret, nodeId.getValue(), threadName());
+                    LOG.debug("syncup return in {} listener for: {} [{}] thread:{}", dsType(), nodeId.getValue(), ret, threadName());
                 }
             } catch (InterruptedException e) {
                 LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId.getValue());

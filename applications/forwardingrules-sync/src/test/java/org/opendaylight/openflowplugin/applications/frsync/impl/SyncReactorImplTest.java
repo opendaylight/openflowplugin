@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -101,13 +102,16 @@ public class SyncReactorImplTest {
                 .setMeter(Collections.singletonList(DSInputFactory.createMeter(2L)))
                 .build();
 
+        final SyncupEntry syncupEntry = new SyncupEntry(configFcn, LogicalDatastoreType.CONFIGURATION,
+                                                        operationalFcn, LogicalDatastoreType.OPERATIONAL);
+
         Mockito.when(syncPlanPushStrategy.executeSyncStrategy(
                 Matchers.<ListenableFuture<RpcResult<Void>>>any(),
                 Matchers.<SynchronizationDiffInput>any(),
                 Matchers.<SyncCrudCounters>any()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 
-        final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, configFcn, operationalFcn, LogicalDatastoreType.CONFIGURATION);
+        final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, syncupEntry);
         try {
             Assert.assertTrue(syncupResult.isDone());
             final Boolean voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);
