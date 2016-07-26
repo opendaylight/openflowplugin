@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_3959bd8e",
+        "filename": "extension/openflowjava-extension-nicira-api/src/main/java/org/opendaylight/openflowjava/nx/api/NiciraActionDeserializerKey.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-26T06:38:27Z",
+      "side": 1,
+      "message": "what about this ?\n\nreturn value \u003e\u003d 0 \u0026\u0026 value \u003c\u003d 65535L;",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 5
+      },
+      "revId": "4c317e155d016dcfd85d7a5bf38e695de0eddf06",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_7956955d",
+        "filename": "extension/openflowjava-extension-nicira-api/src/main/java/org/opendaylight/openflowjava/nx/api/NiciraActionDeserializerKey.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-26T06:38:27Z",
+      "side": 1,
+      "message": "same here\n\nreturn version \u003d\u003d other.version;",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 20
+      },
+      "revId": "4c317e155d016dcfd85d7a5bf38e695de0eddf06",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9949e9b9",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/NxmHeader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-26T06:38:27Z",
+      "side": 1,
+      "message": "return headerAsLong \u003d\u003d other.headerAsLong;",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 20
+      },
+      "revId": "4c317e155d016dcfd85d7a5bf38e695de0eddf06",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
