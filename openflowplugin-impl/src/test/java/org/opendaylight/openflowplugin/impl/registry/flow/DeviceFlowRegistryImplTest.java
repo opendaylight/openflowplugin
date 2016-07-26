@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,6 +17,8 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +46,9 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceFlowRegistryImplTest {
     private static final String NODE_ID = "openflow:1";
+    private static final Pattern INDEX_PATTERN = Pattern.compile("^#UF\\$TABLE\\*1-([0-9]+)$");
+    private static final Short DUMMY_TABLE_ID = 1;
+
     private DeviceFlowRegistryImpl deviceFlowRegistry;
     private FlowRegistryKey key;
     private FlowDescriptor descriptor;
@@ -145,5 +152,27 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
         deviceFlowRegistry.removeMarked();
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
+    }
+
+    @Test
+    public void createAlienFlowIdTest() throws Exception {
+        final String alienFlowId1 = DeviceFlowRegistryImpl.createAlienFlowId(DUMMY_TABLE_ID).getValue();
+        final Integer index1 = parseIndex(alienFlowId1);
+        final String alienFlowId2 = DeviceFlowRegistryImpl.createAlienFlowId(DUMMY_TABLE_ID).getValue();
+        final Integer index2 = parseIndex(alienFlowId2);
+
+        assertNotNull("index1 parsing failed: " + alienFlowId1, index1);
+        assertNotNull("index2 parsing failed: " + alienFlowId2, index2);
+        assertTrue(index1 < index2);
+    }
+
+    private static Integer parseIndex(String alienFlowIdValue) {
+        final Matcher mach = INDEX_PATTERN.matcher(alienFlowIdValue);
+
+        if (mach.find()) {
+            return Integer.valueOf(mach.group(1));
+        }
+
+        return null;
     }
 }

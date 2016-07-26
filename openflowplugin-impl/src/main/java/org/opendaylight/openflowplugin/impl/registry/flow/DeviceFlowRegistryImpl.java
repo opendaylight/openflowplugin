@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -22,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -31,7 +33,6 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -47,6 +48,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
+    private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
+    private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
     private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
     @GuardedBy("marks")
@@ -164,7 +167,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         // We was not able to retrieve FlowDescriptor, so we will at least try to generate it
         if (flowDescriptor == null) {
             final short tableId = flowRegistryKey.getTableId();
-            final FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
+            final FlowId alienFlowId = createAlienFlowId(tableId);
             flowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
 
             // Finally we got flowDescriptor, so now we will store it to registry,
@@ -214,5 +217,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         flowRegistry.clear();
         marks.clear();
+    }
+
+    @VisibleForTesting
+    static FlowId createAlienFlowId(final short tableId) {
+        final String alienId = ALIEN_SYSTEM_FLOW_ID + tableId + '-' + UNACCOUNTED_FLOWS_COUNTER.incrementAndGet();
+        return new FlowId(alienId);
     }
 }
