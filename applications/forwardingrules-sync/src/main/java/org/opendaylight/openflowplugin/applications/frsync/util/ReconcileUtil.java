@@ -260,7 +260,7 @@ public class ReconcileUtil {
                                                        final Map<MeterId, Meter> meterOperationalMap,
                                                        final List<Meter> metersConfigured,
                                                        final boolean gatherUpdates) {
-        LOG.trace("resolving meters for {}", nodeId);
+        LOG.trace("resolving meters for {}", nodeId.getValue());
         final ItemSyncBox<Meter> syncBox = new ItemSyncBox<>();
         for (Meter meter : metersConfigured) {
             final Meter existingMeter = meterOperationalMap.get(meter.getMeterId());
@@ -313,7 +313,7 @@ public class ReconcileUtil {
                                                                                final Map<Short, Table> tableOperationalMap,
                                                                                final List<Table> tablesConfigured,
                                                                                final boolean gatherUpdates) {
-        LOG.trace("resolving flows in tables for {}", nodeId);
+        LOG.trace("resolving flows in tables for {}", nodeId.getValue());
         final Map<TableKey, ItemSyncBox<Flow>> tableFlowSyncBoxes = new HashMap<>();
         for (final Table tableConfigured : tablesConfigured) {
             final List<Flow> flowsConfigured = tableConfigured.getFlow();

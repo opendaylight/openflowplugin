@@ -40,13 +40,13 @@ public class FxChainUtil {
                         LOG.debug(prefix + " failed: {} -> {}", nodeId.getValue(), Arrays.toString(errors.toArray()));
                     }
                 } else {
-                    LOG.debug(prefix + "reconciliation failed: {} -> null result", nodeId.getValue());
+                    LOG.debug(prefix + " reconciliation failed: {} -> null result", nodeId.getValue());
                 }
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.debug(prefix + "reconciliation failed seriously: {}", nodeId.getValue(), t);
+                LOG.debug(prefix + " reconciliation failed seriously: {}", nodeId.getValue(), t);
             }
         };
     }

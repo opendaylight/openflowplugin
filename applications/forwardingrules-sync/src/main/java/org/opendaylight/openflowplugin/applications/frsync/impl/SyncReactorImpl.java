@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
@@ -29,6 +28,7 @@ import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -57,11 +57,15 @@ public class SyncReactorImpl implements SyncReactor {
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                            final LogicalDatastoreType dsType) {
-
+                                            final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-        LOG.trace("syncup impl {} cfg:{} oper:{}", nodeId.getValue(), configTree == null ? "is null" : "non null", operationalTree == null ? "is null" : "non null");
+        FlowCapableNode configTree = syncupEntry.getAfter();
+        FlowCapableNode operationalTree = syncupEntry.getBefore();
+
+        LOG.trace("syncup reactor {} cfg:{} oper:{}",
+                nodeId.getValue(),
+                configTree == null ? "is null" : "non null",
+                operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
 
         /**
@@ -108,7 +112,7 @@ public class SyncReactorImpl implements SyncReactor {
                     final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("sync-outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}, took={} ms",
+                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}, took={} ms",
                             nodeId.getValue(),
                             flowCrudCounts.getAdded(),
                             flowCrudCounts.getUpdated(),

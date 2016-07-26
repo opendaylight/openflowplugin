@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -42,6 +43,8 @@ public class SyncReactorGuardDecoratorTest {
     private FlowCapableNode fcConfigNode;
     @Mock
     private FlowCapableNode fcOperationalNode;
+    @Mock
+    private SyncupEntry syncupEntry;
 
     @Before
     public void setUp() throws Exception {
@@ -57,23 +60,27 @@ public class SyncReactorGuardDecoratorTest {
 
     @Test
     public void testSyncupSuccess() throws Exception {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
     }
 
     @Test
     public void testSyncupFail() throws Exception {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFailedFuture(new Exception()));
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFailedFuture(new Exception()));
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
 
     }

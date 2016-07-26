@@ -47,7 +47,7 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
             return roTx.read(logicalDatastoreType, path).checkedGet(5000, TimeUnit.MILLISECONDS);
         } catch (ReadFailedException | TimeoutException e) {
-            LOG.error("error reading {}", nodeId, e);
+            LOG.error("error reading {} -> {}", nodeId.getValue(), e);
         }
 
         return Optional.absent();

@@ -38,16 +38,16 @@ public class DeviceMastership implements ClusterSingletonService {
 
     @Override
     public void instantiateServiceInstance() {
+        LOG.debug("FRS started for: {}", nodeId.getValue());
         deviceMastered = true;
         reconciliationRegistry.register(nodeId);
-        LOG.trace("FRS started for: {}", nodeId.getValue());
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
+        LOG.debug("FRS stopped for: {}", nodeId.getValue());
         deviceMastered = false;
         reconciliationRegistry.unregisterIfRegistered(nodeId);
-        LOG.debug("FRS stopped for: {}", nodeId.getValue());
         return Futures.immediateFuture(null);
     }
 

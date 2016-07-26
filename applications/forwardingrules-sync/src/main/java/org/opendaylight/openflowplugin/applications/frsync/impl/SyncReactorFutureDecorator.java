@@ -12,9 +12,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -37,18 +37,17 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                            final LogicalDatastoreType dsType) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup future {}", nodeId.getValue());
+        LOG.trace("syncup future decorator: {}", nodeId.getValue());
 
         final ListenableFuture<Boolean> syncup = executorService.submit(() -> {
             final String oldThreadName = updateThreadName(nodeId);
 
             try {
-                final Boolean ret = doSyncupInFuture(flowcapableNodePath, configTree, operationalTree, dsType)
+                final Boolean ret = doSyncupInFuture(flowcapableNodePath, syncupEntry)
                         .get(10000, TimeUnit.MILLISECONDS);
-                LOG.trace("ret {} {}", nodeId.getValue(), ret);
+                LOG.trace("syncup return in future decorator: {} [{}]", nodeId.getValue(), ret);
                 return true;
             } catch (TimeoutException e) {
                 LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
@@ -62,12 +61,11 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                                         final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                                         final LogicalDatastoreType dsType) throws InterruptedException {
+                                                         final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture future {}", nodeId.getValue());
+        LOG.trace("doSyncupInFuture future decorator: {}", nodeId.getValue());
 
-        return delegate.syncup(flowcapableNodePath, configTree, operationalTree, dsType);
+        return delegate.syncup(flowcapableNodePath, syncupEntry);
     }
 
     private String updateThreadName(NodeId nodeId) {
