@@ -18,12 +18,11 @@ import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import io.netty.util.TimerTask;
+import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -51,12 +49,12 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -98,8 +96,6 @@ public class DeviceManagerImplTest {
     @Mock
     private NodeId mockedNodeId;
     @Mock
-    private LifecycleConductor lifecycleConductor;
-    @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
     private DeviceInfo deviceInfo;
@@ -124,8 +120,6 @@ public class DeviceManagerImplTest {
         when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
-
-        when(lifecycleConductor.getMessageIntelligenceAgency()).thenReturn(messageIntelligenceAgency);
     }
 
     @Test
@@ -134,10 +128,6 @@ public class DeviceManagerImplTest {
     }
 
     private DeviceManagerImpl prepareDeviceManager() {
-        return prepareDeviceManager(false);
-    }
-
-    private DeviceManagerImpl prepareDeviceManager(final boolean withException) {
         final DataBroker mockedDataBroker = mock(DataBroker.class);
         final WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
 
@@ -156,9 +146,11 @@ public class DeviceManagerImplTest {
                 false,
                 barrierIntervalNanos,
                 barrierCountLimit,
-                lifecycleConductor,
+                messageIntelligenceAgency,
                 true,
-                clusterSingletonServiceProvider);
+                clusterSingletonServiceProvider,
+                null,
+                new HashedWheelTimer());
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
@@ -167,7 +159,7 @@ public class DeviceManagerImplTest {
     }
 
     public void onDeviceContextLevelUp(final boolean withException) throws Exception {
-        final DeviceManagerImpl deviceManager = prepareDeviceManager(withException);
+        final DeviceManagerImpl deviceManager = prepareDeviceManager();
         final DeviceState mockedDeviceState = mock(DeviceState.class);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
@@ -240,8 +232,6 @@ public class DeviceManagerImplTest {
         deviceContexts.put(deviceInfo, deviceContext);
 
         deviceManager.onDeviceDisconnected(connectionContext);
-
-        verify(lifecycleConductor).newTimeout(Mockito.<TimerTask>any(), Mockito.anyLong(), Mockito.<TimeUnit>any());
     }
 
     protected ConnectionContext buildMockConnectionContext(final short ofpVersion) {
