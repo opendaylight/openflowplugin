@@ -33,7 +33,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -71,8 +70,6 @@ public class RpcManagerImplTest {
     @Mock
     private MessageSpy mockMsgSpy;
     @Mock
-    private LifecycleConductor conductor;
-    @Mock
     private ConnectionContext connectionContext;
     @Mock
     private ItemLifeCycleRegistry itemLifeCycleRegistry;
@@ -103,7 +100,7 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, conductor, extensionConverterProvider, convertorExecutor, notificationPublishService);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, extensionConverterProvider, convertorExecutor, notificationPublishService);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
@@ -128,14 +125,8 @@ public class RpcManagerImplTest {
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
-        Mockito.when(conductor.getDeviceContext(deviceInfo)).thenReturn(deviceContext);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
-    }
-
-    @Test
-    public void onDeviceContextLevelUp() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        verify(conductor).getDeviceContext(deviceInfo);
+        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
     }
 
     @Test
