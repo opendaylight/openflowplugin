@@ -14,6 +14,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -39,8 +41,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
@@ -79,21 +81,25 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
-
-    private final LifecycleConductor conductor;
+    private final NotificationPublishService notificationPublishService;
+    private final MessageSpy messageSpy;
+    private final HashedWheelTimer hashedWheelTimer;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota,
                              final boolean switchFeaturesMandatory,
                              final long barrierInterval,
                              final int barrierCountLimit,
-                             final LifecycleConductor lifecycleConductor,
+                             final MessageSpy messageSpy,
                              final boolean isNotificationFlowRemovedOff,
-                             final ClusterSingletonServiceProvider singletonServiceProvider) {
+                             final ClusterSingletonServiceProvider singletonServiceProvider,
+                             final NotificationPublishService notificationPublishService,
+                             final HashedWheelTimer hashedWheelTimer) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.hashedWheelTimer = hashedWheelTimer;
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
 
@@ -110,9 +116,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
 
-        this.conductor = lifecycleConductor;
         spyPool = new ScheduledThreadPoolExecutor(1);
         this.singletonServiceProvider = singletonServiceProvider;
+        this.notificationPublishService = notificationPublishService;
+        this.messageSpy = messageSpy;
     }
 
 
@@ -163,23 +170,24 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext,
+        final DeviceContext deviceContext = new DeviceContextImpl(
+                connectionContext,
                 dataBroker,
-                conductor,
-                outboundQueueProvider,
+                messageSpy,
                 translatorLibrary,
                 this);
+
+        Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
 
-        Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
         lifecycleServices.putIfAbsent(deviceInfo, lifecycleService);
 
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setNotificationPublishService(conductor.getNotificationPublishService());
+        deviceContext.setNotificationPublishService(notificationPublishService);
 
         updatePacketInRateLimiters();
 
@@ -247,7 +255,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void initialize() {
-        spyPool.scheduleAtFixedRate(conductor.getMessageIntelligenceAgency(), SPY_RATE, SPY_RATE, TimeUnit.SECONDS);
+        spyPool.scheduleAtFixedRate(messageSpy, SPY_RATE, SPY_RATE, TimeUnit.SECONDS);
     }
 
     @Override
@@ -303,13 +311,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                     future.cancel(false);
                 }
             };
-            conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);
+            hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
     }
 
     @VisibleForTesting
     void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
         deviceContexts.put(deviceInfo, deviceContext);
+    }
+
+    @VisibleForTesting
+    void removeDeviceContextFromMap(final DeviceInfo deviceInfo){
+        deviceContexts.remove(deviceInfo);
     }
 
     @Override

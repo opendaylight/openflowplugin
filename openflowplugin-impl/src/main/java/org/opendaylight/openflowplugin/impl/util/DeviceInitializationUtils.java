@@ -430,7 +430,7 @@ public class DeviceInitializationUtils {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
-        final Long reserved = deviceContext.reserveXidForDeviceMessage();
+        final Long reserved = deviceContext.getDeviceInfo().reserveXidForDeviceMessage();
         final RequestContext<List<MultipartReply>> requestContext = new AbstractRequestContext<List<MultipartReply>>(
                 reserved) {
             @Override

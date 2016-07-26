@@ -27,10 +27,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -40,7 +38,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -125,7 +122,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private NotificationPublishService notificationPublishService;
-    private final OutboundQueue outboundQueueProvider;
     private Timeout barrierTaskTimeout;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
@@ -142,26 +138,23 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
             @Nonnull final DataBroker dataBroker,
-            @Nonnull final LifecycleConductor conductor,
-            @Nonnull final OutboundQueueProvider outboundQueueProvider,
+            @Nonnull final MessageSpy messageSpy,
             @Nonnull final TranslatorLibrary translatorLibrary,
             @Nonnull final DeviceManager manager) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        Preconditions.checkNotNull(conductor);
-        this.outboundQueueProvider = Preconditions.checkNotNull(outboundQueueProvider);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo , conductor);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, deviceInfo.getNodeInstanceIdentifier());
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
-        messageSpy = conductor.getMessageIntelligenceAgency();
+        this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.deviceManager = Preconditions.checkNotNull(manager);
 
         packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
-                /*initial*/ 1000, /*initial*/2000, messageSpy, REJECTED_DRAIN_FACTOR);
+                /*initial*/ 1000, /*initial*/2000, this.messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
         portStatusTranslator = translatorLibrary.lookupTranslator(
@@ -184,11 +177,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
-    }
-
-    @Override
-    public Long reserveXidForDeviceMessage() {
-        return outboundQueueProvider.reserveEntry();
     }
 
     @Override

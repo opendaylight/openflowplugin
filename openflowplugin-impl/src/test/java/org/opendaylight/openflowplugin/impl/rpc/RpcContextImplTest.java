@@ -80,7 +80,6 @@ public class RpcContextImplTest {
         rpcContext = new RpcContextImpl(
                 deviceInfo,
                 rpcProviderRegistry,
-                deviceContext,
                 messageSpy,
                 MAX_REQUESTS,
                 nodeInstanceIdentifier,
@@ -97,7 +96,6 @@ public class RpcContextImplTest {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 deviceInfo,
                 rpcProviderRegistry,
-                xidSequencer,
                 messageSpy,
                 100,
                 nodeInstanceIdentifier,
@@ -114,7 +112,6 @@ public class RpcContextImplTest {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 deviceInfo,
                 rpcProviderRegistry,
-                xidSequencer,
                 messageSpy,
                 0,
                 nodeInstanceIdentifier,
@@ -131,7 +128,6 @@ public class RpcContextImplTest {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 deviceInfo,
                 rpcProviderRegistry,
-                deviceContext,
                 messageSpy,
                 100,
                 nodeInstanceIdentifier,
@@ -174,7 +170,7 @@ public class RpcContextImplTest {
      */
     @Test
     public void testCreateRequestContext1() throws InterruptedException {
-        when(deviceContext.reserveXidForDeviceMessage()).thenReturn(null);
+        when(deviceInfo.reserveXidForDeviceMessage()).thenReturn(null);
         assertEquals(rpcContext.createRequestContext(),null);
     }
 

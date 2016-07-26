@@ -43,7 +43,6 @@ class RpcContextImpl implements RpcContext {
     private final RpcProviderRegistry rpcProviderRegistry;
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
-    private final XidSequencer xidSequencer;
     private boolean isStatisticsRpcEnabled;
 
     // TODO: add private Sal salBroker
@@ -57,14 +56,12 @@ class RpcContextImpl implements RpcContext {
 
     RpcContextImpl(final DeviceInfo deviceInfo,
                    final RpcProviderRegistry rpcProviderRegistry,
-                   final XidSequencer xidSequencer,
                    final MessageSpy messageSpy,
                    final int maxRequests,
                    final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier,
                    final DeviceContext deviceContext,
                    final ExtensionConverterProvider extensionConverterProvider,
                    final NotificationPublishService notificationPublishService) {
-        this.xidSequencer = Preconditions.checkNotNull(xidSequencer);
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
@@ -133,7 +130,7 @@ class RpcContextImpl implements RpcContext {
             LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeInstanceIdentifier.getKey().getId(), tracker.availablePermits());
         }
 
-        final Long xid = xidSequencer.reserveXidForDeviceMessage();
+        final Long xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
             LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeInstanceIdentifier.getKey().getId());
             tracker.release();
