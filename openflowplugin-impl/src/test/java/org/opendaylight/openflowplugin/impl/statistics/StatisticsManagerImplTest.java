@@ -51,7 +51,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
@@ -127,8 +126,6 @@ public class StatisticsManagerImplTest {
     @Mock
     private DeviceManager deviceManager;
     @Mock
-    private LifecycleConductor conductor;
-    @Mock
     private GetFeaturesOutput featuresOutput;
     @Mock
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
@@ -185,9 +182,8 @@ public class StatisticsManagerImplTest {
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, conductor);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer());
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
-        when(conductor.getDeviceContext(deviceInfo)).thenReturn(mockedDeviceContext);
     }
 
     @Test
@@ -203,6 +199,9 @@ public class StatisticsManagerImplTest {
             }
         }).when(outboundQueue)
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
+
+        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
         statisticsManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
@@ -255,6 +254,9 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
+        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
@@ -292,6 +294,9 @@ public class StatisticsManagerImplTest {
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
+        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
@@ -327,6 +332,9 @@ public class StatisticsManagerImplTest {
                 Collections.singletonList(itemLifecycleSource));
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
+
+        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
