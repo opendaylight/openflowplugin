@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 /**
  * API defining basic device information
  */
-public interface DeviceInfo {
+public interface DeviceInfo extends XidSequencer {
 
     /**
      * @return id of encapsulated node
