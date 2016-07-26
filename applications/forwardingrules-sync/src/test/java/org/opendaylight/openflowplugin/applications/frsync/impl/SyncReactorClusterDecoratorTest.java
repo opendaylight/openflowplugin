@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.DeviceMastershipManager;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -38,9 +39,7 @@ public class SyncReactorClusterDecoratorTest {
     @Mock
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private FlowCapableNode fcConfigNode;
-    @Mock
-    private FlowCapableNode fcOperationalNode;
+    private SyncupEntry syncupEntry;
 
     @Before
     public void setUp() {
@@ -54,9 +53,9 @@ public class SyncReactorClusterDecoratorTest {
     public void testSyncupMaster() throws InterruptedException {
         Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, LogicalDatastoreType.CONFIGURATION);
+        reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, LogicalDatastoreType.CONFIGURATION);
+        Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
     }
 
@@ -64,7 +63,7 @@ public class SyncReactorClusterDecoratorTest {
     public void testSyncupSlave() throws InterruptedException {
         Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(false);
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, LogicalDatastoreType.CONFIGURATION);
+        reactor.syncup(fcNodePath, syncupEntry);
 
         Mockito.verifyZeroInteractions(delegate);
     }

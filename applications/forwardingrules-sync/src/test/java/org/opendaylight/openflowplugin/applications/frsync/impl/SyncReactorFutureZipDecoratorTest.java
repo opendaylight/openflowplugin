@@ -31,6 +31,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -54,6 +55,8 @@ public class SyncReactorFutureZipDecoratorTest {
 
     @Mock
     private SyncReactorGuardDecorator delegate;
+    @Mock
+    private SyncupEntry syncupEntry;
 
     @Before
     public void setUp() {
@@ -77,8 +80,8 @@ public class SyncReactorFutureZipDecoratorTest {
         final CountDownLatch latchForNext = new CountDownLatch(1);
         final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenAnswer(new Answer<ListenableFuture<Boolean>>() {
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
                     @Override
                     public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
                         LOG.info("unlocking next configs");
@@ -90,12 +93,16 @@ public class SyncReactorFutureZipDecoratorTest {
                 }).thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         final List<ListenableFuture<Boolean>> allResults = new ArrayList<>();
-        allResults.add(reactor.syncup(fcNodePath, dataBefore, null, dsType));
+//        allResults.add(reactor.syncup(fcNodePath, dataBefore, null, dsType));
+        allResults.add(reactor.syncup(fcNodePath, syncupEntry));
         latchForNext.await();
 
-        allResults.add(reactor.syncup(fcNodePath, dataAfter, dataBefore, dsType));
-        allResults.add(reactor.syncup(fcNodePath, null, dataAfter, dsType));
-        allResults.add(reactor.syncup(fcNodePath, dataAfter2, null, dsType));
+//        allResults.add(reactor.syncup(fcNodePath, dataAfter, dataBefore, dsType));
+        allResults.add(reactor.syncup(fcNodePath, syncupEntry));
+//        allResults.add(reactor.syncup(fcNodePath, null, dataAfter, dsType));
+        allResults.add(reactor.syncup(fcNodePath, syncupEntry));
+//        allResults.add(reactor.syncup(fcNodePath, dataAfter2, null, dsType));
+        allResults.add(reactor.syncup(fcNodePath, syncupEntry));
         latchForFirst.countDown();
 
         Futures.allAsList(allResults).get(1, TimeUnit.SECONDS);
@@ -108,8 +115,10 @@ public class SyncReactorFutureZipDecoratorTest {
             syncThreadPool.shutdownNow();
         }
         final InOrder inOrder = Mockito.inOrder(delegate);
-        inOrder.verify(delegate).syncup(fcNodePath, dataBefore, null, dsType);
-        inOrder.verify(delegate).syncup(fcNodePath, dataAfter2, dataBefore, dsType);
+//        inOrder.verify(delegate).syncup(fcNodePath, dataBefore, null, dsType);
+        inOrder.verify(delegate).syncup(fcNodePath, syncupEntry);
+//        inOrder.verify(delegate).syncup(fcNodePath, dataAfter2, dataBefore, dsType);
+        inOrder.verify(delegate).syncup(fcNodePath, syncupEntry);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -120,8 +129,8 @@ public class SyncReactorFutureZipDecoratorTest {
         final CountDownLatch latchForNext = new CountDownLatch(1);
         final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenAnswer(new Answer<ListenableFuture<Boolean>>() {
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
             @Override
             public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
                 LOG.info("unlocking next config");
@@ -130,9 +139,11 @@ public class SyncReactorFutureZipDecoratorTest {
             }
             }).thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
-        reactor.syncup(fcNodePath, dataBefore, null, dsType);
+//        reactor.syncup(fcNodePath, dataBefore, null, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
         latchForNext.await();
-        reactor.syncup(fcNodePath, dataAfter, dataBefore, dsType);
+//        reactor.syncup(fcNodePath, dataAfter, dataBefore, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
         boolean terminated = syncThreadPool.awaitTermination(1, TimeUnit.SECONDS);
         if (!terminated) {
@@ -140,8 +151,10 @@ public class SyncReactorFutureZipDecoratorTest {
             syncThreadPool.shutdownNow();
         }
         final InOrder inOrder = Mockito.inOrder(delegate);
-        inOrder.verify(delegate).syncup(fcNodePath, dataBefore, null, dsType);
-        inOrder.verify(delegate).syncup(fcNodePath, dataAfter, dataBefore, dsType);
+//        inOrder.verify(delegate).syncup(fcNodePath, dataBefore, null, dsType);
+        inOrder.verify(delegate).syncup(fcNodePath, syncupEntry);
+//        inOrder.verify(delegate).syncup(fcNodePath, dataAfter, dataBefore, dsType);
+        inOrder.verify(delegate).syncup(fcNodePath, syncupEntry);
         inOrder.verifyNoMoreInteractions();
 
     }
@@ -155,8 +168,8 @@ public class SyncReactorFutureZipDecoratorTest {
         final CountDownLatch latchForFirst = new CountDownLatch(1);
         final CountDownLatch latchForNext = new CountDownLatch(1);
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenAnswer(new Answer<ListenableFuture<Boolean>>() {
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
             @Override
             public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
                 LOG.info("unlocking for fresh operational");
@@ -167,10 +180,12 @@ public class SyncReactorFutureZipDecoratorTest {
             }
         }).thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
-        reactor.syncup(fcNodePath, configAfter, configBefore, LogicalDatastoreType.CONFIGURATION);
+//        reactor.syncup(fcNodePath, configAfter, configBefore, LogicalDatastoreType.CONFIGURATION);
+        reactor.syncup(fcNodePath, syncupEntry);
         latchForNext.await();
 
-        reactor.syncup(fcNodePath, configActual, freshOperational, LogicalDatastoreType.OPERATIONAL);
+//        reactor.syncup(fcNodePath, configActual, freshOperational, LogicalDatastoreType.OPERATIONAL);
+        reactor.syncup(fcNodePath, syncupEntry);
         latchForFirst.countDown();
 
         syncThreadPool.shutdown();
@@ -179,7 +194,8 @@ public class SyncReactorFutureZipDecoratorTest {
             LOG.info("thread pool not terminated.");
             syncThreadPool.shutdownNow();
         }
-        Mockito.verify(delegate, Mockito.times(1)).syncup(fcNodePath, configActual, freshOperational, LogicalDatastoreType.OPERATIONAL);
+//        Mockito.verify(delegate, Mockito.times(1)).syncup(fcNodePath, configActual, freshOperational, LogicalDatastoreType.OPERATIONAL);
+        Mockito.verify(delegate, Mockito.times(1)).syncup(fcNodePath, syncupEntry);
     }
 
     @After

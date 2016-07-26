@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -95,7 +96,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                   final FlowCapableNode operationalNode) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId);
-        return reactor.syncup(nodePath, dataAfter, operationalNode, dsType());
+        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL);
+        return reactor.syncup(nodePath, syncupEntry);
     }
 
     /**
@@ -110,7 +112,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                     final FlowCapableNode dataAfter) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeUpdated {}", nodeId);
-        return reactor.syncup(nodePath, dataAfter, dataBefore, dsType());
+        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), dataBefore, dsType());
+        return reactor.syncup(nodePath, syncupEntry);
     }
 
     /**
@@ -122,7 +125,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                     final FlowCapableNode dataBefore) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeDeleted {}", nodeId);
-        return reactor.syncup(nodePath, null, dataBefore, dsType());
+        final SyncupEntry syncupEntry = new SyncupEntry(null, dsType(), dataBefore, dsType());
+        return reactor.syncup(nodePath, syncupEntry);
     }
 
     @Override

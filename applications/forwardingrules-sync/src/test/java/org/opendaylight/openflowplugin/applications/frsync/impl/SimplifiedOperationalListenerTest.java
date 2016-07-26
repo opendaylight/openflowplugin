@@ -36,6 +36,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOd
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatus;
@@ -73,6 +74,8 @@ public class SimplifiedOperationalListenerTest {
     private Node operationalNode;
     @Mock
     private FlowCapableNode fcOperationalNode;
+    @Mock
+    private SyncupEntry syncupEntry;
     @Mock
     private FlowCapableStatisticsGatheringStatus statisticsGatheringStatus;
     @Mock
@@ -117,13 +120,14 @@ public class SimplifiedOperationalListenerTest {
 
         Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(configNode)));
-        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
-        Mockito.verify(reactor).syncup(fcNodePath, configNode, fcOperationalNode, dsType);
+//        Mockito.verify(reactor).syncup(fcNodePath, configNode, fcOperationalNode, dsType);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
     }
 
@@ -145,7 +149,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedSyncupDeletePhysical() throws Exception {
+    public void testOnDataTreeChangedDeletePhysical() throws Exception {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.DELETE);
@@ -158,7 +162,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedSyncupDeleteLogical() {
+    public void testOnDataTreeChangedDeleteLogical() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         List<NodeConnector> nodeConnectorList = Mockito.mock(List.class);
         Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnectorList);
@@ -235,12 +239,13 @@ public class SimplifiedOperationalListenerTest {
 
         Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(configNode)));
-        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath, configNode, fcOperationalNode, dsType);
+//        Mockito.verify(reactor).syncup(fcNodePath, configNode, fcOperationalNode, dsType);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
     }
 

@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.Devic
 import org.opendaylight.openflowplugin.applications.frsync.util.ModificationUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEnd;
@@ -177,8 +178,10 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, new NodeKey(ModificationUtil.nodeId(modification)))
                     .augmentation(FlowCapableNode.class);
-            final FlowCapableNode fcNode = ModificationUtil.flowCapableNodeAfter(modification);
-            return Optional.of(reactor.syncup(nodePath, nodeConfiguration.get(), fcNode, dsType()));
+            final FlowCapableNode fcOperationalNode = ModificationUtil.flowCapableNodeAfter(modification);
+            final SyncupEntry syncupEntry = new SyncupEntry(nodeConfiguration.get(), LogicalDatastoreType.CONFIGURATION,
+                                                                    fcOperationalNode, dsType());
+            return Optional.of(reactor.syncup(nodePath, syncupEntry));
         } else {
             LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
             return skipModification(modification);

@@ -9,34 +9,43 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.applications.frsync.impl.SyncReactorFutureZipDecorator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 
 /**
- * Simple compression queue entry for {@link SyncReactorFutureZipDecorator}.
+ * Data entry of before and after data for syncup in {@link org.opendaylight.openflowplugin.applications.frsync.SyncReactor}.
  */
-public class ZipQueueEntry {
+public class SyncupEntry {
     private final FlowCapableNode after;
+    private final LogicalDatastoreType dsTypeAfter;
     private final FlowCapableNode before;
     private final LogicalDatastoreType dsTypeBefore;
 
-    public ZipQueueEntry(final FlowCapableNode after, final FlowCapableNode before,
-                         final LogicalDatastoreType dsTypeBefore) {
+    public SyncupEntry(final FlowCapableNode after, final LogicalDatastoreType dsTypeAfter,
+                       final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
         this.after = after;
+        this.dsTypeAfter = dsTypeAfter;
         this.before = before;
         this.dsTypeBefore = dsTypeBefore;
     }
 
-    public FlowCapableNode getLeft() {
+    public FlowCapableNode getAfter() {
         return after;
     }
 
-    public FlowCapableNode getRight() {
+    public FlowCapableNode getBefore() {
         return before;
     }
 
-    public LogicalDatastoreType getDsType() {
+    public LogicalDatastoreType getDsTypeAfter() {
+        return dsTypeAfter;
+    }
+
+    public LogicalDatastoreType getDsTypeBefore() {
         return dsTypeBefore;
+    }
+
+    public boolean isOptimizedConfigChange() {
+        return dsTypeAfter == LogicalDatastoreType.CONFIGURATION && dsTypeBefore == LogicalDatastoreType.CONFIGURATION;
     }
 
 }

@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -44,6 +45,8 @@ public class SyncReactorRetryDecoratorTest {
     private FlowCapableNode fcConfigNode;
     @Mock
     private FlowCapableNode fcOperationalNode;
+    @Mock
+    private SyncupEntry syncupEntry;
 
     @Before
     public void setUp() {
@@ -58,24 +61,28 @@ public class SyncReactorRetryDecoratorTest {
 
     @Test
     public void testSyncupSuccess() throws InterruptedException {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
         Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
     }
 
     @Test
     public void testSyncupFail() throws InterruptedException {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<FlowCapableNode>any(),
-                Matchers.<FlowCapableNode>any(), Matchers.<LogicalDatastoreType>any())).thenReturn(Futures.immediateFuture(Boolean.FALSE));
+        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+                .thenReturn(Futures.immediateFuture(Boolean.FALSE));
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
         Mockito.verify(reconciliationRegistry).registerIfNotRegistered(NODE_ID);
     }
@@ -84,7 +91,8 @@ public class SyncReactorRetryDecoratorTest {
     public void testSyncupConfigIgnoreInRetry() throws InterruptedException {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
 
-        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
+        reactor.syncup(fcNodePath, syncupEntry);
 
         Mockito.verifyZeroInteractions(delegate);
     }

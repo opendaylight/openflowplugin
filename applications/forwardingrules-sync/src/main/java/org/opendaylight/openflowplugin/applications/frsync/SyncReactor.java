@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -19,13 +20,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public interface SyncReactor {
     /**
      * @param flowcapableNodePath path to openflow augmentation of node
-     * @param configTree configured node
-     * @param operationalTree device reflection
-     * @param dsType type of DS change
+     * @param syncupEntry configured node + device reflection
      * @return synchronization outcome
      * @throws InterruptedException
      */
     ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                     final FlowCapableNode configTree, final FlowCapableNode operationalTree,
-                                     final LogicalDatastoreType dsType) throws InterruptedException;
+                                     final SyncupEntry syncupEntry) throws InterruptedException;
 }
