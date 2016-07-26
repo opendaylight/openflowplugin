@@ -27,7 +27,6 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosed
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -52,9 +51,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private final Object txLock = new Object();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-    private final DeviceInfo deviceInfo;
     private final DataBroker dataBroker;
-    private final LifecycleConductor conductor;
 
     @GuardedBy("txLock")
     private WriteTransaction wTx;
@@ -67,19 +64,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     private boolean initCommit;
 
-    public TransactionChainManagerStatus getTransactionChainManagerStatus() {
-        return transactionChainManagerStatus;
-    }
-
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final DeviceInfo deviceInfo,
-                            @Nonnull final LifecycleConductor conductor) {
+                            @Nonnull final DeviceInfo deviceInfo) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.conductor = Preconditions.checkNotNull(conductor);
-        this.deviceInfo = deviceInfo;
         this.nodeII = deviceInfo.getNodeInstanceIdentifier();
         this.transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
         lastSubmittedFuture = Futures.immediateFuture(null);
@@ -191,7 +181,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
                     if (initCommit) {
                         LOG.error("Initial commit failed. {}", t);
-                        conductor.closeConnection(deviceInfo);
                     }
                 }
             });

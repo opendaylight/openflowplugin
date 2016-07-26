@@ -33,7 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -68,16 +68,18 @@ class StatisticsContextImpl implements StatisticsContext {
     private Timeout pollTimeout;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
+    private final LifecycleService lifecycleService;
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
 
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
-                          @Nonnull final boolean shuttingDownStatisticsPolling,
-                          @Nonnull final LifecycleConductor lifecycleConductor,
+                          final boolean shuttingDownStatisticsPolling,
+                          @Nonnull final LifecycleService lifecycleService,
 			  @Nonnull final ConvertorExecutor convertorExecutor,
-			  @Nonnull final StatisticsManager myManager) {
-        this.deviceContext = Preconditions.checkNotNull(lifecycleConductor.getDeviceContext(deviceInfo));
+                          @Nonnull final StatisticsManager myManager) {
+        this.lifecycleService = lifecycleService;
+        this.deviceContext = lifecycleService.getDeviceContext();
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
         multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
@@ -190,7 +192,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceContext.reserveXidForDeviceMessage()) {
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
             @Override
             public void close() {
                 requestContexts.remove(this);
@@ -424,5 +426,10 @@ class StatisticsContextImpl implements StatisticsContext {
     public ListenableFuture<Void> stopClusterServices() {
         myManager.stopScheduling(deviceInfo);
         return Futures.immediateFuture(null);
+    }
+
+    @Override
+    public LifecycleService getLifecycleService() {
+        return lifecycleService;
     }
 }
