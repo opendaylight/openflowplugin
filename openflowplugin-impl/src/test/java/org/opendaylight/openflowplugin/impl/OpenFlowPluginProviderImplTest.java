@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,7 +88,6 @@ public class OpenFlowPluginProviderImplTest {
         provider.setDataBroker(dataBroker);
         provider.setRpcProviderRegistry(rpcProviderRegistry);
         provider.setNotificationProviderService(notificationService);
-        provider.setEntityOwnershipService(entityOwnershipService);
         provider.setSwitchConnectionProviders(Lists.newArrayList(switchConnectionProvider));
         provider.setClusteringSingletonServicesProvider(clusterSingletonServiceProvider);
     }
