@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_ee98dd6b",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-ipv6-arbitrary-bit-mask-fields.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1602
+      },
+      "writtenOn": "2016-07-26T17:09:47Z",
+      "side": 1,
+      "message": "Please use existing yang model file -\u003e opendaylight-arbitrary-bitmask-fields.yang",
+      "revId": "3a185931a7784ae3346f7d8a857b6838bb04d2c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_2e576559",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1602
+      },
+      "writtenOn": "2016-07-26T17:09:47Z",
+      "side": 1,
+      "message": "Following case is not handled :- \ninput - ipv6_dst\u003dFD6D:8D64:AF0C:FD6D:FD68:AAAA:BBBB:CCCC/FFFF::\noutput - ipv6_dst\u003dFD6D:8D64:AF0C:FD6D:FD68:AAAA:BBBB:CCCC/16\n\nThis needs a change in matchComparatorHelper.java , because though the mask input is in ipv6arbitrarymask format, the mask output will be in Ipv6Match .. which is not handled currently",
+      "revId": "3a185931a7784ae3346f7d8a857b6838bb04d2c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
