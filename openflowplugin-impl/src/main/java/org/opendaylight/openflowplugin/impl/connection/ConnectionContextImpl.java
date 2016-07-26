@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -235,7 +236,8 @@ public class ConnectionContextImpl implements ConnectionContext {
                 nodeId,
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
                 featuresReply.getVersion(),
-                featuresReply.getDatapathId());
+                featuresReply.getDatapathId(),
+                outboundQueueProvider);
     }
 
     @Override
@@ -246,21 +248,24 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     private class DeviceInfoImpl implements DeviceInfo {
 
-        final private NodeId nodeId;
-        final private KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-        final private Short version;
-        final private BigInteger datapathId;
-        final private ServiceGroupIdentifier serviceGroupIdentifier;
+        private final NodeId nodeId;
+        private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+        private final Short version;
+        private final BigInteger datapathId;
+        private final ServiceGroupIdentifier serviceGroupIdentifier;
+        private OutboundQueue outboundQueueProvider;
 
         DeviceInfoImpl(
                 final NodeId nodeId,
                 final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
                 final Short version,
-                final BigInteger datapathId) {
+                final BigInteger datapathId,
+                final OutboundQueue outboundQueueProvider) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
             this.version = version;
             this.datapathId = datapathId;
+            this.outboundQueueProvider = outboundQueueProvider;
             this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
         }
 
@@ -315,6 +320,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
             return result;
+        }
+
+        @Override
+        public Long reserveXidForDeviceMessage() {
+            return outboundQueueProvider.reserveEntry();
         }
     }
 }

@@ -21,7 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -40,23 +39,19 @@ public class RpcManagerImpl implements RpcManager {
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
     private final ExtensionConverterProvider extensionConverterProvider;
+    private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
 
-    private final LifecycleConductor conductor;
-    private final ConvertorExecutor convertorExecutor;
 
     public RpcManagerImpl(
             final RpcProviderRegistry rpcProviderRegistry,
             final int quotaValue,
-            
-            final LifecycleConductor lifecycleConductor,
             final ExtensionConverterProvider extensionConverterProvider,
 	        final ConvertorExecutor convertorExecutor,
             final NotificationPublishService notificationPublishService) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
         this.extensionConverterProvider = extensionConverterProvider;
-        this.conductor = lifecycleConductor;
         this.convertorExecutor = convertorExecutor;
         this.notificationPublishService = notificationPublishService;
     }
@@ -69,12 +64,11 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
+        final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
 
         final RpcContext rpcContext = new RpcContextImpl(
                 deviceInfo,
                 rpcProviderRegistry,
-                deviceContext,
                 deviceContext.getMessageSpy(),
                 maxRequestsQuota,
                 deviceInfo.getNodeInstanceIdentifier(),

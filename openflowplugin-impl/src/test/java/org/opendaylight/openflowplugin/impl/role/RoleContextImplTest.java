@@ -8,21 +8,16 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 
+import io.netty.util.HashedWheelTimer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipCandidateRegistration;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -35,7 +30,7 @@ public class RoleContextImplTest {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
 
     @Mock
-    private LifecycleConductor conductor;
+    HashedWheelTimer hashedWheelTimer;
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
@@ -46,14 +41,14 @@ public class RoleContextImplTest {
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(deviceInfo, conductor, roleManager);
+        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
     }
 
     @Test
     public void testCreateRequestContext() throws Exception {
         roleContext.createRequestContext();
-        Mockito.verify(conductor).reserveXidForDeviceMessage(deviceInfo);
+        Mockito.verify(deviceInfo).reserveXidForDeviceMessage();
     }
 
     @Test(expected = NullPointerException.class)

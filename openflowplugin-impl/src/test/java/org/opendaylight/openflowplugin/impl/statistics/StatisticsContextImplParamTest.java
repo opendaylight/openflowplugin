@@ -63,9 +63,11 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
     @Test
     public void gatherDynamicDataTest() {
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, mockConductor, convertorManager, mockedStatisticsManager);
+        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, false, lifecycleService ,convertorManager, mockedStatisticsManager);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
