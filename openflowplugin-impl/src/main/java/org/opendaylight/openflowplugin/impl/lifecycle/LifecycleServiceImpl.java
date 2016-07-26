@@ -111,6 +111,16 @@ public class LifecycleServiceImpl implements LifecycleService {
         this.statContext = statContext;
     }
 
+    @Override
+    public DeviceContext getDeviceContext() {
+        return this.deviceContext;
+    }
+
+    @Override
+    public void closeConnection() {
+        this.deviceContext.shutdownConnection();
+    }
+
     private void fillDeviceFlowRegistry() {
         // Fill device flow registry with flows from datastore
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = deviceContext.getDeviceFlowRegistry().fill();
