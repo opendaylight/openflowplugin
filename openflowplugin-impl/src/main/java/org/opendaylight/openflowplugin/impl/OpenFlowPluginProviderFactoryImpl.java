@@ -55,7 +55,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setRpcProviderRegistry(rpcRegistry);
         openflowPluginProvider.setNotificationProviderService(notificationService);
         openflowPluginProvider.setNotificationPublishService(notificationPublishService);
-        openflowPluginProvider.setEntityOwnershipService(entityOwnershipService);
         openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
         openflowPluginProvider.setIsStatisticsPollingOff(providerConfig.isIsStatisticsPollingOff());
         openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());

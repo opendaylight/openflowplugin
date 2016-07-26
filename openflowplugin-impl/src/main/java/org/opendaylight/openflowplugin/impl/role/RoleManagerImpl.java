@@ -14,10 +14,8 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import java.util.ArrayList;
+import io.netty.util.HashedWheelTimer;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
@@ -31,14 +29,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.RoleChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,13 +53,11 @@ public class RoleManagerImpl implements RoleManager {
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private final DataBroker dataBroker;
     private final ConcurrentMap<DeviceInfo, RoleContext> contexts = new ConcurrentHashMap<>();
-    private List<RoleChangeListener> listeners = new ArrayList<>();
+    private final HashedWheelTimer hashedWheelTimer;
 
-    private final LifecycleConductor conductor;
-
-    public RoleManagerImpl(final DataBroker dataBroker, final LifecycleConductor lifecycleConductor) {
+    public RoleManagerImpl(final DataBroker dataBroker, final HashedWheelTimer hashedWheelTimer) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.conductor = lifecycleConductor;
+        this.hashedWheelTimer = hashedWheelTimer;
     }
 
     @Override
@@ -74,8 +67,8 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
-        final DeviceContext deviceContext = Preconditions.checkNotNull(conductor.getDeviceContext(deviceInfo));
-        final RoleContext roleContext = new RoleContextImpl(deviceInfo, conductor, this);
+        final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
         lifecycleService.setRoleContext(roleContext);

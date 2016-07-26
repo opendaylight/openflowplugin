@@ -42,7 +42,6 @@ public interface DeviceContext extends
         AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
-        XidSequencer,
         DeviceRegistry{
 
     /**

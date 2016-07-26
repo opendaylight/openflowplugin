@@ -29,4 +29,16 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
     void setRoleContext(RoleContext roleContext);
 
     void setStatContext(StatisticsContext statContext);
+
+    /**
+     * Some services, contexts etc. still need to have access to device context,
+     * instead to push into them, here is the getter
+     * @return device context for this device
+     */
+    DeviceContext getDeviceContext();
+
+    /**
+     * if some services not started properly need to close connection
+     */
+    void closeConnection();
 }
