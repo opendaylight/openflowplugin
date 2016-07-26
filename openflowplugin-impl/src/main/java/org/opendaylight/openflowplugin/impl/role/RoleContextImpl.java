@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -21,7 +22,6 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
@@ -47,24 +47,24 @@ class RoleContextImpl implements RoleContext {
     private static final int MAX_CLEAN_DS_RETRIES = 3;
 
     private SalRoleService salRoleService = null;
-    private final LifecycleConductor conductor;
+    private final HashedWheelTimer hashedWheelTimer;
     private final DeviceInfo deviceInfo;
     private CONTEXT_STATE state;
     private final RoleManager myManager;
 
     RoleContextImpl(final DeviceInfo deviceInfo,
-                    final LifecycleConductor lifecycleConductor,
+                    final HashedWheelTimer hashedWheelTimer,
                     final RoleManager myManager) {
-        this.conductor = lifecycleConductor;
         this.deviceInfo = deviceInfo;
         state = CONTEXT_STATE.WORKING;
         this.myManager = myManager;
+        this.hashedWheelTimer = hashedWheelTimer;
     }
 
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(conductor.reserveXidForDeviceMessage(getDeviceInfo())) {
+        return new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
             @Override
             public void close() {
             }
@@ -143,7 +143,7 @@ class RoleContextImpl implements RoleContext {
                     setRoleOutputFuture.cancel(true);
                 }
             };
-            conductor.newTimeout(timerTask, 10, TimeUnit.SECONDS);
+            hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
         }
         return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
