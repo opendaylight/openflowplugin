@@ -161,7 +161,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
@@ -3218,9 +3218,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
          * TCP_PSH 0x008 / TCP_ACK 0x010 / TCP_URG 0x020
          * TCP_ECE 0x040 / TCP_CWR 0x080 / TCP_NS  0x100
          */
-        final TcpFlagMatchBuilder tcpFlagMatch = new TcpFlagMatchBuilder();
-        tcpFlagMatch.setTcpFlag(0x002);
-        match.setTcpFlagMatch(tcpFlagMatch.build());
+        final TcpFlagsMatchBuilder tcpFlagsMatch = new TcpFlagsMatchBuilder();
+        tcpFlagsMatch.setTcpFlags(0x002);
+        match.setTcpFlagsMatch(tcpFlagsMatch.build());
 
         return match;
     }

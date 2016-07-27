@@ -188,9 +188,9 @@ module opendaylight-table-types {
         base match-field;
         description "Match for IPv6 Extension Header pseudo-field";
     }
-    identity tcp_flag {
+    identity tcp_flags {
         base match-field;
-        description "TCP Flag Match";
+        description "TCP Flags Match";
     }
     identity tunnel_ipv4_dst {
         base match-field;
