@@ -112,7 +112,7 @@ class RoleContextImpl implements RoleContext {
         ListenableFuture<Void> future;
         try {
             //TODO: Add callback
-            sendRoleChangeToDevice(OfpRole.BECOMESLAVE).get();
+            makeDeviceSlave().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Send role to device failed ", e);
         } finally {
@@ -120,6 +120,11 @@ class RoleContextImpl implements RoleContext {
             future = Futures.immediateFuture(null);
         }
         return future;
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave(){
+        return sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {

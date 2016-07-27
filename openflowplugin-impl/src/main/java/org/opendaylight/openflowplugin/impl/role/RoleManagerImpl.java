@@ -71,6 +71,7 @@ public class RoleManagerImpl implements RoleManager {
         final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
+        roleContext.makeDeviceSlave().get();
         lifecycleService.setRoleContext(roleContext);
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
@@ -88,12 +89,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        LOG.trace("onDeviceContextLevelDown for node {}", deviceInfo.getNodeId());
-        final RoleContext roleContext = contexts.remove(deviceInfo);
-        if (roleContext != null) {
-            LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", deviceInfo.getNodeId());
-            contexts.remove(deviceInfo.getNodeId(), roleContext);
-        }
+        contexts.remove(deviceInfo);
         deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
 
