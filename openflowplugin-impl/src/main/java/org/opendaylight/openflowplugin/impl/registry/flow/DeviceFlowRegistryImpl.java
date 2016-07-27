@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -125,8 +126,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             @Override
             public void onSuccess(Optional<FlowCapableNode> result) {
                 result.asSet().stream()
+                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                        .filter(table -> Objects.nonNull(table.getFlow()))
                         .flatMap(table -> table.getFlow().stream())
+                        .filter(Objects::nonNull)
+                        .filter(flow -> Objects.nonNull(flow.getId()))
                         .forEach(flowConsumer);
 
                 // After we are done with reading from datastore, close the transaction

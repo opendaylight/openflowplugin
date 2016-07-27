@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -500,8 +501,9 @@ public final class StatisticsGatheringUtils {
                 .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
-        } catch (final Exception e) {
-            LOG.warn("Can't write to transaction: {}", e);
+        } catch (final TransactionChainClosedException e) {
+            LOG.warn("Can't write to transaction, transaction chain probably closed.");
+            LOG.trace("Write to transaction exception: ", e);
         }
 
         deviceContext.submitTransaction();
@@ -525,8 +527,9 @@ public final class StatisticsGatheringUtils {
                 .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
-        } catch (Exception e) {
-            LOG.warn("Can't write to transaction: {}", e);
+        } catch (TransactionChainClosedException e) {
+            LOG.warn("Can't write to transaction, transaction chain probably closed.");
+            LOG.trace("Write to transaction exception: ", e);
         }
 
         deviceContext.submitTransaction();
