@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_ce96f13e",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtilsTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-27T06:11:22Z",
+      "side": 1,
+      "message": "Yes sure, was somehow hidden before my own eyes :D",
+      "parentUuid": "9a561d44_28a4c506",
+      "range": {
+        "startLine": 180,
+        "startChar": 82,
+        "endLine": 180,
+        "endChar": 85
+      },
+      "revId": "bda7515953813c86b46e856583d0aba8dd89eeff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
