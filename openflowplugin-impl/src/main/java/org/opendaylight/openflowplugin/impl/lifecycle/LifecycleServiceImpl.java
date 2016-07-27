@@ -62,6 +62,7 @@ public class LifecycleServiceImpl implements LifecycleService {
 
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Cluster service {} was unable to start.", this.getIdentifier());
+            this.deviceContext.shutdownConnection();
         }
     }
 

@@ -536,7 +536,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         LOG.debug("Initializing transaction chain manager for node {}", getDeviceInfo().getNodeId());
         this.transactionChainManager.activateTransactionManager();
         LOG.debug("Waiting to get node {} information", getDeviceInfo().getNodeId());
-        DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory).get();
+        DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory);
     }
 
     @Override
