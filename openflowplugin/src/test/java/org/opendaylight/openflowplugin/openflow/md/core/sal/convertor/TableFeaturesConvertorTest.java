@@ -185,7 +185,7 @@ public class TableFeaturesConvertorTest extends TestCase {
         fieldTableFeatures.add(setFieldMatchBuilder.build());
         setFieldMatchBuilder.setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class);
         fieldTableFeatures.add(setFieldMatchBuilder.build());
-        setFieldMatchBuilder.setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class);
+        setFieldMatchBuilder.setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlags.class);
         fieldTableFeatures.add(setFieldMatchBuilder.build());
         setFieldMatchBuilder.setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class);
         fieldTableFeatures.add(setFieldMatchBuilder.build());

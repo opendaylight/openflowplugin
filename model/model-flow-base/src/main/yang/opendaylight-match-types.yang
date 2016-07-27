@@ -271,8 +271,13 @@ module opendaylight-match-types {
         }
     }
 
-    grouping "tcp-flag-match-fields" {
-        leaf tcp-flag {
+    grouping "tcp-flags-match-fields" {
+        leaf tcp-flags {
+            description "Tcp flags for match";
+            type uint16;
+        }
+        leaf tcp-flags-mask {
+            description "Mask for tcp flags";
             type uint16;
         }
     }
@@ -369,8 +374,8 @@ module opendaylight-match-types {
             uses "protocol-match-fields";
         }
 
-        container tcp-flag-match {
-            uses "tcp-flag-match-fields";
+        container tcp-flags-match {
+            uses "tcp-flags-match-fields";
         }
     }
 }
