@@ -18,6 +18,7 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -148,7 +149,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
          if (deviceContexts.containsKey(deviceInfo)) {
-            LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId());
+             DeviceContext deviceContext = deviceContexts.get(deviceInfo);
+             if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
+                 LOG.warn("Context state for node {} is not in TERMINATION state, trying to reconnect", connectionContext.getNodeId().getValue());
+             } else {
+                 LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}", connectionContext.getNodeId().getValue());
+             }
              return false;
          }
 
@@ -177,7 +183,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 translatorLibrary,
                 this);
 
-        Verify.verify(deviceContexts.putIfAbsent(deviceInfo, deviceContext) == null, "DeviceCtx still not closed.");
+        deviceContexts.putIfAbsent(deviceInfo, deviceContext);
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
@@ -242,14 +248,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        LOG.debug("onDeviceContextClosed for Node {}", deviceInfo.getNodeId());
         deviceContexts.remove(deviceInfo);
-        updatePacketInRateLimiters();
         LifecycleService lifecycleService = lifecycleServices.remove(deviceInfo);
-        try {
-            lifecycleService.close();
-        } catch (Exception e) {
-            LOG.warn("Closing service for node {} was unsuccessful ", deviceInfo.getNodeId().getValue(), e);
+        updatePacketInRateLimiters();
+        if (Objects.nonNull(lifecycleService)) {
+            try {
+                lifecycleService.close();
+            } catch (Exception e) {
+                LOG.warn("Closing service for node {} was unsuccessful ", deviceInfo.getNodeId().getValue(), e);
+            }
         }
     }
 
@@ -284,6 +291,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             return;
         }
 
+        if (deviceCtx.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
+            LOG.debug("Device context for node {} is already is termination state, waiting for close all context");
+            return;
+        }
+
+        deviceCtx.setState(OFPContext.CONTEXT_STATE.TERMINATION);
+
         if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
             /* Connection is not PrimaryConnection so try to remove from Auxiliary Connections */
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
@@ -294,20 +308,21 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getNodeId());
+                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getNodeId().getValue());
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getNodeId(), t);
+                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getNodeId().getValue());
+                    LOG.trace("TxChainManager failed by closing. ", t);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
             });
             /* Add timer for Close TxManager because it could fain ind cluster without notification */
             final TimerTask timerTask = timeout -> {
                 if (!future.isDone()) {
-                    LOG.info("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getNodeId());
+                    LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getNodeId().getValue());
                     future.cancel(false);
                 }
             };
@@ -318,11 +333,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @VisibleForTesting
     void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
         deviceContexts.put(deviceInfo, deviceContext);
-    }
-
-    @VisibleForTesting
-    void removeDeviceContextFromMap(final DeviceInfo deviceInfo){
-        deviceContexts.remove(deviceInfo);
     }
 
     @Override
