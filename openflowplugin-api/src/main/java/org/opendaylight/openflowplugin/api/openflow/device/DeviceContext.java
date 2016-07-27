@@ -49,6 +49,9 @@ public interface DeviceContext extends
      */
     void shutdownConnection();
 
+    /**
+     * Initial submit transaction
+     */
     void initialSubmitTransaction();
 
     /**

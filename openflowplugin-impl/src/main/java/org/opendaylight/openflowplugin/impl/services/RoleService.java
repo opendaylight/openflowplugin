@@ -53,7 +53,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     public Future<BigInteger> getGenerationIdFromDevice(final Short version) {
-        LOG.info("getGenerationIdFromDevice called for device:{}", getDeviceInfo().getNodeId().getValue());
+        LOG.info("getGenerationIdFromDevice called for device: {}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();

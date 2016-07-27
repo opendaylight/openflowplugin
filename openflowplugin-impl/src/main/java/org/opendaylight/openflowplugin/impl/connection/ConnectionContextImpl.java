@@ -73,6 +73,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider) {
         this.outboundQueueProvider = outboundQueueProvider;
+        ((DeviceInfoImpl)this.deviceInfo).setOutboundQueueProvider(this.outboundQueueProvider);
     }
 
     @Override
@@ -245,6 +246,37 @@ public class ConnectionContextImpl implements ConnectionContext {
         this.handshakeContext = handshakeContext;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ConnectionContextImpl that = (ConnectionContextImpl) o;
+
+        if (!connectionAdapter.equals(that.connectionAdapter)) {
+            return false;
+        }
+
+        if (featuresReply != null ? !featuresReply.equals(that.featuresReply) : that.featuresReply != null) {
+            return false;
+        }
+
+        return nodeId != null ? nodeId.equals(that.nodeId) : that.nodeId == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = connectionAdapter.hashCode();
+        result = 31 * result + (featuresReply != null ? featuresReply.hashCode() : 0);
+        result = 31 * result + (nodeId != null ? nodeId.hashCode() : 0);
+        return result;
+    }
 
     private class DeviceInfoImpl implements DeviceInfo {
 
@@ -320,6 +352,10 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
             return result;
+        }
+
+        public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
+            this.outboundQueueProvider = outboundQueueProvider;
         }
 
         @Override
