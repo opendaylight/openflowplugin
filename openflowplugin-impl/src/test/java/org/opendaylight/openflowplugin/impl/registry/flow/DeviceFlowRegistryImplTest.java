@@ -17,6 +17,9 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Assert;
@@ -31,8 +34,14 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -62,7 +71,6 @@ public class DeviceFlowRegistryImplTest {
     public void setUp() throws Exception {
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
         deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(flowStats);
@@ -77,11 +85,59 @@ public class DeviceFlowRegistryImplTest {
     public void testFill() throws Exception {
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
-        deviceFlowRegistry.fill().get();
+        final Flow flow = new FlowBuilder()
+                .setTableId((short)1)
+                .setPriority(10)
+                .setCookie(new FlowCookie(BigInteger.TEN))
+                .setId(new FlowId("HELLO"))
+                .build();
 
+        final Table table = new TableBuilder()
+                .setFlow(Collections.singletonList(flow))
+                .build();
+
+        final FlowCapableNode flowCapableNode = new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(table))
+                .build();
+
+        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(flowCapableNode)));
+
+        deviceFlowRegistry.fill().get();
         verify(dataBroker, times(2)).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
         verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
+
+        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = deviceFlowRegistry.getAllFlowDescriptors();
+        final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
+
+        assertTrue(allFlowDescriptors.containsKey(key));
+
+        deviceFlowRegistry.markToBeremoved(key);
+        deviceFlowRegistry.removeMarked();
+    }
+
+    @Test
+    public void testFailedFill() throws Exception {
+        final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
+
+        final Table table = new TableBuilder()
+                .setFlow(null)
+                .build();
+
+        final FlowCapableNode flowCapableNode = new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(table))
+                .build();
+
+        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(flowCapableNode)));
+
+        deviceFlowRegistry.fill().get();
+        verify(dataBroker, times(2)).newReadOnlyTransaction();
+        verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
+        verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
+
+        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = deviceFlowRegistry.getAllFlowDescriptors();
+
+        Assert.assertEquals(1, allFlowDescriptors.size());
     }
 
     @Test

@@ -19,9 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
  */
 public interface OFPContext {
 
-    default void setState(CONTEXT_STATE contextState) {
-        //NOOP
-    }
+    void setState(CONTEXT_STATE contextState);
 
     /**
      * Context state
