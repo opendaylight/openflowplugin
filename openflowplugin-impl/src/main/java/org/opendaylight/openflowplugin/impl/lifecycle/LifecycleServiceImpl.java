@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
@@ -42,31 +43,70 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void instantiateServiceInstance() {
         try {
 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Starting clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getNodeId().getValue());
+                LOG.debug("===============================================");
+            }
+
+            if (connectionInterrupted()) {
+                return;
+            }
+
             LOG.info("Starting device context cluster services for node {}", getIdentifier());
             this.deviceContext.startupClusterServices();
+
+            if (connectionInterrupted()) {
+                return;
+            }
 
             LOG.info("Starting statistics context cluster services for node {}", getIdentifier());
             this.statContext.startupClusterServices();
 
+            if (connectionInterrupted()) {
+                return;
+            }
+
             LOG.info("Statistics initial gathering OK, submitting data for node {}", getIdentifier());
             this.deviceContext.initialSubmitTransaction();
+
+            if (connectionInterrupted()) {
+                return;
+            }
 
             LOG.info("Starting rpc context cluster services for node {}", getIdentifier());
             this.rpcContext.startupClusterServices();
 
+            if (connectionInterrupted()) {
+                return;
+            }
+
             LOG.info("Starting role context cluster services for node {}", getIdentifier());
             this.roleContext.startupClusterServices();
+
+            if (connectionInterrupted()) {
+                return;
+            }
 
             LOG.info("Caching flows IDs ...");
             fillDeviceFlowRegistry();
 
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Cluster service {} was unable to start.", this.getIdentifier());
+            this.deviceContext.shutdownConnection();
         }
+    }
+
+    private boolean connectionInterrupted() {
+        if (this.deviceContext.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+            LOG.warn("Node {} was disconnected, will stop starting MASTER services.", this.deviceContext.getDeviceInfo().getNodeId().getValue());
+            return true;
+        }
+        return false;
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
+        roleContext.stopClusterServices();
         statContext.stopClusterServices();
         rpcContext.stopClusterServices();
         return deviceContext.stopClusterServices();
