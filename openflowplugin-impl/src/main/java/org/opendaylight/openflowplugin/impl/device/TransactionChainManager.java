@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.CancellationException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -27,6 +28,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosed
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -175,12 +177,18 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 @Override
                 public void onFailure(final Throwable t) {
                     if (t instanceof TransactionCommitFailedException) {
-                        LOG.error("Transaction commit failed. {}", t);
+                        LOG.error("Transaction commit failed. ", t);
                     } else {
-                        LOG.error("Exception during transaction submitting. {}", t);
+                        if (t instanceof CancellationException) {
+                            LOG.warn("Submit task was canceled");
+                            LOG.trace("Submit exception: ", t);
+                        } else {
+                            LOG.error("Exception during transaction submitting. ", t);
+                        }
                     }
                     if (initCommit) {
-                        LOG.error("Initial commit failed. {}", t);
+                        LOG.warn("Initial commit failed. ", t);
+                        wTx = null;
                     }
                 }
             });
