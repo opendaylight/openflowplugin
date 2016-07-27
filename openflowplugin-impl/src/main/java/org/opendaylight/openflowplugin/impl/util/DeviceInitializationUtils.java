@@ -96,7 +96,7 @@ public class DeviceInitializationUtils {
      * @param switchFeaturesMandatory
      * @return future - recommended to have blocking call for this future
      */
-    public static ListenableFuture<Void> initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
+    public static void initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory) throws ExecutionException, InterruptedException {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
@@ -145,29 +145,11 @@ public class DeviceInitializationUtils {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
             LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            deviceFeaturesFuture = createDeviceFeaturesForOF13(deviceContext, deviceState, switchFeaturesMandatory);
+            createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory).get();
         } else {
-            deviceFeaturesFuture = Futures.immediateFailedFuture(new ConnectionException("Unsupported version "
-                    + version));
+            throw new ExecutionException(new ConnectionException("Unsupported version " + version));
         }
 
-        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
-            @Override
-            public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                LOG.debug("All init data for node {} is in submitted.", deviceInfo.getNodeId());
-                returnFuture.set(null);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                // FIXME : remove session
-                LOG.trace("Device capabilities gathering future failed.");
-                LOG.trace("more info in exploration failure..", t);
-                LOG.debug("All init data for node {} was not submited correctly - connection has to go down.", deviceInfo.getNodeId());
-                returnFuture.setException(t);
-            }
-        });
-        return returnFuture;
     }
 
     private static void addNodeToOperDS(final DeviceContext deviceContext, final SettableFuture<Void> future) {
@@ -192,7 +174,7 @@ public class DeviceInitializationUtils {
     }
 
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(
-            final DeviceContext deviceContext, final DeviceState deviceState, final boolean switchFeaturesMandatory) {
+            final DeviceContext deviceContext, final boolean switchFeaturesMandatory) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
