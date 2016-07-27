@@ -20,15 +20,35 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
  */
 public interface LifecycleService extends ClusterSingletonService, AutoCloseable {
 
-    void registerService(ClusterSingletonServiceProvider singletonServiceProvider);
+    /**
+     * This method registers lifecycle service to the given provider
+     * @param singletonServiceProvider from md-sal binding
+     */
+    void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
 
-    void setDeviceContext(DeviceContext deviceContext);
+    /**
+     * Setter for device context
+     * @param deviceContext actual device context created per device
+     */
+    void setDeviceContext(final DeviceContext deviceContext);
 
-    void setRpcContext(RpcContext rpcContext);
+    /**
+     * Setter for rpc context
+     * @param rpcContext actual rpc context created per device
+     */
+    void setRpcContext(final RpcContext rpcContext);
 
-    void setRoleContext(RoleContext roleContext);
+    /**
+     * Setter for role context
+     * @param roleContext actual role context created per device
+     */
+    void setRoleContext(final RoleContext roleContext);
 
-    void setStatContext(StatisticsContext statContext);
+    /**
+     * Setter for statistics context
+     * @param statContext actual statistics context created per device
+     */
+    void setStatContext(final StatisticsContext statContext);
 
     /**
      * Some services, contexts etc. still need to have access to device context,
