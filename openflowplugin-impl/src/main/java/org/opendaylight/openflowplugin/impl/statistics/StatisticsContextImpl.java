@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -154,7 +155,9 @@ class StatisticsContextImpl implements StatisticsContext {
                 }
                 @Override
                 public void onFailure(final Throwable t) {
-                    StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
+                    if (!(t instanceof TransactionChainClosedException)) {
+                        StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
+                    }
                 }
             });
             return settableStatResultFuture;
