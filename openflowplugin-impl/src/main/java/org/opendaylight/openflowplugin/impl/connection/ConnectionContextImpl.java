@@ -73,6 +73,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider) {
         this.outboundQueueProvider = outboundQueueProvider;
+        ((DeviceInfoImpl)this.deviceInfo).setOutboundQueueProvider(this.outboundQueueProvider);
     }
 
     @Override
@@ -320,6 +321,10 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
             return result;
+        }
+
+        public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
+            this.outboundQueueProvider = outboundQueueProvider;
         }
 
         @Override
