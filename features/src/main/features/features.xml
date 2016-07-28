@@ -105,4 +105,9 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
     </feature>
 
+    <feature name='odl-openflowplugin-app-forwardingrules-sync' description="OpenDaylight :: Openflow Plugin :: Application - FRS" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-sync/{{VERSION}}</bundle>
+    </feature>
+
 </features>
