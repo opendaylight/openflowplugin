@@ -43,6 +43,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearnBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromFieldCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.field._case.FlowModAddMatchFromFieldBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.NxActionLearnBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowModsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder;
@@ -62,6 +68,8 @@ import com.google.common.util.concurrent.Futures;
  */
 public class Test implements TestService {
     
+    private static final Long NXM_OF_ETH_SRC = new Long(0x0206);
+    private static final Long NXM_OF_ETH_DST = new Long(0x0106);
     private SalFlowService flowService;
 
 
@@ -140,6 +148,7 @@ public class Test implements TestService {
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(createOFAction(0).build());
         actionList.add(createNxActionBld(1).build());
+        actionList.add(createLearnActionBld(2).build());
         
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -158,6 +167,39 @@ public class Test implements TestService {
         ib.setKey(new InstructionKey(0));
         isb.setInstruction(instructions);
         return isb;
+    }
+
+    private static ActionBuilder createLearnActionBld(int actionKeyVal) {
+        NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
+        nxActionLearnBuilder.setIdleTimeout(new Integer(0));
+        nxActionLearnBuilder.setHardTimeout(new Integer(0));
+        nxActionLearnBuilder.setPriority(new Integer(0));
+        nxActionLearnBuilder.setCookie(BigInteger.valueOf(0));
+        nxActionLearnBuilder.setFlags(new Integer(0));
+        nxActionLearnBuilder.setTableId(new Short((short)0));
+        nxActionLearnBuilder.setFinIdleTimeout(new Integer(0));
+        nxActionLearnBuilder.setFinHardTimeout(new Integer(0));
+        
+        FlowModAddMatchFromFieldBuilder builder = new FlowModAddMatchFromFieldBuilder();
+        builder.setSrcField(NXM_OF_ETH_SRC);
+        builder.setSrcOfs(0);
+        builder.setDstField(NXM_OF_ETH_DST);
+        builder.setDstOfs(0);
+        
+        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
+        FlowModAddMatchFromFieldCaseBuilder caseBuilder = new FlowModAddMatchFromFieldCaseBuilder();
+        caseBuilder.setFlowModAddMatchFromField(builder.build());
+        flowModsBuilder.setFlowModSpec(caseBuilder.build());
+        List<FlowMods> flowModsList = new ArrayList<>();
+        flowModsList.add(flowModsBuilder.build());
+        nxActionLearnBuilder.setFlowMods(flowModsList);
+        ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
+        actionLearnBuilder.setNxActionLearn(nxActionLearnBuilder.build());
+        
+        ActionBuilder abExt = new ActionBuilder();
+        abExt.setKey(new ActionKey(actionKeyVal));
+//        abExt.setAction(actionLearnBuilder.build());
+        return abExt;
     }
 
     /**

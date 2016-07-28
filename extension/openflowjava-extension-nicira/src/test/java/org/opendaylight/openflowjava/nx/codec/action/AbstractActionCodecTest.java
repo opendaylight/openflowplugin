@@ -38,7 +38,8 @@ public class AbstractActionCodecTest {
 
     @Test
     public void serializeHeaderTest() {
-        AbstractActionCodec.serializeHeader(msgLength, subType, buffer);
+        ConntrackCodec cc = new ConntrackCodec();
+        cc.serializeHeader(msgLength, subType, buffer);
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(msgLength, buffer.readUnsignedShort());
         assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
@@ -47,9 +48,10 @@ public class AbstractActionCodecTest {
 
     @Test
     public void deserializeHeaderTest() {
+        ConntrackCodec cc = new ConntrackCodec();
         buffer.writeBytes(bytes);
         int readerIndex = buffer.readerIndex();
-        ActionBuilder actionBuilder = AbstractActionCodec.deserializeHeader(buffer);
+        ActionBuilder actionBuilder = cc.deserializeHeader(buffer);
         assertNotNull(actionBuilder);
         assertEquals(NiciraConstants.NX_VENDOR_ID, actionBuilder.getExperimenterId().getValue());
         assertTrue(buffer.readerIndex() - readerIndex == 10);

@@ -39,6 +39,9 @@ module nicira-action {
     identity nxm-nx-conntrack {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-learn {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container nx-action-reg-load {
@@ -244,6 +247,80 @@ module nicira-action {
             }
         }
     }
+    
+    grouping flow-mod-spec {
+        description
+           "flow mod spec indicates the actions that should be performed to create a new flow which was learned from learn action.";
+        choice flow-mod-spec{
+	        case flow-mod-add-match-from-field-case{
+	        	container flow-mod-add-match-from-field{
+	        		leaf flow-mod-header-def{
+	        			type bits{
+	        				bit src;
+		        			bit dst1;
+		        			bit dst2;
+	    	    		}
+	    	    	}
+	        
+	      	  		leaf flow-mod-header-len{
+	        			type uint16;
+	        		}
+	        		
+	        		leaf src-field{
+    					type uint32;
+    				}
+    	
+    				leaf src-ofs{
+    					type uint16;
+    				}
+    	
+    				leaf dst-field{
+    					type uint32;
+    				}
+    	
+    				leaf dst-ofs{
+    					type uint16;
+    				}
+		        }
+        	}
+    	}
+    }
+    
+    grouping ofj-nx-action-learn-grouping {
+        container nx-action-learn {
+            leaf idle-timeout {
+                type uint16;
+            }
+            leaf hard-timeout {
+                type uint16;
+            }
+            leaf priority {
+                type uint16;
+            }
+            leaf cookie {
+                type uint64;
+            }
+            leaf flags {
+                type uint16;
+            }
+            leaf table-id {
+                type uint8;
+            }
+            leaf pad {
+                type uint8;
+            }
+            leaf fin-idle-timeout {
+                type uint16;
+            }
+            leaf fin-hard-timeout {
+                type uint16;
+            }
+            
+            list flow-mods{
+            	uses flow-mod-spec;
+            }
+        }
+    }
 
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
@@ -282,6 +359,9 @@ module nicira-action {
         }
         case action-conntrack {
             uses ofj-nx-action-conntrack-grouping;
+        }
+        case action-learn {
+            uses ofj-nx-action-learn-grouping;
         }
     }
 }
