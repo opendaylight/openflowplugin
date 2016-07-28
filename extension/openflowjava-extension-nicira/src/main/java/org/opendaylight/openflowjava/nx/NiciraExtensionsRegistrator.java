@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx;
 
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
+import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.NiciraActionCodecs;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
@@ -96,6 +97,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         //BUG Conntrack codec is registered with same subtype as Nshc2 codec
         registrator.registerActionSerializer(ConntrackCodec.SERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
         registrator.registerActionDeserializer(ConntrackCodec.DESERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
+        registrator.registerActionSerializer(LearnCodec.SERIALIZER_KEY, NiciraActionCodecs.LEARN_CODEC);
+        registrator.registerActionDeserializer(LearnCodec.DESERIALIZER_KEY, NiciraActionCodecs.LEARN_CODEC);
         //Continue
 
 
@@ -191,6 +194,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         //BUG unregistering with same subtype as Nshc2
         registrator.unregisterActionSerializer(ConntrackCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ConntrackCodec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(LearnCodec.SERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(LearnCodec.DESERIALIZER_KEY);
         //CONTINUE
         registrator.unregisterMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY);
