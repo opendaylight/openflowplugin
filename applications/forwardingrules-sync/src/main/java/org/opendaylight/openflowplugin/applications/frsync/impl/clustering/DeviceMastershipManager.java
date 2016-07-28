@@ -55,11 +55,7 @@ public class DeviceMastershipManager {
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {
-        if (deviceMasterships.get(nodeId) == null) {
-            return false;
-        } else {
-            return deviceMasterships.get(nodeId).isDeviceMastered();
-        }
+        return deviceMasterships.get(nodeId) != null && deviceMasterships.get(nodeId).isDeviceMastered();
     }
 
     @VisibleForTesting

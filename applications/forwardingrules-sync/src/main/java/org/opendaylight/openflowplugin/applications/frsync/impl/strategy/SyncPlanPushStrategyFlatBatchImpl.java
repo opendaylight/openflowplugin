@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
-import org.opendaylight.openflowplugin.applications.frsync.impl.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.FxChainUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -144,7 +143,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
 
                 final ProcessFlatBatchInput flatBatchInput = new ProcessFlatBatchInputBuilder()
                         .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
-                        .setExitOnFirstError(false) // TODO: propagate from input
+                        // TODO: propagate from input
+                        .setExitOnFirstError(false)
                         .setBatch(batchBag)
                         .build();
 
@@ -382,23 +382,21 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     @VisibleForTesting
     static int assembleRemoveMeters(final List<Batch> batchBag, int batchOrder, final ItemSyncBox<Meter> meterItemSyncBox) {
         // process meter remove
-        if (meterItemSyncBox != null) {
-            if (!meterItemSyncBox.getItemsToPush().isEmpty()) {
-                final List<FlatBatchRemoveMeter> flatBatchRemoveMeterBag =
-                        new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
-                int itemOrder = 0;
-                for (Meter meter : meterItemSyncBox.getItemsToPush()) {
-                    flatBatchRemoveMeterBag.add(new FlatBatchRemoveMeterBuilder(meter).setBatchOrder(itemOrder++).build());
-                }
-                final Batch batch = new BatchBuilder()
-                        .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
-                                .setFlatBatchRemoveMeter(flatBatchRemoveMeterBag)
-                                .build())
-                        .setBatchOrder(batchOrder)
-                        .build();
-                batchOrder += itemOrder;
-                batchBag.add(batch);
+        if (meterItemSyncBox != null && !meterItemSyncBox.getItemsToPush().isEmpty()) {
+            final List<FlatBatchRemoveMeter> flatBatchRemoveMeterBag =
+                    new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
+            int itemOrder = 0;
+            for (Meter meter : meterItemSyncBox.getItemsToPush()) {
+                flatBatchRemoveMeterBag.add(new FlatBatchRemoveMeterBuilder(meter).setBatchOrder(itemOrder++).build());
             }
+            final Batch batch = new BatchBuilder()
+                    .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
+                            .setFlatBatchRemoveMeter(flatBatchRemoveMeterBag)
+                            .build())
+                    .setBatchOrder(batchOrder)
+                    .build();
+            batchOrder += itemOrder;
+            batchBag.add(batch);
         }
         return batchOrder;
     }

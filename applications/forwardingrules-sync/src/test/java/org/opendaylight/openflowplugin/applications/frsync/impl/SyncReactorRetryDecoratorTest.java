@@ -16,6 +16,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -36,7 +37,7 @@ public class SyncReactorRetryDecoratorTest {
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
 
     @Mock
-    private SyncReactorImpl delegate;
+    private SyncReactor delegate;
     @Mock
     private ReconciliationRegistry reconciliationRegistry;
     @Mock

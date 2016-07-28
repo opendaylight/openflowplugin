@@ -31,6 +31,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -56,7 +57,7 @@ public class SyncReactorFutureZipDecoratorTest {
     private final LogicalDatastoreType operationalDS = LogicalDatastoreType.OPERATIONAL;
 
     @Mock
-    private SyncReactorGuardDecorator delegate;
+    private SyncReactor delegate;
     @Mock
     private SyncupEntry syncupEntry;
 

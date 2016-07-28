@@ -50,14 +50,24 @@ public class SyncupEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         SyncupEntry that = (SyncupEntry) o;
 
-        if (after != null ? !after.equals(that.after) : that.after != null) return false;
-        if (dsTypeAfter != that.dsTypeAfter) return false;
-        if (before != null ? !before.equals(that.before) : that.before != null) return false;
+        if (after != null ? !after.equals(that.after) : that.after != null) {
+            return false;
+        }
+        if (dsTypeAfter != that.dsTypeAfter) {
+            return false;
+        }
+        if (before != null ? !before.equals(that.before) : that.before != null) {
+            return false;
+        }
         return dsTypeBefore == that.dsTypeBefore;
     }
 

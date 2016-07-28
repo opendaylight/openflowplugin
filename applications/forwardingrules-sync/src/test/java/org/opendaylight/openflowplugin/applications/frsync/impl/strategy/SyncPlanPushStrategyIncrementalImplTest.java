@@ -26,15 +26,10 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.applications.frsync.impl.DSInputFactory;
-import org.opendaylight.openflowplugin.applications.frsync.impl.FlowForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.GroupForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.MeterForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -226,12 +221,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     }
 
     private <O> Answer<Future<RpcResult<O>>> createSalServiceFutureAnswer() {
-        return new Answer<Future<RpcResult<O>>>() {
-            @Override
-            public Future<RpcResult<O>> answer(final InvocationOnMock invocation) throws Throwable {
-                return RpcResultBuilder.<O>success().buildFuture();
-            }
-        };
+        return invocation -> RpcResultBuilder.<O>success().buildFuture();
     }
 
     @Test

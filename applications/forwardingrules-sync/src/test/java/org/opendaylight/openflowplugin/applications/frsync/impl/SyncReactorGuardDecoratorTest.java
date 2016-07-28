@@ -16,7 +16,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -35,10 +35,9 @@ public class SyncReactorGuardDecoratorTest {
     private static final NodeId NODE_ID = new NodeId("test-node");
     private SyncReactorGuardDecorator reactor;
     private InstanceIdentifier<FlowCapableNode> fcNodePath;
-    private final LogicalDatastoreType dsType = LogicalDatastoreType.CONFIGURATION;
 
     @Mock
-    private SyncReactorRetryDecorator delegate;
+    private SyncReactor delegate;
     @Mock
     private FlowCapableNode fcConfigNode;
     @Mock
@@ -63,10 +62,8 @@ public class SyncReactorGuardDecoratorTest {
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
-//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         reactor.syncup(fcNodePath, syncupEntry);
 
-//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
     }
@@ -76,10 +73,8 @@ public class SyncReactorGuardDecoratorTest {
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFailedFuture(new Exception()));
 
-//        reactor.syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         reactor.syncup(fcNodePath, syncupEntry);
 
-//        Mockito.verify(delegate).syncup(fcNodePath, fcConfigNode, fcOperationalNode, dsType);
         Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
 

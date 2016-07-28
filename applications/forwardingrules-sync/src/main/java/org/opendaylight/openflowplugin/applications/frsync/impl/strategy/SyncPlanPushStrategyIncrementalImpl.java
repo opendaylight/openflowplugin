@@ -18,10 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
-import org.opendaylight.openflowplugin.applications.frsync.impl.FlowForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.GroupForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.MeterForwarder;
-import org.opendaylight.openflowplugin.applications.frsync.impl.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.CrudCounts;
 import org.opendaylight.openflowplugin.applications.frsync.util.FxChainUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
@@ -67,9 +63,9 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyIncrementalImpl.class);
 
     private FlowForwarder flowForwarder;
-    private TableForwarder tableForwarder;
     private MeterForwarder meterForwarder;
     private GroupForwarder groupForwarder;
+    private TableForwarder tableForwarder;
     private FlowCapableTransactionService transactionService;
 
     @Override
@@ -153,9 +149,9 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
     ListenableFuture<RpcResult<Void>> addMissingFlows(final NodeId nodeId,
-                                                                final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox,
-                                                                final SyncCrudCounters counters) {
+                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                      final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox,
+                                                      final SyncCrudCounters counters) {
         if (flowsInTablesSyncBox.isEmpty()) {
             LOG.trace("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
@@ -204,22 +200,14 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 Futures.allAsList(allUpdateResults),
                 ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("flow updating"));
 
-        final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(
-                Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
+        return Futures.transform(Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"));
-
-        return summaryResult;
-
-        /*
-        return Futures.transform(summaryResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
-                */
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantFlows(final NodeId nodeId,
-                                                                     final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                     final Map<TableKey, ItemSyncBox<Flow>> removalPlan,
-                                                                     final SyncCrudCounters counters) {
+                                                           final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                           final Map<TableKey, ItemSyncBox<Flow>> removalPlan,
+                                                           final SyncCrudCounters counters) {
         if (removalPlan.isEmpty()) {
             LOG.trace("no tables in operational for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
@@ -250,9 +238,9 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantMeters(final NodeId nodeId,
-                                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                      final ItemSyncBox<Meter> meterRemovalPlan,
-                                                                      final SyncCrudCounters counters) {
+                                                            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                            final ItemSyncBox<Meter> meterRemovalPlan,
+                                                            final SyncCrudCounters counters) {
         if (meterRemovalPlan.isEmpty()) {
             LOG.trace("no meters on device for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
@@ -271,14 +259,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             meterCrudCounts.incRemoved();
         }
 
-        final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
-                Futures.allAsList(allResults),
+        return Futures.transform(Futures.allAsList(allResults),
                 ReconcileUtil.<RemoveMeterOutput>createRpcResultCondenser("meter remove"));
-        return singleVoidResult;
-        /*
-        return Futures.transform(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
-                */
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(final NodeId nodeId,
@@ -407,15 +389,14 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 ReconcileUtil.<Void>createRpcResultCondenser("group add/update"));
 
 
-        return Futures.transform(summaryResult,
-                ReconcileUtil.chainBarrierFlush(
-                        PathUtil.digNodePath(nodeIdent), transactionService));
+        return Futures.transform(summaryResult, ReconcileUtil.chainBarrierFlush(
+                PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
     ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
-                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                 final ItemSyncBox<Meter> syncBox,
-                                                                 final SyncCrudCounters counters) {
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                       final ItemSyncBox<Meter> syncBox,
+                                                       final SyncCrudCounters counters) {
         if (syncBox.isEmpty()) {
             LOG.trace("no meters configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
@@ -451,22 +432,14 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 Futures.allAsList(allUpdateResults),
                 ReconcileUtil.<UpdateMeterOutput>createRpcResultCondenser("meter update"));
 
-        final ListenableFuture<RpcResult<Void>> summaryResults = Futures.transform(
-                Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
+        return Futures.transform(Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
                 ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"));
-
-        return summaryResults;
-
-        /*
-        return Futures.transform(summaryResults,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
-                */
     }
 
     ListenableFuture<RpcResult<Void>> addMissingGroups(final NodeId nodeId,
-                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                 final List<ItemSyncBox<Group>> groupsAddPlan,
-                                                                 final SyncCrudCounters counters) {
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                       final List<ItemSyncBox<Group>> groupsAddPlan,
+                                                       final SyncCrudCounters counters) {
         if (groupsAddPlan.isEmpty()) {
             LOG.trace("no groups configured for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();

@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -127,14 +126,11 @@ public class ReconcileUtil {
     public static AsyncFunction<RpcResult<Void>, RpcResult<Void>> chainBarrierFlush(
             final InstanceIdentifier<Node> nodeIdent,
             final FlowCapableTransactionService flowCapableTransactionService) {
-        return new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                final SendBarrierInput barrierInput = new SendBarrierInputBuilder()
-                        .setNode(new NodeRef(nodeIdent))
-                        .build();
-                return JdkFutureAdapters.listenInPoolThread(flowCapableTransactionService.sendBarrier(barrierInput));
-            }
+        return input -> {
+            final SendBarrierInput barrierInput = new SendBarrierInputBuilder()
+                    .setNode(new NodeRef(nodeIdent))
+                    .build();
+            return JdkFutureAdapters.listenInPoolThread(flowCapableTransactionService.sendBarrier(barrierInput));
         };
     }
 

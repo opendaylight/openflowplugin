@@ -41,7 +41,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         LOG.trace("syncup future decorator: {}", nodeId.getValue());
 
-        final ListenableFuture<Boolean> syncup = executorService.submit(() -> {
+        return executorService.submit(() -> {
             final String oldThreadName = updateThreadName(nodeId);
 
             try {
@@ -56,8 +56,6 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                 updateThreadName(oldThreadName);
             }
         });
-
-        return syncup;
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
