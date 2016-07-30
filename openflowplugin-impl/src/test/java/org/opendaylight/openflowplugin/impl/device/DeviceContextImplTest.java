@@ -233,8 +233,8 @@ public class DeviceContextImplTest {
                 dataBroker,
                 messageSpy,
                 translatorLibrary,
-		        deviceManager,
-                convertorExecutor);
+                deviceManager,
+                convertorExecutor,false);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -245,12 +245,12 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor).close();
+        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor,false).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor).close();
+        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor,false).close();
     }
 
     @Test

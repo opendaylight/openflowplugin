@@ -35,5 +35,7 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
 
     boolean getIsNotificationFlowRemovedOff();
 
+    void setSkipTableFeatures(boolean skipTableFeatures);
+
 }
 
