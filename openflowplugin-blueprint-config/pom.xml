@@ -43,7 +43,7 @@
                                <type>cfg</type>
                                <classifier>config</classifier>
                            </artifact>
-                       </artifacts>
+                        </artifacts>
                    </configuration>
                </execution>
            </executions>
