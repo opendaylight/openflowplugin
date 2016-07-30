@@ -92,7 +92,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
-    private Map<String,Object>  managedProperties;
+    private boolean skipTableFeatures = false;
 
     private final LifecycleConductor conductor;
     private final ThreadPoolExecutor threadPool;
@@ -182,6 +182,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
     }
 
+    @Override
+    public void setSkipTableFeatures(final boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
+    }
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -229,7 +233,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierCountLimit,
                 conductor,
                 isNotificationFlowRemovedOff,
+                skipTableFeatures,
                 convertorManager);
+
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -265,16 +271,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.initialize();
 
         startSwitchConnections();
-    }
-
-    @Override
-    public void update(Map<String,Object> props) {
-        LOG.debug("Update managed properties = {}", props.toString());
-        this.managedProperties = props;
-
-        if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
-            deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
-        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {

@@ -91,4 +91,6 @@ public interface DeviceState extends DeviceSynchronizeListener, DeviceValidListe
 
     void setStatisticsPollingEnabledProp(boolean statPollEnabled);
 
+    boolean isSkipTableFeatures();
+
 }

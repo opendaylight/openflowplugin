@@ -71,7 +71,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
     private boolean isNotificationFlowRemovedOff;
-
+    private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
 
     private final DataBroker dataBroker;
@@ -84,6 +84,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long barrierIntervalNanos;
     private final int barrierCountLimit;
+
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private Set<DeviceSynchronizeListener> deviceSynchronizedListeners;
@@ -95,10 +96,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final long globalNotificationQuota, final boolean switchFeaturesMandatory,
                              final long barrierInterval, final int barrierCountLimit,
                              final LifecycleConductor lifecycleConductor, boolean isNotificationFlowRemovedOff,
+                             boolean skipTableFeatures,
                              final ConvertorExecutor convertorExecutor) {
+
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+        this.skipTableFeatures = skipTableFeatures;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.convertorExecutor = convertorExecutor;
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
@@ -171,7 +175,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        final DeviceState deviceState = new DeviceStateImpl(deviceInfo);
+        final DeviceState deviceState = new DeviceStateImpl(deviceInfo, skipTableFeatures);
         this.addDeviceSynchronizeListener(deviceState);
         this.addDeviceValidListener(deviceState);
 
@@ -367,6 +371,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public boolean getIsNotificationFlowRemovedOff() {
         return this.isNotificationFlowRemovedOff;
     }
+
+    @Override
+    public void setSkipTableFeatures(boolean skipTableFeaturesValue) {
+        skipTableFeatures = skipTableFeaturesValue;
+    }
+
 
     private ListenableFuture<Void> onDeviceTakeClusterLeadership(final DeviceInfo deviceInfo) {
         LOG.trace("onDeviceTakeClusterLeadership for node: {}", deviceInfo.getNodeId());
