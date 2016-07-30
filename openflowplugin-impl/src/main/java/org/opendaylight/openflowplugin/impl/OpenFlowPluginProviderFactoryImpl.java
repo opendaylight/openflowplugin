@@ -63,6 +63,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
         openflowPluginProvider.setNotificationFlowRemovedOff(providerConfig.isNotificationFlowRemovedOff());
         openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
+        openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
 
         openflowPluginProvider.initialize();
 
