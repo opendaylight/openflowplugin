@@ -132,7 +132,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private final DeviceManager deviceManager;
-
+    private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
     private final DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
@@ -144,7 +144,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final MessageSpy messageSpy,
             @Nonnull final TranslatorLibrary translatorLibrary,
             @Nonnull final DeviceManager manager,
-	        final ConvertorExecutor convertorExecutor) {
+	        final ConvertorExecutor convertorExecutor,
+            final boolean skipTableFeatures) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.deviceState = new DeviceStateImpl();
@@ -173,6 +174,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.convertorExecutor = convertorExecutor;
+        this.skipTableFeatures = skipTableFeatures;
     }
 
     /**
@@ -570,5 +572,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         setState(CONTEXT_STATE.INITIALIZATION);
         this.primaryConnectionContext = connectionContext;
         this.onPublished();
+    }
+
+    @Override
+    public boolean isSkipTableFeatures() {
+        return this.skipTableFeatures;
     }
 }
