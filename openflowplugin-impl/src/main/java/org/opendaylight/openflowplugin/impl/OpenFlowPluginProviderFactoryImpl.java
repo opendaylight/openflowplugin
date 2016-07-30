@@ -59,6 +59,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
         openflowPluginProvider.setNotificationFlowRemovedOff(providerConfig.isNotificationFlowRemovedOff());
+        openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
 
         openflowPluginProvider.initialize();
 

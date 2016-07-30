@@ -74,9 +74,6 @@
         <ref component-id="legacySwitchConnProvider"/>
       </list>
     </argument>
-    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                           update-strategy="component-managed"
-                           update-method="update"/>
   </bean>
 
   <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
