@@ -157,7 +157,8 @@ public class DeviceManagerImplTest {
                 clusterSingletonServiceProvider,
                 null,
                 new HashedWheelTimer(),
-                convertorExecutor);
+                convertorExecutor,
+                false);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

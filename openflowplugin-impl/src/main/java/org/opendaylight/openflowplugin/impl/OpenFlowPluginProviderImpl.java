@@ -92,6 +92,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
+    private boolean skipTableFeatures = true;
+
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
 
@@ -173,8 +175,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
     }
 
+    @Override
     public void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider) {
         this.singletonServicesProvider = singletonServicesProvider;
+    }
+
+    @Override
+    public void setSkipTableFeatures(final boolean skipTableFeatures){
+            this.skipTableFeatures = skipTableFeatures;
     }
 
     @Override
@@ -224,11 +232,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierCountLimit,
                 getMessageIntelligenceAgency(),
                 isNotificationFlowRemovedOff,
-
                 singletonServicesProvider,
                 notificationPublishService,
                 hashedWheelTimer,
-		convertorManager);
+                convertorManager,
+                skipTableFeatures);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -263,6 +271,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         LOG.debug("Update managed properties = {}", props.toString());
         if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
             deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+        }
+        if(deviceManager != null && props.containsKey("skip-table-features")) {
+            deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
         }
     }
 
