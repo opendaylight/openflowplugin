@@ -67,7 +67,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
     private boolean isNotificationFlowRemovedOff;
-
+    private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
 
     private final DataBroker dataBroker;
@@ -81,6 +81,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long barrierIntervalNanos;
     private final int barrierCountLimit;
+
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
@@ -93,16 +94,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final boolean switchFeaturesMandatory,
                              final long barrierInterval,
                              final int barrierCountLimit,
-			     
                              final MessageSpy messageSpy,
                              final boolean isNotificationFlowRemovedOff,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
-                             final ConvertorExecutor convertorExecutor) {
+                             final ConvertorExecutor convertorExecutor,
+                             final boolean skipTableFeatures) {
+
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+        this.skipTableFeatures = skipTableFeatures;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
@@ -191,7 +194,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 messageSpy,
                 translatorLibrary,
                 this,
-                convertorExecutor);
+                convertorExecutor,
+                skipTableFeatures);
 
         deviceContexts.putIfAbsent(deviceInfo, deviceContext);
 
@@ -373,6 +377,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public boolean getIsNotificationFlowRemovedOff() {
         return this.isNotificationFlowRemovedOff;
+    }
+
+
+    @Override
+    public void setSkipTableFeatures(boolean skipTableFeaturesValue) {
+        skipTableFeatures = skipTableFeaturesValue;
     }
 
 }

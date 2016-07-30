@@ -206,9 +206,15 @@ public class DeviceInitializationUtils {
                         createSuccessProcessingCallback(MultipartType.OFPMPGROUPFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroupFeatures, convertorExecutor);
 
-                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(
-                                MultipartType.OFPMPTABLEFEATURES, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
+                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures;
+
+                        if (deviceContext.isSkipTableFeatures()){
+                            replyTableFeatures = RpcResultBuilder.<List<MultipartReply>>success().buildFuture();
+                        } else {
+                            replyTableFeatures = getNodeStaticInfo(
+                                    MultipartType.OFPMPTABLEFEATURES, deviceContext,
+                                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
+                        }
                         createSuccessProcessingCallback(MultipartType.OFPMPTABLEFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyTableFeatures, convertorExecutor);
 
