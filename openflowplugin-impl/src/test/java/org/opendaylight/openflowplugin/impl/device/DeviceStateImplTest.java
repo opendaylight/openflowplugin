@@ -32,7 +32,7 @@ public class DeviceStateImplTest {
 
     @Before
     public void initialization() {
-        deviceState = new DeviceStateImpl();
+     deviceState = new DeviceStateImpl();
     }
 
     @Test

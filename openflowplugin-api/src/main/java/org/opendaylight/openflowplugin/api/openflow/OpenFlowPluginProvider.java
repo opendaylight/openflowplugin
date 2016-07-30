@@ -73,9 +73,11 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setEchoReplyTimeout(long echoReplyTimeout);
 
-
     void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
 
     void update(Map<String,Object> props);
+
     void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
+
+    void setSkipTableFeatures(boolean skipTableFeatures);
 }
