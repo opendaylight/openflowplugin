@@ -33,11 +33,14 @@ class DeviceStateImpl implements DeviceState {
     private boolean portStatisticsAvailable;
     private boolean statPollEnabled;
     private boolean queueStatisticsAvailable;
+    private boolean skipTableFeatures;
 
-    public DeviceStateImpl(final DeviceInfo deviceInfo) {
+    public DeviceStateImpl(final DeviceInfo deviceInfo,
+                           final boolean skipTableFeaturesValue) {
         this.deviceInfo = deviceInfo;
         statPollEnabled = false;
         deviceSynchronized = false;
+        skipTableFeatures = skipTableFeaturesValue;
     }
 
     @Override
@@ -119,6 +122,11 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setStatisticsPollingEnabledProp(final boolean statPollEnabled) {
         this.statPollEnabled = statPollEnabled;
+    }
+
+    @Override
+    public boolean isSkipTableFeatures() {
+        return this.skipTableFeatures;
     }
 
     @Override

@@ -152,7 +152,8 @@ public class DeviceManagerImplTest {
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, true, convertorManager);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor,
+                true,false,convertorManager);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
