@@ -149,7 +149,8 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor, true);
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor,
+                true, false);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

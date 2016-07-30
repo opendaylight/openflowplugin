@@ -89,6 +89,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsPollingOff = false;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
+    private boolean skipTableFeatures = false;
     private Map<String,Object>  managedProperties;
 
     private final LifecycleConductor conductor;
@@ -178,6 +179,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
     }
 
+    @Override
+    public void setSkipTableFeatures(final boolean skipTableFeatures) {
+        this.skipTableFeatures = skipTableFeatures;
+    }
 
     @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
@@ -224,7 +229,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierInterval,
                 barrierCountLimit,
                 conductor,
-                isNotificationFlowRemovedOff);
+                isNotificationFlowRemovedOff,
+                skipTableFeatures);
         ((ExtensionConverterProviderKeeper) conductor).setExtensionConverterProvider(extensionConverterManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -269,6 +275,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
             deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+        }
+
+        if(deviceManager != null && props.containsKey("skip-table-features")) {
+            deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
         }
     }
 
