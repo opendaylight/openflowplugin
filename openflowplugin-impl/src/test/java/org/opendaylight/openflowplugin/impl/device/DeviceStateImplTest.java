@@ -32,7 +32,26 @@ public class DeviceStateImplTest {
 
     @Before
     public void initialization() {
+<<<<<<< 698bb567646cffed87dc95057a3f9f82992d0cfc
         deviceState = new DeviceStateImpl();
+=======
+        deviceState = new DeviceStateImpl(deviceInfo, false);
+    }
+
+    @Test
+    public void testIsValid_initialValue(){
+        Assert.assertFalse(deviceState.isValid());
+    }
+
+    @Test
+    public void testDeviceSynchronized_initialValue(){
+        Assert.assertFalse(deviceState.deviceSynchronized());
+    }
+
+    @Test
+    public void testStatPollEnabled_initialValue(){
+        Assert.assertFalse(deviceState.isStatisticsPollingEnabled());
+>>>>>>> BUG-5464,5954: making table features configurable for the Li plugin.
     }
 
     @Test
