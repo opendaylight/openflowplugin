@@ -146,6 +146,7 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
+<<<<<<< 698bb567646cffed87dc95057a3f9f82992d0cfc
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
                 mockedDataBroker,
                 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
@@ -158,6 +159,12 @@ public class DeviceManagerImplTest {
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor);
+=======
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(mockedDataBroker,
+                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA, false, barrierIntervalNanos, barrierCountLimit, lifecycleConductor,
+                true,false,convertorManager);
+>>>>>>> BUG-5464,5954: making table features configurable for the Li plugin.
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
