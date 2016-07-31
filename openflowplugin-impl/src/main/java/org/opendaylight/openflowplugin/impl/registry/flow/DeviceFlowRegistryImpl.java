@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -22,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -51,7 +54,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
+    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = HashBiMap.create();
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
     private final DataBroker dataBroker;
@@ -147,17 +150,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Retrieving flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
         FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
-        if(flowDescriptor == null){
-            LOG.info("Triggered the loop");
-            for(Map.Entry<FlowRegistryKey, FlowDescriptor> fd : flowRegistry.entrySet()) {
-                if (fd.getKey().equals(flowRegistryKey)) {
-                    flowDescriptor = fd.getValue();
-                    break;
-                }
-            }
-        }
+
         // Get FlowDescriptor from flow registry
         return flowDescriptor;
+    }
+
+    @Override
+    public boolean validateIfUnique(FlowDescriptor flowDescriptor){
+        return flowRegistry.inverse().containsKey(flowDescriptor);
     }
 
     @Override
