@@ -13,6 +13,8 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
+import java.util.Objects;
+
 /**
  * This class serves as factory for creating {@link org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor}
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
@@ -37,6 +39,25 @@ public class FlowDescriptorFactory {
             Preconditions.checkNotNull(flowId);
             this.flowId = flowId;
             this.tableKey = tableKey;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FlowDescriptorDto that = (FlowDescriptorDto) o;
+
+            if (flowId != null ? !flowId.equals(that.flowId) : that.flowId != null) return false;
+            return tableKey != null ? tableKey.equals(that.tableKey) : that.tableKey == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = flowId != null ? flowId.hashCode() : 0;
+            result = 31 * result + (tableKey != null ? tableKey.hashCode() : 0);
+            return result;
         }
 
         @Override
