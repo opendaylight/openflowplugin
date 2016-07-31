@@ -48,7 +48,7 @@ public class TimeCounterTest {
         timeCounter.markStart();
         Assert.assertEquals(0, timeCounter.getAverageTimeBetweenMarks());
 
-        zzz(2L);
+        zzz(3L);
         timeCounter.addTimeMark();
         Assert.assertTrue(timeCounter.getAverageTimeBetweenMarks() >= 2);
 

@@ -215,7 +215,7 @@ public class StatisticsGatheringUtilsTest {
         final FlowAndStatisticsMapListBuilder flowAndStatsMapListBld = new FlowAndStatisticsMapListBuilder();
         flowAndStatsMapListBld.setTableId((short) 42);
         flowAndStatsMapListBld.setMatch(new MatchBuilder().build());
-
+        flowAndStatsMapListBld.setPriority(10);
         final FlowsStatisticsUpdateBuilder flowStatsUpdateBld1 = new FlowsStatisticsUpdateBuilder();
         flowStatsUpdateBld1.setFlowAndStatisticsMapList(Lists.newArrayList(flowAndStatsMapListBld.build()));
 
@@ -435,6 +435,7 @@ public class StatisticsGatheringUtilsTest {
                 .setDurationNsec(58L)
                 .setTableId((short) 0)
                 .setMatch(matchBld.build())
+                .setPriority(10)
                 .setFlags(new FlowModFlags(true, false, false, false, true));
 
         final MultipartReplyFlowBuilder mpReplyFlowBld = new MultipartReplyFlowBuilder();
@@ -448,10 +449,11 @@ public class StatisticsGatheringUtilsTest {
 
         final FlowBuilder flowBld = new FlowBuilder()
                 .setTableId((short) 0)
+                .setPriority(10)
                 .setMatch(new MatchBuilder().build());
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
-                .child(Flow.class, new FlowKey(new FlowId("openflow:21")));
+                .child(Flow.class, new FlowKey(new FlowId(new FlowId("openflow:21").toString()+"-"+"10")));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
         verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()));
         verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
