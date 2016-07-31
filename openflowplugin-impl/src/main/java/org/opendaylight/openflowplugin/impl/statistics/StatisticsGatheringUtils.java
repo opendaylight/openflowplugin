@@ -121,6 +121,7 @@ public final class StatisticsGatheringUtils {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
     private static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
+    private static final String DEFAULT_ID = "DEFAULT";
 
     private StatisticsGatheringUtils() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -282,8 +283,15 @@ public final class StatisticsGatheringUtils {
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
                     final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
-
-                    final FlowKey flowKey = new FlowKey(flowId);
+                    final FlowKey flowKey;
+                    if(flowId !=null) {
+                        flowKey= new FlowKey(new FlowId(flowId.toString() + "-"
+                                + flowStat.getPriority().toString())); //has to be unique
+                    }
+                    else{
+                        flowKey = new FlowKey(new FlowId(DEFAULT_ID + "-"
+                                + flowStat.getPriority().toString()));
+                    }
                     flowBuilder.setKey(flowKey);
                     final TableKey tableKey = new TableKey(tableId);
                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);

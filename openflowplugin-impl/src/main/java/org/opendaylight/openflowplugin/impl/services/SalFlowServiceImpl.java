@@ -83,7 +83,12 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         if (Objects.nonNull(input.getFlowRef())) {
             flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
             flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-            deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+            if(deviceContext.getDeviceFlowRegistry().validateIfUnique(flowDescriptor)) {
+                deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+            }else{
+                LOG.error("Flow with flowId {} already exists in table {}",flowId, input.getTableId());
+            }
+
         } else {
             flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
             flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
