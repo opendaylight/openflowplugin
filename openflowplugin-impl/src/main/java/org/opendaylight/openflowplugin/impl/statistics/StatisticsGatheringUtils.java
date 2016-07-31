@@ -283,7 +283,8 @@ public final class StatisticsGatheringUtils {
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
                     final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
 
-                    final FlowKey flowKey = new FlowKey(flowId);
+                    final FlowKey flowKey = new FlowKey(new FlowId(flowId.toString()+ "-"
+                            +flowStat.getPriority().toString())); //has to be unique
                     flowBuilder.setKey(flowKey);
                     final TableKey tableKey = new TableKey(tableId);
                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
