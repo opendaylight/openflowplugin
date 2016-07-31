@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -49,9 +52,12 @@ import org.slf4j.LoggerFactory;
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
+    private static final String CONFLICT_STSTEM_FLOW_ID = "#CF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
+    private static final AtomicInteger CONFLICTING_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
+
+    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = HashBiMap.create();
     @GuardedBy("marks")
     private final Collection<FlowRegistryKey> marks = new HashSet<>();
     private final DataBroker dataBroker;
@@ -147,22 +153,31 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Retrieving flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
         FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
-        if(flowDescriptor == null){
-            for(Map.Entry<FlowRegistryKey, FlowDescriptor> fd : flowRegistry.entrySet()) {
-                if (fd.getKey().equals(flowRegistryKey)) {
-                    flowDescriptor = fd.getValue();
-                    break;
-                }
-            }
-        }
         // Get FlowDescriptor from flow registry
         return flowDescriptor;
     }
 
+
+    FlowId getConflictingFlowId(short tableId) {
+        return createConflictingFlowId(tableId);
+    }
+
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
-        LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-        flowRegistry.put(flowRegistryKey, flowDescriptor);
+        LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
+        synchronized (flowRegistryKey) {
+            try {
+                flowRegistry.put(flowRegistryKey, flowDescriptor);
+            } catch (IllegalArgumentException ex) {
+                LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
+                        flowDescriptor.getTableKey().getId());
+                final FlowId newFlowId = getConflictingFlowId(flowDescriptor.getTableKey().getId());
+                final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
+                        create(flowDescriptor.getTableKey().getId(), newFlowId);
+                flowRegistry.put(flowRegistryKey, newFlowDescriptor);
+            }
+        }
     }
 
     @Override
@@ -230,6 +245,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @VisibleForTesting
     static FlowId createAlienFlowId(final short tableId) {
         final String alienId = ALIEN_SYSTEM_FLOW_ID + tableId + '-' + UNACCOUNTED_FLOWS_COUNTER.incrementAndGet();
+        return new FlowId(alienId);
+    }
+
+    static FlowId createConflictingFlowId(final short tableId) {
+        final String alienId = CONFLICT_STSTEM_FLOW_ID + tableId + '-' + CONFLICTING_FLOWS_COUNTER.incrementAndGet();
         return new FlowId(alienId);
     }
 }
