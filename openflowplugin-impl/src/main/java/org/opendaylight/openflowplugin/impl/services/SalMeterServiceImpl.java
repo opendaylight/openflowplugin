@@ -60,18 +60,18 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
+
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    if(LOG.isDebugEnabled()) {
+                   if(LOG.isDebugEnabled()) {
                         LOG.debug("Meter add finished without error, id={}", input.getMeterId());
                     }
+                    deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                     addIfNecessaryToDS(input.getMeterId(),input);
                 } else {
-                    deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
                     LOG.error("Meter add with id {} failed with error {}", input.getMeterId(),
                             errorsToString(result.getErrors()));
                 }
@@ -79,8 +79,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
             @Override
             public void onFailure(Throwable t) {
-                deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
-                LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
+                 LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
             }
         });
 
@@ -90,7 +89,6 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture = updateMeter.handleServiceCall(input.getUpdatedMeter());
-
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateMeterOutput>>() {
 
             @Override

@@ -30,6 +30,10 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     void store(FlowRegistryKey flowRegistryKey, FlowDescriptor flowDescriptor);
 
+    boolean validateIfUnique(FlowDescriptor flowDescriptor);
+
+    FlowId getConflictingFlowId(short tableId);
+
     FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey);
 
     void markToBeremoved(FlowRegistryKey flowRegistryKey);

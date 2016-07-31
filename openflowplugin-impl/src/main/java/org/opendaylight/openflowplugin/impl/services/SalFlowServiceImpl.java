@@ -78,25 +78,32 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-        final FlowId flowId;
-        final FlowDescriptor flowDescriptor;
 
-        if (Objects.nonNull(input.getFlowRef())) {
-            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-            flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-            deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
-        } else {
-            flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
-            flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-        }
-
-        LOG.trace("Calling add flow for flow with ID ={}.", flowId);
         final ListenableFuture<RpcResult<AddFlowOutput>> future =
                 flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 if (rpcResult.isSuccessful()) {
+                    final FlowId flowId;
+                    final FlowDescriptor flowDescriptor;
+
+                    if (Objects.nonNull(input.getFlowRef())) {
+                        flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                        flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                        if(deviceContext.getDeviceFlowRegistry().validateIfUnique(flowDescriptor)) {
+                            deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+                        }else{
+                            LOG.error("Flow with flowId {} already exists in table {}",flowId, input.getTableId());
+                            final FlowId newFlowId = deviceContext.getDeviceFlowRegistry().getConflictingFlowId(input.getTableId());
+                            final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.create(input.getTableId(), newFlowId);
+                            deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, newFlowDescriptor);
+                        }
+                    } else {
+                        flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
+                        flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                    }
+
                     if(LOG.isDebugEnabled()) {
                         LOG.debug("flow add with id={},finished without error,", flowId.getValue());
                     }
@@ -108,15 +115,14 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     }
                 } else {
                     deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
-                    LOG.error("flow add failed for id={}, errors={}", flowId.getValue(),
+                    LOG.error("flow add failed for flow={}, errors={}", input.toString(),
                             errorsToString(rpcResult.getErrors()));
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
-                LOG.error("Service call for adding flow with  id={} failed, reason {} .", flowId.getValue(), throwable);
+               LOG.error("Service call for adding flow={} failed, reason {} .", input.toString(), throwable);
             }
         });
 
@@ -218,7 +224,14 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 } else { //this is either an add or an update
                     final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                     final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
-                    deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
+                    if(deviceContext.getDeviceFlowRegistry().validateIfUnique(flowDescriptor)) {
+                        deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+                    }else{
+                        LOG.error("Flow with flowId {} already exists in table {}",flowId, updated.getTableId());
+                        final FlowId newFlowId = deviceContext.getDeviceFlowRegistry().getConflictingFlowId(updated.getTableId());
+                        final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), newFlowId);
+                        deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, newFlowDescriptor);
+                    }
 
                     if (itemLifecycleListener != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
@@ -234,8 +247,6 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                             itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                         }
                     }
-
-
                 }
             }
 
