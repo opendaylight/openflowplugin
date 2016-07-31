@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -37,6 +38,20 @@ public class FlowDescriptorFactory {
             Preconditions.checkNotNull(flowId);
             this.flowId = flowId;
             this.tableKey = tableKey;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FlowDescriptorDto that = (FlowDescriptorDto) o;
+            return Objects.equal(flowId, that.flowId) &&
+                    Objects.equal(tableKey, that.tableKey);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(flowId, tableKey);
         }
 
         @Override
