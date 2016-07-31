@@ -28,6 +28,8 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     FlowDescriptor retrieveIdForFlow(FlowRegistryKey flowRegistryKey);
 
+    boolean validateIfUnique(FlowDescriptor flowDescriptor);
+
     void store(FlowRegistryKey flowRegistryKey, FlowDescriptor flowDescriptor);
 
     FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey);
