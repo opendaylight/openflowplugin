@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_6549508b",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 696,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2016-08-01T21:10:22Z",
+      "side": 1,
+      "message": "should be conntrack",
+      "revId": "b110cd385bdf70661b0c6700cd477d237568ff30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c55dc44a",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 701,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2016-08-01T21:10:22Z",
+      "side": 1,
+      "message": "should be action-learn",
+      "revId": "b110cd385bdf70661b0c6700cd477d237568ff30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
