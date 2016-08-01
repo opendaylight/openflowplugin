@@ -43,16 +43,19 @@ public class TcpSrcCodec extends AbstractMatchCodec {
         serializeHeader(input, outBuffer);
         TcpSrcCaseValue tcpSrcCase = ((TcpSrcCaseValue) input.getMatchEntryValue());
         outBuffer.writeShort(tcpSrcCase.getTcpSrcValues().getPort().getValue());
+        outBuffer.writeShort(tcpSrcCase.getTcpSrcValues().getMask());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        matchEntryBuilder.setHasMask(false);
+        matchEntryBuilder.setHasMask(true);
         int portNo = message.readUnsignedShort();
+        int mask = message.readUnsignedShort();
         TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
         TcpSrcValuesBuilder tcpSrcValuesBuilder = new TcpSrcValuesBuilder();
         tcpSrcValuesBuilder.setPort(new PortNumber(portNo));
+        tcpSrcValuesBuilder.setMask(mask);
         caseBuilder.setTcpSrcValues(tcpSrcValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
