@@ -20,7 +20,11 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
  */
 public final class EventsTimeCounter {
 
-    private static Map<String, Map<String, EventTimeCounter>> devicesEvents = new HashMap<>();
+    private static final Map<String, Map<String, EventTimeCounter>> DEVICES_EVENTS = new HashMap<>();
+
+    private EventsTimeCounter() {
+        // Hiding implicit constructor
+    }
 
     public static void markStart(final EventIdentifier eventIdentifier) {
         Map<String, EventTimeCounter> deviceEvents = getOrCreateCountersForDevice(eventIdentifier.getDeviceId());
@@ -44,10 +48,10 @@ public final class EventsTimeCounter {
     }
 
     private static Map<String, EventTimeCounter> getOrCreateCountersForDevice(final String deviceId) {
-        Map<String, EventTimeCounter> lookup = devicesEvents.get(deviceId);
+        Map<String, EventTimeCounter> lookup = DEVICES_EVENTS.get(deviceId);
         if (null == lookup) {
-            lookup = new HashMap<String, EventTimeCounter>();
-            devicesEvents.put(deviceId, lookup);
+            lookup = new HashMap<>();
+            DEVICES_EVENTS.put(deviceId, lookup);
         }
 
         return lookup;
@@ -55,7 +59,7 @@ public final class EventsTimeCounter {
 
     public static List<String> provideTimes() {
         List<String> dump = new ArrayList<>();
-        for (Map.Entry<String, Map<String, EventTimeCounter>> deviceEntry : devicesEvents.entrySet()) {
+        for (Map.Entry<String, Map<String, EventTimeCounter>> deviceEntry : DEVICES_EVENTS.entrySet()) {
             Map<String, EventTimeCounter> eventsMap = deviceEntry.getValue();
             dump.add("================================================");
             dump.add(String.format("DEVICE : %s", deviceEntry.getKey()));
@@ -76,7 +80,7 @@ public final class EventsTimeCounter {
     }
 
     public static void resetAllCounters() {
-        devicesEvents = new HashMap<>();
+        DEVICES_EVENTS.clear();
     }
 
 
