@@ -39,8 +39,6 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         BigInteger datapathId = deviceInfo.getDatapathId();
 
         // TODO: connection cookie from connection distinguisher
-        // packetReceivedBuilder.setConnectionCookie(new ConnectionCookie(input.getCookie().longValue()));
-
         packetReceivedBuilder.setPayload(input.getData());
 
         // get the Cookie if it exists

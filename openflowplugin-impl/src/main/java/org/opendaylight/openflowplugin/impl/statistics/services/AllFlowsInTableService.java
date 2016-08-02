@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.base.Function;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -29,12 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAllFlowStatisticsFromFlowTableInput,
         GetAllFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
-
-    private Function<? super RpcResult<List<MultipartReply>>, FlowsStatisticsUpdate> transformer;
 
     public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
