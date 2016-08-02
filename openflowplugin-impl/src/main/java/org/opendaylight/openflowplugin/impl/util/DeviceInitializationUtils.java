@@ -19,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -87,6 +86,10 @@ import org.slf4j.LoggerFactory;
 public class DeviceInitializationUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceInitializationUtils.class);
+
+    private DeviceInitializationUtils() {
+        // Hiding implicit constructor
+    }
 
     /**
      * InitializationNodeInformation is good to call only for MASTER otherwise we will have not empty transaction
@@ -249,104 +252,152 @@ public class DeviceInitializationUtils {
                                        final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result,
                                        final ConvertorExecutor convertorExecutor) {
         try {
-            for (final MultipartReply reply : result) {
-                final MultipartReplyBody body = reply.getMultipartReplyBody();
-                switch (type) {
-                    case OFPMPDESC:
-                        Preconditions.checkArgument(body instanceof MultipartReplyDescCase);
-                        final MultipartReplyDesc replyDesc = ((MultipartReplyDescCase) body).getMultipartReplyDesc();
-                        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc,
-                                getIpAddressOf(dContext));
-                        final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
-                        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
-                        break;
-
-                    case OFPMPTABLEFEATURES:
-                        Preconditions.checkArgument(body instanceof MultipartReplyTableFeaturesCase);
-                        final MultipartReplyTableFeatures tableFeaturesMP = ((MultipartReplyTableFeaturesCase) body)
-                                .getMultipartReplyTableFeatures();
-                        final List<TableFeatures> tableFeatures = NodeStaticReplyTranslatorUtil
-                                .nodeTableFeatureTranslator(tableFeaturesMP, dContext.getDeviceInfo().getVersion(), convertorExecutor);
-                        for (final TableFeatures tableFeature : tableFeatures) {
-                            final Short tableId = tableFeature.getTableId();
-                            final KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII =
-                                    nodeII.augmentation(FlowCapableNode.class)
-                                            .child(TableFeatures.class, new TableFeaturesKey(tableId));
-                            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII, tableFeature);
-
-                            // write parent for table statistics
-                            final KeyedInstanceIdentifier<Table, TableKey> tableII =
-                                    nodeII.augmentation(FlowCapableNode.class)
-                                            .child(Table.class, new TableKey(tableId));
-                            final TableBuilder tableBld = new TableBuilder().setId(tableId)
-                                    .addAugmentation(FlowTableStatisticsData.class,
-                                            new FlowTableStatisticsDataBuilder().build());
-
-                            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBld.build());
+            result.stream()
+                    .map(MultipartReply::getMultipartReplyBody)
+                    .forEach(multipartReplyBody -> {
+                        if (!(writeDesc(type, multipartReplyBody, dContext, nodeII)
+                                || writeTableFeatures(type, multipartReplyBody, dContext, nodeII, convertorExecutor)
+                                || writeMeterFeatures(type, multipartReplyBody, dContext, nodeII)
+                                || writeGroupFeatures(type, multipartReplyBody, dContext, nodeII)
+                                || writePortDesc(type, multipartReplyBody, dContext, nodeII))) {
+                            throw new IllegalArgumentException("Unexpected MultipartType " + type);
                         }
-                        break;
-
-                    case OFPMPMETERFEATURES:
-                        Preconditions.checkArgument(body instanceof MultipartReplyMeterFeaturesCase);
-                        final MultipartReplyMeterFeatures meterFeatures = ((MultipartReplyMeterFeaturesCase) body)
-                                .getMultipartReplyMeterFeatures();
-                        final NodeMeterFeatures mFeature = NodeStaticReplyTranslatorUtil
-                                .nodeMeterFeatureTranslator(meterFeatures);
-                        final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII
-                                .augmentation(NodeMeterFeatures.class);
-                        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
-                        if (0L < mFeature.getMeterFeatures().getMaxMeter().getValue()) {
-                            dContext.getDeviceState().setMeterAvailable(true);
-                        }
-                        break;
-
-                    case OFPMPGROUPFEATURES:
-                        Preconditions.checkArgument(body instanceof MultipartReplyGroupFeaturesCase);
-                        final MultipartReplyGroupFeatures groupFeatures = ((MultipartReplyGroupFeaturesCase) body)
-                                .getMultipartReplyGroupFeatures();
-                        final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil
-                                .nodeGroupFeatureTranslator(groupFeatures);
-                        final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII
-                                .augmentation(NodeGroupFeatures.class);
-                        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
-                        break;
-
-                    case OFPMPPORTDESC:
-                        Preconditions.checkArgument(body instanceof MultipartReplyPortDescCase);
-                        final MultipartReplyPortDesc portDesc = ((MultipartReplyPortDescCase) body)
-                                .getMultipartReplyPortDesc();
-                        for (final PortGrouping port : portDesc.getPorts()) {
-                            final short ofVersion = dContext.getDeviceInfo().getVersion();
-                            final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
-                            final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = dContext.oook()
-                                    .lookupTranslator(translatorKey);
-                            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext.getDeviceInfo(), null);
-
-                            final BigInteger dataPathId = dContext.getPrimaryConnectionContext().getFeatures()
-                                    .getDatapathId();
-                            final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(
-                                    dataPathId.toString(), port.getPortNo(), ofVersion);
-                            final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder().setId(nodeConnectorId);
-                            ncBuilder.addAugmentation(FlowCapableNodeConnector.class, fcNodeConnector);
-
-                            ncBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
-                                    new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-                            final NodeConnector connector = ncBuilder.build();
-
-                            final InstanceIdentifier<NodeConnector> connectorII = nodeII.child(NodeConnector.class,
-                                    connector.getKey());
-                            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
-                        }
-
-                        break;
-
-                    default:
-                        throw new IllegalArgumentException("Unnexpected MultipartType " + type);
-                }
-            }
+                    });
         } catch (final Exception e) {
             LOG.debug("Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
         }
+    }
+
+    private static boolean writeDesc(final MultipartType type,
+                                     final MultipartReplyBody body,
+                                     final DeviceContext dContext,
+                                     final InstanceIdentifier<Node> nodeII) {
+        if (!MultipartType.OFPMPDESC.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyDescCase);
+        final MultipartReplyDesc replyDesc = ((MultipartReplyDescCase) body).getMultipartReplyDesc();
+        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc,
+                getIpAddressOf(dContext));
+        final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
+        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
+        return true;
+    }
+
+    private static boolean writeTableFeatures(final MultipartType type,
+                                              final MultipartReplyBody body,
+                                              final DeviceContext dContext,
+                                              final InstanceIdentifier<Node> nodeII,
+                                              final ConvertorExecutor convertorExecutor) {
+        if (!MultipartType.OFPMPTABLEFEATURES.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyTableFeaturesCase);
+        final MultipartReplyTableFeatures tableFeaturesMP = ((MultipartReplyTableFeaturesCase) body)
+                .getMultipartReplyTableFeatures();
+        final List<TableFeatures> tableFeatures = NodeStaticReplyTranslatorUtil
+                .nodeTableFeatureTranslator(tableFeaturesMP, dContext.getDeviceInfo().getVersion(), convertorExecutor);
+        for (final TableFeatures tableFeature : tableFeatures) {
+            final Short tableId = tableFeature.getTableId();
+            final KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII =
+                    nodeII.augmentation(FlowCapableNode.class)
+                            .child(TableFeatures.class, new TableFeaturesKey(tableId));
+            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII, tableFeature);
+
+            // write parent for table statistics
+            final KeyedInstanceIdentifier<Table, TableKey> tableII =
+                    nodeII.augmentation(FlowCapableNode.class)
+                            .child(Table.class, new TableKey(tableId));
+            final TableBuilder tableBld = new TableBuilder().setId(tableId)
+                    .addAugmentation(FlowTableStatisticsData.class,
+                            new FlowTableStatisticsDataBuilder().build());
+
+            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBld.build());
+        }
+
+        return true;
+    }
+
+    private static boolean writeMeterFeatures(final MultipartType type,
+                                              final MultipartReplyBody body,
+                                              final DeviceContext dContext,
+                                              final InstanceIdentifier<Node> nodeII) {
+        if (!MultipartType.OFPMPMETERFEATURES.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyMeterFeaturesCase);
+        final MultipartReplyMeterFeatures meterFeatures = ((MultipartReplyMeterFeaturesCase) body)
+                .getMultipartReplyMeterFeatures();
+        final NodeMeterFeatures mFeature = NodeStaticReplyTranslatorUtil
+                .nodeMeterFeatureTranslator(meterFeatures);
+        final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII
+                .augmentation(NodeMeterFeatures.class);
+        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
+        if (0L < mFeature.getMeterFeatures().getMaxMeter().getValue()) {
+            dContext.getDeviceState().setMeterAvailable(true);
+        }
+
+        return true;
+    }
+
+    private static boolean writeGroupFeatures(final MultipartType type,
+                                              final MultipartReplyBody body,
+                                              final DeviceContext dContext,
+                                              final InstanceIdentifier<Node> nodeII) {
+        if (!MultipartType.OFPMPGROUPFEATURES.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyGroupFeaturesCase);
+        final MultipartReplyGroupFeatures groupFeatures = ((MultipartReplyGroupFeaturesCase) body)
+                .getMultipartReplyGroupFeatures();
+        final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil
+                .nodeGroupFeatureTranslator(groupFeatures);
+        final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII
+                .augmentation(NodeGroupFeatures.class);
+        dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
+
+        return true;
+    }
+
+    private static boolean writePortDesc(final MultipartType type,
+                                         final MultipartReplyBody body,
+                                         final DeviceContext dContext,
+                                         final InstanceIdentifier<Node> nodeII) {
+        if (!MultipartType.OFPMPPORTDESC.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyPortDescCase);
+        final MultipartReplyPortDesc portDesc = ((MultipartReplyPortDescCase) body)
+                .getMultipartReplyPortDesc();
+        for (final PortGrouping port : portDesc.getPorts()) {
+            final short ofVersion = dContext.getDeviceInfo().getVersion();
+            final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
+            final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = dContext.oook()
+                    .lookupTranslator(translatorKey);
+            final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, dContext.getDeviceInfo(), null);
+
+            final BigInteger dataPathId = dContext.getPrimaryConnectionContext().getFeatures()
+                    .getDatapathId();
+            final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(
+                    dataPathId.toString(), port.getPortNo(), ofVersion);
+            final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder().setId(nodeConnectorId);
+            ncBuilder.addAugmentation(FlowCapableNodeConnector.class, fcNodeConnector);
+
+            ncBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
+                    new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+            final NodeConnector connector = ncBuilder.build();
+
+            final InstanceIdentifier<NodeConnector> connectorII = nodeII.child(NodeConnector.class,
+                    connector.getKey());
+            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
+        }
+
+        return true;
     }
 
     private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
@@ -407,9 +458,7 @@ public class DeviceInitializationUtils {
                     LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo().getNodeId(), type);
                     translateAndWriteReply(type, deviceContext, nodeII, result, convertorExecutor);
                 } else {
-                    final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
-                    while (rpcErrorIterator.hasNext()) {
-                        final RpcError rpcError = rpcErrorIterator.next();
+                    for (RpcError rpcError : rpcResult.getErrors()) {
                         LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
                         if (null != rpcError.getCause()) {
                             LOG.trace("Detailed error:", rpcError.getCause());
