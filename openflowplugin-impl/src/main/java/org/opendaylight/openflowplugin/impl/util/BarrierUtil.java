@@ -21,15 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * provides barrier message chaining and factory methods
  */
 public final class BarrierUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BarrierUtil.class);
 
 
     private BarrierUtil() {
