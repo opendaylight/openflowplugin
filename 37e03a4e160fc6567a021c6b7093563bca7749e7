@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_b3360fe6",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 444,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "nitpick - replace tabs with spaces",
+      "revId": "37e03a4e160fc6567a021c6b7093563bca7749e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
