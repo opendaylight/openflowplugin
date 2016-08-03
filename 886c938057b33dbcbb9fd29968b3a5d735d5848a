@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_e2aeebe6",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "Why are the finals removed? At this point we should minimize touching anything that might affect currently used scenarios (I know this change doesn\u0027t mean much, but as a general guideline after code freeze)",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_22b9032f",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "nitpicks tabs and empty lines",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_02b6873d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "nitpick: tabs and spaces",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6282db53",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodecTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "I don\u0027t think you meant to touch this file. Please revert.",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_4287df61",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodecTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "nitpick tabs and spaces",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e2954b89",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/LearnConvertor.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "cosmetic: is it really important to give the full import path (including rev?) - where possible to use the default, its much easier to read",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a2f35309",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/LearnConvertor.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "rename flowModAdd2 to flowModAddSpec or something",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_42eebf23",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/LearnConvertor.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:54:54Z",
+      "side": 1,
+      "message": "huh what are these weird and long defines?",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
