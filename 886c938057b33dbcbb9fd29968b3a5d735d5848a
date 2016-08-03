@@ -36,6 +36,57 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_42d51f42",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:58:28Z",
+      "side": 1,
+      "message": "defines for 11/13",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_62d01b54",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:58:28Z",
+      "side": 1,
+      "message": "what is 12? please add a define for it so we understand what it is (int final)",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_02e4c739",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-03T10:58:28Z",
+      "side": 1,
+      "message": "This is identical to the one in AbstractActionCodec as far as I can tell - why override?",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_02b6873d",
         "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
         "patchSetId": 6
