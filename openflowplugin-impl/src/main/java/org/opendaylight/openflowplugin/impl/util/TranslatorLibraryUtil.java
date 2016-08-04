@@ -18,7 +18,9 @@ import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorLibraryBuilder;
+import org.opendaylight.openflowplugin.impl.translator.NodeUpdateTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -43,10 +45,12 @@ public final class TranslatorLibraryUtil {
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedTranslator(convertorExecutor)).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(NodeUpdated.class), new NodeUpdateTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(convertorExecutor)).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedV10Translator(convertorExecutor)).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(NodeUpdated.class), new NodeUpdateTranslator()).
 
                 build();
 
