@@ -130,8 +130,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             @Override
             public void onSuccess(Optional<FlowCapableNode> result) {
                 result.asSet().stream()
+                        .filter(Objects::nonNull)
                         .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                        .filter(Objects::nonNull)
                         .filter(table -> Objects.nonNull(table.getFlow()))
                         .flatMap(table -> table.getFlow().stream())
                         .filter(Objects::nonNull)
@@ -154,10 +156,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
-        LOG.trace("Retrieving flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
+        LOG.trace("Retrieving flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
         FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
         // Get FlowDescriptor from flow registry
         if(flowDescriptor == null){
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Failed to retrieve flow descriptor for flow hash : {}, trying with custom equals method", flowRegistryKey.hashCode());
+            }
             for(Map.Entry<FlowRegistryKey, FlowDescriptor> fd : flowRegistry.entrySet()) {
                 if (fd.getKey().equals(flowRegistryKey)) {
                     flowDescriptor = fd.getValue();
@@ -187,13 +192,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey) {
-        LOG.trace("Trying to retrieve flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
+        LOG.trace("Trying to retrieve flow ID for flow hash : {}", flowRegistryKey.hashCode());
 
         // First, try to get FlowDescriptor from flow registry
         FlowDescriptor flowDescriptor = retrieveIdForFlow(flowRegistryKey);
 
         // We was not able to retrieve FlowDescriptor, so we will at least try to generate it
         if (flowDescriptor == null) {
+            LOG.trace("Flow descriptor for flow hash : {} not found, generating alien flow ID", flowRegistryKey.hashCode());
             final short tableId = flowRegistryKey.getTableId();
             final FlowId alienFlowId = createAlienFlowId(tableId);
             flowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
@@ -219,7 +225,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public void removeMarked() {
         synchronized (marks) {
             for (FlowRegistryKey flowRegistryKey : marks) {
-                LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
+                LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
                 flowRegistry.remove(flowRegistryKey);
             }
 
