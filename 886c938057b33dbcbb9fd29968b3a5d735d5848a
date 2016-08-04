@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_135258dd",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-04T06:43:31Z",
+      "side": 1,
+      "message": "I had to remove finals to be able to override the function",
+      "parentUuid": "7a6b29fe_e2aeebe6",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_22b9032f",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
         "patchSetId": 6
@@ -104,6 +122,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_73058cc1",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-04T06:43:31Z",
+      "side": 1,
+      "message": "What is the correct form? Is there a formater for yang files?",
+      "parentUuid": "7a6b29fe_02b6873d",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_6282db53",
         "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodecTest.java",
         "patchSetId": 6
@@ -115,6 +151,24 @@
       "writtenOn": "2016-08-03T10:54:54Z",
       "side": 1,
       "message": "I don\u0027t think you meant to touch this file. Please revert.",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_530a10d3",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodecTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-04T06:43:31Z",
+      "side": 1,
+      "message": "I did. Because I changed the AbstractActionCodec\u0027s functions to be not static, I had to put here instance to call functions",
+      "parentUuid": "7a6b29fe_6282db53",
       "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -183,6 +237,24 @@
       "writtenOn": "2016-08-03T10:54:54Z",
       "side": 1,
       "message": "huh what are these weird and long defines?",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d3f580cc",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/LearnConvertor.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-04T06:43:31Z",
+      "side": 1,
+      "message": "They are generated from the class path I think...",
+      "parentUuid": "7a6b29fe_42eebf23",
       "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
