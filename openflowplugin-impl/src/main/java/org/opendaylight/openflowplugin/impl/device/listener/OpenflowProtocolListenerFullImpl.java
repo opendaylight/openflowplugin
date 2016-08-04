@@ -82,6 +82,8 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
             LOG.trace("Multipart Reply with XID: {}", notification.getXid());
         }
 //        multiMsgCollector.addMultipartMsg(notification);
+        /* processing NodeUpdateMessage on MultiPartReply Message */
+        deviceReplyProcessor.processNodeUpdateMessage(notification);
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 
 /**
  * @author tkubas
@@ -64,4 +65,11 @@ public interface DeviceReplyProcessor {
      * @param notification
      */
     void processExperimenterMessage(ExperimenterMessage notification);
+
+    /**
+     * Processing of Node Update message from device on connection
+     *
+     * @param multipartReplyMessage
+     */
+    void processNodeUpdateMessage(MultipartReplyMessage multipartReplyMessage);
 }
