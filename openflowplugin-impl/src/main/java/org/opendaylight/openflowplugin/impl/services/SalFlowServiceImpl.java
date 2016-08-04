@@ -106,8 +106,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
                 } else {
-                LOG.error("flow add failed for id={}, errors={}", flowId.getValue(), errorsToString(rpcResult.getErrors()));
-            }
+                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
+                    LOG.error("flow add failed for id={}, errors={}", flowId.getValue(), errorsToString(rpcResult.getErrors()));
+                }
             }
 
             @Override
