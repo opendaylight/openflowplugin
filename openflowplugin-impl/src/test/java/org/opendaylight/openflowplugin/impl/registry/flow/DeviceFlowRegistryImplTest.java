@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -100,16 +102,14 @@ public class DeviceFlowRegistryImplTest {
                 .setTable(Collections.singletonList(table))
                 .build();
 
-        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(flowCapableNode)));
-
-        deviceFlowRegistry.fill().get();
-        verify(dataBroker, times(2)).newReadOnlyTransaction();
-        verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
-        verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
-
-        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = deviceFlowRegistry.getAllFlowDescriptors();
+        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = testFill(path, flowCapableNode);
         final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
 
+        InOrder order = inOrder(dataBroker, readOnlyTransaction);
+        order.verify(dataBroker).newReadOnlyTransaction();
+        order.verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
+        order.verify(dataBroker).newReadOnlyTransaction();
+        order.verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
         assertTrue(allFlowDescriptors.containsKey(key));
 
         deviceFlowRegistry.markToBeremoved(key);
@@ -120,24 +120,48 @@ public class DeviceFlowRegistryImplTest {
     public void testFailedFill() throws Exception {
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
-        final Table table = new TableBuilder()
-                .setFlow(null)
-                .build();
+        testFill(path, null);
 
-        final FlowCapableNode flowCapableNode = new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(table))
-                .build();
+        testFill(path, new FlowCapableNodeBuilder()
+                .setTable(null)
+                .build());
 
-        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(flowCapableNode)));
+        testFill(path, new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(null))
+                .build());
 
+        testFill(path, new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(new TableBuilder()
+                        .setFlow(null)
+                        .build()))
+                .build());
+
+        testFill(path, new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(new TableBuilder()
+                        .setFlow(Collections.singletonList(null))
+                        .build()))
+                .build());
+
+        testFill(path, new FlowCapableNodeBuilder()
+                .setTable(Collections.singletonList(new TableBuilder()
+                        .setFlow(Collections.singletonList(new FlowBuilder()
+                                .setId(null)
+                                .build()))
+                        .build()))
+                .build());
+
+        verify(dataBroker, times(12)).newReadOnlyTransaction();
+        verify(readOnlyTransaction, times(6)).read(LogicalDatastoreType.CONFIGURATION, path);
+        verify(readOnlyTransaction, times(6)).read(LogicalDatastoreType.OPERATIONAL, path);
+
+        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
+    }
+
+    private Map<FlowRegistryKey, FlowDescriptor> testFill(final InstanceIdentifier<FlowCapableNode> path,
+                                                          final FlowCapableNode flowCapableNode) throws Exception {
+        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.fromNullable(flowCapableNode)));
         deviceFlowRegistry.fill().get();
-        verify(dataBroker, times(2)).newReadOnlyTransaction();
-        verify(readOnlyTransaction).read(LogicalDatastoreType.CONFIGURATION, path);
-        verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
-
-        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = deviceFlowRegistry.getAllFlowDescriptors();
-
-        Assert.assertEquals(1, allFlowDescriptors.size());
+        return deviceFlowRegistry.getAllFlowDescriptors();
     }
 
     @Test
