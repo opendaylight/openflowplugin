@@ -73,10 +73,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -87,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -128,6 +131,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
+    private final MessageTranslator<MultipartReplyMessage, NodeUpdated> nodeUpdatedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
@@ -167,6 +171,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 new TranslatorKey(deviceInfo.getVersion(), PacketIn.class.getName()));
         flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
+        nodeUpdatedTranslator = translatorLibrary.lookupTranslator(
+                new TranslatorKey(deviceInfo.getVersion(), NodeUpdated.class.getName()));
 
         itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
@@ -309,6 +315,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
+        }
+    }
+
+    @Override
+    public void processNodeUpdateMessage(MultipartReplyMessage multipartReplyMessage) {
+        if (multipartReplyMessage.getType() == MultipartType.OFPMPDESC) {
+            final NodeUpdated nodeUpdatedNotification = nodeUpdatedTranslator.translate(multipartReplyMessage, deviceInfo, null);
+            notificationPublishService.offerNotification(nodeUpdatedNotification);
+        }else {
+            LOG.debug("NodeUpdate Notification not published for type={}",multipartReplyMessage.getType());
         }
     }
 
