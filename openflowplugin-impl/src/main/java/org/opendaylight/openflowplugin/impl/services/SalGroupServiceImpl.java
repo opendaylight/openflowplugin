@@ -59,7 +59,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        addGroup.getDeviceRegistry().getDeviceGroupRegistry().store(input.getGroupId());
+        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroup.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
@@ -70,15 +70,16 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     }
                     addIfNecessaryToDS(input.getGroupId(), input);
                 } else {
-                LOG.error("group add with id={} failed, errors={}", input.getGroupId().getValue(),
-                        errorsToString(result.getErrors()));
-                 }
+                    deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+                    LOG.error("group add with id={} failed, errors={}", input.getGroupId().getValue(),
+                            errorsToString(result.getErrors()));
+                }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("Service call for group add failed for id={}. Exception: {}",
-                        input.getGroupId().getValue(), t);
+                deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+                LOG.error("Service call for group add failed for id={}. Exception: {}", input.getGroupId().getValue(), t);
             }
         });
 
