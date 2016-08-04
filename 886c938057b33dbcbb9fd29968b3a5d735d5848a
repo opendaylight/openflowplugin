@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_33583456",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-04T08:54:36Z",
+      "side": 1,
+      "message": "You only need to override deserializeHeader though right?\nCan keep changes to a minimum in this file and other unrelated files (like conntrack)",
+      "parentUuid": "7a6b29fe_135258dd",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_22b9032f",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/LearnCodec.java",
         "patchSetId": 6
@@ -134,6 +152,24 @@
       "side": 1,
       "message": "What is the correct form? Is there a formater for yang files?",
       "parentUuid": "7a6b29fe_02b6873d",
+      "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_1355381d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-08-04T08:54:36Z",
+      "side": 1,
+      "message": "Not that I\u0027m aware of - just take a look at the review after you fix it - it should look like other lines in the yang (no \u003e\u003e or red blocks)",
+      "parentUuid": "7a6b29fe_73058cc1",
       "revId": "886c938057b33dbcbb9fd29968b3a5d735d5848a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
