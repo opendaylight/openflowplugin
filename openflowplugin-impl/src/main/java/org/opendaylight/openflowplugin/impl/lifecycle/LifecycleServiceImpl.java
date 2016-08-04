@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -176,7 +177,9 @@ public class LifecycleServiceImpl implements LifecycleService {
                     long flowCount = Optional.fromNullable(result).asSet().stream()
                             .flatMap(Collection::stream)
                             .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                            .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
                             .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                            .filter(table -> Objects.nonNull(table.getFlow()))
                             .flatMap(table -> table.getFlow().stream())
                             .count();
 
