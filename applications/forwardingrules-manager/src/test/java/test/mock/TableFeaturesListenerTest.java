@@ -10,11 +10,18 @@ package test.mock;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -27,27 +34,38 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalTableServiceMock;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesListenerTest extends FRMTest {
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private final static NodeId NODE_ID = new NodeId("testnode:1");
+    private final static NodeKey s1Key = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonService;
+    @Mock
+    DeviceMastershipManager deviceMastershipManager;
 
-
-    @Test
-    public void updateFlowTest() throws Exception {
-        NodeKey s1Key = new NodeKey(new NodeId("S1"));
-        TableKey tableKey = new TableKey((short) 2);
-        TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+    @Before
+    public void setUp() {
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                eos);
+                clusterSingletonService);
         forwardingRulesManager.start();
+        // TODO consider tests rewrite (added because of complicated access)
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+    }
+
+    @Test
+    public void updateFlowTest() {
+        TableKey tableKey = new TableKey((short) 2);
+        TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
 
         addTable(tableKey, s1Key);
 
@@ -67,7 +85,11 @@ public class TableFeaturesListenerTest extends FRMTest {
         List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
         assertEquals(1, updateTableInputs.size());
         assertEquals("DOM-0", updateTableInputs.get(0).getTransactionUri().getValue());
+    }
 
+    @After
+    public void tearDown() throws Exception {
         forwardingRulesManager.close();
     }
+
 }
