@@ -60,11 +60,9 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        addMeter.getDeviceRegistry().getDeviceMeterRegistry().store(input.getMeterId());
-
+        deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
-
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
@@ -72,7 +70,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
                         LOG.debug("Meter add finished without error, id={}", input.getMeterId());
                     }
                     addIfNecessaryToDS(input.getMeterId(),input);
-                }else{
+                } else {
+                    deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
                     LOG.error("Meter add with id {} failed with error {}", input.getMeterId(),
                             errorsToString(result.getErrors()));
                 }
@@ -80,6 +79,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
             @Override
             public void onFailure(Throwable t) {
+                deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
                 LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
             }
         });
