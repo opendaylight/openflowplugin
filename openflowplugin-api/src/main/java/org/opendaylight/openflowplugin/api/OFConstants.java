@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.api;
 
 import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 
 /**
  * OFP related constants
@@ -25,7 +27,6 @@ public final class OFConstants {
     public static final short OFPP_ALL  = ((short)0xfffc);
     /** enum ofp_port_no, reserved port: local openflow port  */
     public static final short OFPP_LOCAL = ((short)0xfffe);
-
 
     /** openflow protocol 1.0 - version identifier */
     public static final short OFP_VERSION_1_0 = 0x01;
@@ -54,6 +55,8 @@ public final class OFConstants {
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
     public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
     public static final Integer DEFAULT_FLOW_PRIORITY = 0x8000;
+    /** Empty flow match */
+    public static final Match EMPTY_MATCH = new MatchBuilder().build();
 
     /** indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
@@ -61,7 +64,6 @@ public final class OFConstants {
     /** enum ofp_controller_max_len: indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
     public static final Integer OFPCML_NO_BUFFER = 0xffff;
-
 
     public static final int MAC_ADDRESS_LENGTH = 6;
     public static final int SIZE_OF_LONG_IN_BYTES = 8;
