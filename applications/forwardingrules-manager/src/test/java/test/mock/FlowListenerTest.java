@@ -8,13 +8,21 @@
 package test.mock;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.Collections;
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -40,27 +48,37 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalFlowServiceMock;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FlowListenerTest extends FRMTest {
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private final static NodeId NODE_ID = new NodeId("testnode:1");
+    private final static NodeKey s1Key = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    EntityOwnershipService eos = new EntityOwnershipServiceMock();
-
-    NodeKey s1Key = new NodeKey(new NodeId("S1"));
     TableKey tableKey = new TableKey((short) 2);
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonService;
+    @Mock
+    DeviceMastershipManager deviceMastershipManager;
 
-    @Test
-    public void addTwoFlowsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+    @Before
+    public void setUp() {
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                eos);
+                clusterSingletonService);
         forwardingRulesManager.start();
+        // TODO consider tests rewrite (added because of complicated access)
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+    }
 
+    @Test
+    public void addTwoFlowsTest() throws Exception {
         addFlowCapableNode(s1Key);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -93,19 +111,10 @@ public class FlowListenerTest extends FRMTest {
         assertEquals("DOM-1", addFlowCalls.get(1).getTransactionUri().getValue());
         assertEquals(2, addFlowCalls.get(1).getTableId().intValue());
         assertEquals(flowII, addFlowCalls.get(1).getFlowRef().getValue());
-
-        forwardingRulesManager.close();
-    }
+}
 
     @Test
     public void updateFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(),
-                eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -139,19 +148,10 @@ public class FlowListenerTest extends FRMTest {
         assertEquals(flowII, updateFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(Boolean.TRUE, updateFlowCalls.get(0).getOriginalFlow().isStrict());
         assertEquals(Boolean.TRUE, updateFlowCalls.get(0).getUpdatedFlow().isStrict());
-
-        forwardingRulesManager.close();
     }
 
     @Test
     public void updateFlowScopeTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(),
-                eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -188,18 +188,10 @@ public class FlowListenerTest extends FRMTest {
         assertEquals("DOM-1", updateFlowCalls.get(0).getTransactionUri().getValue());
         assertEquals(flowII, updateFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(ipMatch, updateFlowCalls.get(0).getUpdatedFlow().getMatch().getIpMatch());
-        forwardingRulesManager.close();
     }
 
     @Test
     public void deleteFlowTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(),
-                eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -228,8 +220,6 @@ public class FlowListenerTest extends FRMTest {
         assertEquals("DOM-1", removeFlowCalls.get(0).getTransactionUri().getValue());
         assertEquals(flowII, removeFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(Boolean.TRUE, removeFlowCalls.get(0).isStrict());
-
-        forwardingRulesManager.close();
     }
 
 
@@ -250,8 +240,11 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.submit());
-
-
-
     }
+
+    @After
+    public void tearDown() throws Exception {
+        forwardingRulesManager.close();
+    }
+
 }
