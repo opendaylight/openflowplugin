@@ -7,23 +7,16 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
-
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -41,8 +34,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 
 public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource {
     private static final Logger LOG = LoggerFactory.getLogger(SalGroupServiceImpl.class);
@@ -66,7 +57,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        addGroup.getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
+        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroup.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
@@ -74,12 +65,16 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                 if (result.isSuccessful()) {
                     LOG.debug("group add finished without error, id={}", input.getGroupId().getValue());
                     addIfNecessaryToDS(input.getGroupId(), input);
+                } else {
+                    deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+                    LOG.debug("group add with id={} failed, errors={}", input.getGroupId().getValue(), result.getErrors());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("group add failed for id={}. Exception: {}", input.getGroupId().getValue(), t);
+                deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+                LOG.error("Service call for adding groups failed, id={}. Exception: {}", input.getGroupId().getValue(), t);
             }
         });
 

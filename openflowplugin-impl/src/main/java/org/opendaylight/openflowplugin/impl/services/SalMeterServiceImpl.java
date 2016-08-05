@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
@@ -19,7 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
@@ -35,8 +34,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 
 public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource {
     private static final Logger LOG = LoggerFactory.getLogger(SalMeterServiceImpl.class);
@@ -60,22 +57,24 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        addMeter.getDeviceContext().getDeviceMeterRegistry().store(input.getMeterId());
-
+        deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
-
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("Meter add finished without error, id={}", input.getMeterId());
                     addIfNecessaryToDS(input.getMeterId(),input);
+                } else {
+                    deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
+                    LOG.debug("meter add with id={} failed, errors={}", input.getMeterId().getValue(), result.getErrors());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
+                deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
+                LOG.error("Service call for adding meters failed, id={}. Exception: {}", input.getMeterId(), t);
             }
         });
 
