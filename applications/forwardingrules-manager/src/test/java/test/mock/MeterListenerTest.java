@@ -7,14 +7,29 @@
  */
 package test.mock;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.StaleMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.StaleMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.StaleMeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -24,30 +39,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalMeterServiceMock;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
+@RunWith(MockitoJUnitRunner.class)
 public class MeterListenerTest extends FRMTest {
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private final static NodeId NODE_ID = new NodeId("testnode:1");
+    private final static NodeKey s1Key = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonService;
+    @Mock
+    DeviceMastershipManager deviceMastershipManager;
 
-    NodeKey s1Key = new NodeKey(new NodeId("S1"));
+    @Before
+    public void setUp() {
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig(),
+                clusterSingletonService);
+        forwardingRulesManager.start();
+        // TODO consider tests rewrite (added because of complicated access)
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+    }
 
     @Test
     public void addTwoMetersTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -75,18 +96,10 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(2, addMeterCalls.size());
         assertEquals("DOM-1", addMeterCalls.get(1).getTransactionUri().getValue());
         assertEquals(meterII, addMeterCalls.get(1).getMeterRef().getValue());
-
-        forwardingRulesManager.close();
     }
 
     @Test
     public void updateMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -111,18 +124,10 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(1, updateMeterCalls.size());
         assertEquals("DOM-1", updateMeterCalls.get(0).getTransactionUri().getValue());
         assertEquals(meterII, updateMeterCalls.get(0).getMeterRef().getValue());
-
-        forwardingRulesManager.close();
     }
 
     @Test
     public void removeMeterTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -146,8 +151,6 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(1, removeMeterCalls.size());
         assertEquals("DOM-1", removeMeterCalls.get(0).getTransactionUri().getValue());
         assertEquals(meterII, removeMeterCalls.get(0).getMeterRef().getValue());
-
-        forwardingRulesManager.close();
     }
 
 
@@ -163,6 +166,11 @@ public class MeterListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.submit());
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        forwardingRulesManager.close();
     }
 
 }
