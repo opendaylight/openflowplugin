@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_7a1d5873",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-05T08:37:58Z",
+      "side": 1,
+      "message": "Since the device is not in TERMINATION state, shouldn\u0027t the return value be true here ??",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_3a03e010",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/LifecycleServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-05T08:37:58Z",
+      "side": 1,
+      "message": "On the various ConnectionInterrupt return paths, is a clean up of the previous completed tasks not mandatory ??",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
