@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SetNshc1Codec extends AbstractActionCodec {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SetNshc1Codec.class);
-
     public static final int LENGTH = 16;
     public static final byte NXAST_SET_NSC_SUBTYPE = 34;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =

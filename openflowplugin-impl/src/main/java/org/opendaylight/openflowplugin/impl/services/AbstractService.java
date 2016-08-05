@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
-    private static final long WAIT_TIME = 2000;
-    private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
 
     private final short version;
     private final BigInteger datapathId;

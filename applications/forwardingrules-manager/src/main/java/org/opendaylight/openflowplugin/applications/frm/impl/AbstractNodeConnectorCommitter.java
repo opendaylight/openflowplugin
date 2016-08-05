@@ -69,6 +69,5 @@ public abstract class AbstractNodeConnectorCommitter <T extends DataObject> impl
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         Preconditions.checkNotNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
         return true;
-        //return provider.isNodeActive(nodeConnIdent);
     }
 }

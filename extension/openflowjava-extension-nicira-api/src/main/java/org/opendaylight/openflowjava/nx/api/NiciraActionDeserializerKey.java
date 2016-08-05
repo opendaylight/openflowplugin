@@ -38,8 +38,9 @@ public final class NiciraActionDeserializerKey {
     }
 
     private static final boolean isValueUint16(int value) {
-        if (value >= 0 && value <= 65535L)
+        if (value >= 0 && value <= 65535L) {
             return true;
+        }
         return false;
     }
 
@@ -54,17 +55,22 @@ public final class NiciraActionDeserializerKey {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         NiciraActionDeserializerKey other = (NiciraActionDeserializerKey) obj;
-        if (subtype != other.subtype)
+        if (subtype != other.subtype) {
             return false;
-        if (version != other.version)
+        }
+        if (version != other.version) {
             return false;
+        }
         return true;
     }
 

@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class ConntrackCodec extends AbstractActionCodec {
-    private static final Logger logger = LoggerFactory.getLogger(ConntrackCodec.class);
-
     public static final int LENGTH = 24;
     public static final byte NXAST_CONNTRACK_SUBTYPE = 35;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
@@ -36,7 +34,7 @@ public class ConntrackCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionConntrack action = ((ActionConntrack) input.getActionChoice()); //getAugmentation(OfjAugNxAction.class).getActionConntrack();
+        ActionConntrack action = ((ActionConntrack) input.getActionChoice());
         serializeHeader(LENGTH, NXAST_CONNTRACK_SUBTYPE, outBuffer);
 
         outBuffer.writeShort(action.getNxActionConntrack().getFlags().shortValue());

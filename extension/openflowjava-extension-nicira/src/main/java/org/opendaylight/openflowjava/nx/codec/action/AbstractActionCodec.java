@@ -21,18 +21,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  */
 public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDeserializer<Action> {
 
-    protected final static void serializeHeader(final int msgLength, final int subtype, final ByteBuf outBuffer) {
+    protected static final void serializeHeader(final int msgLength, final int subtype, final ByteBuf outBuffer) {
         outBuffer.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         writeMsgLengthVendorIdSubtypeToBuffer(msgLength, subtype, outBuffer);
     }
 
-    private final static void writeMsgLengthVendorIdSubtypeToBuffer(final int msgLength, final int subtype, final ByteBuf outBuffer) {
+    private static final void writeMsgLengthVendorIdSubtypeToBuffer(final int msgLength, final int subtype, final ByteBuf outBuffer) {
         outBuffer.writeShort(msgLength);
         outBuffer.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         outBuffer.writeShort(subtype);
     }
 
-    protected final static ActionBuilder deserializeHeader(final ByteBuf message) {
+    protected static final ActionBuilder deserializeHeader(final ByteBuf message) {
         // size of experimenter type
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         // size of length
@@ -46,7 +46,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         return actionBuilder;
     }
 
-    protected final static ExperimenterId getExperimenterId(){
+    protected static final ExperimenterId getExperimenterId(){
         return new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
     }
 

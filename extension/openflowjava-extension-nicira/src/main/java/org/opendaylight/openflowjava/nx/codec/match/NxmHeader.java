@@ -73,15 +73,19 @@ public class NxmHeader {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         NxmHeader other = (NxmHeader) obj;
-        if (headerAsLong != other.headerAsLong)
+        if (headerAsLong != other.headerAsLong) {
             return false;
+        }
         return true;
     }
 

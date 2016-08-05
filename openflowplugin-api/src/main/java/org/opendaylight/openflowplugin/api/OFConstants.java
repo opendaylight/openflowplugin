@@ -33,7 +33,7 @@ public final class OFConstants {
     /** openflow protocol 1.3 - version identifier */
     public static final short OFP_VERSION_1_3 = 0x04;
 
-    public final static String OF_URI_PREFIX = "openflow:";
+    public static final String OF_URI_PREFIX = "openflow:";
 
     /** enum ofp_table: Table numbering, wildcard table used for table config, flow stats and flow deletes. */
     public static final Short OFPTT_ALL = 0xff;

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemLifecycleListenerImpl.class);
+    public static final String NOT_ABLE_TO_WRITE_TO_TRANSACTION = "Not able to write to transaction: {}";
 
     private final DeviceContext deviceContext;
 
@@ -37,7 +38,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             deviceContext.submitTransaction();
         } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e);
+            LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
     }
 
@@ -47,7 +48,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             deviceContext.submitTransaction();
         } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e);
+            LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
     }
 
@@ -58,7 +59,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             deviceContext.submitTransaction();
         } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e);
+            LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
     }
 }

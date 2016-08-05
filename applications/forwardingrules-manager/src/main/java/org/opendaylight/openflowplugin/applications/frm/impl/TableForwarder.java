@@ -48,12 +48,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<TableForwarder>>() {
-                @Override
-                public ListenerRegistration<TableForwarder> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, TableForwarder.this);
-                }
-            });
+            listenerRegistration = looper.loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Table DataChange listener registration fail!");
             LOG.debug("FRM Table DataChange listener registration fail ..", e);
@@ -95,11 +90,12 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
         final TableFeatures originalTableFeatures = original;
         TableFeatures updatedTableFeatures;
-        if (null == update)
+        if (null == update) {
             updatedTableFeatures = original;
-        else
+        }
+        else {
             updatedTableFeatures = update;
-
+        }
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));

@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  * Codec for the NX_MULTIPATH
  */
 public class MultipathCodec extends AbstractActionCodec {
-    private static final Logger logger = LoggerFactory.getLogger(MultipathCodec.class);
-
     public static final int LENGTH = 32;
     public static final byte NXAST_MULTIPATH_SUBTYPE = 10;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
@@ -37,7 +35,7 @@ public class MultipathCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionMultipath action = ((ActionMultipath) input.getActionChoice()); //getAugmentation(OfjAugNxAction.class).getActionMultipath();
+        ActionMultipath action = ((ActionMultipath) input.getActionChoice());
         serializeHeader(LENGTH, NXAST_MULTIPATH_SUBTYPE, outBuffer);
 
         outBuffer.writeShort(action.getNxActionMultipath().getFields().getIntValue());
