@@ -7,45 +7,68 @@
  */
 package test.mock;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalGroupServiceMock;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
+@RunWith(MockitoJUnitRunner.class)
 public class GroupListenerTest extends FRMTest {
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private final static NodeId NODE_ID = new NodeId("testnode:1");
+    private final static NodeKey s1Key = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonService;
+    @Mock
+    DeviceMastershipManager deviceMastershipManager;
 
-    NodeKey s1Key = new NodeKey(new NodeId("S1"));
+    @Before
+    public void setUp() {
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig(),
+                clusterSingletonService);
+        forwardingRulesManager.start();
+        // TODO consider tests rewrite (added because of complicated access)
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+    }
 
     @Test
     public void addTwoGroupsTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -72,18 +95,10 @@ public class GroupListenerTest extends FRMTest {
         addGroupCalls = salGroupService.getAddGroupCalls();
         assertEquals(2, addGroupCalls.size());
         assertEquals("DOM-1", addGroupCalls.get(1).getTransactionUri().getValue());
-
-        forwardingRulesManager.close();
     }
 
     @Test
     public void updateGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -107,18 +122,10 @@ public class GroupListenerTest extends FRMTest {
         List<UpdateGroupInput> updateGroupCalls = salGroupService.getUpdateGroupCalls();
         assertEquals(1, updateGroupCalls.size());
         assertEquals("DOM-1", updateGroupCalls.get(0).getTransactionUri().getValue());
-
-        forwardingRulesManager.close();
     }
 
     @Test
     public void removeGroupTest() throws Exception {
-        ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(), eos);
-        forwardingRulesManager.start();
-
         addFlowCapableNode(s1Key);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -141,8 +148,6 @@ public class GroupListenerTest extends FRMTest {
         List<RemoveGroupInput> removeGroupCalls = salGroupService.getRemoveGroupCalls();
         assertEquals(1, removeGroupCalls.size());
         assertEquals("DOM-1", removeGroupCalls.get(0).getTransactionUri().getValue());
-
-        forwardingRulesManager.close();
     }
 
     @Test
@@ -158,4 +163,10 @@ public class GroupListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.submit());
     }
+
+    @After
+    public void tearDown() throws Exception {
+        forwardingRulesManager.close();
+    }
+
 }
