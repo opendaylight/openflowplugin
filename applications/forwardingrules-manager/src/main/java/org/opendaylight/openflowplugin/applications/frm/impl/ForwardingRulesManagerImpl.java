@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -17,12 +18,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -32,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
@@ -74,15 +72,17 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
-    private final EntityOwnershipService entityOwnershipService;
+    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private DeviceMastershipManager deviceMastershipManager;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
-                                      final EntityOwnershipService eos) {
+                                      final ClusterSingletonServiceProvider clusterSingletonService) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
-        this.entityOwnershipService = Preconditions.checkNotNull(eos, "EntityOwnership service can not be null");
+        this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
+                "ClusterSingletonService provider can not be null");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -98,18 +98,15 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
-
         this.flowListener = new FlowForwarder(this, dataService);
-
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
-
         this.tableListener = new TableForwarder(this, dataService);
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
-	flowNodeConnectorInventoryTranslatorImpl =
-	                    new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
+        flowNodeConnectorInventoryTranslatorImpl =
+                new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
-
     }
 
     @Override
@@ -183,6 +180,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                             Sets.newHashSet(activeNodes);
                     set.add(ident);
                     activeNodes = Collections.unmodifiableSet(set);
+                    deviceMastershipManager.onDeviceConnected(ident.firstKeyOf(Node.class).getId());
                 }
             }
         }
@@ -197,6 +195,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                             Sets.newHashSet(activeNodes);
                     set.remove(ident);
                     activeNodes = Collections.unmodifiableSet(set);
+                    deviceMastershipManager.onDeviceDisconnected(ident.firstKeyOf(Node.class).getId());
                 }
             }
         }
@@ -259,13 +258,13 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
-        NodeId nodeId = ident.firstKeyOf(Node.class).getId();
-        Entity entity = new Entity("openflow", nodeId.getValue());
-        Optional<EntityOwnershipState> eState = this.entityOwnershipService.getOwnershipState(entity);
-        if(eState.isPresent()) {
-            return eState.get().isOwner();
-        }
-        return false;
+        return deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
+
+    @VisibleForTesting
+    public void setDeviceMastershipManager(final DeviceMastershipManager deviceMastershipManager) {
+        this.deviceMastershipManager = deviceMastershipManager;
+    }
+
 }
 
