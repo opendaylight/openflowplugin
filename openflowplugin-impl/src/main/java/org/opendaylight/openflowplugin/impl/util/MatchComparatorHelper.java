@@ -212,6 +212,35 @@ public class MatchComparatorHelper {
                 }
                 verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(ipv4PrefixSource, statsIpv4Match.getIpv4Source());
             }
+        } else if (statsLayer3Match instanceof Ipv4MatchArbitraryBitMask && storedLayer3Match instanceof Ipv4Match) {
+            // Here stored netmask is an instance of Ipv4MatchArbitraryBitMask, when it is pushed in to switch
+            // it automatically converts it in to cidr format in case of certain subnet masks ( consecutive ones or zeroes)
+            // Eg:- stats src/dest -> 1.1.1.0/24  stored src/dest -> 1.1.1.0/255.255.255.0
+            final Ipv4Match storedIpv4Match = (Ipv4Match) storedLayer3Match;
+            final Ipv4MatchArbitraryBitMask statsIpv4MatchArbitraryBitMask = (Ipv4MatchArbitraryBitMask) statsLayer3Match;
+            if (statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask() != null) {
+                Ipv4Prefix ipv4PrefixDestination;
+                if (statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask() != null) {
+                    byte[] destByteMask = convertArbitraryMaskToByteArray(statsIpv4MatchArbitraryBitMask.getIpv4DestinationArbitraryBitmask());
+                    ipv4PrefixDestination = createPrefix(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask(), destByteMask);
+                } else {
+                    ipv4PrefixDestination = createPrefix(statsIpv4MatchArbitraryBitMask.getIpv4DestinationAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(ipv4PrefixDestination, storedIpv4Match.getIpv4Destination());
+                if (verdict == false) {
+                    return verdict;
+                }
+            }
+            if (statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask() != null) {
+                Ipv4Prefix ipv4PrefixSource;
+                if (statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask() != null) {
+                    byte[] srcByteMask = convertArbitraryMaskToByteArray(statsIpv4MatchArbitraryBitMask.getIpv4SourceArbitraryBitmask());
+                    ipv4PrefixSource = createPrefix(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask(), srcByteMask);
+                } else {
+                    ipv4PrefixSource = createPrefix(statsIpv4MatchArbitraryBitMask.getIpv4SourceAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv4PrefixNullSafe(ipv4PrefixSource, storedIpv4Match.getIpv4Source());
+            }
         } else if (statsLayer3Match instanceof Ipv6MatchArbitraryBitMask && storedLayer3Match instanceof Ipv6MatchArbitraryBitMask) {
             // At this moment storedIpv6MatchArbitraryBitMask & statsIpv6MatchArbitraryBitMask will always have non null arbitrary masks.
             // In case of no / null arbitrary mask, statsLayer3Match will be an instance of Ipv6Match.
@@ -267,8 +296,38 @@ public class MatchComparatorHelper {
             // it automatically converts it in to cidr format in case of certain subnet masks ( consecutive ones or zeroes)
             // Eg:- stats src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/124
             // stored src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFF0
-            final Ipv6Match statsIpv6Match = (Ipv6Match) statsLayer3Match;
-            final Ipv6MatchArbitraryBitMask storedIpv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) storedLayer3Match;
+            final Ipv6Match storedIpv6Match = (Ipv6Match) statsLayer3Match;
+            final Ipv6MatchArbitraryBitMask statsIpv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) storedLayer3Match;
+            if (statsIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask() != null) {
+                Ipv6Prefix ipv6PrefixDestination;
+                if (statsIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask() != null) {
+                    byte[] destByteMask = convertIpv6ArbitraryMaskToByteArray(statsIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask());
+                    ipv6PrefixDestination = createPrefix(statsIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask(), destByteMask);
+                } else {
+                    ipv6PrefixDestination = createPrefix(statsIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(ipv6PrefixDestination, storedIpv6Match.getIpv6Destination());
+                if (verdict == false) {
+                    return verdict;
+                }
+            }
+            if (statsIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask() != null) {
+                Ipv6Prefix ipv6PrefixSource;
+                if (statsIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask() != null) {
+                    byte[] srcByteMask = convertIpv6ArbitraryMaskToByteArray(statsIpv6MatchArbitraryBitMask.getIpv6SourceArbitraryBitmask());
+                    ipv6PrefixSource = createPrefix(statsIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask(), srcByteMask);
+                } else {
+                    ipv6PrefixSource = createPrefix(statsIpv6MatchArbitraryBitMask.getIpv6SourceAddressNoMask());
+                }
+                verdict = MatchComparatorHelper.compareIpv6PrefixNullSafe(ipv6PrefixSource, storedIpv6Match.getIpv6Source());
+            }
+        } else if (statsLayer3Match instanceof Ipv6MatchArbitraryBitMask && storedLayer3Match instanceof Ipv6Match) {
+            // Here stored netmask is an instance of Ipv6MatchArbitraryBitMask, when it is pushed in to switch
+            // it automatically converts it in to cidr format in case of certain subnet masks ( consecutive ones or zeroes)
+            // Eg:- stats src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/124
+            // stored src/dest -> 2001:2001:2001:2001:2001:2001:2001:2001/FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFF0
+            final Ipv6Match statsIpv6Match = (Ipv6Match) storedLayer3Match;
+            final Ipv6MatchArbitraryBitMask storedIpv6MatchArbitraryBitMask = (Ipv6MatchArbitraryBitMask) statsLayer3Match;
             if (storedIpv6MatchArbitraryBitMask.getIpv6DestinationAddressNoMask() != null) {
                 Ipv6Prefix ipv6PrefixDestination;
                 if (storedIpv6MatchArbitraryBitMask.getIpv6DestinationArbitraryBitmask() != null) {
