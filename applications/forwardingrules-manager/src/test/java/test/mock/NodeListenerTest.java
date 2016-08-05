@@ -9,9 +9,15 @@ package test.mock;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -19,40 +25,43 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import test.mock.util.EntityOwnershipServiceMock;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 
+@RunWith(MockitoJUnitRunner.class)
 public class NodeListenerTest extends FRMTest {
-
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private final static NodeKey s1Key = new NodeKey(new NodeId("testnode:1"));
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    EntityOwnershipService eos = new EntityOwnershipServiceMock();
+    @Mock
+    ClusterSingletonServiceProvider clusterSingletonService;
 
-    NodeKey s1Key = new NodeKey(new NodeId("S1"));
-
-    @Test
-    public void addRemoveNodeTest() throws Exception {
-        try (ForwardingRulesManagerImpl forwardingRulesManager = new ForwardingRulesManagerImpl(
+    @Before
+    public void setUp() {
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                eos)) {
-            forwardingRulesManager.start();
-
-            addFlowCapableNode(s1Key);
-
-            InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
-                    .augmentation(FlowCapableNode.class);
-
-            boolean nodeActive = forwardingRulesManager.isNodeActive(nodeII);
-            assertTrue(nodeActive);
-
-            removeNode(s1Key);
-
-            nodeActive = forwardingRulesManager.isNodeActive(nodeII);
-            assertFalse(nodeActive);
-        }
+                clusterSingletonService);
+        forwardingRulesManager.start();
     }
 
+    @Test
+    public void addRemoveNodeTest() throws Exception {
+        addFlowCapableNode(s1Key);
+
+        InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+                .augmentation(FlowCapableNode.class);
+        boolean nodeActive = forwardingRulesManager.isNodeActive(nodeII);
+        assertTrue(nodeActive);
+        removeNode(s1Key);
+        nodeActive = forwardingRulesManager.isNodeActive(nodeII);
+        assertFalse(nodeActive);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        forwardingRulesManager.close();
+    }
 
 }
