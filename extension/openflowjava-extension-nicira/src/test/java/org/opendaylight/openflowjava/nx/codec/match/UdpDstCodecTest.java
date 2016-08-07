@@ -47,9 +47,10 @@ public class UdpDstCodecTest {
         assertEquals(OxmMatchConstants.NXM_0_CLASS, buffer.readUnsignedShort());
         short fieldMask = buffer.readUnsignedByte();
         assertEquals(NXM_FIELD_CODE, fieldMask >> 1);
-        assertEquals(0, fieldMask & 1);
+        assertEquals(1, fieldMask & 1);
         assertEquals(VALUE_LENGTH, buffer.readUnsignedByte());
         assertEquals(1, buffer.readUnsignedShort());
+        assertEquals(0xffff, buffer.readUnsignedShort());
     }
 
     @Test
@@ -62,8 +63,9 @@ public class UdpDstCodecTest {
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfUdpDst.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(true, input.isHasMask());
         assertEquals(1, result.getUdpDstValues().getPort().getValue().shortValue());
+        assertEquals(0xffff, result.getUdpDstValues().getMask().shortValue() & 0xffff);
     }
 
 
@@ -74,9 +76,10 @@ public class UdpDstCodecTest {
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfUdpDst.class);
-        matchEntryBuilder.setHasMask(false);
+        matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(1));
+        valuesBuilder.setMask(0xffff);
 
         caseBuilder.setUdpDstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
@@ -89,8 +92,8 @@ public class UdpDstCodecTest {
         int fieldMask = (NXM_FIELD_CODE << 1);
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
-        byte[] value = new byte[VALUE_LENGTH];
         //Port num = 1
         message.writeShort(1);
+        message.writeShort(0xffff);
     }
 }
