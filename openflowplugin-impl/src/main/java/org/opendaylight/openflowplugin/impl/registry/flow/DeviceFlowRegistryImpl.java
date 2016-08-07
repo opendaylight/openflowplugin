@@ -148,7 +148,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         LOG.trace("Retrieving flowDescriptor for flow hash: {}", flowRegistryKey.hashCode());
         FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
         if(flowDescriptor == null){
-            LOG.info("Triggered the loop");
+            LOG.trace("Triggered the loop");
             for(Map.Entry<FlowRegistryKey, FlowDescriptor> fd : flowRegistry.entrySet()) {
                 if (fd.getKey().equals(flowRegistryKey)) {
                     flowDescriptor = fd.getValue();
