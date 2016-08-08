@@ -63,25 +63,33 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
 
         openflowPluginProvider.initialize();
 
-        LOG.info("Configured values, " +
-                "StatisticsPollingOff:{}, " +
+        LOG.info("Configured values -> " +
+                "RpcRequestsQuota:{}, " +
                 "SwitchFeaturesMandatory:{}, " +
+                "GlobalNotificationQuota:{}, " +
+                "StatisticsPollingOff:{}, " +
+                "StatisticsRpcEnabled:{}, " +
+                "BarrierIntervalTimeoutLimit:{}, " +
                 "BarrierCountLimit:{}, " +
-                "BarrierTimeoutLimit:{}, " +
                 "EchoReplyTimeout:{}, " +
                 "ThreadPoolMinThreads:{}, " +
                 "ThreadPoolMaxThreads:{}, " +
                 "ThreadPoolTimeout:{}, " +
-                "NotificationFlowRemovedOff:{}",
-                providerConfig.isIsStatisticsPollingOff(),
+                "NotificationFlowRemovedOff:{}, " +
+                "SkipTableFeatures:{}",
+                providerConfig.getRpcRequestsQuota(),
                 providerConfig.isSwitchFeaturesMandatory(),
-                providerConfig.getBarrierCountLimit().getValue(),
+                providerConfig.getGlobalNotificationQuota(),
+                providerConfig.isIsStatisticsPollingOff(),
+                providerConfig.isIsStatisticsRpcEnabled(),
                 providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
+                providerConfig.getBarrierCountLimit().getValue(),
                 providerConfig.getEchoReplyTimeout().getValue(),
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout(),
-                providerConfig.isNotificationFlowRemovedOff());
+                providerConfig.isNotificationFlowRemovedOff(),
+                providerConfig.isSkipTableFeatures());
 
         return openflowPluginProvider;
     }
