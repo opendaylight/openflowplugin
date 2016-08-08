@@ -63,35 +63,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             final ListenableFuture<Boolean> endResult =
                     delegate.syncup(flowcapableNodePath, syncupEntry);
 
-            Futures.addCallback(endResult, new FutureCallback<Boolean>() {
-                @Override
-                public void onSuccess(@Nullable final Boolean result) {
-                    if (LOG.isDebugEnabled()) {
-                        final long stampFinished = System.nanoTime();
-                        LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
-                                formatNanos(stampFinished - stampBeforeGuard),
-                                formatNanos(stampFinished - stampAfterGuard),
-                                formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard.availablePermits(), threadName());
-                    }
-
-                    releaseGuardForNodeId(guard);
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    if (LOG.isDebugEnabled()) {
-                        final long stampFinished = System.nanoTime();
-                        LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
-                                formatNanos(stampFinished - stampBeforeGuard),
-                                formatNanos(stampFinished - stampAfterGuard),
-                                formatNanos(stampAfterGuard - stampBeforeGuard),
-                                guard.availablePermits(), threadName());
-                    }
-
-                    releaseGuardForNodeId(guard);
-                }
-            });
+            Futures.addCallback(endResult, createSyncupCallback(guard, stampBeforeGuard, stampAfterGuard, nodeId);
             return endResult;
         } catch (InterruptedException e) {
             releaseGuardForNodeId(guard);
@@ -99,7 +71,34 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         }
     }
 
-    private String formatNanos(long nanos) {
+    private static FutureCallback<Boolean> createSyncupCallback(final Semaphore guard,
+                                                                final long stampBeforeGuard,
+                                                                final long stampAfterGuard,
+                                                                final NodeId nodeId) {
+        return new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(@Nullable final Boolean result) {
+                if (LOG.isDebugEnabled()) {
+                    final long stampFinished = System.nanoTime();
+                    LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                            formatNanos(stampFinished - stampBeforeGuard), formatNanos(stampFinished - stampAfterGuard),
+                            formatNanos(stampAfterGuard - stampBeforeGuard), guard.availablePermits(), threadName());
+                }
+                releaseGuardForNodeId(guard);
+            }
+            @Override
+            public void onFailure(final Throwable t) {
+                if (LOG.isDebugEnabled()) {
+                    final long stampFinished = System.nanoTime();
+                    LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                            formatNanos(stampFinished - stampBeforeGuard), formatNanos(stampFinished - stampAfterGuard),
+                            formatNanos(stampAfterGuard - stampBeforeGuard), guard.availablePermits(), threadName());
+                }
+                releaseGuardForNodeId(guard);
+            }};
+    }
+
+    private static String formatNanos(long nanos) {
         return "'" + TimeUnit.NANOSECONDS.toMillis(nanos) + " ms'";
     }
 
@@ -126,7 +125,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * Unlock and release guard.
      * @param guard semaphore guard which should be unlocked
      */
-    private void releaseGuardForNodeId(final Semaphore guard) {
+    private static void releaseGuardForNodeId(final Semaphore guard) {
         if (guard != null) {
             guard.release();
             LOG.trace("syncup release guard:{} thread:{}", guard, threadName());
