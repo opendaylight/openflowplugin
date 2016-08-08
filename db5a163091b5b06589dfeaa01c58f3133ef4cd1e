@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_e49edf55",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/role/RoleManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T17:43:15Z",
+      "side": 1,
+      "message": "Isn\u0027t it handy to be notified on Role Change ??",
+      "revId": "db5a163091b5b06589dfeaa01c58f3133ef4cd1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_04b15be1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T17:43:15Z",
+      "side": 1,
+      "message": "On Exception, should we just remove the Device from OperDB or attempt some retries ??",
+      "revId": "db5a163091b5b06589dfeaa01c58f3133ef4cd1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
