@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to config changes and delegates add/remove/update/barrier to {@link SyncReactor}.
+ * Listens to config changes and delegates sync entry to {@link SyncReactor}.
  */
 public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedConfigListener.class);
@@ -49,8 +49,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     /**
-     * Compare cached operational with current config modification. If operational is not present
-     * skip calling Inventory RPCs.
+     * Update cache. If operational data are present, choose appropriate data and start syncup.
+     * Otherwise skip incoming change.
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
@@ -82,14 +82,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     /**
-     * Add only what is missing in operational store. Config. node could be added in two situations:
-     * <ul>
-     * <li>Note very first time after restart was handled by operational listener. Syncup should
-     * calculate no delta (we don want to reconfigure switch if not necessary).</li>
-     * <li>But later the config. node could be deleted, after that config node added again. Syncup
-     * should calculate that everything needs to be added. Operational store should be empty in
-     * optimal case (but the switch could be reprogrammed by another person/system.</li>
-     * </ul>
+     * Add only what is missing on device. If node was added to config DS and it is already present
+     * in operational DS (connected) diff between current new configuration and actual configuration
+     * (seen in operational) should be calculated and sent to device.
      */
     private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                   final FlowCapableNode dataAfter,
@@ -102,7 +97,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
     /**
      * Apply minimal changes very fast. For better performance needed just compare config
-     * after+before. Config listener should not be dependent on operational flows/groups while
+     * after+before. Config listener should not be dependent on operational flows/groups/meters while
      * updating config because operational store is highly async and it depends on another module in
      * system which is updating operational store (that components is also trying to solve
      * scale/performance issues on several layers).
@@ -117,9 +112,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     /**
-     * Remove values that are being deleted in the config from the switch. Note, this could be
-     * probably optimized using dedicated wipe-out RPC, but it has impact on switch if it is
-     * programmed by two person/system
+     * Remove values that are being deleted in the config from the switch.
+     * Note, this could be probably optimized using dedicated wipe-out RPC.
      */
     private ListenableFuture<Boolean> onNodeDeleted(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore) throws InterruptedException {
