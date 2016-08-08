@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
-        odl:use-default-for-reference-types="true">
+           odl:use-default-for-reference-types="true">
 
   <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
   <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
@@ -55,7 +55,8 @@
   <!-- Create OpenflowPluginProvider instance -->
 
   <odl:clustered-app-config id="openflowProviderConfig"
-      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"
+      default-config-file-name="openflow-provider-config.xml"/>
 
   <reference id="openflowPluginProviderFactory"
           interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
