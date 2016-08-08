@@ -168,6 +168,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>features-dlux</artifactId>
             <version>${dlux.version}</version>
