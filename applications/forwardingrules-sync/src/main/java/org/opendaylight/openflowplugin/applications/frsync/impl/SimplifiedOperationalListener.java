@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to operational new nodes and delegates add/remove/update/barrier to {@link SyncReactor}.
+ * Listens to operational changes and starts reconciliation through {@link SyncReactor} when necessary.
  */
 public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
@@ -71,13 +71,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     /**
-     * This method behaves like this:
-     * <ul>
-     * <li>If node is added to operational store then reconciliation.</li>
-     * <li>Node is deleted from operational cache is removed.</li>
-     * <li>Skip this event otherwise.</li>
-     * </ul>
-     *
+     * Update cache, register for device masterhip when device connected and start reconciliation if device
+     * is registered and actual modification is consistent.Skip the event otherwise.
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
@@ -89,7 +84,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             deviceMastershipManager.onDeviceConnected(nodeId);
         }
 
-        if (isRegisteredAndConsistentForReconcile(modification)) {
+        if (reconciliationRegistry.isRegistered(nodeId) && isConsistentForReconcile(modification)) {
             return reconciliation(modification);
         } else {
             return skipModification(modification);
@@ -98,7 +93,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
 
     /**
      * Remove if delete. Update only if FlowCapableNode Augmentation modified.
-     *
+     * Unregister for device mastership.
      * @param modification Datastore modification
      */
     private void updateCache(DataTreeModification<Node> modification) {
@@ -169,6 +164,13 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return false;
     }
 
+    /**
+     * If node is present in config DS diff between wanted configuration (in config DS) and actual device
+     * configuration (coming from operational) should be calculated and sent to device.
+     * @param modification from DS
+     * @return optional syncup future
+     * @throws InterruptedException from syncup
+     */
     private Optional<ListenableFuture<Boolean>> reconciliation(DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
@@ -188,13 +190,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
     }
 
-    private boolean isRegisteredAndConsistentForReconcile(DataTreeModification<Node> modification) {
+    private boolean isConsistentForReconcile(DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
-
-        if (!reconciliationRegistry.isRegistered(nodeId)) {
-            return false;
-        }
-
         final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().getDataAfter()
                 .getAugmentation(FlowCapableStatisticsGatheringStatus.class);
 
@@ -234,9 +231,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         if (node == null) {
             return true;
         }
-
         final List<NodeConnector> nodeConnectors = node.getNodeConnector();
-
         return nodeConnectors == null || nodeConnectors.isEmpty();
     }
 

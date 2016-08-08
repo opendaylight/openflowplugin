@@ -71,4 +71,14 @@ public class SyncupEntry {
         return dsTypeBefore == that.dsTypeBefore;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = after != null ? after.hashCode() : 0;
+        result = prime * result + (dsTypeAfter != null ? dsTypeAfter.hashCode() : 0);
+        result = prime * result + (before != null ? before.hashCode() : 0);
+        result = prime * result + (dsTypeBefore != null ? dsTypeBefore.hashCode() : 0);
+        return result;
+    }
+
 }

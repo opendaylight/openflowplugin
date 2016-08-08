@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,4 +72,10 @@ public class ForwardingRulesSyncProviderTest {
                 Matchers.<DataTreeIdentifier<FlowCapableNode>>any(),
                 Matchers.<DataTreeChangeListener<FlowCapableNode>>any());
     }
+
+    @After
+    public void tearDown() throws InterruptedException {
+        provider.close();
+    }
+
 }
