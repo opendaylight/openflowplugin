@@ -33,6 +33,57 @@
       "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d41718a2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T09:28:59Z",
+      "side": 1,
+      "message": "All nodes in the Cluster will try this at the same time during a Cluster Reboot scenario. Can this be optimized by leveraging the EOS, so that, only specific Controller Instance will request for the MASTER Role for a given Device.",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_141230b1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T09:28:59Z",
+      "side": 1,
+      "message": "Same logic here as well, so that, only if the Controller Instance had the previous state as MASTER, then only change this to SLAVE.",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_54230805",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T09:28:59Z",
+      "side": 1,
+      "message": "Maybe a comment can be added here, highlighting the reason why the Role is getting changed to Slave here.",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
