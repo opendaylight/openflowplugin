@@ -27,6 +27,10 @@ public class FxChainUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(FxChainUtil.class);
 
+    private FxChainUtil() {
+        throw new IllegalStateException("This class should not be instantiated.");
+    }
+
 
     public static FutureCallback<RpcResult<Void>> logResultCallback(final NodeId nodeId, final String prefix) {
         return new FutureCallback<RpcResult<Void>>() {
