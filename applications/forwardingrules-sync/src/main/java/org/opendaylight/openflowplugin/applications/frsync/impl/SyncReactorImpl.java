@@ -107,30 +107,20 @@ public class SyncReactorImpl implements SyncReactor {
                 if (input == null) {
                     return false;
                 }
-
                 if (LOG.isDebugEnabled()) {
                     final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, meter={}/{}/{}, group={}/{}/{}, took={} ms",
+                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, meter={}/{}/{}, took={} ms",
                             nodeId.getValue(),
-                            flowCrudCounts.getAdded(),
-                            flowCrudCounts.getUpdated(),
-                            flowCrudCounts.getRemoved(),
-                            meterCrudCounts.getAdded(),
-                            meterCrudCounts.getUpdated(),
-                            meterCrudCounts.getRemoved(),
-                            groupCrudCounts.getAdded(),
-                            groupCrudCounts.getUpdated(),
-                            groupCrudCounts.getRemoved(),
-                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano())
-                    );
+                            flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),
+                            groupCrudCounts.getAdded(), groupCrudCounts.getUpdated(), groupCrudCounts.getRemoved(),
+                            meterCrudCounts.getAdded(), meterCrudCounts.getUpdated(), meterCrudCounts.getRemoved(),
+                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano()));
                 }
-
                 LOG.trace("syncup errors: {}", input.getErrors());
                 return input.isSuccessful();
-            }
-        });
+            }});
     }
 
     @VisibleForTesting
