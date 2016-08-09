@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+/**
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,13 +10,15 @@ package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -47,13 +49,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * Created by Martin Bobak mbobak@cisco.com on 8/27/14.
- */
-public class LLDPPacketPuntEnforcer implements DataChangeListener {
+public class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChangeListener<FlowCapableNode> {
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final short TABLE_ID = (short) 0;
@@ -61,7 +59,7 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
     private static final String DEFAULT_FLOW_ID = "42";
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
 
     public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker) {
         this.flowService = flowService;
@@ -71,14 +69,13 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
     public void start() {
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class).
                 augmentation(FlowCapableNode.class);
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, path);
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataChangeListener>>() {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
-                public ListenerRegistration<DataChangeListener> call() throws Exception {
-                    return dataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL,
-                            path, LLDPPacketPuntEnforcer.this, AsyncDataBroker.DataChangeScope.BASE);
+                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                    return dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this);
                 }
             });
         } catch (Exception e) {
@@ -86,27 +83,25 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
         }
     }
 
+    @Override
     public void close() {
-        if(dataChangeListenerRegistration != null) {
-            dataChangeListenerRegistration.close();
+        if(listenerRegistration != null) {
+            listenerRegistration.close();
         }
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        final Set<InstanceIdentifier<?>> changedDataKeys = change.getCreatedData().keySet();
-
-        if (changedDataKeys != null) {
-            for (InstanceIdentifier<?> key : changedDataKeys) {
+    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+        for (DataTreeModification modification : modifications) {
+            if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
-                addFlowInput.setNode(new NodeRef(key.firstIdentifierOf(Node.class)));
+                addFlowInput.setNode(new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
                 this.flowService.addFlow(addFlowInput.build());
             }
         }
     }
 
-
-    protected Flow createFlow() {
+    static Flow createFlow() {
         FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setMatch(new MatchBuilder().build());
         flowBuilder.setInstructions(createSendToControllerInstructions().build());
@@ -116,7 +111,6 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
         flowBuilder.setBarrier(Boolean.FALSE);
         flowBuilder.setBufferId(OFConstants.OFP_NO_BUFFER);
         BigInteger value = BigInteger.valueOf(10L);
-        // BigInteger outputPort = BigInteger.valueOf(65535L);
         flowBuilder.setCookie(new FlowCookie(value));
         flowBuilder.setCookieMask(new FlowCookie(value));
         flowBuilder.setHardTimeout(0);
@@ -134,7 +128,7 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
     }
 
     private static InstructionsBuilder createSendToControllerInstructions() {
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
@@ -157,7 +151,7 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
