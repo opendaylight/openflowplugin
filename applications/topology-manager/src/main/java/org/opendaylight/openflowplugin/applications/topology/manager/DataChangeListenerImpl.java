@@ -9,9 +9,8 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -27,12 +26,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataChangeListenerImpl implements DataChangeListener, AutoCloseable {
+public abstract class DataChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataChangeListenerImpl.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    protected final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    protected final ListenerRegistration<DataTreeChangeListener> dataChangeListenerRegistration;
     protected OperationProcessor operationProcessor;
 
     /**
@@ -40,24 +39,18 @@ public abstract class DataChangeListenerImpl implements DataChangeListener, Auto
      */
     protected static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
             InstanceIdentifier
-            .builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)))
-            .build();
+            .create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
 
-
-    /**
-     *
-     */
     public DataChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
-            final InstanceIdentifier<?> ii) {
-        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+            final InstanceIdentifier<T> ii) {
+        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+        final DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
         try {
-            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataChangeListener>>() {
+            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
-                public ListenerRegistration<DataChangeListener> call() throws Exception {
-                    return dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, ii,
-                            DataChangeListenerImpl.this, AsyncDataBroker.DataChangeScope.BASE);
-
+                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                    return dataBroker.registerDataTreeChangeListener(identifier, DataChangeListenerImpl.this);
                 }
             });
         } catch (Exception e) {
@@ -76,13 +69,7 @@ public abstract class DataChangeListenerImpl implements DataChangeListener, Auto
 
     protected <T extends DataObject> void sendToTransactionChain(final T node,
             final InstanceIdentifier<T> iiToTopologyNode) {
-        operationProcessor.enqueueOperation(new TopologyOperation() {
-
-            @Override
-            public void applyOperation(ReadWriteTransaction transaction) {
-                transaction.merge(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true);
-            }
-        });
+        operationProcessor.enqueueOperation(transaction -> transaction.merge(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true));
     }
 
     protected InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> provideIIToTopologyNode(
