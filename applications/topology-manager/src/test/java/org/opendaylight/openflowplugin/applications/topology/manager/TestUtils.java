@@ -66,28 +66,24 @@ public class TestUtils {
         }
     }
 
-    static void setReadFutureAsync(final Topology topology,
-            final SettableFuture<Optional<Topology>> readFuture) {
+    static void setReadFutureAsync(final Topology topology, final SettableFuture<Optional<Topology>> readFuture) {
         new Thread() {
             @Override
             public void run() {
-                Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+                Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
                 readFuture.set(Optional.of(topology));
             }
-
         }.start();
     }
 
     static void waitForSubmit(CountDownLatch latch) {
-        assertEquals("Transaction submitted", true,
-                Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS));
+        assertEquals("Transaction submitted", true, Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS));
     }
 
     static void waitForDeletes(int expDeleteCalls, final CountDownLatch latch) {
         boolean done = Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS);
         if(!done) {
-            fail("Expected " + expDeleteCalls + " delete calls. Actual: " +
-                    (expDeleteCalls - latch.getCount()));
+            fail("Expected " + expDeleteCalls + " delete calls. Actual: " + (expDeleteCalls - latch.getCount()));
         }
     }
 
@@ -95,8 +91,7 @@ public class TestUtils {
         final CountDownLatch latch = new CountDownLatch(1);
         doAnswer(new Answer<CheckedFuture<Void, TransactionCommitFailedException>>() {
             @Override
-            public CheckedFuture<Void, TransactionCommitFailedException> answer(
-                                                            InvocationOnMock invocation) {
+            public CheckedFuture<Void, TransactionCommitFailedException> answer(InvocationOnMock invocation) {
                 latch.countDown();
                 return Futures.immediateCheckedFuture(null);
             }
@@ -106,8 +101,8 @@ public class TestUtils {
     }
 
     @SuppressWarnings("rawtypes")
-    static void setupStubbedDeletes(ReadWriteTransaction mockTx,
-            ArgumentCaptor<InstanceIdentifier> deletedLinkIDs, final CountDownLatch latch) {
+    static void setupStubbedDeletes(ReadWriteTransaction mockTx, ArgumentCaptor<InstanceIdentifier> deletedLinkIDs,
+                                    final CountDownLatch latch) {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {

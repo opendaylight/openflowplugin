@@ -9,10 +9,9 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.After;
@@ -21,7 +20,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
@@ -34,10 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * @author joe
- *
- */
 public abstract class DataChangeListenerBase {
 
     @Mock
@@ -45,9 +44,6 @@ public abstract class DataChangeListenerBase {
 
     @Mock
     protected BindingTransactionChain mockTxChain;
-
-    @Mock
-    protected AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> mockedDataChangeListener;
 
     private OperationProcessor processor;
 
@@ -81,16 +77,22 @@ public abstract class DataChangeListenerBase {
         executor.shutdownNow();
     }
 
-    protected void mockDataChangeListener(Map<InstanceIdentifier<?>,DataObject> createdData, Map<InstanceIdentifier<?>, DataObject> updatedData, Set<?> removedPaths) {
-        doReturn(createdData == null ? Collections.emptyMap() : createdData).when(mockedDataChangeListener).getCreatedData();
-        doReturn(updatedData == null ? Collections.emptyMap() : updatedData).when(mockedDataChangeListener).getUpdatedData();
-        doReturn(removedPaths == null ? Collections.emptySet() : removedPaths).when(mockedDataChangeListener).getRemovedPaths();
-    }
-
     protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown, final boolean isPortDown) {
         FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         builder.setState(new StateBuilder().setLinkDown(isLinkDown).build());
         builder.setConfiguration(new PortConfig(true, true, true, isPortDown));
         return builder.build();
     }
+
+    protected <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
+                                                                              final InstanceIdentifier<T> ii) {
+        final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
+        final DataTreeIdentifier identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
+        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
+        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(type);
+        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
+        return dataTreeModification;
+    }
+
 }
