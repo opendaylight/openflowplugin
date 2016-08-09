@@ -8,68 +8,71 @@
 
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link DefaultConfigPusher}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultConfigPusherTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultConfigPusherTest.class);
-
-    @Mock
-    private NodeConfigService mockNodeConfigService;
-    @Mock
-    private AsyncDataChangeEvent mockAsyncDataChangeEvent;
-    @Mock
-    private DataBroker mockDataBroker;
-
     private DefaultConfigPusher defaultConfigPusher;
+    private final static InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("testnode:1")));
+    @Mock
+    private NodeConfigService nodeConfigService;
+    @Mock
+    private DataTreeModification<FlowCapableNode> dataTreeModification;
+    @Captor
+    private ArgumentCaptor<SetConfigInput> setConfigInputCaptor;
 
     @Before
     public void setUp() throws Exception {
-        defaultConfigPusher = new DefaultConfigPusher(mockNodeConfigService, mockDataBroker);
+        defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class));
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeIID);
+        Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
+        Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
     }
 
     @Test
     public void testOnDataChanged() throws Exception {
-        final InstanceIdentifier<Node> nodeIID = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("1")))
-                .build();
+        defaultConfigPusher.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        Mockito.verify(nodeConfigService).setConfig(setConfigInputCaptor.capture());
+        final SetConfigInput captured = setConfigInputCaptor.getValue();
+        Assert.assertEquals(SwitchConfigFlag.FRAGNORMAL.toString(), captured.getFlag());
+        Assert.assertEquals(OFConstants.OFPCML_NO_BUFFER, captured.getMissSearchLength());
+        Assert.assertEquals(nodeIID, captured.getNode().getValue());
+    }
 
-        AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder()
-                .setFlowName("flow:1");
-
-        Map<InstanceIdentifier<?>,DataObject> created = new HashMap<>();
-        created.put(nodeIID, addFlowInputBuilder.build());
-
-        when(mockAsyncDataChangeEvent.getCreatedData()).thenReturn(created);
-        defaultConfigPusher.onDataChanged(mockAsyncDataChangeEvent);
-        verify(mockNodeConfigService).setConfig(Matchers.<SetConfigInput>any());
+    @After
+    public void tearDown() {
+        defaultConfigPusher.close();
     }
 
 }
