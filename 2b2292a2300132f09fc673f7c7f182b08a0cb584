@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_087a0988",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T12:47:18Z",
+      "side": 1,
+      "message": "Yes agree, but it is not belongs to this patch sets :)",
+      "parentUuid": "7a6b29fe_74544454",
+      "revId": "2b2292a2300132f09fc673f7c7f182b08a0cb584",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_54514861",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
         "patchSetId": 14
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_687d7d6e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T12:47:18Z",
+      "side": 1,
+      "message": "What is your thought ? Remove it from here or remove it at all ?",
+      "parentUuid": "7a6b29fe_54514861",
+      "revId": "2b2292a2300132f09fc673f7c7f182b08a0cb584",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_f4c7b410",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 14
@@ -47,6 +83,24 @@
       "writtenOn": "2016-08-08T09:49:50Z",
       "side": 1,
       "message": "Will be handy to not hard-code these values and also make them configurable.",
+      "revId": "2b2292a2300132f09fc673f7c7f182b08a0cb584",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_08efa91f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T12:47:18Z",
+      "side": 1,
+      "message": "Agree, another bug/improvement :)",
+      "parentUuid": "7a6b29fe_f4c7b410",
       "revId": "2b2292a2300132f09fc673f7c7f182b08a0cb584",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
