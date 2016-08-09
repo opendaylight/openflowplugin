@@ -22,6 +22,30 @@
       "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2e4eed6f",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-09T16:42:06Z",
+      "side": 0,
+      "message": "yes, because I want to override methods of it (deserializeHeader). I had to do this because I needed to take the message length from the header bytes, that are skipped in this abstract class.\n\nBTW I didn\u0027t understand why was it static in the beginning if every codec extends it.",
+      "parentUuid": "7a6b29fe_4beebb89",
+      "range": {
+        "startLine": 24,
+        "startChar": 48,
+        "endLine": 24,
+        "endChar": 54
+      },
+      "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
