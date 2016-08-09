@@ -48,10 +48,10 @@ public class AbstractActionCodecTest {
 
     @Test
     public void deserializeHeaderTest() {
-        ConntrackCodec cc = new ConntrackCodec();
+        TestsCodecStub codecStub = new TestsCodecStub();
         buffer.writeBytes(bytes);
         int readerIndex = buffer.readerIndex();
-        ActionBuilder actionBuilder = cc.deserializeHeader(buffer);
+        ActionBuilder actionBuilder = codecStub.deserializeHeader(buffer);
         assertNotNull(actionBuilder);
         assertEquals(NiciraConstants.NX_VENDOR_ID, actionBuilder.getExperimenterId().getValue());
         assertTrue(buffer.readerIndex() - readerIndex == 10);

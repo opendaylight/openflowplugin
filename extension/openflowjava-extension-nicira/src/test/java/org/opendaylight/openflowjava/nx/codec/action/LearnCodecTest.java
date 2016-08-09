@@ -1,11 +1,10 @@
-/**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2016 Hewlett-Packard Enterprise and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import java.math.BigInteger;
@@ -82,7 +81,7 @@ public class LearnCodecTest {
         Assert.assertEquals(8, buffer.readUnsignedShort());
         assertFlowMods();
     }
-    
+
     @Test
     public void deserializeTest() {
         createBufer(buffer);
@@ -96,11 +95,11 @@ public class LearnCodecTest {
     }
 
     private void assertFlowMods() {
-        short header = buffer.readShort(); 
+        short header = buffer.readShort();
         short src = (short) ((header & SRC_MASK) >> 13);
         short dst = (short) ((header & DST_MASK) >> 11);
         short len = (short) (header & NUM_BITS_MASK);
-        
+
         Assert.assertEquals(0, src);
         Assert.assertEquals(0, dst);
         Assert.assertEquals(48, len);
@@ -127,7 +126,7 @@ public class LearnCodecTest {
         Assert.assertEquals(0, buffer.readableBytes());
     }
 
-    
+
 
     private Action createAction() {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
@@ -152,9 +151,9 @@ public class LearnCodecTest {
     }
 
     private List<FlowMods> createFlowMods() {
-        
+
         List<FlowMods> flowMods = new ArrayList<FlowMods>();
-        //length = 14 
+        //length = 14
         FlowModsBuilder flowMod = new FlowModsBuilder();
         FlowModAddMatchFromFieldBuilder spec = new FlowModAddMatchFromFieldBuilder();
         spec.setFlowModNumBits(48);
@@ -166,7 +165,7 @@ public class LearnCodecTest {
         caseBuilder.setFlowModAddMatchFromField(spec.build());
         flowMod.setFlowModSpec(caseBuilder.build());
         flowMods.add(flowMod.build());
-        
+
         //length = 14
         FlowModsBuilder flowMod2 = new FlowModsBuilder();
         FlowModCopyFieldIntoFieldBuilder spec2 = new FlowModCopyFieldIntoFieldBuilder();
@@ -179,7 +178,7 @@ public class LearnCodecTest {
         caseBuilder2.setFlowModCopyFieldIntoField(spec2.build());
         flowMod2.setFlowModSpec(caseBuilder2.build());
         flowMods.add(flowMod2.build());
-        
+
         //length = 10
         FlowModsBuilder flowMod3 = new FlowModsBuilder();
         FlowModCopyValueIntoFieldBuilder spec3 = new FlowModCopyValueIntoFieldBuilder();
@@ -191,7 +190,7 @@ public class LearnCodecTest {
         caseBuilder3.setFlowModCopyValueIntoField(spec3.build());
         flowMod3.setFlowModSpec(caseBuilder3.build());
         flowMods.add(flowMod3.build());
-        
+
         //length = 10
         FlowModsBuilder flowMod4 = new FlowModsBuilder();
         FlowModAddMatchFromValueBuilder spec4 = new FlowModAddMatchFromValueBuilder();
@@ -203,7 +202,7 @@ public class LearnCodecTest {
         caseBuilder4.setFlowModAddMatchFromValue(spec4.build());
         flowMod4.setFlowModSpec(caseBuilder4.build());
         flowMods.add(flowMod4.build());
-        
+
         //length = 8
         FlowModsBuilder flowMod5 = new FlowModsBuilder();
         FlowModOutputToPortBuilder spec5 = new FlowModOutputToPortBuilder();
@@ -214,7 +213,7 @@ public class LearnCodecTest {
         caseBuilder5.setFlowModOutputToPort(spec5.build());
         flowMod5.setFlowModSpec(caseBuilder5.build());
         flowMods.add(flowMod5.build());
-        
+
         return flowMods;
     }
 
@@ -223,7 +222,7 @@ public class LearnCodecTest {
         message.writeShort(LEARN_HEADER_LEN + 56);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(NXAST_LEARN_SUBTYPE);
-        
+
         message.writeShort(1);
         message.writeShort(2);
         message.writeShort(3);
@@ -233,41 +232,41 @@ public class LearnCodecTest {
         message.writeZero(1);
         message.writeShort(7);
         message.writeShort(8);
-        
+
         toFlowModSpecHeader(message, 0, 0);
         message.writeInt(9);
         message.writeShort(10);
         message.writeInt(11);
         message.writeShort(12);
-        
+
         toFlowModSpecHeader(message, 0, 1);
         message.writeInt(9);
         message.writeShort(10);
         message.writeInt(11);
         message.writeShort(12);
-        
+
         toFlowModSpecHeader(message, 1, 1);
         message.writeShort(9);
         message.writeInt(10);
         message.writeShort(11);
-        
+
         toFlowModSpecHeader(message, 1, 0);
         message.writeShort(9);
         message.writeInt(10);
         message.writeShort(11);
-        
+
         toFlowModSpecHeader(message, 0, 2);
         message.writeInt(9);
         message.writeShort(10);
     }
-    
+
     private void toFlowModSpecHeader(ByteBuf message, int src, int dst) {
         short b = 0;
         short bitNum = 48;
         b |= (src << 13);
         b |= (dst << 11);
         b |= bitNum;
-        
+
         message.writeShort(b);
     }
 }

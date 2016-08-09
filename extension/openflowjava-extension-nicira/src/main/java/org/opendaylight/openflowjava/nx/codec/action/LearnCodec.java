@@ -45,12 +45,12 @@ public class LearnCodec extends AbstractActionCodec {
 
         LearnCodecUtil.serializeLearnHeader(outBuffer, action);
         LearnCodecUtil.serializeFlowMods(outBuffer, action);
-        
+
         //pad with zeros for the length to be multiplication by 8
         if(lengthMod != 0){
             outBuffer.writeZero(lengthMod);
         }
-        
+
     }
 
     @Override
@@ -60,11 +60,11 @@ public class LearnCodec extends AbstractActionCodec {
 
         NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
         LearnCodecUtil.deserializeLearnHeader(message, nxActionLearnBuilder);
-        
+
         length -= LearnCodecUtil.HEADER_LENGTH;
-        
+
         LearnCodecUtil.buildFlowModSpecs(nxActionLearnBuilder, message, length);
-        
+
         actionLearnBuilder.setNxActionLearn(nxActionLearnBuilder.build());
 
         actionBuilder.setActionChoice(actionLearnBuilder.build());

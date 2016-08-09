@@ -34,7 +34,7 @@ import com.google.common.base.Preconditions;
 public class LearnConvertor implements
         ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
         ConvertorActionFromOFJava<Action, ActionPath> {
-    
+
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
         NxActionLearn action = ((ActionLearn) input.getActionChoice()).getNxActionLearn();

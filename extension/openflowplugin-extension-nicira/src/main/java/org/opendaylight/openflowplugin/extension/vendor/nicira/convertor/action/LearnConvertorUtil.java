@@ -41,9 +41,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 
 public class LearnConvertorUtil {
     
-    ///////////////////////////////////////////////////////////////////////////////////
-    ////                        CONVERT UP                                       //////
-    ///////////////////////////////////////////////////////////////////////////////////
+    /*
+     *                         CONVERT UP
+    */
     
     static void convertUp(NxActionLearn action, NxLearnBuilder builder) {
         builder.setFlags(action.getFlags());
@@ -51,17 +51,17 @@ public class LearnConvertorUtil {
         builder.setFinHardTimeout(action.getFinHardTimeout());
         builder.setFinIdleTimeout(action.getFinIdleTimeout());
         builder.setHardTimeout(action.getHardTimeout());
-        builder.setIdleTimeout(action.getIdleTimeout());   
+        builder.setIdleTimeout(action.getIdleTimeout());
         builder.setPriority(action.getPriority());
         builder.setTableId(action.getTableId());
         builder.setFlowMods(getFlowMods(action));
     }
-    
+
     private static List<FlowMods> getFlowMods(NxActionLearn action) {
         if(action.getFlowMods() == null){
             return null;
         }
-        
+
         List<FlowMods> flowMods = new ArrayList<FlowMods>();
         for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods flowMod : action.getFlowMods()){
             FlowModsBuilder flowModBuilder = new FlowModsBuilder();
@@ -70,7 +70,6 @@ public class LearnConvertorUtil {
             flowMods.add(flowModBuilder.build());
         }
         return flowMods;
-        
     }
 
 
@@ -134,10 +133,10 @@ public class LearnConvertorUtil {
         }
         return null;
     }
-    
-    ///////////////////////////////////////////////////////////////////////////////////
-    ////                        CONVERT DOWN                                     //////
-    ///////////////////////////////////////////////////////////////////////////////////
+
+    /*
+     *                                  CONVERT DOWN
+     */
 
     static void convertDown(NxActionLearnGrouping nxAction, NxActionLearnBuilder nxActionLearnBuilder) {
         nxActionLearnBuilder.setFlags(nxAction.getNxLearn().getFlags());
@@ -145,18 +144,18 @@ public class LearnConvertorUtil {
         nxActionLearnBuilder.setFinHardTimeout(nxAction.getNxLearn().getFinHardTimeout());
         nxActionLearnBuilder.setFinIdleTimeout(nxAction.getNxLearn().getFinIdleTimeout());
         nxActionLearnBuilder.setHardTimeout(nxAction.getNxLearn().getHardTimeout());
-        nxActionLearnBuilder.setIdleTimeout(nxAction.getNxLearn().getIdleTimeout());   
+        nxActionLearnBuilder.setIdleTimeout(nxAction.getNxLearn().getIdleTimeout());
         nxActionLearnBuilder.setPriority(nxAction.getNxLearn().getPriority());
         nxActionLearnBuilder.setTableId(nxAction.getNxLearn().getTableId());
         nxActionLearnBuilder.setFlowMods(getFlowMods(nxAction.getNxLearn()));
     }
-    
+
     private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods> getFlowMods(
             NxLearn nxLearn) {
         if(nxLearn.getFlowMods() == null){
             return null;
         }
-        
+
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods> flowMods = new ArrayList<>();
         for(FlowMods flowMod : nxLearn.getFlowMods()){
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowModsBuilder flowModBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowModsBuilder();
@@ -166,13 +165,10 @@ public class LearnConvertorUtil {
         }
         return flowMods;
     }
-    
-    
-
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.FlowModSpec buildFlowModSpec(FlowModSpec flowModSpec) {
         if(flowModSpec instanceof FlowModAddMatchFromFieldCase){
-            FlowModAddMatchFromField flowModAdd2 = ((FlowModAddMatchFromFieldCase) flowModSpec).getFlowModAddMatchFromField(); 
+            FlowModAddMatchFromField flowModAdd2 = ((FlowModAddMatchFromFieldCase) flowModSpec).getFlowModAddMatchFromField();
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.field._case.FlowModAddMatchFromFieldBuilder 
                 flowModAdd = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.field._case.FlowModAddMatchFromFieldBuilder();
             flowModAdd.setDstField(flowModAdd2.getDstField());
@@ -185,7 +181,7 @@ public class LearnConvertorUtil {
             caseBuilder.setFlowModAddMatchFromField(flowModAdd.build());
             return caseBuilder.build();
         } else if(flowModSpec instanceof FlowModAddMatchFromValueCase){
-            FlowModAddMatchFromValue flowModAdd2 = ((FlowModAddMatchFromValueCase) flowModSpec).getFlowModAddMatchFromValue(); 
+            FlowModAddMatchFromValue flowModAdd2 = ((FlowModAddMatchFromValueCase) flowModSpec).getFlowModAddMatchFromValue();
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.value._case.FlowModAddMatchFromValueBuilder 
                 flowModAdd = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.value._case.FlowModAddMatchFromValueBuilder();
             flowModAdd.setValue(flowModAdd2.getValue());
@@ -197,7 +193,7 @@ public class LearnConvertorUtil {
             caseBuilder.setFlowModAddMatchFromValue(flowModAdd.build());
             return caseBuilder.build();
         } else if(flowModSpec instanceof FlowModCopyFieldIntoFieldCase){
-            FlowModCopyFieldIntoField flowModCopy2 = ((FlowModCopyFieldIntoFieldCase) flowModSpec).getFlowModCopyFieldIntoField(); 
+            FlowModCopyFieldIntoField flowModCopy2 = ((FlowModCopyFieldIntoFieldCase) flowModSpec).getFlowModCopyFieldIntoField();
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.copy.field.into.field._case.FlowModCopyFieldIntoFieldBuilder 
                 flowModCopy = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.copy.field.into.field._case.FlowModCopyFieldIntoFieldBuilder();
             flowModCopy.setDstField(flowModCopy2.getDstField());
@@ -210,7 +206,7 @@ public class LearnConvertorUtil {
             caseBuilder.setFlowModCopyFieldIntoField(flowModCopy.build());
             return caseBuilder.build();
         } else if (flowModSpec instanceof FlowModCopyValueIntoFieldCase) {
-            FlowModCopyValueIntoField flowModCopy2 = ((FlowModCopyValueIntoFieldCase) flowModSpec).getFlowModCopyValueIntoField(); 
+            FlowModCopyValueIntoField flowModCopy2 = ((FlowModCopyValueIntoFieldCase) flowModSpec).getFlowModCopyValueIntoField();
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.copy.value.into.field._case.FlowModCopyValueIntoFieldBuilder 
                 flowModCopy = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.copy.value.into.field._case.FlowModCopyValueIntoFieldBuilder();
             flowModCopy.setDstField(flowModCopy2.getDstField());
@@ -222,7 +218,7 @@ public class LearnConvertorUtil {
             caseBuilder.setFlowModCopyValueIntoField(flowModCopy.build());
             return caseBuilder.build();
         } else if (flowModSpec instanceof FlowModOutputToPortCase) {
-            FlowModOutputToPort flowModOut2 = ((FlowModOutputToPortCase) flowModSpec).getFlowModOutputToPort(); 
+            FlowModOutputToPort flowModOut2 = ((FlowModOutputToPortCase) flowModSpec).getFlowModOutputToPort();
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.output.to.port._case.FlowModOutputToPortBuilder 
                 flowModOut = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.output.to.port._case.FlowModOutputToPortBuilder();
             flowModOut.setSrcField(flowModOut2.getSrcField());
@@ -235,5 +231,5 @@ public class LearnConvertorUtil {
         }
         return null;
     }
-    
+
 }

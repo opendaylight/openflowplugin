@@ -436,7 +436,7 @@ bits specified from the register.";
             }
         }
     }
-    
+
     grouping flow-mod-spec {
         description
            "flow mod spec indicates the actions that should be performed to create a new flow which was learned from learn action.";
@@ -446,19 +446,19 @@ bits specified from the register.";
 	      	  		leaf flow-mod-num-bits{
 	        			type uint16;
 	        		}
-	        		
+
 	        		leaf src-field{
     					type uint32;
     				}
-    	
+
     				leaf src-ofs{
     					type uint16;
     				}
-    	
+
     				leaf dst-field{
     					type uint32;
     				}
-    	
+
     				leaf dst-ofs{
     					type uint16;
     				}
@@ -469,15 +469,15 @@ bits specified from the register.";
 	      	  		leaf flow-mod-num-bits{
 	        			type uint16;
 	        		}
-    	
+
     				leaf value{
     					type uint16;
     				}
-    	
+
     				leaf src-field{
     					type uint32;
     				}
-    	
+
     				leaf src-ofs{
     					type uint16;
     				}
@@ -488,19 +488,19 @@ bits specified from the register.";
 	      	  		leaf flow-mod-num-bits{
 	        			type uint16;
 	        		}
-    	
+
     				leaf src-field{
     					type uint32;
     				}
-    	
+
     				leaf src-ofs{
     					type uint16;
     				}
-    	
+
     				leaf dst-field{
     					type uint32;
     				}
-    	
+
     				leaf dst-ofs{
     					type uint16;
     				}
@@ -511,15 +511,15 @@ bits specified from the register.";
 	      	  		leaf flow-mod-num-bits{
 	        			type uint16;
 	        		}
-    	
+
     				leaf value{
     					type uint16;
     				}
-    	
+
     				leaf dst-field{
     					type uint32;
     				}
-    	
+
     				leaf dst-ofs{
     					type uint16;
     				}
@@ -530,11 +530,11 @@ bits specified from the register.";
 	      	  		leaf flow-mod-num-bits{
 	        			type uint16;
 	        		}
-    	
+
     				leaf src-field{
     					type uint32;
     				}
-    	
+
     				leaf src-ofs{
     					type uint16;
     				}
@@ -542,7 +542,7 @@ bits specified from the register.";
         	}
     	}
     }
-    
+
     grouping nx-action-learn-grouping {
         container nx-learn {
             leaf idle-timeout {
@@ -569,14 +569,14 @@ bits specified from the register.";
             leaf fin-hard-timeout {
                 type uint16;
             }
-            
+
             list flow-mods{
             	uses flow-mod-spec;
             }
         }
     }
-    
-   
+
+
     // ACTION augmentations
     // RPCS
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
