@@ -9,10 +9,9 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.After;
@@ -21,7 +20,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -47,7 +46,7 @@ public abstract class DataChangeListenerBase {
     protected BindingTransactionChain mockTxChain;
 
     @Mock
-    protected AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> mockedDataChangeListener;
+    protected DataTreeModification dataTreeModification;
 
     private OperationProcessor processor;
 
@@ -65,6 +64,7 @@ public abstract class DataChangeListenerBase {
 
         doReturn(mockTxChain).when(mockDataBroker)
                 .createTransactionChain(any(TransactionChainListener.class));
+        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
 
         processor = new OperationProcessor(mockDataBroker);
 
@@ -79,12 +79,6 @@ public abstract class DataChangeListenerBase {
     @After
     public void tearDown() {
         executor.shutdownNow();
-    }
-
-    protected void mockDataChangeListener(Map<InstanceIdentifier<?>,DataObject> createdData, Map<InstanceIdentifier<?>, DataObject> updatedData, Set<?> removedPaths) {
-        doReturn(createdData == null ? Collections.emptyMap() : createdData).when(mockedDataChangeListener).getCreatedData();
-        doReturn(updatedData == null ? Collections.emptyMap() : updatedData).when(mockedDataChangeListener).getUpdatedData();
-        doReturn(removedPaths == null ? Collections.emptySet() : removedPaths).when(mockedDataChangeListener).getRemovedPaths();
     }
 
     protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown, final boolean isPortDown) {
