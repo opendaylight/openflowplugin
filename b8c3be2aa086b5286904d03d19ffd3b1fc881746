@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_e8e7cd3e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T13:12:59Z",
+      "side": 1,
+      "message": "boolean false will stop the connection process, which is what we needed. It is a bit confusing, I\u0027ll try to make changes to get it more readable ...",
+      "parentUuid": "7a6b29fe_7a1d5873",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_3a03e010",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/LifecycleServiceImpl.java",
         "patchSetId": 20
@@ -30,6 +48,24 @@
       "writtenOn": "2016-08-05T08:37:58Z",
       "side": 1,
       "message": "On the various ConnectionInterrupt return paths, is a clean up of the previous completed tasks not mandatory ??",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_886f3992",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/LifecycleServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T13:12:59Z",
+      "side": 1,
+      "message": "This piece of code is not the best I know :(, I\u0027ll try to make it nicer. But to you question, if we are already in state RIP connection we already closing all contexts on another thread and soon we get from mdsal closeServiceInstance.",
+      "parentUuid": "7a6b29fe_3a03e010",
       "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_88f619d6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T13:12:59Z",
+      "side": 1,
+      "message": "This context is per device and this is running as one controller instance. It is up to mdsal to call this once per device and once per instance. We don\u0027t know and care about other instances of controller on this device and we must assume that controller/mdsal/EOS whatever knows about other instances of controller on this device. This service method therefore from our point of view is called only on mastership gained and only in this controller instance.",
+      "parentUuid": "7a6b29fe_d41718a2",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_141230b1",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
         "patchSetId": 20
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_282d4547",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T13:12:59Z",
+      "side": 1,
+      "message": "Same answer as above :) and this method is called only if we were a master",
+      "parentUuid": "7a6b29fe_141230b1",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_54230805",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
         "patchSetId": 20
@@ -81,6 +153,24 @@
       "writtenOn": "2016-08-08T09:28:59Z",
       "side": 1,
       "message": "Maybe a comment can be added here, highlighting the reason why the Role is getting changed to Slave here.",
+      "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e81a2d16",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-09T13:12:59Z",
+      "side": 1,
+      "message": "Will add/change it.",
+      "parentUuid": "7a6b29fe_54230805",
       "revId": "b8c3be2aa086b5286904d03d19ffd3b1fc881746",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
