@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_7d6ff992",
+        "filename": "applications/of-switch-config-pusher/src/main/java/org/opendaylight/openflowplugin/openflow/ofswitch/config/DefaultConfigPusher.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-10T07:23:03Z",
+      "side": 1,
+      "message": "@Tom: Is the retry looper for registering DTCL still needed since calling start method with blueprint? Could we get ahead here in a way that DS will not be ready yet for listener registration.",
+      "parentUuid": "7a6b29fe_1d27e5b7",
+      "range": {
+        "startLine": 44,
+        "startChar": 89,
+        "endLine": 44,
+        "endChar": 91
+      },
+      "revId": "0b6445cdbee98c4ed59f1774b1b7dbc9f8e473cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
