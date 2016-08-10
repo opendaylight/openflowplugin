@@ -12,7 +12,7 @@ module opendaylight-arbitrary-bitmask-fields {
     grouping "ipv4-match-arbitrary-bitmask-fields" {
 
         leaf ipv4-source-address-no-mask {
-            description "IPv4 source address with no mask .";
+            description "IPv4 source address with no mask.";
             type inet:ipv4-address;
         }
 
@@ -22,12 +22,12 @@ module opendaylight-arbitrary-bitmask-fields {
         }
 
         leaf ipv4-source-arbitrary-bitmask {
-            description "IPv4 source address with no mask .";
+            description "Arbitrary bit mask of IPv4 source address.";
             type yang:dotted-quad;
         }
 
         leaf ipv4-destination-arbitrary-bitmask {
-            description "IPv4 destination address with no mask.";
+            description "Arbitrary bit mask of IPv4 destination address.";
             type yang:dotted-quad;
         }
     }
