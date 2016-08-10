@@ -97,6 +97,7 @@ public class HandshakeListenerImplTest {
     @Test
     public void testOnHandshakeFailure2() throws Exception {
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(InetSocketAddress.createUnresolved("ut-ofp.example.org", 4242));
+        connectionContextSpy.setNodeId(new NodeId("openflow:1"));
         handshakeListener.onHandshakeFailure();
         Mockito.verify(handshakeContext).close();
         Mockito.verify(connectionContextSpy).closeConnection(false);
