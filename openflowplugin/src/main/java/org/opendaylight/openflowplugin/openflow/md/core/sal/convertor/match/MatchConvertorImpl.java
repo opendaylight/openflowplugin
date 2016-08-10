@@ -90,8 +90,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.Pbb;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -1561,11 +1561,11 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                             Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                                     IpConversionUtil.extractIpv6AddressMask(ipv6PrefixDestinationAddress));
                             setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
-                                    dstIpv6ArbitraryMask, IpConversionUtil.compressedIpv6Format(ipv6DstAddress.getValue()));
+                                    dstIpv6ArbitraryMask, IpConversionUtil.compressedIpv6AddressFormat(ipv6DstAddress));
                         }
                         Ipv6ArbitraryMask srcIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                                 IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                        String stringIpv6SrcAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6SrcAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setSrcIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
                                 srcIpv6ArbitraryMask, stringIpv6SrcAddress);
                         matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
@@ -1587,12 +1587,12 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                         */
                         Ipv6ArbitraryMask srcIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                                 IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                        String stringIpv6SrcAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6SrcAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setSrcIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
                                 srcIpv6ArbitraryMask, stringIpv6SrcAddress);
                         matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
                     } else {
-                        String stringIpv6SrcAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6SrcAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setIpv6MatchBuilderFields(ipv6MatchBuilder, ofMatch, mask, stringIpv6SrcAddress);
                         matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
                     }
@@ -1611,11 +1611,11 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                             Ipv6ArbitraryMask srcIpv6Arbitrary = IpConversionUtil.compressedIpv6MaskFormat(
                                     IpConversionUtil.extractIpv6AddressMask(ipv6PrefixSourceAddress));
                             setSrcIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
-                                    srcIpv6Arbitrary, IpConversionUtil.compressedIpv6Format(ipv6SrcAddress.getValue()));
+                                    srcIpv6Arbitrary, IpConversionUtil.compressedIpv6AddressFormat(ipv6SrcAddress));
                         }
                         Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                                 IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                        String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6DstAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
                                 dstIpv6ArbitraryMask, stringIpv6DstAddress);
                         matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
@@ -1637,12 +1637,12 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                         */
                         Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                                 IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                        String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6DstAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder, ofMatch,
                                 dstIpv6ArbitraryMask, stringIpv6DstAddress);
                         matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
                     } else {
-                        String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Address.getIpv6Address().getValue());
+                        Ipv6Address stringIpv6DstAddress = IpConversionUtil.compressedIpv6AddressFormat(ipv6Address.getIpv6Address());
                         setIpv6MatchBuilderFields(ipv6MatchBuilder, ofMatch, mask, stringIpv6DstAddress);
                         matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
                     }
@@ -1740,13 +1740,13 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         return matchBuilder;
     }
 
-    private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder ipv6MatchBuilder, final MatchEntry ofMatch, final byte[] mask, final String ipv6PrefixStr) {
+    private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder ipv6MatchBuilder, final MatchEntry ofMatch, final byte[] mask, final Ipv6Address prefix) {
         Ipv6Prefix ipv6Prefix;
 
         if (mask != null) {
-            ipv6Prefix = IpConversionUtil.createPrefix(new Ipv6Address(ipv6PrefixStr), mask);
+            ipv6Prefix = IpConversionUtil.createPrefix(prefix, mask);
         } else {
-            ipv6Prefix = IpConversionUtil.createPrefix(new Ipv6Address(ipv6PrefixStr));
+            ipv6Prefix = IpConversionUtil.createPrefix(prefix);
         }
 
         if (ofMatch.getOxmMatchField().equals(Ipv6Src.class)) {
@@ -1800,23 +1800,19 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 
     private static void setSrcIpv6MatchArbitraryBitMaskBuilderFields(
             final Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder,
-            final MatchEntry ofMatch, final Ipv6ArbitraryMask mask, final String ipv6AddressStr) {
-        Ipv6Address ipv6Address;
+            final MatchEntry ofMatch, final Ipv6ArbitraryMask mask, final Ipv6Address ipv6Address) {
         if (mask != null) {
             ipv6MatchArbitraryBitMaskBuilder.setIpv6SourceArbitraryBitmask(mask);
         }
-        ipv6Address = new Ipv6Address(ipv6AddressStr);
         ipv6MatchArbitraryBitMaskBuilder.setIpv6SourceAddressNoMask(ipv6Address);
     }
 
     private static void setDstIpv6MatchArbitraryBitMaskBuilderFields(
             final Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder,
-            final MatchEntry ofMatch, final Ipv6ArbitraryMask mask, final String ipv6AddressStr) {
-        Ipv6Address ipv6Address;
+            final MatchEntry ofMatch, final Ipv6ArbitraryMask mask, final Ipv6Address ipv6Address) {
         if (mask != null) {
             ipv6MatchArbitraryBitMaskBuilder.setIpv6DestinationArbitraryBitmask(mask);
         }
-        ipv6Address = new Ipv6Address(ipv6AddressStr);
         ipv6MatchArbitraryBitMaskBuilder.setIpv6DestinationAddressNoMask(ipv6Address);
     }
 

@@ -10,13 +10,16 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
@@ -31,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  *
  */
-public class GroupStatsResponseConvertorTest2 {
+public class GroupStatsResponseConvertor2ndTest {
 
     GroupStatsResponseConvertor convertor =  new GroupStatsResponseConvertor();
 
@@ -85,6 +88,7 @@ public class GroupStatsResponseConvertorTest2 {
         bucketsBuilder.setWatchGroup(168L);
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(new CopyTtlInCaseBuilder().build());
         actions.add(actionBuilder.build());
         bucketsBuilder.setAction(actions);
         bucketsList.add(bucketsBuilder.build());
@@ -100,10 +104,13 @@ public class GroupStatsResponseConvertorTest2 {
         bucketsBuilder.setWatchGroup(400L);
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(new CopyTtlOutCaseBuilder().build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(new DecNwTtlCaseBuilder().build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(new PopPbbCaseBuilder().build());
         actions.add(actionBuilder.build());
         bucketsBuilder.setAction(actions);
         bucketsList.add(bucketsBuilder.build());
