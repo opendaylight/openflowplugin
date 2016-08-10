@@ -224,8 +224,18 @@ public class IpConversionUtilTest {
     @Test
     public void compressedIpv6MaskFormatTest() {
         Ipv6ArbitraryMask compressedIpv6IpAddressMask;
+        // zero compression
         Ipv6ArbitraryMask ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF:0000:0000:0:0:0:1001:1000");
         compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
-        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(),"FFFF::1001:1000");
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "FFFF::1001:1000");
+        // :: present - no compression
+        ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF::F000:0:0:1000");
+        compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "FFFF::F000:0:0:1000");
+        // more zero sequences - compress only one
+        ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF:0:0:F000:0000:0:0:1000");
+        compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "FFFF::F000:0000:0:0:1000");
     }
+
 }
