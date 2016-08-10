@@ -45,7 +45,7 @@ public class TestUtils {
         return createFlowCapableNodeConnector(false, false, mac, port);
     }
 
-    static FlowCapableNodeConnectorBuilder createFlowCapableNodeConnector(boolean linkDown, boolean adminDown,
+    private static FlowCapableNodeConnectorBuilder createFlowCapableNodeConnector(boolean linkDown, boolean adminDown,
                                                                           MacAddress mac, long port) {
         return new FlowCapableNodeConnectorBuilder()
                 .setHardwareAddress(mac)
