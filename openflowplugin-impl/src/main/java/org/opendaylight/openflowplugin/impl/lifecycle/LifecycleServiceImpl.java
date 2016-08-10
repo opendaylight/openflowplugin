@@ -45,7 +45,7 @@ public class LifecycleServiceImpl implements LifecycleService {
         try {
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getNodeId().getValue());
+                LOG.debug("Starting clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
                 LOG.debug("===============================================");
             }
 
@@ -99,7 +99,7 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     private boolean connectionInterrupted() {
         if (this.deviceContext.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Node {} was disconnected, will stop starting MASTER services.", this.deviceContext.getDeviceInfo().getNodeId().getValue());
+            LOG.warn("Node {} was disconnected, will stop starting MASTER services.", this.deviceContext.getDeviceInfo().getLOGValue());
             return true;
         }
         return false;
@@ -107,9 +107,21 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Stopping clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
+            LOG.debug("===============================================");
+        }
+
+        LOG.info("Stopping role context cluster services for node {}", getIdentifier());
         roleContext.stopClusterServices();
+
+        LOG.info("Stopping statistics context cluster services for node {}", getIdentifier());
         statContext.stopClusterServices();
+
+        LOG.info("Stopping rpc context cluster services for node {}", getIdentifier());
         rpcContext.stopClusterServices();
+
+        LOG.info("Stopping device context cluster services for node {}", getIdentifier());
         return deviceContext.stopClusterServices();
     }
 
@@ -187,16 +199,16 @@ public class LifecycleServiceImpl implements LifecycleService {
                             .filter(Objects::nonNull)
                             .count();
 
-                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, getIdentifier());
+                    LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceContext.getDeviceInfo().getLOGValue());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 if (deviceFlowRegistryFill.isCancelled()) {
-                    LOG.debug("Cancelled filling flow registry with flows for node: {}", getIdentifier());
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceContext.getDeviceInfo().getLOGValue());
                 } else {
-                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", getIdentifier(), t);
+                    LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceContext.getDeviceInfo().getLOGValue(), t);
                 }
             }
         });

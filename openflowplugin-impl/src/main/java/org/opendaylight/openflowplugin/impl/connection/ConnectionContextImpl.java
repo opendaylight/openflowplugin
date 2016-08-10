@@ -129,8 +129,8 @@ public class ConnectionContextImpl implements ConnectionContext {
             future.get(1, TimeUnit.SECONDS);
             LOG.info("Unregister outbound queue successful.");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            LOG.warn("Unregister outbound queue throws exception for node {} ", nodeId);
-            LOG.trace("Unregister outbound queue throws exception for node {} ", nodeId, e);
+            LOG.warn("Unregister outbound queue throws exception for node {} ", nodeId.getValue());
+            LOG.trace("Unregister outbound queue throws exception for node {} ", nodeId.getValue(), e);
         }
 
         closeHandshakeContext();
@@ -140,15 +140,15 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         if (propagate) {
-            LOG.debug("Propagating device disconnect for node {}", nodeId);
+            LOG.debug("Propagating device disconnect for node {}", nodeId.getValue());
             propagateDeviceDisconnectedEvent();
         } else {
-            LOG.debug("Close connection without propagating for node {}", nodeId);
+            LOG.debug("Close connection without propagating for node {}", nodeId.getValue());
         }
     }
 
     private void closeHandshakeContext() {
-        LOG.debug("Trying closing handshake context for node {}", nodeId);
+        LOG.debug("Trying closing handshake context for node {}", nodeId.getValue());
         if (handshakeContext != null) {
             try {
                 handshakeContext.close();
