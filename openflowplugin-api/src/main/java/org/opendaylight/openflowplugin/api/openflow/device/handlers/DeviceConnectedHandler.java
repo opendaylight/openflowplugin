@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
@@ -19,6 +20,6 @@ public interface DeviceConnectedHandler {
      * Method is used to propagate information about established connection with device.
      * It propagates connected device's connection context.
      */
-    boolean deviceConnected(ConnectionContext connectionContext) throws Exception;
+    ConnectionStatus deviceConnected(ConnectionContext connectionContext) throws Exception;
 
 }

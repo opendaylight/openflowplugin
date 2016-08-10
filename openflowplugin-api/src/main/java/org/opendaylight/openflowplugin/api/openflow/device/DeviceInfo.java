@@ -45,4 +45,12 @@ public interface DeviceInfo extends XidSequencer {
      */
     ServiceGroupIdentifier getServiceIdentifier();
 
+    /**
+     * Many uses in log, this will make code more readable
+     * @return string representation of nodeId
+     */
+    default String getLOGValue() {
+        return getNodeId().getValue();
+    }
+
 }

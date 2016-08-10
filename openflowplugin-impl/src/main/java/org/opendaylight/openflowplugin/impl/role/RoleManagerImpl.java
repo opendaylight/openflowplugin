@@ -73,18 +73,18 @@ public class RoleManagerImpl implements RoleManager {
         final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
         final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this, lifecycleService);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
-        Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
+        Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getLOGValue());
         Futures.addCallback(roleContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
                     @Override
                     public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getNodeId().getValue());
+                            LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable throwable) {
-                        LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getNodeId().getValue());
+                        LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
                         lifecycleService.closeConnection();
                     }
                 });
@@ -118,7 +118,7 @@ public class RoleManagerImpl implements RoleManager {
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("Delete Node {} was successful", deviceInfo);
+                LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
                 contexts.remove(deviceInfo);
             }
 
@@ -128,14 +128,14 @@ public class RoleManagerImpl implements RoleManager {
                 if (numRetries > 0) {
                     // We "used" one retry here, so decrement it
                     final int curRetries = numRetries - 1;
-                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getNodeId(), t, curRetries);
+                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getLOGValue(), t, curRetries);
                     // Recursive call to this method with "one less" retry
                     removeDeviceFromOperationalDS(deviceInfo, curRetries);
                     return;
                 }
 
                 // No retries left, so we will just close the role context, and ignore datastore cleanup
-                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getNodeId(), t);
+                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getLOGValue(), t);
                 contexts.remove(deviceInfo);
             }
         });
