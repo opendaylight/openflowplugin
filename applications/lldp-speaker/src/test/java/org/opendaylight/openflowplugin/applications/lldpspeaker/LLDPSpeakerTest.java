@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Tests for @{LLDPSpeaker} class.
+ * Tests for {@link LLDPSpeaker}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPSpeakerTest {
@@ -72,7 +72,6 @@ public class LLDPSpeakerTest {
     LLDPSpeaker lldpSpeaker;
 
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() {
         when(
                 scheduledExecutorService.scheduleAtFixedRate(
@@ -143,7 +142,7 @@ public class LLDPSpeakerTest {
     }
 
     /**
-     * Test that when @{LLDPSpeaker#nodeConnectorAdded} is called multiple times
+     * Test that when {@link LLDPSpeaker#nodeConnectorAdded} is called multiple times
      * with same arguments, only the first one have effect.
      */
     @Test
