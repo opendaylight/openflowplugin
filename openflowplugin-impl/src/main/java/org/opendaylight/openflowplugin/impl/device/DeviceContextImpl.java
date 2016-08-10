@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -197,7 +198,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
         final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
         LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                .getRemoteAddress(), getDeviceInfo().getNodeId());
+                .getRemoteAddress(), getDeviceInfo().getLOGValue());
         auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
@@ -286,7 +287,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
         } else if(LOG.isDebugEnabled()) {
-            LOG.debug("For nodeId={} isNotificationFlowRemovedOff={}", getDeviceInfo().getNodeId(), deviceManager.getIsNotificationFlowRemovedOff());
+            LOG.debug("For nodeId={} isNotificationFlowRemovedOff={}", getDeviceInfo().getLOGValue(), deviceManager.getIsNotificationFlowRemovedOff());
         }
 
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
@@ -424,7 +425,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public synchronized void close() {
         LOG.debug("closing deviceContext: {}, nodeId:{}",
                 getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
-                getDeviceInfo().getNodeId());
+                getDeviceInfo().getLOGValue());
         // NOOP
         throw new UnsupportedOperationException("Autocloseble.close will be removed soon");
     }
@@ -486,15 +487,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public synchronized void shutdownConnection() {
-        LOG.debug("Shutdown method for node {}", getDeviceInfo().getNodeId());
+        LOG.debug("Shutdown method for node {}", getDeviceInfo().getLOGValue());
         if (CONTEXT_STATE.TERMINATION.equals(getState())) {
-            LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getNodeId());
+            LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getLOGValue());
             return;
         }
         setState(CONTEXT_STATE.TERMINATION);
 
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
-            LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getNodeId());
+            LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getLOGValue());
             return;
         }
         /* Terminate Auxiliary Connection */
@@ -537,9 +538,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void startupClusterServices() throws ExecutionException, InterruptedException {
-        LOG.debug("Initializing transaction chain manager for node {}", getDeviceInfo().getNodeId());
+        LOG.debug("Initializing transaction chain manager for node {}", getDeviceInfo().getLOGValue());
         this.transactionChainManager.activateTransactionManager();
-        LOG.debug("Waiting to get node {} information", getDeviceInfo().getNodeId());
+        LOG.debug("Waiting to get node {} information", getDeviceInfo().getLOGValue());
         DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
     }
 
@@ -556,5 +557,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
+    }
+
+    @Override
+    public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
+        this.transactionChainManager.setLifecycleService(lifecycleService);
     }
 }

@@ -118,7 +118,7 @@ public class RoleManagerImpl implements RoleManager {
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("Delete Node {} was successful", deviceInfo);
+                LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
                 contexts.remove(deviceInfo);
             }
 
@@ -128,14 +128,14 @@ public class RoleManagerImpl implements RoleManager {
                 if (numRetries > 0) {
                     // We "used" one retry here, so decrement it
                     final int curRetries = numRetries - 1;
-                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getNodeId(), t, curRetries);
+                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getLOGValue(), t, curRetries);
                     // Recursive call to this method with "one less" retry
                     removeDeviceFromOperationalDS(deviceInfo, curRetries);
                     return;
                 }
 
                 // No retries left, so we will just close the role context, and ignore datastore cleanup
-                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getNodeId(), t);
+                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getLOGValue(), t);
                 contexts.remove(deviceInfo);
             }
         });

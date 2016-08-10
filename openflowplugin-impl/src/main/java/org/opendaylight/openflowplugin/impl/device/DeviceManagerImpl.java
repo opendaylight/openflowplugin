@@ -194,6 +194,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
+        deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
 
         lifecycleServices.putIfAbsent(deviceInfo, lifecycleService);
 
@@ -262,7 +263,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             try {
                 lifecycleService.close();
             } catch (Exception e) {
-                LOG.warn("Closing service for node {} was unsuccessful ", deviceInfo.getNodeId().getValue(), e);
+                LOG.warn("Closing service for node {} was unsuccessful ", deviceInfo.getLOGValue(), e);
             }
         }
     }
@@ -294,7 +295,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo);
 
         if (null == deviceCtx) {
-            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getNodeId());
+            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getLOGValue());
             return;
         }
 
@@ -306,7 +307,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         deviceCtx.setState(OFPContext.CONTEXT_STATE.TERMINATION);
 
         if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
-            LOG.debug("Node {} disconnected, but not primary connection.", connectionContext.getDeviceInfo().getNodeId().getValue());
+            LOG.debug("Node {} disconnected, but not primary connection.", connectionContext.getDeviceInfo().getLOGValue());
             /* Connection is not PrimaryConnection so try to remove from Auxiliary Connections */
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
         }
@@ -318,13 +319,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
                 @Override
                 public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getNodeId().getValue());
+                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getLOGValue());
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getNodeId().getValue());
+                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getLOGValue());
                     LOG.trace("TxChainManager failed by closing. ", t);
                     deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
                 }
@@ -332,7 +333,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             /* Add timer for Close TxManager because it could fain ind cluster without notification */
             final TimerTask timerTask = timeout -> {
                 if (!future.isDone()) {
-                    LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getNodeId().getValue());
+                    LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getLOGValue());
                     future.cancel(false);
                 }
             };
