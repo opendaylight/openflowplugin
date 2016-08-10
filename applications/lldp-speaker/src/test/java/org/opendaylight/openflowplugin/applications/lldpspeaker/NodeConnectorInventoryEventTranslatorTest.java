@@ -8,24 +8,30 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.DELETE;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.SUBTREE_MODIFIED;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.WRITE;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -35,28 +41,20 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorInventoryEventTranslatorTest {
-    static InstanceIdentifier<NodeConnector> id = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
-    static InstanceIdentifier<FlowCapableNodeConnector> iiToConnector = id.augmentation(FlowCapableNodeConnector.class);
-    static FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector().build();
+    private static final InstanceIdentifier<NodeConnector> id = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
+    private static final InstanceIdentifier<FlowCapableNodeConnector> iiToConnector = id.augmentation(FlowCapableNodeConnector.class);
+    private static final FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector().build();
 
-    @Mock DataBroker dataBroker;
-    @Mock ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
-    @Mock NodeConnectorEventsObserver eventsObserver;
-    @Mock NodeConnectorEventsObserver eventsObserver2;
+    @Mock
+    private NodeConnectorEventsObserver eventsObserver;
+    @Mock
+    private NodeConnectorEventsObserver eventsObserver2;
 
-    MockDataChangedEvent dataChangedEvent = new MockDataChangedEvent();
-    NodeConnectorInventoryEventTranslator translator;
+    private NodeConnectorInventoryEventTranslator translator;
 
     @Before
     public void setUp() {
-
-        when(dataBroker.registerDataChangeListener(
-                any(LogicalDatastoreType.class),
-                any(InstanceIdentifier.class),
-                any(DataChangeListener.class),
-                any(AsyncDataBroker.DataChangeScope.class)))
-                .thenReturn(dataChangeListenerRegistration);
-        translator = new NodeConnectorInventoryEventTranslator(dataBroker, eventsObserver, eventsObserver2);
+        translator = new NodeConnectorInventoryEventTranslator(mock(DataBroker.class), eventsObserver, eventsObserver2);
     }
 
     /**
@@ -65,11 +63,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
      */
     @Test
     public void testNodeConnectorCreation() {
-        // Setup dataChangedEvent to mock new port creation in inventory
-        dataChangedEvent.created.put(iiToConnector, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, iiToConnector, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verify(eventsObserver).nodeConnectorAdded(id, fcnc);
     }
 
@@ -79,12 +74,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorCreationLinkDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
-
-        // Setup dataChangedEvent to mock new port creation in inventory
-        dataChangedEvent.created.put(id, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, id, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verifyZeroInteractions(eventsObserver);
     }
 
@@ -94,12 +85,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorCreationAdminDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
-
-        // Setup dataChangedEvent to mock new port creation in inventory
-        dataChangedEvent.created.put(id, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, id, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verifyZeroInteractions(eventsObserver);
     }
 
@@ -111,12 +98,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorUpdateToLinkDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
-
-        // Setup dataChangedEvent to mock link down
-        dataChangedEvent.updated.put(iiToConnector, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED, iiToConnector, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(id);
     }
 
@@ -128,12 +111,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
     @Test
     public void testNodeConnectorUpdateToAdminDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
-
-        // Setup dataChangedEvent to mock link down and administrative port down
-        dataChangedEvent.updated.put(iiToConnector, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED, iiToConnector, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(id);
     }
 
@@ -144,11 +123,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
      */
     @Test
     public void testNodeConnectorUpdateToUp() {
-        // Setup dataChangedEvent to mock link up and administrative port up
-        dataChangedEvent.updated.put(iiToConnector, fcnc);
-
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED, iiToConnector, fcnc);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verify(eventsObserver).nodeConnectorAdded(id, fcnc);
     }
 
@@ -158,11 +134,9 @@ public class NodeConnectorInventoryEventTranslatorTest {
      */
     @Test
     public void testNodeConnectorRemoval() {
-        // Setup dataChangedEvent to mock node connector removal
-        dataChangedEvent.removed.add(iiToConnector);
-
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, iiToConnector, null);
         // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataChanged(dataChangedEvent);
+        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(id);
     }
 
@@ -176,66 +150,32 @@ public class NodeConnectorInventoryEventTranslatorTest {
         // Create prerequisites
         InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
         InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
-
-        // Setup dataChangedEvent to mock port creation and removal
-        dataChangedEvent.created.put(iiToConnector, fcnc);
-        dataChangedEvent.removed.add(iiToConnector2);
-
+        List<DataTreeModification> modifications = new ArrayList();
+        modifications.add(setupDataTreeChange(WRITE, iiToConnector, fcnc));
+        modifications.add(setupDataTreeChange(DELETE, iiToConnector2, null));
         // Invoke onDataChanged and check that both observers notified
-        translator.onDataChanged(dataChangedEvent);
+        translator.onDataTreeChanged(modifications);
         verify(eventsObserver).nodeConnectorAdded(id, fcnc);
         verify(eventsObserver).nodeConnectorRemoved(id2);
         verify(eventsObserver2).nodeConnectorAdded(id, fcnc);
         verify(eventsObserver2).nodeConnectorRemoved(id2);
     }
 
-    /**
-     * Test that @{ListenerRegistration} is closed when ${NodeConnectorInventoryEventTranslator#close}
-     * method is called.
-     * @throws Exception
-     */
     @Test
-    public void testCleanup() throws Exception {
-        // Trigger cleanup
+    public void tearDown() throws Exception {
         translator.close();
-
-        // Verify that ListenerRegistration to DOM events
-        verify(dataChangeListenerRegistration, times(2)).close();
     }
 
-    static class MockDataChangedEvent implements AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> {
-        Map<InstanceIdentifier<?>,DataObject> created = new HashMap<>();
-        Map<InstanceIdentifier<?>,DataObject> updated = new HashMap<>();
-        Set<InstanceIdentifier<?>> removed = new HashSet<>();
+    private <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
+                                                            final InstanceIdentifier<T> ii,
+                                                            final FlowCapableNodeConnector connector) {
+        final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
+        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
+        DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
+        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(type);
+        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(connector);
+        return dataTreeModification;
 
-        @Override
-        public Map<InstanceIdentifier<?>, DataObject> getCreatedData() {
-            return created;
-        }
-
-        @Override
-        public Map<InstanceIdentifier<?>, DataObject> getUpdatedData() {
-            return updated;
-        }
-
-        @Override
-        public Set<InstanceIdentifier<?>> getRemovedPaths() {
-            return removed;
-        }
-
-        @Override
-        public Map<InstanceIdentifier<?>, DataObject> getOriginalData() {
-            throw new UnsupportedOperationException("Not implemented by mock");
-        }
-
-        @Override
-        public DataObject getOriginalSubtree() {
-            throw new UnsupportedOperationException("Not implemented by mock");
-        }
-
-        @Override
-        public DataObject getUpdatedSubtree() {
-            throw new UnsupportedOperationException("Not implemented by mock");
-        }
     }
 }

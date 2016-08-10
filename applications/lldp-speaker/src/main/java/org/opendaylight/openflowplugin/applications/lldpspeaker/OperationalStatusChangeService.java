@@ -17,9 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-/**
- * Created by Martin Bobak mbobak@cisco.com on 11/20/14.
- */
 public class OperationalStatusChangeService implements LldpSpeakerService {
 
     private final LLDPSpeaker speakerInstance;
