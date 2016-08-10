@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +44,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPSpeakerTest {
-    static InstanceIdentifier<NodeConnector> id;
-    static FlowCapableNodeConnector fcnc;
-    static TransmitPacketInput packet;
+    private static final InstanceIdentifier<NodeConnector> id;
+    private static final FlowCapableNodeConnector fcnc;
+    private static final TransmitPacketInput packet;
 
     static {
         MacAddress mac = new MacAddress("01:23:45:67:89:AB");
@@ -62,14 +61,14 @@ public class LLDPSpeakerTest {
     }
 
     @Mock
-    PacketProcessingService packetProcessingService;
+    private PacketProcessingService packetProcessingService;
     @Mock
-    ScheduledExecutorService scheduledExecutorService;
+    private ScheduledExecutorService scheduledExecutorService;
     @Mock
-    ScheduledFuture scheduledSpeakerTask;
+    private ScheduledFuture scheduledSpeakerTask;
 
-    MacAddress destinationMACAddress = null;
-    LLDPSpeaker lldpSpeaker;
+    private final MacAddress destinationMACAddress = null;
+    private LLDPSpeaker lldpSpeaker;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -161,12 +160,9 @@ public class LLDPSpeakerTest {
 
     /**
      * Test that lldpSpeaker cancels periodic LLDP flood task and stops
-     * 
-     * @{ScheduledExecutorService .
-     * @throws Exception
      */
     @Test
-    public void testCleanup() throws Exception {
+    public void testCleanup() {
         lldpSpeaker.close();
         verify(scheduledSpeakerTask, times(1)).cancel(true);
         verify(scheduledExecutorService, times(1)).shutdown();
