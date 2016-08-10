@@ -763,9 +763,8 @@ public final class IpConversionUtil {
     }
 
     public static String compressedIpv6Format(final String ipv6Address) {
-        String compressedIpv6Address;
-        compressedIpv6Address = ipv6Address.replaceAll("((?::0+\\b){2,}):?(?!\\S*\\b\\1:0\\b)(\\S*)", "::$2");
-        return compressedIpv6Address;
+        return ipv6Address.contains("::") ? ipv6Address : ipv6Address.replaceAll("((?::0+\\b){2,}):?(?!\\S*\\b\\1:0\\b)(\\S*)", "::$2");
+
     }
 
     public static Ipv6ArbitraryMask compressedIpv6MaskFormat(final Ipv6ArbitraryMask ipv6Mask) {
