@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 
 /**
- * Tests for @{NodeConnectorInventoryEventTranslator} class.
+ * Tests for {@link NodeConnectorInventoryEventTranslator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorInventoryEventTranslatorTest {
@@ -58,7 +58,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorAdded} is called
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
      * for each FlowCapableNodeConnector item that @{AsyncDataChangeEvent#getCreatedData} return.
      */
     @Test
@@ -91,7 +91,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorRemoved} is called
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
      * that have link down state.
      */
@@ -104,7 +104,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorRemoved} is called
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
      * that have administrative down state.
      */
@@ -117,7 +117,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorAdded} is called
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
      * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
      * that have administrative up and link up state.
      */
@@ -129,7 +129,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorRemoved} is called
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector path that @{AsyncDataChangeEvent#getRemovedPaths} return.
      */
     @Test
@@ -141,7 +141,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that checks if @{NodeConnectorEventsObserver#nodeConnectorAdded} and
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} and
      * @{NodeConnectorEventsObserver#nodeConnectorRemoved} are called for each
      * observer when multiple observers are registered for notifications.
      */
