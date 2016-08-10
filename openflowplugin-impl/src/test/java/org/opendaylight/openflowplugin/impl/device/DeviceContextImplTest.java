@@ -29,6 +29,8 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -538,4 +540,17 @@ public class DeviceContextImplTest {
         assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
     }
+
+    @Test
+    public void replaceConnectionContext() throws Exception {
+
+        final ConnectionContext connectionContext1 = mock(ConnectionContext.class);
+        Assert.assertEquals(deviceContext.getPrimaryConnectionContext(), connectionContext);
+        Mockito.when(connectionContext1.getConnectionAdapter()).thenReturn(connectionAdapter);
+        Mockito.doNothing().when(connectionAdapter).setPacketInFiltering(Mockito.anyBoolean());
+        deviceContext.replaceConnectionContext(connectionContext1);
+        Assert.assertEquals(deviceContext.getPrimaryConnectionContext(), connectionContext1);
+
+    }
+
 }

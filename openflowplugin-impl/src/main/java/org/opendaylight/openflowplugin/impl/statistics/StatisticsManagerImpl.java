@@ -96,7 +96,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, isStatisticsPollingEnabled, lifecycleService, convertorExecutor, this);
-        Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getNodeId());
+        Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue());
         lifecycleService.setStatContext(statisticsContext);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
@@ -142,7 +142,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getNodeId(), STATS_TIMEOUT_SEC);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), STATS_TIMEOUT_SEC);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
@@ -194,7 +194,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         final StatisticsContext statisticsContext = contexts.remove(deviceInfo);
         if (null != statisticsContext) {
-            LOG.trace("Removing device context from stack. No more statistics gathering for device: {}", deviceInfo.getNodeId());
+            LOG.debug("Removing device context from stack. No more statistics gathering for device: {}", deviceInfo.getLOGValue());
             statisticsContext.close();
         }
         deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);

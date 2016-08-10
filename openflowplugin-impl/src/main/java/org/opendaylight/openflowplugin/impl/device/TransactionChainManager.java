@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,6 +56,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final DataBroker dataBroker;
+    private LifecycleService lifecycleService;
 
     @GuardedBy("txLock")
     private WriteTransaction wTx;
@@ -88,6 +91,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             txChainFactory.close();
         }
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+    }
+
+    public void setLifecycleService(final LifecycleService lifecycleService) {
+        this.lifecycleService = lifecycleService;
     }
 
     void initialSubmitWriteTransaction() {
@@ -189,6 +196,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     if (initCommit) {
                         LOG.warn("Initial commit failed. ", t);
                         wTx = null;
+                        if (Objects.nonNull(lifecycleService)) {
+                            lifecycleService.closeConnection();
+                        }
                     }
                 }
             });
