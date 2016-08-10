@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
@@ -35,12 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 5.3.2015.
- * v6 routines added by Anton Ivanov on 14.6.2015
- * Arbitrary masks by sai.marapareddy@gmail.com
- */
 public final class IpConversionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(IpConversionUtil.class);
@@ -234,19 +227,16 @@ public final class IpConversionUtil {
      * @param ipv6Address - v6 Address object
      * @return - byte array of size 16. Last byte contains netmask
      */
-
-
     public static byte[] canonicalBinaryV6Address(final Ipv6Address ipv6Address) {
-        /*
-         * Do not modify this routine to take direct strings input!!!
-         * Key checks have been removed based on the assumption that
-         * the input is validated via regexps in Ipv6Prefix()
-         */
+        return canonicalBinaryV6AddressFromString(ipv6Address.getValue());
+    }
 
+
+    private static byte[] canonicalBinaryV6AddressFromString(final String ipv6Address) {
        Iterable<String> splittedV6Address = Splitter.on("%")
                 .trimResults()
                 .omitEmptyStrings()
-                .split(ipv6Address.getValue());
+                .split(ipv6Address);
         List<String> partsV6Address = Lists.newArrayList(splittedV6Address.iterator());
 
         int colonp;
@@ -363,7 +353,7 @@ public final class IpConversionUtil {
         return dst;
     }
 
-    public static String byteArrayV6AddressToString (final byte [] _binary_form) throws UnknownHostException{
+    public static String byteArrayV6AddressToString (final byte [] _binary_form) throws UnknownHostException {
         /* DO NOT DIY!!! - InetAddresses will actually print correct canonical
          * zero compressed form.
          */
@@ -762,14 +752,21 @@ public final class IpConversionUtil {
         return false;
     }
 
-    public static String compressedIpv6Format(final String ipv6Address) {
-        String compressedIpv6Address;
-        compressedIpv6Address = ipv6Address.replaceAll("((?::0+\\b){2,}):?(?!\\S*\\b\\1:0\\b)(\\S*)", "::$2");
-        return compressedIpv6Address;
+    private static String compressedIpv6FormatFromString(final String ipv6Address) {
+        try {
+            return byteArrayV6AddressToString(canonicalBinaryV6AddressFromString(ipv6Address));
+        } catch (UnknownHostException e) {
+            LOG.warn("Failed to compress IPv6 address {} because it is invalid", ipv6Address);
+            return ipv6Address;
+        }
+    }
+
+    public static String compressedIpv6Format(final Ipv6Address ipv6Address) {
+        return compressedIpv6FormatFromString(ipv6Address.getValue());
     }
 
     public static Ipv6ArbitraryMask compressedIpv6MaskFormat(final Ipv6ArbitraryMask ipv6Mask) {
         String stringIpv6Mask = ipv6Mask.getValue();
-        return new Ipv6ArbitraryMask(compressedIpv6Format(stringIpv6Mask));
+        return new Ipv6ArbitraryMask(compressedIpv6FormatFromString(stringIpv6Mask));
     }
 }

@@ -5,29 +5,22 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Anton Ivanov aivanov@brocade.com
- * @author Sai MarapaReddy sai.marapareddy@gmail.com
- *
- */
 public class IpConversionUtilTest {
 
     private static Logger LOG = LoggerFactory
@@ -85,13 +78,6 @@ public class IpConversionUtilTest {
             maskSeed = maskSeed.clearBit(i);
         }
     }
-
-
-    /**
-     * Test method for {@link MatchConvertorUtil#getIpv4Mask(byte[])}.
-     *
-     * @throws Exception
-     */
 
     @Test
     public void testcountBitsAsGetIpv4Mask() {
@@ -224,8 +210,18 @@ public class IpConversionUtilTest {
     @Test
     public void compressedIpv6MaskFormatTest() {
         Ipv6ArbitraryMask compressedIpv6IpAddressMask;
+        // zero compression
         Ipv6ArbitraryMask ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF:0000:0000:0:0:0:1001:1000");
         compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
-        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(),"FFFF::1001:1000");
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "ffff::1001:1000");
+        // :: present - no compression
+        ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF::F000:0:0:1000");
+        compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "ffff::f000:0:0:1000");
+        // more zero sequences - compress only one
+        ipv6IpAddressMask = new Ipv6ArbitraryMask("FFFF:0:0:F000:0000:0:0:1000");
+        compressedIpv6IpAddressMask = IpConversionUtil.compressedIpv6MaskFormat(ipv6IpAddressMask);
+        Assert.assertEquals(compressedIpv6IpAddressMask.getValue(), "ffff:0:0:f000::1000");
     }
+
 }

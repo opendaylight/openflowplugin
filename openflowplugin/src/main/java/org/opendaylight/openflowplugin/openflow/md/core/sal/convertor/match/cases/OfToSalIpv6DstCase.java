@@ -49,11 +49,11 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
                     Ipv6ArbitraryMask srcIpv6Arbitrary = IpConversionUtil.compressedIpv6MaskFormat(
                             IpConversionUtil.extractIpv6AddressMask(ipv6PrefixSourceAddress));
                     setSrcIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
-                            srcIpv6Arbitrary, IpConversionUtil.compressedIpv6Format(ipv6SrcAddress.getValue()));
+                            srcIpv6Arbitrary, IpConversionUtil.compressedIpv6Format(ipv6SrcAddress));
                 }
                 Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                         IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address().getValue());
+                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address());
                 setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
                         dstIpv6ArbitraryMask, stringIpv6DstAddress);
                 matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
@@ -75,12 +75,12 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
                         */
                 Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                         IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address().getValue());
+                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address());
                 setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
                         dstIpv6ArbitraryMask, stringIpv6DstAddress);
                 matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
             } else {
-                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address().getValue());
+                String stringIpv6DstAddress = IpConversionUtil.compressedIpv6Format(ipv6Dst.getIpv6Address());
                 setIpv6MatchBuilderFields(ipv6MatchBuilder, mask, stringIpv6DstAddress);
                 matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
             }
