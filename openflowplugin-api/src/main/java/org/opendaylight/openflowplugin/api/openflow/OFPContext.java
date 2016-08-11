@@ -48,8 +48,9 @@ public interface OFPContext {
     /**
      * About to stop services in cluster not master anymore or going down
      * @return Future most of services need time to be closed
+     * @param deviceDisconnected
      */
-    default ListenableFuture<Void> stopClusterServices(){
+    default ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected){
         return Futures.immediateFailedFuture(new RejectedExecutionException("Cannot stop abstract services, check implementation of cluster services"));
     }
 

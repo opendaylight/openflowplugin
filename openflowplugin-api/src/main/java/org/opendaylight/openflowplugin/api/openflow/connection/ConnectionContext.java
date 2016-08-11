@@ -106,6 +106,8 @@ public interface ConnectionContext {
      */
     void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
 
+    String getSafeNodeIdForLOG();
+
     void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration);
 
     /**
@@ -139,7 +141,7 @@ public interface ConnectionContext {
 
     /**
      * Create and return basic device info
-     * @return
+     * @return created device info
      */
     DeviceInfo getDeviceInfo();
 
