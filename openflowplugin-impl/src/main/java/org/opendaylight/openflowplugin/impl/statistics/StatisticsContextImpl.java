@@ -426,7 +426,7 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
+    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         myManager.stopScheduling(deviceInfo);
         return Futures.immediateFuture(null);
     }

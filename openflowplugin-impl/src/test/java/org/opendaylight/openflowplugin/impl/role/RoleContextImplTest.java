@@ -44,7 +44,7 @@ public class RoleContextImplTest {
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager, lifecycleService);
+        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
     }
 

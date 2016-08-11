@@ -69,7 +69,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             currentRoleGuard.acquire();
             LOG.trace("currentRole lock queue length: {} " + currentRoleGuard.getQueueLength());
         } catch (final InterruptedException e) {
-            LOG.error("Unexpected exception {} for acquire semaphor for input {}", e, input);
+            LOG.error("Unexpected exception {} for acquire semaphore for input {}", e, input);
             return RpcResultBuilder.<SetRoleOutput> failed().buildFuture();
         }
         // compare with last known role and set if different. If they are same, then return.

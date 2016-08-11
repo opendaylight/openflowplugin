@@ -104,7 +104,7 @@ public class SystemNotificationsListenerImplTest {
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
         Mockito.verify(connectionContext).getConnectionAdapter();
-        Mockito.verify(connectionContext).getNodeId();
+        Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
     /**
@@ -123,7 +123,7 @@ public class SystemNotificationsListenerImplTest {
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
         Mockito.verify(connectionContext).getConnectionAdapter();
-        Mockito.verify(connectionContext).getNodeId();
+        Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
     /**
@@ -144,7 +144,7 @@ public class SystemNotificationsListenerImplTest {
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
         Mockito.verify(connectionContext).getConnectionAdapter();
-        Mockito.verify(connectionContext).getNodeId();
+        Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
     /**
@@ -163,7 +163,7 @@ public class SystemNotificationsListenerImplTest {
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
         Mockito.verify(connectionContext).getConnectionAdapter();
-        Mockito.verify(connectionContext).getNodeId();
+        Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
     /**
@@ -212,7 +212,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).changeStateToTimeouting();
         Mockito.verify(connectionContext).closeConnection(true);
-        Mockito.verify(connectionContext).getNodeId();
+        Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
 
     }
 

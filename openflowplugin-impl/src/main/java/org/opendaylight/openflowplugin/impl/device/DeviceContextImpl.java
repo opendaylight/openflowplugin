@@ -545,7 +545,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
+    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         return this.transactionChainManager.deactivateTransactionManager();
     }
 

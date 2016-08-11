@@ -51,7 +51,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
         LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getNodeId());
+                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
     }
 
@@ -98,7 +98,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         if (shouldBeDisconnected) {
             if (LOG.isInfoEnabled()) {
                 LOG.info("ConnectionEvent:Closing connection as device is idle. Echo sent at {}. Device:{}, NodeId:{}",
-                        new Date(System.currentTimeMillis() - echoReplyTimeout), remoteAddress, connectionContext.getNodeId());
+                        new Date(System.currentTimeMillis() - echoReplyTimeout), remoteAddress, connectionContext.getSafeNodeIdForLOG());
             }
 
             connectionContext.closeConnection(true);
