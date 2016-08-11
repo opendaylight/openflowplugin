@@ -80,7 +80,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public ListenableFuture<List<Optional<FlowCapableNode>>> fill() {
-        LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier);
+        LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier.getKey().getId().getValue());
 
         // Prepare path for read transaction
         // TODO: Read only Tables, and not entire FlowCapableNode (fix Yang model)
