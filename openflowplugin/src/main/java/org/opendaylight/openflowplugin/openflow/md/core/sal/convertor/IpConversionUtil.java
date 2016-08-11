@@ -30,12 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 5.3.2015.
- * v6 routines added by Anton Ivanov on 14.6.2015
- * Arbitrary masks by sai.marapareddy@gmail.com
- */
 public final class IpConversionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(IpConversionUtil.class);
@@ -247,8 +241,6 @@ public final class IpConversionUtil {
      * @param ipv6Address - v6 Address object
      * @return - byte array of size 16. Last byte contains netmask
      */
-
-
     public static byte[] canonicalBinaryV6Address(final Ipv6Address ipv6Address) {
         /*
          * Do not modify this routine to take direct strings input!!!
@@ -256,7 +248,12 @@ public final class IpConversionUtil {
          * the input is validated via regexps in Ipv6Prefix()
          */
 
-        String [] address =  (ipv6Address.getValue()).split("%");
+        return canonicalBinaryV6AddressFromString(ipv6Address.getValue());
+    }
+
+    private static byte[] canonicalBinaryV6AddressFromString(final String ipv6Address) {
+
+        String [] address =  ipv6Address.split("%");
 
         int colonp;
         char ch;
@@ -785,14 +782,20 @@ public final class IpConversionUtil {
         return false;
     }
 
-    public static String compressedIpv6Format(final String ipv6Address) {
-        String compressedIpv6Address;
-        compressedIpv6Address = ipv6Address.replaceAll("((?::0+\\b){2,}):?(?!\\S*\\b\\1:0\\b)(\\S*)", "::$2");
-        return compressedIpv6Address;
+    private static String compressedIpv6FormatFromString(final String ipv6Address) {
+        try {
+            return byteArrayV6AddressToString(canonicalBinaryV6AddressFromString(ipv6Address));
+        } catch (UnknownHostException e) {
+            LOG.warn("Failed to compress IPv6 address {} because it is invalid", ipv6Address);
+            return ipv6Address;
+        }
+    }
+
+    public static Ipv6Address compressedIpv6AddressFormat(final Ipv6Address ipv6Address) {
+        return new Ipv6Address(compressedIpv6FormatFromString(ipv6Address.getValue()));
     }
 
     public static Ipv6ArbitraryMask compressedIpv6MaskFormat(final Ipv6ArbitraryMask ipv6Mask) {
-        String stringIpv6Mask = ipv6Mask.getValue();
-        return new Ipv6ArbitraryMask(compressedIpv6Format(stringIpv6Mask));
+        return new Ipv6ArbitraryMask(compressedIpv6FormatFromString(ipv6Mask.getValue()));
     }
 }
