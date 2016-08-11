@@ -30,7 +30,7 @@ public class Nshc1CodecTest {
     MatchEntry input;
 
     private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 39;
+    private static final int NXM_FIELD_CODE = 115;
 
     @Before
     public void setUp(){
