@@ -71,7 +71,7 @@ public class RoleManagerImpl implements RoleManager {
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
         final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
-        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this, lifecycleService);
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getLOGValue());
         Futures.addCallback(roleContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
@@ -85,7 +85,6 @@ public class RoleManagerImpl implements RoleManager {
                     @Override
                     public void onFailure(Throwable throwable) {
                         LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
-                        lifecycleService.closeConnection();
                     }
                 });
         lifecycleService.setRoleContext(roleContext);

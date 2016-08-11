@@ -25,7 +25,6 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -90,7 +89,7 @@ class RpcContextImpl implements RpcContext {
             final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
-            LOG.debug("Registration of service {} for device {}.", serviceClass, nodeInstanceIdentifier);
+            LOG.debug("Registration of service {} for device {}.", serviceClass.getSimpleName(), nodeInstanceIdentifier.getKey().getId().getValue());
         }
     }
 
@@ -120,8 +119,8 @@ class RpcContextImpl implements RpcContext {
                 rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
                 rpcRegistration.close();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType(),
-                            nodeInstanceIdentifier);
+                    LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                            nodeInstanceIdentifier.getKey().getId().getValue());
                 }
             }
         }
@@ -133,12 +132,12 @@ class RpcContextImpl implements RpcContext {
             LOG.trace("Device queue {} at capacity", this);
             return null;
         } else {
-            LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeInstanceIdentifier.getKey().getId(), tracker.availablePermits());
+            LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
         }
 
         final Long xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
-            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeInstanceIdentifier.getKey().getId());
+            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeInstanceIdentifier.getKey().getId().getValue());
             tracker.release();
             return null;
         }
@@ -161,7 +160,7 @@ class RpcContextImpl implements RpcContext {
         if (rpcRegistration != null) {
             rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistration.close();
-            LOG.debug("Unregistration serviceClass {} for Node {}", serviceClass, nodeInstanceIdentifier.getKey().getId());
+            LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(), nodeInstanceIdentifier.getKey().getId().getValue());
         }
     }
 
@@ -214,7 +213,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
+    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         MdSalRegistrationUtils.unregisterServices(this);
         return Futures.immediateFuture(null);
     }

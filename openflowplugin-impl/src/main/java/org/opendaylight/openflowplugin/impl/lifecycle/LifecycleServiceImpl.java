@@ -45,8 +45,7 @@ public class LifecycleServiceImpl implements LifecycleService {
         try {
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
-                LOG.debug("===============================================");
+                LOG.debug("========== Starting clustering MASTER services for node {} ==========", this.deviceContext.getDeviceInfo().getLOGValue());
             }
 
             if (connectionInterrupted()) {
@@ -108,21 +107,26 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Stopping clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
-            LOG.debug("===============================================");
+            LOG.debug("========== Stopping clustering MASTER services for node {} ==========", this.deviceContext.getDeviceInfo().getLOGValue());
         }
 
+        final boolean connectionInterrupted =
+                this.deviceContext
+                        .getPrimaryConnectionContext()
+                        .getConnectionState()
+                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
+
         LOG.info("Stopping role context cluster services for node {}", getIdentifier());
-        roleContext.stopClusterServices();
+        roleContext.stopClusterServices(connectionInterrupted);
 
         LOG.info("Stopping statistics context cluster services for node {}", getIdentifier());
-        statContext.stopClusterServices();
+        statContext.stopClusterServices(connectionInterrupted);
 
         LOG.info("Stopping rpc context cluster services for node {}", getIdentifier());
-        rpcContext.stopClusterServices();
+        rpcContext.stopClusterServices(connectionInterrupted);
 
         LOG.info("Stopping device context cluster services for node {}", getIdentifier());
-        return deviceContext.stopClusterServices();
+        return deviceContext.stopClusterServices(connectionInterrupted);
     }
 
     @Override

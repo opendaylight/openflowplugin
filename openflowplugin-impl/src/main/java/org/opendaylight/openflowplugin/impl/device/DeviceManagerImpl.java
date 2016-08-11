@@ -260,11 +260,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
 
-        deviceContexts.remove(deviceInfo);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
-        }
-
         LifecycleService lifecycleService = lifecycleServices.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
@@ -279,6 +274,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 LOG.warn("Closing lifecycle service for node {} was unsuccessful ", deviceInfo.getLOGValue(), e);
             }
         }
+
+        deviceContexts.remove(deviceInfo);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
+        }
+
     }
 
     @Override

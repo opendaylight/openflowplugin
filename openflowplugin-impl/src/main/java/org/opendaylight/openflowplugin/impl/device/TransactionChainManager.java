@@ -276,7 +276,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     ListenableFuture<Void> shuttingDown() {
-        LOG.debug("TxManager is going SHUTTING_DOWN for node {}", nodeII);
+        LOG.debug("TxManager is going SHUTTING_DOWN for node {}", nodeII.getKey().getId().getValue());
         ListenableFuture<Void> future;
         synchronized (txLock) {
             this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
