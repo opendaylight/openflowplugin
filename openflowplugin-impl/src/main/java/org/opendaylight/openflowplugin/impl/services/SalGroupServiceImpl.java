@@ -60,7 +60,6 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroup.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
@@ -69,9 +68,9 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if(LOG.isDebugEnabled()) {
                         LOG.debug("group add with id={} finished without error", input.getGroupId().getValue());
                     }
+                    deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
                     addIfNecessaryToDS(input.getGroupId(), input);
                 } else {
-                    deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
                     LOG.error("group add with id={} failed, errors={}", input.getGroupId().getValue(),
                             errorsToString(result.getErrors()));
                 }
@@ -79,7 +78,6 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
             @Override
             public void onFailure(Throwable t) {
-                deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
                 LOG.error("Service call for group add failed for id={}. Exception: {}", input.getGroupId().getValue(), t);
             }
         });
@@ -117,7 +115,6 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        removeGroup.getDeviceRegistry().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
         final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroup.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveGroupOutput>>() {
             @Override
@@ -126,6 +123,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if(LOG.isDebugEnabled()) {
                         LOG.debug("Group remove for id {} succeded", input.getGroupId().getValue());
                     }
+                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
                     removeIfNecessaryFromDS(input.getGroupId());
                 }else{
                     LOG.error("group remove failed with id={}, errors={}", input.getGroupId().getValue(),
