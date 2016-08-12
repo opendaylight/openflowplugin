@@ -46,6 +46,30 @@
       "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2d1c21c1",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-08-12T07:31:39Z",
+      "side": 0,
+      "message": "These are static method, you can always define the method with the same name in your LearnCodec and it will hide the parent static methods. So you don\u0027t really have to make them non-static for that purpose. These methods are made static because all the experimenter actions have the same header, and their deserialization is similar, so making it static method make sense.",
+      "parentUuid": "7a6b29fe_2e4eed6f",
+      "range": {
+        "startLine": 24,
+        "startChar": 48,
+        "endLine": 24,
+        "endChar": 54
+      },
+      "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
