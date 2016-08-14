@@ -70,6 +70,30 @@
       "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_1978842a",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/AbstractActionCodec.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6238
+      },
+      "writtenOn": "2016-08-14T07:00:06Z",
+      "side": 0,
+      "message": "Oh OK, I overridden it because I needed the length that is encoded in the header.\nI fixed as you said.",
+      "parentUuid": "7a6b29fe_2d1c21c1",
+      "range": {
+        "startLine": 24,
+        "startChar": 48,
+        "endLine": 24,
+        "endChar": 54
+      },
+      "revId": "ed04d8c6c98a0fdc2f924765e504e8d5d4caebea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
