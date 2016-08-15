@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 
 /**
  * The RPC Manager will maintain an RPC Context for each online switch. RPC context for device is created when
- * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler#onDeviceContextLevelUp(org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo)}
+ * {@link DeviceInitializationPhaseHandler#onDeviceContextLevelUp(DeviceInfo, org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService)}
  * is called.
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.

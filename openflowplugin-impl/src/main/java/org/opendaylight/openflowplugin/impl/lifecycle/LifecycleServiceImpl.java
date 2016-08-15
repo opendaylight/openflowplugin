@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
@@ -18,25 +20,16 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LifecycleServiceImpl implements LifecycleService {
+public class LifecycleServiceImpl implements LifecycleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
 
-    private final DeviceContext deviceContext;
-    private final RpcContext rpcContext;
-    private final RoleContext roleContext;
-    private final StatisticsContext statContext;
+    private DeviceContext deviceContext;
+    private RpcContext rpcContext;
+    private RoleContext roleContext;
+    private StatisticsContext statContext;
+    private ClusterSingletonServiceRegistration registration;
 
-    LifecycleServiceImpl(
-            final DeviceContext deviceContext,
-            final RpcContext rpcContext,
-            final RoleContext roleContext,
-            final StatisticsContext statContext) {
-        this.deviceContext = deviceContext;
-        this.rpcContext = rpcContext;
-        this.roleContext = roleContext;
-        this.statContext = statContext;
-    }
 
     @Override
     public void instantiateServiceInstance() {
@@ -69,5 +62,39 @@ class LifecycleServiceImpl implements LifecycleService {
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceContext.getServiceIdentifier();
+    }
+
+
+    @Override
+    public void close() throws Exception {
+        if (registration != null) {
+            registration.close();
+            registration = null;
+        }
+    }
+
+    @Override
+    public void registerService(final ClusterSingletonServiceProvider singletonServiceProvider) {
+        this.registration = singletonServiceProvider.registerClusterSingletonService(this);
+    }
+
+    @Override
+    public void setDeviceContext(final DeviceContext deviceContext) {
+        this.deviceContext = deviceContext;
+    }
+
+    @Override
+    public void setRpcContext(final RpcContext rpcContext) {
+        this.rpcContext = rpcContext;
+    }
+
+    @Override
+    public void setRoleContext(final RoleContext roleContext) {
+        this.roleContext = roleContext;
+    }
+
+    @Override
+    public void setStatContext(final StatisticsContext statContext) {
+        this.statContext = statContext;
     }
 }
