@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -16,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -31,46 +29,6 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
      * invoked after all services injected
      */
     void initialize();
-
-    /**
-     * Method has to activate (MASTER) or deactivate (SLAVE) TransactionChainManager.
-     * TransactionChainManager represents possibility to write or delete Node subtree data
-     * for actual Controller Cluster Node. We are able to have an active TxManager only if
-     * newRole is {@link OfpRole#BECOMESLAVE}.
-     * Parameters are used as marker to be sure it is change to SLAVE from MASTER or from
-     * MASTER to SLAVE and the last parameter "cleanDataStore" is used for validation only.
-     *
-     * @param deviceInfo which device
-     * @param role - NewRole expect to be {@link OfpRole#BECOMESLAVE} or {@link OfpRole#BECOMEMASTER}
-     * @return RoleChangeTxChainManager future for activation/deactivation
-     */
-    ListenableFuture<Void> onClusterRoleChange(final DeviceInfo deviceInfo, final OfpRole role);
-
-    /**
-     * Register device synchronize listeners
-     * @param deviceSynchronizeListener are notified if device is synchronized or not
-     */
-    void addDeviceSynchronizeListener(final DeviceSynchronizeListener deviceSynchronizeListener);
-
-    /**
-     * Notify all registered listeners about synchronized status
-     * @param deviceInfo which device
-     * @param deviceSynchronized true if device is synchronized
-     */
-    void notifyDeviceSynchronizeListeners(final DeviceInfo deviceInfo, final boolean deviceSynchronized);
-
-    /**
-     * Register device valid listeners
-     * @param deviceValidListener are notified if device is valid or not
-     */
-    void addDeviceValidListener(final DeviceValidListener deviceValidListener);
-
-    /**
-     * Notify all registered listeners about valid status
-     * @param deviceInfo which device
-     * @param deviceValid true if device is valid
-     */
-    void notifyDeviceValidListeners(final DeviceInfo deviceInfo, final boolean deviceValid);
 
     void setIsNotificationFlowRemovedOff(boolean value);
 
