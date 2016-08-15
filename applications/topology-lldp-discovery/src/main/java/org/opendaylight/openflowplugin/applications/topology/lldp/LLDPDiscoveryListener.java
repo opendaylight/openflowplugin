@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,12 +14,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LLDPDiscoveryListener implements PacketProcessingListener {
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
-
     private final LLDPLinkAger lldpLinkAger;
     private final NotificationProviderService notificationService;
 
