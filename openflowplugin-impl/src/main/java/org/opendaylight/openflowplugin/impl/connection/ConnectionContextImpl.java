@@ -162,12 +162,14 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
+
+        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
+
         if (null == nodeId){
             SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
         } else {
             SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
         }
-        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
         final Short auxiliaryId;
@@ -200,7 +202,8 @@ public class ConnectionContextImpl implements ConnectionContext {
      * This method returns safe nodeId for logging
      * @return string value od nodeId or string "null"
      */
-    private String getSafeNodeIdForLOG() {
+    @Override
+    public String getSafeNodeIdForLOG() {
         return null == nodeId ? "null" : nodeId.getValue();
     }
 
