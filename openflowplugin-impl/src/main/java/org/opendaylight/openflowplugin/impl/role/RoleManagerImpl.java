@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -34,6 +35,8 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +71,23 @@ public class RoleManagerImpl implements RoleManager {
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
         final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
-        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this);
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this, lifecycleService);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getNodeId());
+        Futures.addCallback(roleContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
+                    @Override
+                    public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getNodeId().getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getNodeId().getValue());
+                        lifecycleService.closeConnection();
+                    }
+                });
         lifecycleService.setRoleContext(roleContext);
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
@@ -88,12 +105,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        LOG.trace("onDeviceContextLevelDown for node {}", deviceInfo.getNodeId());
-        final RoleContext roleContext = contexts.remove(deviceInfo);
-        if (roleContext != null) {
-            LOG.debug("Found roleContext associated to deviceContext: {}, now trying close the roleContext", deviceInfo.getNodeId());
-            contexts.remove(deviceInfo.getNodeId(), roleContext);
-        }
+        contexts.remove(deviceInfo);
         deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
     }
 
