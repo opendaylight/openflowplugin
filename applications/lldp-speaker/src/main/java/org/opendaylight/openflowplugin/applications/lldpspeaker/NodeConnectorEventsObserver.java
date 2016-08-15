@@ -25,7 +25,7 @@ public interface NodeConnectorEventsObserver {
      * @param nodeConnectorInstanceId Object that uniquely identify added node connector
      * @param flowConnector object containing almost all of details about node connector
      */
-    public void nodeConnectorAdded(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
+    void nodeConnectorAdded(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
                                    FlowCapableNodeConnector flowConnector);
 
     /**
@@ -34,5 +34,5 @@ public interface NodeConnectorEventsObserver {
      * the same removal event.
      * @param nodeConnectorInstanceId Object that uniquely identify added node connector
      */
-    public void nodeConnectorRemoved(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId);
+    void nodeConnectorRemoved(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId);
 }
