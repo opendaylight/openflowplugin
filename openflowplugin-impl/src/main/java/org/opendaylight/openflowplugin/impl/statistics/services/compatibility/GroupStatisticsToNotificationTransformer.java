@@ -26,6 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * pulled out group stats to notification transformation
  */
 public class GroupStatisticsToNotificationTransformer {
+    private GroupStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state
