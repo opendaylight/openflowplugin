@@ -129,8 +129,8 @@ public class ConnectionContextImpl implements ConnectionContext {
             future.get(1, TimeUnit.SECONDS);
             LOG.info("Unregister outbound queue successful.");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            LOG.warn("Unregister outbound queue throws exception for node {} ", nodeId);
-            LOG.trace("Unregister outbound queue throws exception for node {} ", nodeId, e);
+            LOG.warn("Unregister outbound queue throws exception for node {} ", getSafeNodeIdForLOG());
+            LOG.trace("Unregister outbound queue throws exception for node {} ", getSafeNodeIdForLOG(), e);
         }
 
         closeHandshakeContext();
@@ -140,15 +140,15 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         if (propagate) {
-            LOG.debug("Propagating device disconnect for node {}", nodeId);
+            LOG.debug("Propagating device disconnect for node {}", getSafeNodeIdForLOG());
             propagateDeviceDisconnectedEvent();
         } else {
-            LOG.debug("Close connection without propagating for node {}", nodeId);
+            LOG.debug("Close connection without propagating for node {}", getSafeNodeIdForLOG());
         }
     }
 
     private void closeHandshakeContext() {
-        LOG.debug("Trying closing handshake context for node {}", nodeId);
+        LOG.debug("Trying closing handshake context for node {}", getSafeNodeIdForLOG());
         if (handshakeContext != null) {
             try {
                 handshakeContext.close();
@@ -194,6 +194,14 @@ public class ConnectionContextImpl implements ConnectionContext {
                     connectionAdapter.getRemoteAddress(), datapathId);
             deviceDisconnectedHandler.onDeviceDisconnected(this);
         }
+    }
+
+    /**
+     * This method returns safe nodeId for logging
+     * @return string value od nodeId or string "null"
+     */
+    private String getSafeNodeIdForLOG() {
+        return null == nodeId ? "null" : nodeId.getValue();
     }
 
     @Override
