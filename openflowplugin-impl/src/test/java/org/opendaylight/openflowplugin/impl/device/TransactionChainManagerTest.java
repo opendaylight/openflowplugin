@@ -33,7 +33,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleConductor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -69,7 +69,7 @@ public class TransactionChainManagerTest {
     @Mock
     DeviceInfo deviceInfo;
     @Mock
-    LifecycleConductor conductor;
+    LifecycleService lifecycleService;
 
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
@@ -90,7 +90,7 @@ public class TransactionChainManagerTest {
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
-        txChainManager = new TransactionChainManager(dataBroker, deviceInfo, conductor);
+        txChainManager = new TransactionChainManager(dataBroker, deviceInfo);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
