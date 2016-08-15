@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
+import org.opendaylight.openflowplugin.impl.util.GroupUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesOutput;
@@ -33,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -84,7 +84,7 @@ final class GroupFeaturesService
         notification.setGroupTypesSupported(extractSupportedGroupTypes(replyBody.getTypes()));
         notification.setMaxGroups(replyBody.getMaxGroups());
         notification.setGroupCapabilitiesSupported(extractSupportedCapabilities(replyBody.getCapabilities()));
-        notification.setActions(extractGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
+        notification.setActions(GroupUtil.extractGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
 
         return notification.build();
     }
@@ -125,31 +125,5 @@ final class GroupFeaturesService
             supportedGroups.add(GroupFf.class);
         }
         return supportedGroups;
-    }
-
-    @VisibleForTesting
-    static List<Long> extractGroupActionsSupportBitmap(final List<ActionType> actionsSupported) {
-        List<Long> supportActionByGroups = new ArrayList<>();
-        for (ActionType supportedActions : actionsSupported) {
-            long supportActionBitmap = 0;
-            supportActionBitmap |= supportedActions.isOFPATOUTPUT() ? (1 << 0) : 0;
-            supportActionBitmap |= supportedActions.isOFPATCOPYTTLOUT() ? (1 << 11) : 0;
-            supportActionBitmap |= supportedActions.isOFPATCOPYTTLIN() ? (1 << 12) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETMPLSTTL() ? (1 << 15) : 0;
-            supportActionBitmap |= supportedActions.isOFPATDECMPLSTTL() ? (1 << 16) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHVLAN() ? (1 << 17) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPVLAN() ? (1 << 18) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHMPLS() ? (1 << 19) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPMPLS() ? (1 << 20) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETQUEUE() ? (1 << 21) : 0;
-            supportActionBitmap |= supportedActions.isOFPATGROUP() ? (1 << 22) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETNWTTL() ? (1 << 23) : 0;
-            supportActionBitmap |= supportedActions.isOFPATDECNWTTL() ? (1 << 24) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETFIELD() ? (1 << 25) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHPBB() ? (1 << 26) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPPBB() ? (1 << 27) : 0;
-            supportActionByGroups.add(Long.valueOf(supportActionBitmap));
-        }
-        return supportActionByGroups;
     }
 }

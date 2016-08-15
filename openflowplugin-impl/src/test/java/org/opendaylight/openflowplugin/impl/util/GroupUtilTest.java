@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -28,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -41,6 +44,7 @@ public class GroupUtilTest {
     public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     private static final GroupId DUMMY_GROUP_ID = new GroupId(42L);
     private static final GroupId DUMMY_GROUP_ID_2 = new GroupId(43L);
+    private static final Long GROUP_ACTION_BITMAP = 0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Test
     public void testBuildGroupPath() throws Exception {
@@ -200,6 +204,15 @@ public class GroupUtilTest {
         Assert.assertFalse(composite.isSuccessful());
         Assert.assertEquals(2, composite.getErrors().size());
         Assert.assertEquals(1, composite.getResult().getBatchFailedGroupsOutput().size());
+    }
+
+    @Test
+    public void testExtractGroupActionsSupportBitmap() {
+        ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+        final List<Long> groupActionsSupportBitmap = GroupUtil.extractGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
+        assertEquals(1, groupActionsSupportBitmap.size());
+        final Long bitmap = groupActionsSupportBitmap.get(0);
+        assertEquals(GROUP_ACTION_BITMAP, bitmap);
     }
 
     private RpcResult<Void> createBarrierFailureOutcome() {
