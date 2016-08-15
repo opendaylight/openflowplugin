@@ -36,7 +36,7 @@ public final class PacketProcessingServiceImpl extends AbstractVoidService<Trans
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final TransmitPacketInput input) {
+    protected OfHeader buildRequest(final Xid xid, final TransmitPacketInput input) throws ServiceException {
         final PacketOutConvertorData data = new PacketOutConvertorData(getVersion());
         data.setDatapathId(getDatapathId());
         data.setXid(xid.getValue());

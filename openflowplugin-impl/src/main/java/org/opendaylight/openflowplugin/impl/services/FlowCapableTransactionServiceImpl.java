@@ -28,7 +28,7 @@ public class FlowCapableTransactionServiceImpl extends AbstractVoidService<SendB
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) throws ServiceException {
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
         barrierInputOFJavaBuilder.setVersion(getVersion());
         barrierInputOFJavaBuilder.setXid(xid.getValue());

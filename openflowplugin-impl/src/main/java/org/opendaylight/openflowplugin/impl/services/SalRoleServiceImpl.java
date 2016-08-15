@@ -58,7 +58,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SetRoleInput input) {
+    protected OfHeader buildRequest(final Xid xid, final SetRoleInput input) throws ServiceException {
         return null;
     }
 

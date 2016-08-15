@@ -20,7 +20,7 @@ public class EchoService extends AbstractSimpleService<EchoInputBuilder, EchoOut
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final EchoInputBuilder input) throws Exception {
+    protected OfHeader buildRequest(final Xid xid, final EchoInputBuilder input) throws ServiceException {
         return input
                 .setXid(xid.getValue())
                 .setVersion(getVersion())

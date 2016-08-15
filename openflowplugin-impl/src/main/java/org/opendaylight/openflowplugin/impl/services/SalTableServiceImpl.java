@@ -170,7 +170,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) {
+    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
         final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         final MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
 

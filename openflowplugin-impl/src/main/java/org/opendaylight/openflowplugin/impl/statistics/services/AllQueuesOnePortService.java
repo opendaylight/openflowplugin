@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.QueueStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -38,7 +39,7 @@ final class AllQueuesOnePortService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromGivenPortInput input) {
+    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromGivenPortInput input) throws ServiceException {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
         // Select all queues
