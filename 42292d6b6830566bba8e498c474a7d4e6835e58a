@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_522dae45",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2016-08-15T15:19:32Z",
+      "side": 1,
+      "message": "There are used two \"Flows\". One of them have to have fully qualified name.",
+      "parentUuid": "7a6b29fe_329f52b6",
+      "range": {
+        "startLine": 223,
+        "startChar": 80,
+        "endLine": 223,
+        "endChar": 82
+      },
+      "revId": "42292d6b6830566bba8e498c474a7d4e6835e58a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
