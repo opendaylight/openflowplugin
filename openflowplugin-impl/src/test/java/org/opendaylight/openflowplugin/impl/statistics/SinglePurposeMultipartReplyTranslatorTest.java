@@ -32,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -87,7 +86,6 @@ public class SinglePurposeMultipartReplyTranslatorTest {
     private static final Long DUMMY_REF_COUNT = 1234L;
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
-    private static final Long GROUP_ACTION_BITMAP = 0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Before
     public void setUp() {
@@ -207,15 +205,6 @@ public class SinglePurposeMultipartReplyTranslatorTest {
         GroupDescStats groupDescStat = groupDescStats.get(0);
         assertEquals(DUMMY_GROUP_ID.getValue(),groupDescStat.getGroupId().getValue());
         assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType() );
-    }
-
-    @Test
-    public void getGroupActionsSupportBitmap() {
-        ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
-        final List<Long> groupActionsSupportBitmap = SinglePurposeMultipartReplyTranslator.getGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
-        assertEquals(1, groupActionsSupportBitmap.size());
-        final Long bitmap = groupActionsSupportBitmap.get(0);
-        assertEquals(GROUP_ACTION_BITMAP, bitmap);
     }
 
     private MultipartReplyBody prepareMultipartReplyGroupDesc() {

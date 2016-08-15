@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.impl.util.GroupUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -50,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterKbps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
@@ -158,28 +158,7 @@ public class NodeStaticReplyTranslatorUtil {
         addGroupCapabilities(reply, gCapability);
         groupFeature.setGroupCapabilitiesSupported(gCapability);
 
-        final List<Long> supportActionByGroups = new ArrayList<>();
-        for (final ActionType actionType : reply.getActionsBitmap()) {
-            long supportActionBitmap = 0;
-            supportActionBitmap |= actionType.isOFPATOUTPUT() ? (1 << 0) : 0;
-            supportActionBitmap |= actionType.isOFPATCOPYTTLOUT() ? (1 << 11) : 0;
-            supportActionBitmap |= actionType.isOFPATCOPYTTLIN() ? (1 << 12) : 0;
-            supportActionBitmap |= actionType.isOFPATSETMPLSTTL() ? (1 << 15) : 0;
-            supportActionBitmap |= actionType.isOFPATDECMPLSTTL() ? (1 << 16) : 0;
-            supportActionBitmap |= actionType.isOFPATPUSHVLAN() ? (1 << 17) : 0;
-            supportActionBitmap |= actionType.isOFPATPOPVLAN() ? (1 << 18) : 0;
-            supportActionBitmap |= actionType.isOFPATPUSHMPLS() ? (1 << 19) : 0;
-            supportActionBitmap |= actionType.isOFPATPOPMPLS() ? (1 << 20) : 0;
-            supportActionBitmap |= actionType.isOFPATSETQUEUE() ? (1 << 21) : 0;
-            supportActionBitmap |= actionType.isOFPATGROUP() ? (1 << 22) : 0;
-            supportActionBitmap |= actionType.isOFPATSETNWTTL() ? (1 << 23) : 0;
-            supportActionBitmap |= actionType.isOFPATDECNWTTL() ? (1 << 24) : 0;
-            supportActionBitmap |= actionType.isOFPATSETFIELD() ? (1 << 25) : 0;
-            supportActionBitmap |= actionType.isOFPATPUSHPBB() ? (1 << 26) : 0;
-            supportActionBitmap |= actionType.isOFPATPOPPBB() ? (1 << 27) : 0;
-            supportActionByGroups.add(Long.valueOf(supportActionBitmap));
-        }
-        groupFeature.setActions(supportActionByGroups);
+        groupFeature.setActions(GroupUtil.extractGroupActionsSupportBitmap(reply.getActionsBitmap()));
         return new NodeGroupFeaturesBuilder().setGroupFeatures(groupFeature.build()).build();
     }
 
