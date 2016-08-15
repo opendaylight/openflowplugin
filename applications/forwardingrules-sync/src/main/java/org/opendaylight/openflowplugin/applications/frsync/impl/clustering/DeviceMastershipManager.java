@@ -48,7 +48,7 @@ public class DeviceMastershipManager {
             try {
                 registration.close();
             } catch (Exception e) {
-                LOG.error("FRS cluster service close fail: {}", nodeId.getValue());
+                LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
             }
         }
         LOG.debug("FRS service unregistered for: {}", nodeId.getValue());

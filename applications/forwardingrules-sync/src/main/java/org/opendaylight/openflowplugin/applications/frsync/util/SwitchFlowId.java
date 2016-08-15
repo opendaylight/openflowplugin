@@ -30,6 +30,26 @@ public class SwitchFlowId {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SwitchFlowId that = (SwitchFlowId) o;
+
+        if (tableId != null ? !tableId.equals(that.tableId) : that.tableId != null) {
+            return false;
+        }
+        if (priority != null ? !priority.equals(that.priority) : that.priority != null) {
+            return false;
+        }
+        return match != null ? match.equals(that.match) : that.match == null;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -39,30 +59,4 @@ public class SwitchFlowId {
         return result;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SwitchFlowId other = (SwitchFlowId) obj;
-        if (match == null) {
-            if (other.match != null)
-                return false;
-        } else if (!match.equals(other.match))
-            return false;
-        if (priority == null) {
-            if (other.priority != null)
-                return false;
-        } else if (!priority.equals(other.priority))
-            return false;
-        if (tableId == null) {
-            if (other.tableId != null)
-                return false;
-        } else if (!tableId.equals(other.tableId))
-            return false;
-        return true;
-    }
 }

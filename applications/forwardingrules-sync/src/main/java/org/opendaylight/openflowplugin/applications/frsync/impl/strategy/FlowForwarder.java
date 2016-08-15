@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
+    private static final String TABLE_ID_MISMATCH = "tableId mismatch";
     private final SalFlowService salFlowService;
 
     public FlowForwarder(final SalFlowService salFlowService) {
@@ -67,7 +68,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             return salFlowService.removeFlow(builder.build());
         } else {
             return RpcResultBuilder.<RemoveFlowOutput>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "tableId mismatch").buildFuture();
+                    .withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
         }
     }
 
@@ -94,7 +95,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             output = salFlowService.updateFlow(builder.build());
         } else {
             output = RpcResultBuilder.<UpdateFlowOutput>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "tableId mismatch").buildFuture();
+                    .withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
         }
 
         return output;
@@ -117,7 +118,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             output = salFlowService.addFlow(builder.build());
         } else {
-            output = RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "tableId mismatch").buildFuture();
+            output = RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
         }
         return output;
     }
