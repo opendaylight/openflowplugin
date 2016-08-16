@@ -9,12 +9,8 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
-import org.opendaylight.openflowplugin.api.openflow.OFPManager;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -31,10 +27,8 @@ public interface RoleContext extends  RequestContextStack, OFPContext {
     void setSalRoleService(@Nonnull final SalRoleService salRoleService);
 
     /**
-     * Getter for sal role service
-     * @return
+     * Make device slave
+     * @return listenable future from sal role service
      */
-    SalRoleService getSalRoleService();
-
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 }
