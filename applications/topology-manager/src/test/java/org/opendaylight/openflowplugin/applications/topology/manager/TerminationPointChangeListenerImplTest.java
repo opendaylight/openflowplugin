@@ -14,6 +14,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.DELETE;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeConnKey;
@@ -37,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -52,13 +56,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * @author joe
- *
- */
 public class TerminationPointChangeListenerImplTest extends DataChangeListenerBase{
     @SuppressWarnings("rawtypes")
     @Test
@@ -112,8 +111,8 @@ public class TerminationPointChangeListenerImplTest extends DataChangeListenerBa
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(null, null, Collections.singleton(invNodeConnID));
-        terminationPointListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID);
+        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch1);
 
@@ -166,8 +165,8 @@ public class TerminationPointChangeListenerImplTest extends DataChangeListenerBa
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(null, null, Collections.singleton(invNodeConnID));
-        terminationPointListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID);
+        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -191,9 +190,8 @@ public class TerminationPointChangeListenerImplTest extends DataChangeListenerBa
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(Collections.<InstanceIdentifier<?>, DataObject> singletonMap(
-                invNodeConnID, null), null, null);
-        terminationPointListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID);
+        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -240,9 +238,9 @@ public class TerminationPointChangeListenerImplTest extends DataChangeListenerBa
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(Collections.<InstanceIdentifier<?>, DataObject> singletonMap(
-                invNodeConnID, provideFlowCapableNodeConnector(true, false)), null, null);
-        terminationPointListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID);
+        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(provideFlowCapableNodeConnector(true, false));
+        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);
 
@@ -285,9 +283,9 @@ public class TerminationPointChangeListenerImplTest extends DataChangeListenerBa
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(Collections.<InstanceIdentifier<?>, DataObject> singletonMap(
-                invNodeConnID, provideFlowCapableNodeConnector(false, true)), null, null);
-        terminationPointListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID);
+        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(provideFlowCapableNodeConnector(false, true));
+        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);
 
