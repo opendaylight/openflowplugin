@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 
+import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,18 +18,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.clustering.CandidateAlreadyRegisteredException;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoleContextImplTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
 
     @Mock
     HashedWheelTimer hashedWheelTimer;
@@ -38,14 +39,20 @@ public class RoleContextImplTest {
     private RoleManager roleManager;
     @Mock
     private LifecycleService lifecycleService;
+    @Mock
+    private SalRoleService salRoleService;
 
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
     private RoleContext roleContext;
+    private RoleContextImpl roleContextSpy;
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
         roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager);
+        roleContext.setSalRoleService(salRoleService);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(salRoleService.setRole(Mockito.<SetRoleInput>any())).thenReturn(Futures.immediateFuture(null));
+        roleContextSpy = Mockito.spy((RoleContextImpl) roleContext);
     }
 
     @Test
@@ -63,4 +70,45 @@ public class RoleContextImplTest {
     public void testGetNodeId() throws Exception {
         Assert.assertTrue(roleContext.getDeviceInfo().getNodeId().equals(nodeId));
     }
+
+    @Test
+    public void startupClusterServices() throws Exception {
+        Mockito.when(deviceInfo.getVersion()).thenReturn(null);
+        roleContextSpy.startupClusterServices();
+        Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
+    }
+
+    @Test
+    public void startupClusterServicesVersion10() throws Exception {
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
+        roleContextSpy.startupClusterServices();
+        Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
+    }
+
+    @Test
+    public void startupClusterServicesVersion13() throws Exception {
+        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        roleContextSpy.startupClusterServices();
+        Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
+    }
+
+    @Test
+    public void stopClusterServicesNotDisconnected() throws Exception {
+        roleContextSpy.stopClusterServices(false);
+        Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
+        Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+    }
+
+    @Test
+    public void stopClusterServicesDisconnected() throws Exception {
+        roleContextSpy.stopClusterServices(true);
+        Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+    }
+
+    @Test
+    public void makeDeviceSlave() throws Exception {
+        roleContextSpy.makeDeviceSlave();
+        Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
+    }
+
 }
