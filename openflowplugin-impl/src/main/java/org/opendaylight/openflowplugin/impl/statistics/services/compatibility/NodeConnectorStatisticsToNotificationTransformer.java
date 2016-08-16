@@ -34,6 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.n
  */
 public class NodeConnectorStatisticsToNotificationTransformer {
 
+    private NodeConnectorStatisticsToNotificationTransformer() {
+        // Hide implicit constructor
+    }
+
     /**
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo    device basic info
