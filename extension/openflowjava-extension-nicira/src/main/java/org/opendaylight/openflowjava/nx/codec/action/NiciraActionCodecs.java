@@ -23,4 +23,5 @@ public class NiciraActionCodecs {
     public static final PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
     public static final PopNshCodec POP_NSH_CODEC = new PopNshCodec();
     public static final ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
+    public static final LearnCodec LEARN_CODEC = new LearnCodec();
 }
