@@ -36,15 +36,11 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * provides flat batch util methods
  */
 public final class FlatBatchUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FlatBatchUtil.class);
 
     private FlatBatchUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -67,31 +63,33 @@ public final class FlatBatchUtil {
 
     @VisibleForTesting
     static boolean decideBarrier(final EnumSet<BatchStepType> previousTypes, final BatchStepType type) {
-        final boolean needBarrier;
-        switch (type) {
-            case FLOW_ADD:
-            case FLOW_UPDATE:
-                needBarrier = previousTypes.contains(BatchStepType.GROUP_ADD)
-                        || previousTypes.contains(BatchStepType.METER_ADD);
-                break;
-            case GROUP_ADD:
-                needBarrier = previousTypes.contains(BatchStepType.GROUP_ADD)
-                        || previousTypes.contains(BatchStepType.GROUP_UPDATE);
-                break;
-            case GROUP_REMOVE:
-                needBarrier = previousTypes.contains(BatchStepType.FLOW_REMOVE)
-                        || previousTypes.contains(BatchStepType.FLOW_UPDATE)
-                        || previousTypes.contains(BatchStepType.GROUP_REMOVE)
-                        || previousTypes.contains(BatchStepType.GROUP_UPDATE);
-                break;
-            case METER_REMOVE:
-                needBarrier = previousTypes.contains(BatchStepType.FLOW_REMOVE)
-                        || previousTypes.contains(BatchStepType.FLOW_UPDATE);
-                break;
-            default:
-                needBarrier = false;
-        }
-        return needBarrier;
+        return isFlowBarrierNeeded(previousTypes, type)
+                || isGroupBarrierNeeded(previousTypes, type)
+                || isMeterBarrierNeeded(previousTypes, type);
+    }
+
+    private static boolean isFlowBarrierNeeded(final EnumSet<BatchStepType> previousTypes, final BatchStepType type) {
+        return (type == BatchStepType.FLOW_ADD
+                || type == BatchStepType.FLOW_UPDATE)
+                && (previousTypes.contains(BatchStepType.GROUP_ADD)
+                || previousTypes.contains(BatchStepType.METER_ADD));
+    }
+
+    private static boolean isGroupBarrierNeeded(final EnumSet<BatchStepType> previousTypes, final BatchStepType type) {
+        return (type == BatchStepType.GROUP_ADD
+                && (previousTypes.contains(BatchStepType.GROUP_ADD)
+                || previousTypes.contains(BatchStepType.GROUP_UPDATE)))
+                || (type == BatchStepType.GROUP_REMOVE
+                && (previousTypes.contains(BatchStepType.FLOW_REMOVE)
+                || previousTypes.contains(BatchStepType.FLOW_UPDATE)
+                || previousTypes.contains(BatchStepType.GROUP_REMOVE)
+                || previousTypes.contains(BatchStepType.GROUP_UPDATE)));
+    }
+
+    private static boolean isMeterBarrierNeeded(final EnumSet<BatchStepType> previousTypes, final BatchStepType type) {
+        return type == BatchStepType.METER_REMOVE
+                && (previousTypes.contains(BatchStepType.FLOW_REMOVE)
+                || previousTypes.contains(BatchStepType.FLOW_UPDATE));
     }
 
     public static List<BatchPlanStep> assembleBatchPlan(List<Batch> batches) {
