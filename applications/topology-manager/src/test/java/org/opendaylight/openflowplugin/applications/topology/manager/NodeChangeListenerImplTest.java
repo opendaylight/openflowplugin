@@ -13,6 +13,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.DELETE;
+import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestNode;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -47,13 +50,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * @author joe
- *
- */
 public class NodeChangeListenerImplTest extends DataChangeListenerBase {
     @SuppressWarnings({ "rawtypes" })
     @Test
@@ -102,8 +100,8 @@ public class NodeChangeListenerImplTest extends DataChangeListenerBase {
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(null, null, Collections.singleton(invNodeID));
-        nodeChangeListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID);
+        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch1);
 
@@ -151,8 +149,8 @@ public class NodeChangeListenerImplTest extends DataChangeListenerBase {
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(null,null,Collections.singleton(invNodeID));
-        nodeChangeListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID);
+        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -174,9 +172,8 @@ public class NodeChangeListenerImplTest extends DataChangeListenerBase {
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        mockDataChangeListener(Collections.<InstanceIdentifier<?>, DataObject> singletonMap(
-                invNodeID, null), null, null);
-        nodeChangeListener.onDataChanged(mockedDataChangeListener);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeID);
+        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
