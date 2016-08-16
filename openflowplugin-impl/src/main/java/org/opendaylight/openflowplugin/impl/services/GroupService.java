@@ -31,7 +31,7 @@ final class GroupService<I extends Group, O extends DataObject> extends Abstract
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final I input) {
+    protected OfHeader buildRequest(final Xid xid, final I input) throws ServiceException {
         final Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(input, data);
 
         final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
