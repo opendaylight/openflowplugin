@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
  */
 public class SessionStatistics {
 
-    private static final Map<String, Map<ConnectionStatus, EventCounter>> sessionEvents = new HashMap<>();
+    private static final Map<String, Map<ConnectionStatus, EventCounter>> SESSION_EVENTS = new HashMap<>();
 
     public static void countEvent(final String sessionId, final ConnectionStatus connectionStatus) {
         Map<ConnectionStatus, EventCounter> sessionsConnectionEvents = getConnectionEvents(sessionId);
@@ -38,10 +38,10 @@ public class SessionStatistics {
     }
 
     private static Map<ConnectionStatus, EventCounter> getConnectionEvents(final String sessionId) {
-        Map<ConnectionStatus, EventCounter> sessionConnectionEvents = sessionEvents.get(sessionId);
+        Map<ConnectionStatus, EventCounter> sessionConnectionEvents = SESSION_EVENTS.get(sessionId);
         if (null == sessionConnectionEvents) {
             sessionConnectionEvents = new HashMap<>();
-            sessionEvents.put(sessionId, sessionConnectionEvents);
+            SESSION_EVENTS.put(sessionId, sessionConnectionEvents);
         }
         return sessionConnectionEvents;
     }
@@ -49,7 +49,7 @@ public class SessionStatistics {
 
     public static List<String> provideStatistics() {
         List<String> dump = new ArrayList<>();
-        for (Map.Entry<String, Map<ConnectionStatus, EventCounter>> sessionEntries : sessionEvents.entrySet()) {
+        for (Map.Entry<String, Map<ConnectionStatus, EventCounter>> sessionEntries : SESSION_EVENTS.entrySet()) {
             Map<ConnectionStatus, EventCounter> sessionEvents = sessionEntries.getValue();
             dump.add(String.format("SESSION : %s", sessionEntries.getKey()));
             for (Map.Entry<ConnectionStatus, EventCounter> sessionEvent : sessionEvents.entrySet()) {
@@ -65,7 +65,7 @@ public class SessionStatistics {
     }
 
     private static final class EventCounter {
-        private final AtomicLongFieldUpdater<EventCounter> UPDATER = AtomicLongFieldUpdater.newUpdater(EventCounter.class, "count");
+        private final AtomicLongFieldUpdater<EventCounter> updater = AtomicLongFieldUpdater.newUpdater(EventCounter.class, "count");
         private volatile long count;
 
         public long getCount() {
@@ -73,12 +73,12 @@ public class SessionStatistics {
         }
 
         public void increment() {
-            count = UPDATER.incrementAndGet(this);
+            count = updater.incrementAndGet(this);
         }
     }
 
     public static void resetAllCounters() {
-        sessionEvents.clear();
+        SESSION_EVENTS.clear();
     }
 
 }
