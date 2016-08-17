@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -116,11 +115,6 @@ public class RpcManagerImpl implements RpcManager {
         if(!contexts.containsKey(deviceInfo)) {
             this.contexts.put(deviceInfo,rpcContexts);
         }
-    }
-
-    @Override
-    public <T extends OFPContext> T gainContext(DeviceInfo deviceInfo) {
-        return (T) contexts.get(deviceInfo);
     }
 
 
