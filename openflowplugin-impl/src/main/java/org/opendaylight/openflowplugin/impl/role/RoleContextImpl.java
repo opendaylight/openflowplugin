@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
@@ -39,8 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Role context hold information about entity ownership registration,
- * register and unregister candidate (main and tx)
+ * Role context try to make change device role on device
  */
 class RoleContextImpl implements RoleContext {
 
@@ -77,11 +77,6 @@ class RoleContextImpl implements RoleContext {
     public void setSalRoleService(@Nonnull final SalRoleService salRoleService) {
         Preconditions.checkNotNull(salRoleService);
         this.salRoleService = salRoleService;
-    }
-
-    @Override
-    public SalRoleService getSalRoleService() {
-        return this.salRoleService;
     }
 
     @Override
@@ -159,7 +154,8 @@ class RoleContextImpl implements RoleContext {
         return sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
     }
 
-    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
         LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
         final Short version = deviceInfo.getVersion();
@@ -173,7 +169,7 @@ class RoleContextImpl implements RoleContext {
         } else {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
                     .setNode(new NodeRef(DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()))).build();
-            setRoleOutputFuture = getSalRoleService().setRole(setRoleInput);
+            setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
                     LOG.warn("New role {} was not propagated to device {} during 10 sec", newRole, deviceInfo.getLOGValue());

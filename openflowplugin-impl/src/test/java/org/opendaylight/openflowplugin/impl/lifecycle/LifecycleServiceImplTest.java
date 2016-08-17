@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.util.concurrent.Futures;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +15,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -25,7 +29,9 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 @RunWith(MockitoJUnitRunner.class)
 public class LifecycleServiceImplTest {
 
-    private static final ServiceGroupIdentifier SERVICE_GROUP_IDENTIFIER = ServiceGroupIdentifier.create("test node");
+    private static final String TEST_NODE = "test node";
+    private static final ServiceGroupIdentifier SERVICE_GROUP_IDENTIFIER = ServiceGroupIdentifier.create(TEST_NODE);
+
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
@@ -36,6 +42,12 @@ public class LifecycleServiceImplTest {
     private RoleContext roleContext;
     @Mock
     private StatisticsContext statContext;
+    @Mock
+    private ConnectionContext connectionContext;
+    @Mock
+    private DeviceFlowRegistry deviceFlowRegistry;
+    @Mock
+    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
     private LifecycleService lifecycleService;
 
@@ -46,12 +58,43 @@ public class LifecycleServiceImplTest {
         lifecycleService.setRpcContext(rpcContext);
         lifecycleService.setRoleContext(roleContext);
         lifecycleService.setStatContext(statContext);
-        Mockito.when(deviceInfo.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
+        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        Mockito.when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
+        Mockito.when(deviceContext.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
+        Mockito.when(deviceFlowRegistry.fill()).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
+        Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
     }
 
     @Test
-    public void createTests() {
-        Assert.assertTrue(true);
+    public void instantiateServiceInstance() throws Exception {
+        lifecycleService.instantiateServiceInstance();
+        Mockito.verify(deviceContext).startupClusterServices();
+        Mockito.verify(statContext).startupClusterServices();
+        Mockito.verify(deviceContext).initialSubmitTransaction();
+        Mockito.verify(rpcContext).startupClusterServices();
+        Mockito.verify(roleContext).startupClusterServices();
+    }
+
+    @Test
+    public void closeServiceInstance() throws Exception {
+        lifecycleService.closeServiceInstance();
+        Mockito.verify(statContext).stopClusterServices(false);
+        Mockito.verify(deviceContext).stopClusterServices(false);
+        Mockito.verify(rpcContext).stopClusterServices(false);
+        Mockito.verify(roleContext).stopClusterServices(false);
+    }
+
+    @Test
+    public void getIdentifier() throws Exception {
+        Assert.assertEquals(lifecycleService.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
+    }
+
+    @Test
+    public void closeConnection() throws Exception {
+        lifecycleService.closeConnection();
+        Mockito.verify(deviceContext).shutdownConnection();
     }
 
 }
