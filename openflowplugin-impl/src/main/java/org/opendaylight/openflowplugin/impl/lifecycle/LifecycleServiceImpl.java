@@ -21,6 +21,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegist
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -38,70 +39,21 @@ public class LifecycleServiceImpl implements LifecycleService {
     private RoleContext roleContext;
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
 
     @Override
     public void instantiateServiceInstance() {
-        try {
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("========== Starting clustering MASTER services for node {} ==========", this.deviceContext.getDeviceInfo().getLOGValue());
-            }
+        LOG.info("========== Starting clustering MASTER services for node {} ==========", this.deviceContext.getDeviceInfo().getLOGValue());
 
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Starting device context cluster services for node {}", getIdentifier());
-            this.deviceContext.startupClusterServices();
-
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Starting statistics context cluster services for node {}", getIdentifier());
-            this.statContext.startupClusterServices();
-
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Statistics initial gathering OK, submitting data for node {}", getIdentifier());
-            this.deviceContext.initialSubmitTransaction();
-
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Starting rpc context cluster services for node {}", getIdentifier());
-            this.rpcContext.startupClusterServices();
-
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Starting role context cluster services for node {}", getIdentifier());
-            this.roleContext.startupClusterServices();
-
-            if (connectionInterrupted()) {
-                return;
-            }
-
-            LOG.info("Caching flows IDs ...");
-            fillDeviceFlowRegistry();
-
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("Cluster service {} was unable to start.", this.getIdentifier());
-            this.deviceContext.shutdownConnection();
+        if (this.clusterInitializationPhaseHandler.onContextBecomeMasterInitialized(null)) {
+            LOG.info("========== Start-up clustering MASTER services for node {} was SUCCESSFUL ==========", this.deviceContext.getDeviceInfo().getLOGValue());
+        } else {
+            LOG.warn("========== Start-up clustering MASTER services for node {} was UN-SUCCESSFUL ==========", this.deviceContext.getDeviceInfo().getLOGValue());
+            this.closeConnection();
         }
-    }
 
-    private boolean connectionInterrupted() {
-        if (this.deviceContext.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Node {} was disconnected, will stop starting MASTER services.", this.deviceContext.getDeviceInfo().getLOGValue());
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -145,6 +97,15 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void registerService(final ClusterSingletonServiceProvider singletonServiceProvider) {
+        //lifecycle service -> device context -> statistics context -> rpc context -> role context -> lifecycle service
+        this.clusterInitializationPhaseHandler = deviceContext;
+        this.deviceContext.setLifecycleInitializationPhaseHandler(this.statContext);
+        this.statContext.setLifecycleInitializationPhaseHandler(this.rpcContext);
+        this.rpcContext.setLifecycleInitializationPhaseHandler(this.roleContext);
+        this.roleContext.setLifecycleInitializationPhaseHandler(this);
+        //Set initial submit handler
+        this.statContext.setInitialSubmitHandler(this.deviceContext);
+        //Register cluster singleton service
         this.registration = singletonServiceProvider.registerClusterSingletonService(this);
     }
 
@@ -218,4 +179,23 @@ public class LifecycleServiceImpl implements LifecycleService {
         });
     }
 
+    @Override
+    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        this.clusterInitializationPhaseHandler = handler;
+    }
+
+    @Override
+    public boolean onContextBecomeMasterInitialized(final ConnectionContext connectionContext) {
+
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(connectionContext.getConnectionState())) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Connection to the device {} was interrupted.", this.deviceContext.getDeviceInfo().getLOGValue());
+            }
+            return false;
+        }
+
+        LOG.info("Caching flows IDs ...");
+        fillDeviceFlowRegistry();
+        return true;
+    }
 }

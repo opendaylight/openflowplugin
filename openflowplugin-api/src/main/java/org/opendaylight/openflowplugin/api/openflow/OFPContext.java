@@ -13,11 +13,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
 
 /**
  * General API for all OFP Context
  */
-public interface OFPContext {
+public interface OFPContext extends ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
     void setState(CONTEXT_STATE contextState);
 
@@ -48,7 +50,7 @@ public interface OFPContext {
     /**
      * About to stop services in cluster not master anymore or going down
      * @return Future most of services need time to be closed
-     * @param deviceDisconnected
+     * @param deviceDisconnected true if clustering services stopping by device disconnect
      */
     default ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected){
         return Futures.immediateFailedFuture(new RejectedExecutionException("Cannot stop abstract services, check implementation of cluster services"));
