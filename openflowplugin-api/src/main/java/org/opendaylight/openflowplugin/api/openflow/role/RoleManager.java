@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
@@ -22,8 +21,7 @@ public interface RoleManager extends
         DeviceLifecycleSupervisor,
         DeviceInitializationPhaseHandler,
         AutoCloseable,
-        DeviceTerminationPhaseHandler,
-        OFPManager {
+        DeviceTerminationPhaseHandler {
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo, final int numRetries);
 }

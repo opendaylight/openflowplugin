@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -18,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 /**
  * Service for starting or stopping all services in plugin in cluster
  */
-public interface LifecycleService extends ClusterSingletonService, AutoCloseable {
+public interface LifecycleService extends ClusterSingletonService, AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
     /**
      * This method registers lifecycle service to the given provider

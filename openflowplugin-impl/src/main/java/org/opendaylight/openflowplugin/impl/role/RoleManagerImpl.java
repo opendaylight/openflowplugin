@@ -25,7 +25,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -152,8 +151,4 @@ public class RoleManagerImpl implements RoleManager {
         return contexts.get(deviceInfo);
     }
 
-    @Override
-    public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
-        return (T) contexts.get(deviceInfo);
-    }
 }
