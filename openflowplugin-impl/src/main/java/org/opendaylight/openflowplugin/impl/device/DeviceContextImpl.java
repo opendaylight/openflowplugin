@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -137,6 +138,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
     public DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -539,14 +541,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void startupClusterServices() throws ExecutionException, InterruptedException {
-        LOG.debug("Initializing transaction chain manager for node {}", getDeviceInfo().getLOGValue());
-        this.transactionChainManager.activateTransactionManager();
-        LOG.debug("Waiting to get node {} information", getDeviceInfo().getLOGValue());
-        DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
-    }
-
-    @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         return this.transactionChainManager.deactivateTransactionManager();
     }
@@ -577,5 +571,32 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public boolean isSkipTableFeatures() {
         return this.skipTableFeatures;
+    }
+
+    @Override	
+    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        this.clusterInitializationPhaseHandler = handler;
+    }
+
+    @Override
+    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
+
+        if (getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
+            return false;
+        }
+
+        LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
+
+        this.transactionChainManager.activateTransactionManager();
+
+        try {
+            DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
+            return false;
+        }
+
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
     }
 }
