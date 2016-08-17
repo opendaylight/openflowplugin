@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -308,8 +307,4 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         this.deviceTerminPhaseHandler = handler;
     }
 
-    @Override
-    public <T extends OFPContext> T gainContext(DeviceInfo deviceInfo) {
-        return (T) contexts.get(deviceInfo);
-    }
 }

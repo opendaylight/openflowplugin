@@ -69,8 +69,8 @@ public class HandshakeListenerImpl implements HandshakeListener {
                 LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getNodeId().getValue());
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
-                    if (ConnectionStatus.CLOSING.equals(connectionStatusResult)) {
-                        connectionContext.closeConnection(false);
+                    if (!ConnectionStatus.MAY_CONTINUE.equals(connectionStatusResult)) {
+                        connectionContext.closeConnection(ConnectionStatus.ALREADY_CONNECTED.equals(connectionStatusResult));
                     }
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
