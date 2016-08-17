@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,6 +20,7 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
@@ -58,6 +59,7 @@ public class LifecycleServiceImplTest {
         lifecycleService.setRpcContext(rpcContext);
         lifecycleService.setRoleContext(roleContext);
         lifecycleService.setStatContext(statContext);
+        lifecycleService.registerService(clusterSingletonServiceProvider);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
@@ -70,11 +72,11 @@ public class LifecycleServiceImplTest {
     @Test
     public void instantiateServiceInstance() throws Exception {
         lifecycleService.instantiateServiceInstance();
-        Mockito.verify(deviceContext).startupClusterServices();
-        Mockito.verify(statContext).startupClusterServices();
-        Mockito.verify(deviceContext).initialSubmitTransaction();
-        Mockito.verify(rpcContext).startupClusterServices();
-        Mockito.verify(roleContext).startupClusterServices();
+        Mockito.verify(deviceContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
+        Mockito.verify(statContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
+        Mockito.verify(statContext).setInitialSubmitHandler(Mockito.<ClusterInitializationPhaseHandler>any());
+        Mockito.verify(rpcContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
+        Mockito.verify(roleContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
     }
 
     @Test

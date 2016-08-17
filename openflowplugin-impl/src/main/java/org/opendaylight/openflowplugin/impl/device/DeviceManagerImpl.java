@@ -159,9 +159,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          if (deviceContexts.containsKey(deviceInfo)) {
              DeviceContext deviceContext = deviceContexts.get(deviceInfo);
              if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-                 LOG.info("Node {} already connected but context state not in TERMINATION state, replacing connection context",
+                 LOG.warn("Node {} already connected but context state not in TERMINATION state, rejecting connection",
                          connectionContext.getDeviceInfo().getLOGValue());
-                 deviceContext.replaceConnectionContext(connectionContext);
                  return ConnectionStatus.ALREADY_CONNECTED;
              } else {
                  LOG.warn("Rejecting connection from node which is already connected and there exist deviceContext for it: {}",
@@ -362,11 +361,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @VisibleForTesting
     void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
         deviceContexts.put(deviceInfo, deviceContext);
-    }
-
-    @Override
-    public <T extends OFPContext> T gainContext(final DeviceInfo deviceInfo) {
-        return (T) deviceContexts.get(deviceInfo);
     }
 
     @Override
