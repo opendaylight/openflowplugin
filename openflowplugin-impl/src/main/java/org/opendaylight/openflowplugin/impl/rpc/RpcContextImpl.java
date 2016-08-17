@@ -16,15 +16,16 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -54,6 +55,7 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
     RpcContextImpl(final DeviceInfo deviceInfo,
                    final RpcProviderRegistry rpcProviderRegistry,
@@ -200,7 +202,24 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void startupClusterServices() throws ExecutionException, InterruptedException {
+    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
+        MdSalRegistrationUtils.unregisterServices(this);
+        return Futures.immediateFuture(null);
+    }
+
+    @Override
+    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        this.clusterInitializationPhaseHandler = handler;
+    }
+
+    @Override
+    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
+
+        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
+            return false;
+        }
+
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
@@ -209,12 +228,6 @@ class RpcContextImpl implements RpcContext {
                     notificationPublishService,
                     convertorExecutor);
         }
-
-    }
-
-    @Override
-    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        MdSalRegistrationUtils.unregisterServices(this);
-        return Futures.immediateFuture(null);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
     }
 }
