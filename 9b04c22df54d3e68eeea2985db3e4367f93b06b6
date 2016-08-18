@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_178dd231",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T16:39:11Z",
+      "side": 1,
+      "message": "please remove w/space",
+      "range": {
+        "startLine": 576,
+        "startChar": 13,
+        "endLine": 576,
+        "endChar": 14
+      },
+      "revId": "9b04c22df54d3e68eeea2985db3e4367f93b06b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
