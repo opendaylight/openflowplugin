@@ -34,6 +34,8 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     void markToBeremoved(FlowRegistryKey flowRegistryKey);
 
+    void update(FlowRegistryKey oldFlowRegistryKey,FlowRegistryKey newFlowRegistryKey,FlowDescriptor flowDescriptor);
+
     void removeMarked();
 
     Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors();
