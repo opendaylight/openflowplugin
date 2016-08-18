@@ -178,15 +178,25 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
                 flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-        try {
-            flowRegistry.put(flowRegistryKey, flowDescriptor);
-        } catch (IllegalArgumentException ex) {
-            LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
-                    flowDescriptor.getTableKey().getId());
-            final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
-            final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
-                    create(flowDescriptor.getTableKey().getId(), newFlowId);
-            flowRegistry.put(flowRegistryKey, newFlowDescriptor);
+        synchronized (flowRegistryKey) {
+            try {
+                flowRegistry.put(flowRegistryKey, flowDescriptor);
+            } catch (IllegalArgumentException ex) {
+                LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
+                        flowDescriptor.getTableKey().getId());
+                final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
+                final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
+                        create(flowDescriptor.getTableKey().getId(), newFlowId);
+                flowRegistry.put(flowRegistryKey, newFlowDescriptor);
+            }
+        }
+    }
+
+    @Override
+    public void update(FlowRegistryKey newFlowRegistryKey,FlowDescriptor flowDescriptor){
+        LOG.trace("Updating the entry with hash: {}", newFlowRegistryKey.hashCode());
+        synchronized (newFlowRegistryKey) {
+            flowRegistry.forcePut(newFlowRegistryKey, flowDescriptor);
         }
     }
 
