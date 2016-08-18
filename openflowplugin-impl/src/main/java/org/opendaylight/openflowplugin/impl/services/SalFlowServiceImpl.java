@@ -252,7 +252,8 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 // this is either an add or an update
                 final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
-                deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
+
+                deviceFlowRegistry.update(updatedflowRegistryKey, flowDescriptor);
 
                 if (itemLifecycleListener != null) {
                     KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
