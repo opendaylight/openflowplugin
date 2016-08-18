@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -50,9 +49,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Util methods for group reconcil task (future chaining, transforms).
  */
-public class ReconcileUtil {
+public final class ReconcileUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReconcileUtil.class);
+
+    private ReconcileUtil() {
+        throw new IllegalStateException("This class should not be instantiated.");
+    }
 
     /**
      * @param previousItemAction description for case when the triggering future contains failure
@@ -60,31 +63,25 @@ public class ReconcileUtil {
      * @return single rpc result of type Void honoring all partial rpc results
      */
     public static <D> Function<List<RpcResult<D>>, RpcResult<Void>> createRpcResultCondenser(final String previousItemAction) {
-        return new Function<List<RpcResult<D>>, RpcResult<Void>>() {
-            @Nullable
-            @Override
-            public RpcResult<Void> apply(@Nullable final List<RpcResult<D>> input) {
-                final RpcResultBuilder<Void> resultSink;
-                if (input != null) {
-                    List<RpcError> errors = new ArrayList<>();
-                    for (RpcResult<D> rpcResult : input) {
-                        if (!rpcResult.isSuccessful()) {
-                            errors.addAll(rpcResult.getErrors());
-                        }
+        return input -> {
+            final RpcResultBuilder<Void> resultSink;
+            if (input != null) {
+                List<RpcError> errors = new ArrayList<>();
+                for (RpcResult<D> rpcResult : input) {
+                    if (!rpcResult.isSuccessful()) {
+                        errors.addAll(rpcResult.getErrors());
                     }
-                    if (errors.isEmpty()) {
-                        resultSink = RpcResultBuilder.success();
-                    } else {
-                        resultSink = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
-                    }
-                } else {
-                    resultSink = RpcResultBuilder.<Void>failed()
-                            .withError(RpcError.ErrorType.APPLICATION, "previous " + previousItemAction + " failed");
-
                 }
-
-                return resultSink.build();
+                if (errors.isEmpty()) {
+                    resultSink = RpcResultBuilder.success();
+                } else {
+                    resultSink = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
+                }
+            } else {
+                resultSink = RpcResultBuilder.<Void>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "previous " + previousItemAction + " failed");
             }
+            return resultSink.build();
         };
     }
 
@@ -94,27 +91,21 @@ public class ReconcileUtil {
      * @return single rpc result of type Void honoring all partial rpc results
      */
     public static <D> Function<RpcResult<D>, RpcResult<Void>> createRpcResultToVoidFunction(final String actionDescription) {
-        return new Function<RpcResult<D>, RpcResult<Void>>() {
-            @Nullable
-            @Override
-            public RpcResult<Void> apply(@Nullable final RpcResult<D> input) {
-                final RpcResultBuilder<Void> resultSink;
-                if (input != null) {
-                    List<RpcError> errors = new ArrayList<>();
-                    if (!input.isSuccessful()) {
-                        errors.addAll(input.getErrors());
-                        resultSink = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
-                    } else {
-                        resultSink = RpcResultBuilder.success();
-                    }
+        return input -> {
+            final RpcResultBuilder<Void> resultSink;
+            if (input != null) {
+                List<RpcError> errors = new ArrayList<>();
+                if (!input.isSuccessful()) {
+                    errors.addAll(input.getErrors());
+                    resultSink = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
                 } else {
-                    resultSink = RpcResultBuilder.<Void>failed()
-                            .withError(RpcError.ErrorType.APPLICATION, "action of " + actionDescription + " failed");
-
+                    resultSink = RpcResultBuilder.success();
                 }
-
-                return resultSink.build();
+            } else {
+                resultSink = RpcResultBuilder.<Void>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "action of " + actionDescription + " failed");
             }
+            return resultSink.build();
         };
     }
 
@@ -157,7 +148,6 @@ public class ReconcileUtil {
                                                                       final Map<Long, Group> installedGroupsArg,
                                                                       final Collection<Group> pendingGroups,
                                                                       final boolean gatherUpdates) {
-
         final Map<Long, Group> installedGroups = new HashMap<>(installedGroupsArg);
         final List<ItemSyncBox<Group>> plan = new ArrayList<>();
 
