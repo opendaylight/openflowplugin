@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_e2ba0fbf",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/handlers/ClusterInitializationPhaseHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-19T10:03:56Z",
+      "side": 1,
+      "message": "yes, we need one method for just one context, I was thinking to define a new interface with one method and use it in context needed but we end up with many interfaces for one class, so I put it here and made default action NOOP and overwrite it only in context needed. We could define it as not default but in this case you need to define few empty body methods in each implemantation who\u0027s implementing this interface :)",
+      "parentUuid": "7a6b29fe_a2681788",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 11
+      },
+      "revId": "767b03eadaa49d5487bfa389b69bcc7d2a683ac0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
