@@ -33,7 +33,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class RoleManagerImpl implements RoleManager {
     @Override
     public void onDeviceContextLevelUp(@CheckForNull final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
         final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
-        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this);
+        final RoleContext roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, this, lifecycleService);
         roleContext.setSalRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         Verify.verify(contexts.putIfAbsent(deviceInfo, roleContext) == null, "Role context for master Node %s is still not closed.", deviceInfo.getLOGValue());
         Futures.addCallback(roleContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
@@ -84,6 +83,7 @@ public class RoleManagerImpl implements RoleManager {
                     @Override
                     public void onFailure(Throwable throwable) {
                         LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
+                        lifecycleService.closeConnection();
                     }
                 });
         lifecycleService.setRoleContext(roleContext);
@@ -97,7 +97,7 @@ public class RoleManagerImpl implements RoleManager {
             // got here because last known role is LEADER and DS might need clearing up
             final RoleContext roleContext = iterator.next();
             contexts.remove(roleContext.getDeviceInfo());
-            removeDeviceFromOperationalDS(roleContext.getDeviceInfo(), MAX_CLEAN_DS_RETRIES);
+            removeDeviceFromOperationalDS(roleContext.getDeviceInfo());
         }
     }
 
@@ -108,33 +108,22 @@ public class RoleManagerImpl implements RoleManager {
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo, final int numRetries) {
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-        delWtx.delete(LogicalDatastoreType.OPERATIONAL, DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()));
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceInfo.getNodeInstanceIdentifier());
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
 
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
-                contexts.remove(deviceInfo);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
+                }
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                // If we have any retries left, we will try to clean the datastore again
-                if (numRetries > 0) {
-                    // We "used" one retry here, so decrement it
-                    final int curRetries = numRetries - 1;
-                    LOG.debug("Delete node {} failed with exception {}. Trying again (retries left: {})", deviceInfo.getLOGValue(), t, curRetries);
-                    // Recursive call to this method with "one less" retry
-                    removeDeviceFromOperationalDS(deviceInfo, curRetries);
-                    return;
-                }
-
-                // No retries left, so we will just close the role context, and ignore datastore cleanup
-                LOG.warn("Delete node {} failed with exception {}. No retries left, aborting", deviceInfo.getLOGValue(), t);
-                contexts.remove(deviceInfo);
+                LOG.warn("Delete node {} failed with exception {}", deviceInfo.getLOGValue(), t);
             }
         });
 
