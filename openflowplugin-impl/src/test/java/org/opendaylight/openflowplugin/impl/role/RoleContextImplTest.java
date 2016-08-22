@@ -48,7 +48,7 @@ public class RoleContextImplTest {
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager);
+        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager, );
         roleContext.setSalRoleService(salRoleService);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(salRoleService.setRole(Mockito.<SetRoleInput>any())).thenReturn(Futures.immediateFuture(null));
@@ -96,13 +96,13 @@ public class RoleContextImplTest {
     public void stopClusterServicesNotDisconnected() throws Exception {
         roleContextSpy.stopClusterServices(false);
         Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
-        Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+        Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test
     public void stopClusterServicesDisconnected() throws Exception {
         roleContextSpy.stopClusterServices(true);
-        Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+        Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test

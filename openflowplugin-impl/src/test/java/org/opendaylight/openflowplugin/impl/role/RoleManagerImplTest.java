@@ -132,7 +132,7 @@ public class RoleManagerImplTest {
     @Test
     public void testCloseMaster() throws Exception {
         roleManagerSpy.close();
-        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.eq(deviceInfo), Mockito.anyInt());
+        inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.eq(deviceInfo));
         inOrder.verifyNoMoreInteractions();
     }
 
