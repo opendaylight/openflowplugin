@@ -33,6 +33,8 @@ public class FlowWriterTxChain implements FlowCounterMBean {
     private AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private AtomicInteger countDpnWriteCompletion = new AtomicInteger();
     private AtomicLong taskCompletionTime = new AtomicLong();
+    private final String UNITS = "ns";
+    private FlowStats flowStats = new FlowStats();
 
     public FlowWriterTxChain(final DataBroker dataBroker, ExecutorService flowPusher){
         this.dataBroker = dataBroker;
@@ -62,6 +64,10 @@ public class FlowWriterTxChain implements FlowCounterMBean {
                     0, 1, startTableId, endTableId, false);
             flowPusher.execute(task);
         }
+    }
+
+    public void setFlowStatInstance(FlowStats flowStats) {
+        this.flowStats = flowStats;
     }
 
     @Override
@@ -200,6 +206,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
 
             @Override
             public void onSuccess(Object o) {
+                flowStats.incrementSuccessCount();
                 if (remainingTxReturn.decrementAndGet() <= 0) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {} in {}ns", dpId,

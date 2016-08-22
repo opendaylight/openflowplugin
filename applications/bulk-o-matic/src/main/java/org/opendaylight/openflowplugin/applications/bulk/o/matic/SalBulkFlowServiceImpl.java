@@ -78,6 +78,9 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     private final DataBroker dataBroker;
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
+    private FlowStats flowStats = new FlowStats();
+    private long initializeFailedTransactionCount = 0;
+
     public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker) {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -214,6 +217,12 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
             name = new ObjectName(pathToMBean);
             mbs.registerMBean(flowCounterBeanImpl, name);
+
+            String pathToStatsMBean = String.format("%s:type=%s",
+                    FlowStats.class.getPackage().getName(),
+                    FlowStats.class.getSimpleName());
+            ObjectName fStats = new ObjectName(pathToStatsMBean);;
+            mbs.registerMBean(flowStats, fStats);
         } catch (MalformedObjectNameException | InstanceAlreadyExistsException
                 | MBeanRegistrationException | NotCompliantMBeanException e) {
             rpcResultBuilder = RpcResultBuilder.failed();
@@ -239,9 +248,14 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
     @Override
     public Future<RpcResult<Void>> flowTest(FlowTestInput input) {
+        initializeFailedTransactionCount = input.getDpnCount().intValue() * input.getFlowsPerDpn().intValue();
+        flowStats.resetCount();
+        // the failure count is derived from the success count using this reverse counter.
+        flowStats.setReverseCounter(initializeFailedTransactionCount);
         if (input.isTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
+            flowTester.setFlowStatInstance(flowStats);
             if (input.isIsAdd()){
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
@@ -258,6 +272,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         if (input.isSeq()) {
             FlowWriterSequential flowTester = new FlowWriterSequential(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
+            flowTester.setFlowStatInstance(flowStats);
             if (input.isIsAdd()){
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
@@ -271,6 +286,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         } else {
             FlowWriterConcurrent flowTester = new FlowWriterConcurrent(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
+            flowTester.setFlowStatInstance(flowStats);
             if (input.isIsAdd()){
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),

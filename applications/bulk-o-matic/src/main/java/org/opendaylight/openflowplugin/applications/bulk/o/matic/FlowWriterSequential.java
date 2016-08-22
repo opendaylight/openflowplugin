@@ -30,6 +30,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
     private AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private AtomicInteger countDpnWriteCompletion = new AtomicInteger();
     private AtomicLong taskCompletionTime = new AtomicLong();
+    private static final String UNITS = "ns";
+    private FlowStats flowStats = new FlowStats();
 
     public FlowWriterSequential(final DataBroker dataBroker, ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
@@ -59,6 +61,10 @@ public class FlowWriterSequential implements FlowCounterMBean {
                     startTableId, endTableId, false);
             flowPusher.execute(task);
         }
+    }
+
+    public void setFlowStatInstance(FlowStats flowStats) {
+        this.flowStats = flowStats;
     }
 
     @Override
@@ -131,6 +137,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             LOG.debug("Submitting Txn for dpId: {}, begin tableId: {}, end tableId: {}, sourceIp: {}", dpId, tableId, k, sourceIp);
 
             Futures.addCallback(writeTransaction.submit(), new DsCallBack(dpId, sourceIp, k));
+
         }
 
         private void addFlowToTx(WriteTransaction writeTransaction, String flowId, InstanceIdentifier<Flow> flowIid,
@@ -159,6 +166,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
 
             @Override
             public void onSuccess(Object o) {
+                flowStats.incrementSuccessCount();
                 if (sourceIp > flowsPerDpn) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {}, tableId: {}, sourceIp: {} in {}ns", dpId,
