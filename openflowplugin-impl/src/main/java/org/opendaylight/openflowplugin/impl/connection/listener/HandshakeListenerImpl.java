@@ -50,8 +50,10 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
     @Override
     public void onHandshakeSuccessful(final GetFeaturesOutput featureOutput, final Short version) {
-        LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
-        closeHandshakeContext();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+        }
+        this.handshakeContext.close();
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
@@ -66,7 +68,9 @@ public class HandshakeListenerImpl implements HandshakeListener {
         return new FutureCallback<RpcResult<BarrierOutput>>() {
             @Override
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
-                LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getNodeId().getValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getNodeId().getValue());
+                }
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
                     if (!ConnectionStatus.MAY_CONTINUE.equals(connectionStatusResult)) {
@@ -90,29 +94,22 @@ public class HandshakeListenerImpl implements HandshakeListener {
         };
     }
 
-    protected ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final long xid) {
+    private ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final long xid) {
         final BarrierInput barrierInput = new BarrierInputBuilder()
                 .setXid(xid)
                 .setVersion(version)
                 .build();
         return JdkFutureAdapters.listenInPoolThread(
-                connectionContext.getConnectionAdapter().barrier(barrierInput));
+                this.connectionContext.getConnectionAdapter().barrier(barrierInput));
     }
 
     @Override
     public void onHandshakeFailure() {
-        LOG.debug("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
-        closeHandshakeContext();
-        connectionContext.closeConnection(false);
-    }
-
-    private void closeHandshakeContext() {
-        try {
-            handshakeContext.close();
-        } catch (final Exception e) {
-            LOG.error("Closing handshake context failed: {}", e.getMessage());
-            LOG.debug("Detail in handshake context close: {}", e);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("handshake failed: {}", this.connectionContext.getConnectionAdapter().getRemoteAddress());
         }
+        this.handshakeContext.close();
+        this.connectionContext.closeConnection(false);
     }
 
     @Override

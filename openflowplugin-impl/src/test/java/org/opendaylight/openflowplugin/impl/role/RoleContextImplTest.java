@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
@@ -48,10 +49,11 @@ public class RoleContextImplTest {
 
     @Before
     public void setup() throws CandidateAlreadyRegisteredException {
-        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager);
+        roleContext = new RoleContextImpl(deviceInfo, hashedWheelTimer, roleManager, lifecycleService);
         roleContext.setSalRoleService(salRoleService);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(salRoleService.setRole(Mockito.<SetRoleInput>any())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DeviceStateUtil.createNodeInstanceIdentifier(nodeId));
         roleContextSpy = Mockito.spy((RoleContextImpl) roleContext);
     }
 
@@ -73,7 +75,6 @@ public class RoleContextImplTest {
 
     @Test
     public void startupClusterServices() throws Exception {
-        Mockito.when(deviceInfo.getVersion()).thenReturn(null);
         roleContextSpy.startupClusterServices();
         Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
     }
@@ -96,13 +97,13 @@ public class RoleContextImplTest {
     public void stopClusterServicesNotDisconnected() throws Exception {
         roleContextSpy.stopClusterServices(false);
         Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
-        Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+        Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test
     public void stopClusterServicesDisconnected() throws Exception {
         roleContextSpy.stopClusterServices(true);
-        Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any(), Mockito.anyInt());
+        Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test

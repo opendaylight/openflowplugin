@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.rpc.listener;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifiable;
@@ -24,19 +24,19 @@ import org.slf4j.LoggerFactory;
 public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemLifecycleListenerImpl.class);
-    public static final String NOT_ABLE_TO_WRITE_TO_TRANSACTION = "Not able to write to transaction: {}";
+    private static final String NOT_ABLE_TO_WRITE_TO_TRANSACTION = "Not able to write to transaction: ";
 
-    private final DeviceContext deviceContext;
+    private final TxFacade txFacade;
 
-    public ItemLifecycleListenerImpl(DeviceContext deviceContext) {
-        this.deviceContext = deviceContext;
+    public ItemLifecycleListenerImpl(final TxFacade txFacade) {
+        this.txFacade = txFacade;
     }
 
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
-            deviceContext.submitTransaction();
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
+            txFacade.submitTransaction();
         } catch (Exception e) {
             LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
@@ -45,8 +45,8 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath) {
         try {
-            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
-            deviceContext.submitTransaction();
+            txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
+            txFacade.submitTransaction();
         } catch (Exception e) {
             LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
@@ -55,9 +55,9 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
-            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
-            deviceContext.submitTransaction();
+            txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
+            txFacade.submitTransaction();
         } catch (Exception e) {
             LOG.warn(NOT_ABLE_TO_WRITE_TO_TRANSACTION, e);
         }
