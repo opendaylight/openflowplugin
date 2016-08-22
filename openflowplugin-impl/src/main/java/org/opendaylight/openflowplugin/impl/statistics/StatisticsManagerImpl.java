@@ -107,11 +107,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         final DeviceInfo deviceInfo) {
 
         if (!statisticsContext.isSchedulingEnabled()) {
-            LOG.debug("Disabled statistics scheduling for device: {}", deviceInfo.getNodeId().getValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Disabled statistics scheduling for device: {}", deviceInfo.getNodeId().getValue());
+            }
             return;
         }
 
-        LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo.getNodeId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo.getNodeId());
+        }
         timeCounter.markStart();
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -125,13 +129,20 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node was not successful: {}", throwable);
+                LOG.warn("Statistics gathering for single node {} was not successful: ", deviceInfo.getLOGValue(), throwable.getMessage());
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
+                }
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /* This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
                     contexts.get(deviceInfo).getLifecycleService().closeConnection();
                 } else {
-                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+                    if (throwable instanceof IllegalStateException) {
+                        stopScheduling(deviceInfo);
+                    } else {
+                        scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+                    }
                 }
             }
         });
@@ -152,7 +163,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                      final DeviceInfo deviceInfo,
                                      final StatisticsContext statisticsContext,
                                      final TimeCounter timeCounter) {
-        LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
+        }
         if (!isStatisticsPollingEnabled) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
                     timeout -> pollStatistics(
@@ -253,7 +266,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
         if (isStatisticsPollingEnabled) {
-            LOG.info("Statistics are shut down for device: {}", deviceInfo.getNodeId());
+            LOG.info("Statistics are shutdown for device: {}", deviceInfo.getNodeId());
             return;
         }
 
@@ -278,7 +291,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void stopScheduling(final DeviceInfo deviceInfo) {
-        LOG.debug("Stopping statistics scheduling for device: {}", deviceInfo.getNodeId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Stopping statistics scheduling for device: {}", deviceInfo.getNodeId());
+        }
         final StatisticsContext statisticsContext = contexts.get(deviceInfo);
 
         if (statisticsContext == null) {
