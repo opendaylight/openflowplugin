@@ -18,9 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 12.5.2015.
- */
 public class OutboundQueueProviderImpl implements OutboundQueueProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OutboundQueueProviderImpl.class);
     private final short ofVersion;

@@ -18,6 +18,7 @@ import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -102,16 +103,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final ConvertorExecutor convertorExecutor,
                              final boolean skipTableFeatures) {
 
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
-        this.globalNotificationQuota = globalNotificationQuota;
-        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
-        this.skipTableFeatures = skipTableFeatures;
-        this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.convertorExecutor = convertorExecutor;
-        this.hashedWheelTimer = hashedWheelTimer;
+        this.dataBroker = dataBroker;
+
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-
         final NodesBuilder nodesBuilder = new NodesBuilder();
         nodesBuilder.setNode(Collections.<Node>emptyList());
         tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
@@ -122,10 +117,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             throw new IllegalStateException(e);
         }
 
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
+        this.globalNotificationQuota = globalNotificationQuota;
+        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+        this.skipTableFeatures = skipTableFeatures;
+        this.convertorExecutor = convertorExecutor;
+        this.hashedWheelTimer = hashedWheelTimer;
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
-
-        spyPool = new ScheduledThreadPoolExecutor(1);
+        this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
@@ -158,7 +158,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          */
          if (deviceContexts.containsKey(deviceInfo)) {
              DeviceContext deviceContext = deviceContexts.get(deviceInfo);
-             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo);
+             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
              if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
                  LOG.warn("Node {} context state not in TERMINATION state.",
                          connectionContext.getDeviceInfo().getLOGValue());
@@ -195,13 +195,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 convertorExecutor,
                 skipTableFeatures);
 
-        deviceContexts.putIfAbsent(deviceInfo, deviceContext);
+        deviceContexts.put(deviceInfo, deviceContext);
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
         deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
 
-        lifecycleServices.putIfAbsent(deviceInfo, lifecycleService);
+        lifecycleServices.put(deviceInfo, lifecycleService);
 
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
 
@@ -226,7 +226,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 if (freshNotificationLimit < 100) {
                     freshNotificationLimit = 100;
                 }
-                LOG.debug("fresh notification limit = {}", freshNotificationLimit);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("fresh notification limit = {}", freshNotificationLimit);
+                }
                 for (final DeviceContext deviceContext : deviceContexts.values()) {
                     deviceContext.updatePacketInRateLimit(freshNotificationLimit);
                 }
@@ -253,10 +255,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             deviceCtx.shuttingDownDataStoreTransactions();
         }
 
-        if (spyPool != null) {
-            spyPool.shutdownNow();
-            spyPool = null;
-        }
+        Optional.ofNullable(spyPool).ifPresent(ScheduledThreadPoolExecutor::shutdownNow);
+        spyPool = null;
+
     }
 
     @Override
@@ -316,7 +317,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
 
         if (deviceCtx.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-            LOG.debug("Device context for node {} is already is termination state, waiting for close all context");
+            LOG.info("Device context for node {} is already is termination state, waiting for close all context", deviceInfo.getLOGValue());
             return;
         }
 
@@ -328,33 +329,31 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
         }
         //TODO: Auxiliary connections supported ?
-        {
             /* Device is disconnected and so we need to close TxManager */
-            final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
-            Futures.addCallback(future, new FutureCallback<Void>() {
+        final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
+        Futures.addCallback(future, new FutureCallback<Void>() {
 
-                @Override
-                public void onSuccess(final Void result) {
-                    LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getLOGValue());
-                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-                }
+            @Override
+            public void onSuccess(final Void result) {
+                LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getLOGValue());
+                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+            }
 
-                @Override
-                public void onFailure(final Throwable t) {
-                    LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getLOGValue());
-                    LOG.trace("TxChainManager failed by closing. ", t);
-                    deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-                }
-            });
-            /* Add timer for Close TxManager because it could fain ind cluster without notification */
-            final TimerTask timerTask = timeout -> {
-                if (!future.isDone()) {
-                    LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getLOGValue());
-                    future.cancel(false);
-                }
-            };
-            hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
-        }
+            @Override
+            public void onFailure(final Throwable t) {
+                LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getLOGValue());
+                LOG.trace("TxChainManager failed by closing. ", t);
+                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+            }
+        });
+        /* Add timer for Close TxManager because it could fain ind cluster without notification */
+        final TimerTask timerTask = timeout -> {
+            if (!future.isDone()) {
+                LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getLOGValue());
+                future.cancel(false);
+            }
+        };
+        hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
     }
 
     @VisibleForTesting
