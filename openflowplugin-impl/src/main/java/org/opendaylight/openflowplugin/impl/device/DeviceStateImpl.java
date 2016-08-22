@@ -13,12 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
 /**
- * openflowplugin-impl
- * org.opendaylight.openflowplugin.impl.device
- * <p/>
- * DeviceState is builded from {@link FeaturesReply} and {@link NodeId}. Both values are inside
- * {@link org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext}
- *
+ * Holder for device features
  */
 class DeviceStateImpl implements DeviceState {
 
@@ -29,7 +24,7 @@ class DeviceStateImpl implements DeviceState {
     private boolean portStatisticsAvailable;
     private boolean queueStatisticsAvailable;
 
-    public DeviceStateImpl() {
+    DeviceStateImpl() {
     }
 
     @Override
