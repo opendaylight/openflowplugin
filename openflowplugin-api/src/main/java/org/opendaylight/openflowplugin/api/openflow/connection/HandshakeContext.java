@@ -24,4 +24,7 @@ public interface HandshakeContext extends AutoCloseable {
      * @return handshake pool
      */
     ThreadPoolExecutor getHandshakePool();
+
+    @Override
+    void close();
 }

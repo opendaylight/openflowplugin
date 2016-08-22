@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -112,15 +113,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private static final float LOW_WATERMARK_FACTOR = 0.75f;
     // TODO: high water mark factor should be parametrized
     private static final float HIGH_WATERMARK_FACTOR = 0.95f;
+    private boolean initialized;
 
     private ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
-    private final TransactionChainManager transactionChainManager;
-    private final DeviceFlowRegistry deviceFlowRegistry;
-    private final DeviceGroupRegistry deviceGroupRegistry;
-    private final DeviceMeterRegistry deviceMeterRegistry;
+    private TransactionChainManager transactionChainManager;
+    private DeviceFlowRegistry deviceFlowRegistry;
+    private DeviceGroupRegistry deviceGroupRegistry;
+    private DeviceMeterRegistry deviceMeterRegistry;
     private final PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
@@ -140,7 +142,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
-    public DeviceContextImpl(
+    DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
             @Nonnull final DataBroker dataBroker,
             @Nonnull final MessageSpy messageSpy,
@@ -148,41 +150,34 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final DeviceManager manager,
             final ConvertorExecutor convertorExecutor,
             final boolean skipTableFeatures) {
-        this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
+        this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.deviceState = new DeviceStateImpl();
-        this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
-        auxiliaryConnectionContexts = new HashMap<>();
-        deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, deviceInfo.getNodeInstanceIdentifier());
-        deviceGroupRegistry = new DeviceGroupRegistryImpl();
-        deviceMeterRegistry = new DeviceMeterRegistryImpl();
+        this.dataBroker = dataBroker;
+        this.auxiliaryConnectionContexts = new HashMap<>();
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
-        this.deviceManager = Preconditions.checkNotNull(manager);
+        this.deviceManager = manager;
 
-        packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
+        this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ 1000, /*initial*/2000, this.messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
-        portStatusTranslator = translatorLibrary.lookupTranslator(
+        this.portStatusTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), PortGrouping.class.getName()));
-        packetInTranslator = translatorLibrary.lookupTranslator(
+        this.packetInTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), PacketIn.class.getName()));
-        flowRemovedTranslator = translatorLibrary.lookupTranslator(
+        this.flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
 
-        itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
-        flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
-        itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
+        this.itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
+        this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
+        this.itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
+        this.initialized = false;
     }
 
-    /**
-     * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
-     * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
-     */
     @Override
     public void initialSubmitTransaction() {
         transactionChainManager.initialSubmitWriteTransaction();
@@ -220,24 +215,30 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data){
-        transactionChainManager.writeToTransaction(store, path, data, false);
+        if (Objects.nonNull(transactionChainManager)) {
+            transactionChainManager.writeToTransaction(store, path, data, false);
+        }
     }
 
     @Override
     public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
                                                                          final InstanceIdentifier<T> path,
                                                                          final T data){
-        transactionChainManager.writeToTransaction(store, path, data, true);
+        if (Objects.nonNull(transactionChainManager)) {
+            transactionChainManager.writeToTransaction(store, path, data, true);
+        }
     }
 
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws TransactionChainClosedException {
-        transactionChainManager.addDeleteOperationTotTxChain(store, path);
+        if (Objects.nonNull(transactionChainManager)) {
+            transactionChainManager.addDeleteOperationTotTxChain(store, path);
+        }
     }
 
     @Override
     public boolean submitTransaction() {
-        return transactionChainManager.submitWriteTransaction();
+        return Objects.nonNull(transactionChainManager) && transactionChainManager.submitWriteTransaction();
     }
 
     @Override
@@ -246,7 +247,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ConnectionContext getAuxiliaryConnectiobContexts(final BigInteger cookie) {
+    public ConnectionContext getAuxiliaryConnectionContexts(final BigInteger cookie) {
         return auxiliaryConnectionContexts.get(new SwitchConnectionCookieOFImpl(cookie.longValue()));
     }
 
@@ -492,12 +493,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public synchronized void shutdownConnection() {
-        LOG.debug("Shutdown method for node {}", getDeviceInfo().getLOGValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Shutdown method for node {}", getDeviceInfo().getLOGValue());
+        }
         if (CONTEXT_STATE.TERMINATION.equals(getState())) {
             LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getLOGValue());
             return;
         }
-        setState(CONTEXT_STATE.TERMINATION);
 
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
             LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getLOGValue());
@@ -518,7 +520,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
-        return transactionChainManager.shuttingDown();
+        ListenableFuture<Void> future = Futures.immediateFuture(null);
+        if (Objects.nonNull(this.transactionChainManager)) {
+            future = this.transactionChainManager.shuttingDown();
+        }
+        return future;
     }
 
     @VisibleForTesting
@@ -543,7 +549,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        return this.transactionChainManager.deactivateTransactionManager();
+        ListenableFuture<Void> future = Futures.immediateFuture(null);
+        if (Objects.nonNull(this.transactionChainManager)) {
+            future = this.transactionChainManager.deactivateTransactionManager();
+        }
+        return future;
     }
 
     @Override
@@ -558,7 +568,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
-        this.transactionChainManager.setLifecycleService(lifecycleService);
+        if (Objects.nonNull(this.transactionChainManager)) {
+            this.transactionChainManager.setLifecycleService(lifecycleService);
+        }
     }
 
     @Override
@@ -589,6 +601,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
 
+        lazyTransactionManagerInitialiaztion();
+
         this.transactionChainManager.activateTransactionManager();
 
         try {
@@ -599,5 +613,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
+    }
+
+    @VisibleForTesting
+    void lazyTransactionManagerInitialiaztion() {
+        if (!this.initialized) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
+            }
+            this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
+            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, deviceInfo.getNodeInstanceIdentifier());
+            this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
+            this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
+            this.initialized = true;
+        }
     }
 }
