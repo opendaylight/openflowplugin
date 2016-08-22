@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -34,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -73,6 +73,8 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private ClusterInitializationPhaseHandler initialSubmitHandler;
 
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
                           final boolean shuttingDownStatisticsPolling,
@@ -428,15 +430,6 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public void startupClusterServices() throws ExecutionException, InterruptedException {
-        if (!this.shuttingDownStatisticsPolling) {
-            this.statListForCollectingInitialization();
-            this.initialGatherDynamicData();
-            myManager.startScheduling(deviceInfo);
-        }
-    }
-
-    @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         myManager.stopScheduling(deviceInfo);
         return Futures.immediateFuture(null);
@@ -445,5 +438,49 @@ class StatisticsContextImpl implements StatisticsContext {
     @Override
     public LifecycleService getLifecycleService() {
         return lifecycleService;
+    }
+
+    @Override
+    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        this.clusterInitializationPhaseHandler = handler;
+    }
+
+    @Override
+    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
+
+        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
+            return false;
+        }
+
+        if (!this.shuttingDownStatisticsPolling) {
+
+            LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
+
+            this.statListForCollectingInitialization();
+            Futures.addCallback(this.initialGatherDynamicData(), new FutureCallback<Boolean>() {
+
+                        @Override
+                        public void onSuccess(@Nullable Boolean aBoolean) {
+                            initialSubmitHandler.initialSubmitTransaction();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
+                            lifecycleService.closeConnection();
+                        }
+                    });
+
+                    myManager.startScheduling(deviceInfo);
+
+        }
+
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+    }
+
+    @Override
+    public void setInitialSubmitHandler(final ClusterInitializationPhaseHandler initialSubmitHandler) {
+        this.initialSubmitHandler = initialSubmitHandler;
     }
 }

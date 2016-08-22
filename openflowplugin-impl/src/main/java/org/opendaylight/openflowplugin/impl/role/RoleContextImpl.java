@@ -23,8 +23,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
@@ -53,6 +55,7 @@ class RoleContextImpl implements RoleContext {
     private final DeviceInfo deviceInfo;
     private CONTEXT_STATE state;
     private final RoleManager myManager;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
     RoleContextImpl(final DeviceInfo deviceInfo,
                     final HashedWheelTimer hashedWheelTimer,
@@ -181,4 +184,33 @@ class RoleContextImpl implements RoleContext {
         return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
 
+    @Override
+    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        this.clusterInitializationPhaseHandler = handler;
+    }
+
+    @Override
+    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
+
+        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
+            return false;
+        }
+
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new FutureCallback<RpcResult<SetRoleOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
+            }
+        });
+
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+    }
 }
