@@ -125,13 +125,18 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node was not successful: {}", throwable);
+                LOG.warn("Statistics gathering for single node {} was not successful: ", deviceInfo.getLOGValue(), throwable);
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof CancellationException) {
                     /* This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
                     contexts.get(deviceInfo).getLifecycleService().closeConnection();
                 } else {
-                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+                    if (throwable instanceof IllegalStateException) {
+                        LOG.warn("Probably connection lost with {} stopping scheduling.", deviceInfo.getLOGValue());
+                        stopScheduling(deviceInfo);
+                    } else {
+                        scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+                    }
                 }
             }
         });

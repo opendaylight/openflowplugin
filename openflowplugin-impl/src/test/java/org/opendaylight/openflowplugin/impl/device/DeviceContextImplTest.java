@@ -70,7 +70,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -278,7 +277,7 @@ public class DeviceContextImplTest {
     @Test
     public void testAuxiliaryConnectionContext() {
         final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
-        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE);
+        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE);
         assertEquals(mockedConnectionContext, pickedConnectiobContexts);
     }
     @Test
@@ -288,9 +287,9 @@ public class DeviceContextImplTest {
         final ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
         when(mockedConnectionContext.getConnectionAdapter()).thenReturn(mockedAuxConnectionAdapter);
 
-        assertNotNull(deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE));
+        assertNotNull(deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE));
         deviceContext.removeAuxiliaryConnectionContext(mockedConnectionContext);
-        assertNull(deviceContext.getAuxiliaryConnectiobContexts(DUMMY_COOKIE));
+        assertNull(deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE));
     }
 
     private ConnectionContext addDummyAuxiliaryConnectionContext() {
