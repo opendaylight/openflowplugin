@@ -23,5 +23,6 @@ public interface RoleManager extends
         AutoCloseable,
         DeviceTerminationPhaseHandler {
 
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo, final int numRetries);
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo);
+
 }
