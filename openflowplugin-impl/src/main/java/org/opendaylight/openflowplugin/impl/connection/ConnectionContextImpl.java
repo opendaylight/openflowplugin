@@ -114,25 +114,13 @@ public class ConnectionContextImpl implements ConnectionContext {
             SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
         }
         final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
-        LOG.debug("Actively closing connection: {}, datapathId: {}",
-                connectionAdapter.getRemoteAddress(), datapathId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Actively closing connection: {}, datapathId: {}",
+                    connectionAdapter.getRemoteAddress(), datapathId);
+        }
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
-        Future<Void> future = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                unregisterOutboundQueue();
-                return null;
-            }
-        });
-        try {
-            future.get(1, TimeUnit.SECONDS);
-            LOG.info("Unregister outbound queue successful.");
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            LOG.warn("Unregister outbound queue throws exception for node {} ", getSafeNodeIdForLOG());
-            LOG.trace("Unregister outbound queue throws exception for node {} ", getSafeNodeIdForLOG(), e);
-        }
-
+        unregisterOutboundQueue();
         closeHandshakeContext();
 
         if (getConnectionAdapter().isAlive()) {
@@ -190,10 +178,12 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     private void propagateDeviceDisconnectedEvent() {
-        if (null != deviceDisconnectedHandler) {
+        if (Objects.nonNull(deviceDisconnectedHandler)) {
             final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
-            LOG.debug("Propagating connection closed event: {}, datapathId:{}.",
-                    connectionAdapter.getRemoteAddress(), datapathId);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Propagating connection closed event: {}, datapathId:{}.",
+                        connectionAdapter.getRemoteAddress(), datapathId);
+            }
             deviceDisconnectedHandler.onDeviceDisconnected(this);
         }
     }
@@ -204,7 +194,7 @@ public class ConnectionContextImpl implements ConnectionContext {
      */
     @Override
     public String getSafeNodeIdForLOG() {
-        return null == nodeId ? "null" : nodeId.getValue();
+        return Objects.nonNull(nodeId) ? "null" : nodeId.getValue();
     }
 
     @Override
@@ -213,7 +203,9 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     private void unregisterOutboundQueue() {
-        LOG.debug("Trying unregister outbound queue handler registration for node {}", nodeId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Trying unregister outbound queue handler registration for node {}", nodeId);
+        }
         if (outboundQueueHandlerRegistration != null) {
             outboundQueueHandlerRegistration.close();
             outboundQueueHandlerRegistration = null;
@@ -323,7 +315,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public Short getVersion() {
+        public short getVersion() {
             return version;
         }
 
