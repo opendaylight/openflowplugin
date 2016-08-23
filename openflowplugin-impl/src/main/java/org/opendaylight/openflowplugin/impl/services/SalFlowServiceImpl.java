@@ -199,7 +199,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     LOG.debug("flow removed finished without error,");
                 }
                 FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
+                deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
                 if (itemLifecycleListener != null) {
                     final FlowDescriptor flowDescriptor =
                             deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
@@ -239,7 +239,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
             if (flowRef == null) {
                 // then this is equivalent to a delete
-                deviceFlowRegistry.markToBeremoved(flowRegistryKey);
+                deviceFlowRegistry.removeDescriptor(flowRegistryKey);
 
                 if (itemLifecycleListener != null) {
                     final FlowDescriptor flowDescriptor =
