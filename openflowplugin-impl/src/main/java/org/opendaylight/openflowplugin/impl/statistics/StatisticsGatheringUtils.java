@@ -341,7 +341,6 @@ public final class StatisticsGatheringUtils {
                         txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
                 }
-                registry.removeMarked();
                 readTx.close();
                 return Futures.immediateFuture(null);
             }
