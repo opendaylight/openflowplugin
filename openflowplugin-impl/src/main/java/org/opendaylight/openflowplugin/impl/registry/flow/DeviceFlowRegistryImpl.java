@@ -11,12 +11,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.romix.scala.collection.concurrent.TrieMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.GuardedBy;
@@ -46,9 +43,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
- */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
@@ -74,7 +68,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             store(key, descriptor);
         }
     };
-
 
     public DeviceFlowRegistryImpl(final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
@@ -163,7 +156,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         return flowDescriptor;
     }
 
-
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
@@ -212,23 +204,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void markToBeremoved(final FlowRegistryKey flowRegistryKey) {
-        synchronized (marks) {
-            marks.add(flowRegistryKey);
-        }
-
-        LOG.trace("Flow hash {} was marked for removal.", flowRegistryKey.hashCode());
-    }
-
-    @Override
-    public void removeMarked() {
-        synchronized (marks) {
-            for (FlowRegistryKey flowRegistryKey : marks) {
-                LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
-                flowRegistry.remove(flowRegistryKey);
-            }
-
-            marks.clear();
+    public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
+        synchronized (flowRegistryKey) {
+            LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
+            flowRegistry.remove(flowRegistryKey);
         }
     }
 
@@ -249,7 +228,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         }
 
         flowRegistry.clear();
-        marks.clear();
     }
 
     @VisibleForTesting
