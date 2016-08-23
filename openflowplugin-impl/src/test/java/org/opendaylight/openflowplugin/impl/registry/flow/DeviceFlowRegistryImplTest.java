@@ -112,8 +112,7 @@ public class DeviceFlowRegistryImplTest {
         order.verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
         assertTrue(allFlowDescriptors.containsKey(key));
 
-        deviceFlowRegistry.markToBeremoved(key);
-        deviceFlowRegistry.removeMarked();
+        deviceFlowRegistry.removeDescriptor(key);
     }
 
     @Test
@@ -207,31 +206,15 @@ public class DeviceFlowRegistryImplTest {
     }
 
     @Test
-    public void testRemoveMarked() throws Exception {
-        deviceFlowRegistry.markToBeremoved(key);
-        deviceFlowRegistry.removeMarked();
+    public void testRemoveDescriptor() throws Exception {
+        deviceFlowRegistry.removeDescriptor(key);
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
-    }
-
-    @Test
-    public void testRemoveMarkedNegative() throws Exception {
-        final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build();
-        FlowRegistryKey key2 = FlowRegistryKeyFactory.create(flowStats);
-        deviceFlowRegistry.markToBeremoved(key2);
-        deviceFlowRegistry.removeMarked();
-        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
     public void testClose() throws Exception {
-        deviceFlowRegistry.markToBeremoved(key);
         deviceFlowRegistry.close();
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
-
-        deviceFlowRegistry.store(key, descriptor);
-        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
-        deviceFlowRegistry.removeMarked();
-        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
