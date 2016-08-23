@@ -15,13 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
- */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
     ListenableFuture<List<Optional<FlowCapableNode>>> fill();
@@ -32,11 +26,9 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey);
 
-    void markToBeremoved(FlowRegistryKey flowRegistryKey);
+    void removeDescriptor(FlowRegistryKey flowRegistryKey);
 
     void update(FlowRegistryKey newFlowRegistryKey,FlowDescriptor flowDescriptor);
-
-    void removeMarked();
 
     Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors();
 
