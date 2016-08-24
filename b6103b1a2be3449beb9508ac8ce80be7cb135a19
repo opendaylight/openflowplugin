@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_2dd7ccc0",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/registry/flow/DeviceFlowRegistry.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-08-24T06:29:07Z",
+      "side": 1,
+      "message": "missing description its an interface",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 59
+      },
+      "revId": "b6103b1a2be3449beb9508ac8ce80be7cb135a19",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
