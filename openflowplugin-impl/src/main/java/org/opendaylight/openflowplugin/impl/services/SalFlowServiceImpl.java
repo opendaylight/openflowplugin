@@ -99,14 +99,14 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
                     }
                 } else {
-                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
+                    deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
                     LOG.debug("flow add with id={} failed, errors={}", flowId.getValue(), rpcResult.getErrors());
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
+                deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
                 LOG.trace("Service call for adding flows failed, id={}. Exception: {}", flowId.getValue(), throwable);
             }
         });
@@ -124,7 +124,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
             public void onSuccess(final RpcResult<RemoveFlowOutput> result) {
                 if (result.isSuccessful()) {
                     FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
+                    deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
                     if (itemLifecycleListener != null) {
                         final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
                         if (flowDescriptor != null) {
@@ -191,7 +191,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
 
                 if (flowRef == null) { //then this is equivalent to a delete
-                    deviceFlowRegistry.markToBeremoved(flowRegistryKey);
+                    deviceFlowRegistry.removeDescriptor(flowRegistryKey);
 
                     if (itemLifecycleListener != null) {
                         final FlowDescriptor flowDescriptor =

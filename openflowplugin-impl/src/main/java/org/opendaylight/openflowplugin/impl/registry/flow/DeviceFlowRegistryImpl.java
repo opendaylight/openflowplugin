@@ -8,12 +8,9 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.romix.scala.collection.concurrent.TrieMap;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -22,15 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
- */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
-    @GuardedBy("marks")
-    private final Collection<FlowRegistryKey> marks = new HashSet<>();
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
@@ -60,22 +52,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void markToBeremoved(final FlowRegistryKey flowRegistryKey) {
-        synchronized (marks) {
-            marks.add(flowRegistryKey);
-        }
-        LOG.trace("Flow hash {} was marked for removal.", flowRegistryKey.hashCode());
-    }
-
-    @Override
-    public void removeMarked() {
-        synchronized (marks) {
-            for (FlowRegistryKey flowRegistryKey : marks) {
-                LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
-                flowRegistry.remove(flowRegistryKey);
-            }
-
-            marks.clear();
+    public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
+        synchronized (flowRegistryKey) {
+            LOG.trace("Removing flowDescriptor for flow hash : {}", flowRegistryKey.hashCode());
+            flowRegistry.remove(flowRegistryKey);
         }
     }
 
@@ -87,6 +67,5 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void close() {
         flowRegistry.clear();
-        marks.clear();
     }
 }

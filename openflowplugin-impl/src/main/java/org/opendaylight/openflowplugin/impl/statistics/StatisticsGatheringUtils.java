@@ -100,9 +100,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.4.2015.
- */
 public final class StatisticsGatheringUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
@@ -316,7 +313,6 @@ public final class StatisticsGatheringUtils {
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                         }
                     }
-                    registry.removeMarked();
                     readTx.close();
                     return Futures.immediateFuture(null);
                 }

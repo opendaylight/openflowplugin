@@ -8,12 +8,12 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
-
 import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
+ * Registry for mapping composite-key of flow ({@link FlowRegistryKey}) from device view
+ * to flow descriptor ({@link FlowDescriptor}) as the identifier of the same flow in data store.
  */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
@@ -23,9 +23,7 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey, short tableId);
 
-    void markToBeremoved(FlowRegistryKey flowRegistryKey);
-
-    void removeMarked();
+    void removeDescriptor(FlowRegistryKey flowRegistryKey);
 
     Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors();
 
