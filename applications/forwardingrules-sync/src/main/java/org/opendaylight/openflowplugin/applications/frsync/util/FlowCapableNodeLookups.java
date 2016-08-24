@@ -52,8 +52,8 @@ public final class FlowCapableNodeLookups {
     }
 
     @Nonnull
-    public static Map<SwitchFlowId, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
-        final Map<SwitchFlowId, Flow> flowMap;
+    public static Map<FlowDescriptor, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
+        final Map<FlowDescriptor, Flow> flowMap;
 
         if (flows == null) {
             flowMap = Collections.emptyMap();
@@ -61,15 +61,15 @@ public final class FlowCapableNodeLookups {
             LOG.trace("flows found: {}", flows.size());
             flowMap = new HashMap<>();
             for (Flow flow : flows) {
-                flowMap.put(new SwitchFlowId(flow), flow);
+                flowMap.put(new FlowDescriptor(flow), flow);
             }
         }
 
         return flowMap;
     }
 
-    public static Flow flowMapLookupExisting(Flow flow, Map<SwitchFlowId, Flow> flowConfigMap) {
-        return flowConfigMap.get(new SwitchFlowId(flow));
+    public static Flow flowMapLookupExisting(Flow flow, Map<FlowDescriptor, Flow> flowConfigMap) {
+        return flowConfigMap.get(new FlowDescriptor(flow));
     }
 
     @Nonnull
