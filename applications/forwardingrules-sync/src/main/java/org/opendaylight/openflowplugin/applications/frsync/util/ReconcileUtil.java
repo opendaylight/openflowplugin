@@ -269,8 +269,8 @@ public final class ReconcileUtil {
      * @return list of safe synchronization steps
      */
     public static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
-                                                     final Map<SwitchFlowId, Flow> flowOperationalMap,
-                                                     final boolean gatherUpdates) {
+                                                            final Map<FlowDescriptor, Flow> flowOperationalMap,
+                                                            final boolean gatherUpdates) {
         final ItemSyncBox<Flow> flowsSyncBox = new ItemSyncBox<>();
         // loop configured flows and check if already present on device
         for (final Flow flow : flowsConfigured) {
@@ -310,7 +310,7 @@ public final class ReconcileUtil {
             // lookup table (on device)
             final Table tableOperational = tableOperationalMap.get(tableConfigured.getId());
             // wrap existing (on device) flows in current table into map
-            final Map<SwitchFlowId, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
+            final Map<FlowDescriptor, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
                     tableOperational != null
                             ? tableOperational.getFlow()
                             : null);
