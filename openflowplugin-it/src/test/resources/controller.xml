@@ -109,29 +109,6 @@
                     </binding-broker-impl>
                 </module>
 
-
-                <module>
-                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider">prefix:inmemory-config-datastore-provider</type>
-                    <name>config-store-service</name>
-                    <inmemory-config-datastore-provider xmlns="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider">
-                        <schema-service>
-                            <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:schema-service</type>
-                            <name>yang-schema-service</name>
-                        </schema-service>
-                    </inmemory-config-datastore-provider>
-                </module>
-
-                <module>
-                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider">prefix:inmemory-operational-datastore-provider</type>
-                    <name>operational-store-service</name>
-                    <inmemory-operational-datastore-provider xmlns="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider">
-                        <schema-service>
-                             <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:schema-service</type>
-                             <name>yang-schema-service</name>
-                        </schema-service>
-                    </inmemory-operational-datastore-provider>
-                </module>
-
                 <!-- PingPong broker -->
                 <module>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom:pingpong">prefix:pingpong-data-broker</type>
