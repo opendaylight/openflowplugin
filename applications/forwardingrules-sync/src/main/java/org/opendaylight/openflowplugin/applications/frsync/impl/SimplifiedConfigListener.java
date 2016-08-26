@@ -91,6 +91,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                   final FlowCapableNode operationalNode) throws InterruptedException {
         NodeId nodeId = PathUtil.digNodeId(nodePath);
         LOG.trace("onNodeAdded {}", nodeId.getValue());
+        LOG.debug("Reconciliation: {}", nodeId.getValue());
         final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL);
         return reactor.syncup(nodePath, syncupEntry);
     }

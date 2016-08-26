@@ -186,6 +186,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             return Optional.of(reactor.syncup(nodePath, syncupEntry));
         } else {
             LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
+            reconciliationRegistry.unregisterIfRegistered(nodeId);
             return skipModification(modification);
         }
     }
