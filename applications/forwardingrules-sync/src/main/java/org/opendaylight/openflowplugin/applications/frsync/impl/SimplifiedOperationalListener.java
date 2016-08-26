@@ -176,7 +176,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
 
         if (nodeConfiguration.isPresent()) {
-            LOG.debug("Reconciliation: {}", nodeId.getValue());
+            LOG.debug("Reconciliation {}: {}", dsType(), nodeId.getValue());
             final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, new NodeKey(ModificationUtil.nodeId(modification)))
                     .augmentation(FlowCapableNode.class);
@@ -186,6 +186,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             return Optional.of(reactor.syncup(nodePath, syncupEntry));
         } else {
             LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
+            reconciliationRegistry.unregisterIfRegistered(nodeId);
             return skipModification(modification);
         }
     }
