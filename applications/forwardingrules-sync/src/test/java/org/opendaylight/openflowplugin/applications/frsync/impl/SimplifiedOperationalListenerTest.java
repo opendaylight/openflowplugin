@@ -112,34 +112,11 @@ public class SimplifiedOperationalListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangeAddSyncup() throws Exception {
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+    public void testOnDataTreeChangedAddPhysical() {
         operationalAdd();
-        prepareFreshOperational(true);
-        final SyncupEntry syncupEntry = loadConfigDSAndPrepareSyncupEntry(configNode, configDS, fcOperationalNode, operationalDS);
-
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
-
-        Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
-        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
-        Mockito.verify(roTx).close();
-    }
-
-    @Test
-    public void testOnDataTreeChangedAddSkip() throws Exception {
-        // Related to bug 5920 -> https://bugs.opendaylight.org/show_bug.cgi?id=5920
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
-        operationalAdd();
-        prepareFreshOperational(true);
-
-        Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
-
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
-
         Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
         Mockito.verifyZeroInteractions(reactor);
-        Mockito.verify(roTx).close();
     }
 
     @Test
@@ -170,8 +147,8 @@ public class SimplifiedOperationalListenerTest {
 
     @Test
     public void testOnDataTreeChangedReconcileNotRegistered() {
-        operationalUpdate();
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
+        operationalUpdate();
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -235,6 +212,23 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
+        Mockito.verify(roTx).close();
+    }
+
+    @Test
+    public void testOnDataTreeChangedReconcileAndConfigNotPresent() throws Exception {
+        // Related to bug 5920 -> https://bugs.opendaylight.org/show_bug.cgi?id=5920
+        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        operationalUpdate();
+        prepareFreshOperational(true);
+
+        Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+
+        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
+        Mockito.verifyZeroInteractions(reactor);
         Mockito.verify(roTx).close();
     }
 
