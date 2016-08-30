@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
@@ -21,19 +22,22 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link ClusterSingletonService} clusterSingletonServiceRegistration per connected device.
  */
-public class DeviceMastership implements ClusterSingletonService {
+public class DeviceMastership implements ClusterSingletonService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastership.class);
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
     private final ReconciliationRegistry reconciliationRegistry;
-    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private final ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     private boolean deviceMastered;
 
-    public DeviceMastership(final NodeId nodeId, final ReconciliationRegistry reconciliationRegistry) {
+    public DeviceMastership(final NodeId nodeId,
+                            final ReconciliationRegistry reconciliationRegistry,
+                            final ClusterSingletonServiceProvider clusterSingletonService) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.reconciliationRegistry = reconciliationRegistry;
         this.deviceMastered = false;
+        clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);
     }
 
     @Override
@@ -56,16 +60,19 @@ public class DeviceMastership implements ClusterSingletonService {
         return identifier;
     }
 
+    @Override
+    public void close() {
+        if (clusterSingletonServiceRegistration != null) {
+            try {
+                clusterSingletonServiceRegistration.close();
+            } catch (Exception e) {
+                LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
+            }
+        }
+    }
+
     public boolean isDeviceMastered() {
         return deviceMastered;
-    }
-
-    public void setClusterSingletonServiceRegistration(final ClusterSingletonServiceRegistration registration) {
-        this.clusterSingletonServiceRegistration = registration;
-    }
-
-    public ClusterSingletonServiceRegistration getClusterSingletonServiceRegistration() {
-        return clusterSingletonServiceRegistration;
     }
 
 }
