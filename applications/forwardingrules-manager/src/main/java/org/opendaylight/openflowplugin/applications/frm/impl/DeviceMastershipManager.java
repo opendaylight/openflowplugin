@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,29 +28,26 @@ public class DeviceMastershipManager {
     }
 
     public void onDeviceConnected(final NodeId nodeId) {
-        final DeviceMastership mastership = new DeviceMastership(nodeId);
-        final ClusterSingletonServiceRegistration registration = clusterSingletonService.registerClusterSingletonService(mastership);
-        mastership.setClusterSingletonServiceRegistration(registration);
+        final DeviceMastership mastership = new DeviceMastership(nodeId, clusterSingletonService);
         deviceMasterships.put(nodeId, mastership);
-        LOG.debug("FRS service registered for: {}", nodeId.getValue());
+        LOG.debug("FRM service registered for: {}", nodeId.getValue());
     }
-
 
     public void onDeviceDisconnected(final NodeId nodeId) {
         final DeviceMastership mastership = deviceMasterships.remove(nodeId);
-        final ClusterSingletonServiceRegistration registration = mastership.getClusterSingletonServiceRegistration();
-        if (registration != null) {
-            try {
-                registration.close();
-            } catch (Exception e) {
-                LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
-            }
+        if (mastership != null) {
+            mastership.close();
         }
-        LOG.debug("FRS service unregistered for: {}", nodeId.getValue());
+        LOG.debug("FRM service unregistered for: {}", nodeId.getValue());
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {
         return deviceMasterships.get(nodeId) != null && deviceMasterships.get(nodeId).isDeviceMastered();
+    }
+
+    @VisibleForTesting
+    ConcurrentHashMap<NodeId, DeviceMastership> getDeviceMasterships() {
+        return deviceMasterships;
     }
 
 }
