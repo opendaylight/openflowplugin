@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
@@ -33,23 +32,15 @@ public class DeviceMastershipManager {
     }
 
     public void onDeviceConnected(final NodeId nodeId) {
-        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry);
-        final ClusterSingletonServiceRegistration registration = clusterSingletonService.registerClusterSingletonService(mastership);
-        mastership.setClusterSingletonServiceRegistration(registration);
+        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry, clusterSingletonService);
         deviceMasterships.put(nodeId, mastership);
         LOG.debug("FRS service registered for: {}", nodeId.getValue());
     }
 
-
     public void onDeviceDisconnected(final NodeId nodeId) {
         final DeviceMastership mastership = deviceMasterships.remove(nodeId);
-        final ClusterSingletonServiceRegistration registration = mastership.getClusterSingletonServiceRegistration();
-        if (registration != null) {
-            try {
-                registration.close();
-            } catch (Exception e) {
-                LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
-            }
+        if (mastership != null) {
+            mastership.close();
         }
         LOG.debug("FRS service unregistered for: {}", nodeId.getValue());
     }
@@ -62,4 +53,5 @@ public class DeviceMastershipManager {
     ConcurrentHashMap<NodeId, DeviceMastership> getDeviceMasterships() {
         return deviceMasterships;
     }
+
 }
