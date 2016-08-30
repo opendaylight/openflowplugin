@@ -10,13 +10,13 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collection;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -33,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,29 +59,29 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
-                   if(LOG.isDebugEnabled()) {
-                        LOG.debug("Meter add finished without error, id={}", input.getMeterId());
+                   if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter add with id={} finished without error", input.getMeterId());
                     }
                     deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                     addIfNecessaryToDS(input.getMeterId(),input);
                 } else {
-                    LOG.error("Meter add with id {} failed with error {}", input.getMeterId(),
-                            errorsToString(result.getErrors()));
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter add with id={} failed, errors={}", input.getMeterId(),
+                                ErrorUtil.errorsToString(result.getErrors()));
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                 LOG.error("Meter add failed for id={}. Exception {}", input.getMeterId(), t);
+                 LOG.warn("Service call for adding meter={} failed, reason: {}", input.getMeterId(), t);
             }
         });
-
         return resultFuture;
     }
 
@@ -94,22 +93,24 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             @Override
             public void onSuccess(@Nullable RpcResult<UpdateMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    if(LOG.isDebugEnabled()) {
-                        LOG.debug("Meter update finished without error, id={}", input.getOriginalMeter().getMeterId());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter update with id={} finished without error", input.getOriginalMeter().getMeterId());
                     }
                     if (itemLifecycleListener != null) {
                         removeIfNecessaryFromDS(input.getOriginalMeter().getMeterId());
                         addIfNecessaryToDS(input.getUpdatedMeter().getMeterId(),input.getUpdatedMeter());
                     }
-                }else{
-                    LOG.error("Meter update with id {} failed with error {}", input.getOriginalMeter().getMeterId(),
-                            errorsToString(result.getErrors()));
+                } else {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter update with id={} failed, errors={}", input.getOriginalMeter().getMeterId(),
+                                ErrorUtil.errorsToString(result.getErrors()));
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("Service call for meter update failed. for id={}. Exception {}.",
+                LOG.warn("Service call for updating meter={} failed, reason: {}",
                         input.getOriginalMeter().getMeterId(),t);
             }
         });
@@ -121,34 +122,33 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
         removeMeter.getDeviceRegistry().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture = removeMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
-
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveMeterOutput> result) {
                 if (result.isSuccessful()) {
-                    if(LOG.isDebugEnabled()) {
-                        LOG.debug("Meter remove finished without error, id={}", input.getMeterId());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
                     removeIfNecessaryFromDS(input.getMeterId());
-                }else{
-                    LOG.error("Meter remove with id {} failed with error {}", input.getMeterId(),
-                            errorsToString(result.getErrors()));
+                } else {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Meter remove with id={} failed, errors={}", input.getMeterId(),
+                                ErrorUtil.errorsToString(result.getErrors()));
+                    }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.error("Service call for meter remove failed for id={}. Exception {}",input.getMeterId(),t);
+                LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),t);
             }
         });
-
         return resultFuture;
     }
 
     private void removeIfNecessaryFromDS(final MeterId meterId) {
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> meterPath
-                    = createMeterPath(meterId,
-                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+                    = createMeterPath(meterId, deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(meterPath);
         }
     }
@@ -156,23 +156,13 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     private void addIfNecessaryToDS(final MeterId meterId, final Meter data) {
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> groupPath
-                    = createMeterPath(meterId,
-                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+                    = createMeterPath(meterId, deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new MeterBuilder(data).build());
         }
     }
 
-    static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> createMeterPath(final MeterId meterId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> createMeterPath(final MeterId meterId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         return nodePath.augmentation(FlowCapableNode.class).child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter.class, new MeterKey(meterId));
     }
 
-    private final String errorsToString(final Collection<RpcError> rpcErrors) {
-        final StringBuilder errors = new StringBuilder();
-        if ((null != rpcErrors) && (rpcErrors.size() > 0)) {
-            for (final RpcError rpcError : rpcErrors) {
-                errors.append(rpcError.getMessage());
-            }
-        }
-        return errors.toString();
-    }
 }
