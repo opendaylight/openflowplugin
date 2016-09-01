@@ -334,7 +334,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             submitTransaction();
         } catch (final Exception e) {
-            LOG.warn("Error processing port status message: ", e);
+            LOG.warn("Error processing port status message for port {} on device {} : ", portStatus.getPortNo(),
+                    getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
