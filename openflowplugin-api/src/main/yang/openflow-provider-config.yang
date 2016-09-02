@@ -29,6 +29,11 @@ module openflow-provider-config {
             default 20000;
         }
 
+        leaf rpc-requests-timeout {
+            type non-zero-uint32-type;
+            default 2000;
+        }
+
         leaf switch-features-mandatory {
             type boolean;
             default false;

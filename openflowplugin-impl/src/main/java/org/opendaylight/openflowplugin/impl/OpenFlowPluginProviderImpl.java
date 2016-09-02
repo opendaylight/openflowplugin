@@ -72,6 +72,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
     private final int rpcRequestsQuota;
+    private long rpcRequestsTimeout;
     private final long globalNotificationQuota;
     private final ConvertorManager convertorManager;
     private long barrierInterval;
@@ -117,16 +118,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
-    @Override
-    public boolean isStatisticsPollingOff() {
-        return isStatisticsPollingOff;
-    }
-
-    @Override
-    public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
-        this.isStatisticsPollingOff = isStatisticsPollingOff;
-    }
-
     private void startSwitchConnections() {
         final List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
         for (final SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
@@ -148,6 +139,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 LOG.warn("Some switchConnectionProviders failed to start.", t);
             }
         });
+    }
+
+    @Override
+    public boolean isStatisticsPollingOff() {
+        return isStatisticsPollingOff;
+    }
+
+    @Override
+    public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
+        this.isStatisticsPollingOff = isStatisticsPollingOff;
     }
 
     @Override
@@ -183,6 +184,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setSkipTableFeatures(final boolean skipTableFeatures){
             this.skipTableFeatures = skipTableFeatures;
+    }
+
+    @Override
+    public void setRpcRequestsTimeout(final long rpcRequestsTimeout) {
+        this.rpcRequestsTimeout = rpcRequestsTimeout;
     }
 
     @Override
@@ -236,7 +242,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
-                skipTableFeatures);
+                skipTableFeatures,
+                rpcRequestsTimeout);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
