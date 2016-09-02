@@ -12,7 +12,9 @@ import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -130,6 +132,17 @@ abstract class AbstractService<I, O> {
             outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
         }
 
+        GlobalEventExecutor.INSTANCE.schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                if ((requestContext != null) && !requestContext.getFuture().isDone()) {
+                    LOG.debug("requestContext {} timeout after 2000 Milliseconds", requestContext);
+                    requestContext.setResult(RpcResultBuilder.<O>failed().build());
+                }
+            }
+        }, 2000, TimeUnit.MILLISECONDS);
+        
         return requestContext.getFuture();
     }
 
