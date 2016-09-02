@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -53,8 +52,6 @@ import org.slf4j.LoggerFactory;
 class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
-    private static final Long RETRY_DELAY = 100L;
-    private static final int RETRY_COUNT = 3;
 
     private final Object txLock = new Object();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
@@ -261,20 +258,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @Nullable
     private WriteTransaction getTransactionSafely() {
             synchronized (txLock) {
-                int trial = 0;
-                while(trial <=RETRY_COUNT) {
-                    if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                        if (wTx == null && txChainFactory != null) {
-                            wTx = txChainFactory.newWriteOnlyTransaction();
-                            break;
-                        }
-                    } else {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(RETRY_DELAY);
-                        } catch (InterruptedException e) {
-                            LOG.debug("Timer interrupted in getTransactionSafely : {}", e);
-                        }
-                        trial++;
+                if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
+                    if (wTx == null && txChainFactory != null) {
+                        wTx = txChainFactory.newWriteOnlyTransaction();
                     }
                 }
             }
