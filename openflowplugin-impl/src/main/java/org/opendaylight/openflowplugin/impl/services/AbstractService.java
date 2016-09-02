@@ -12,7 +12,9 @@ import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -129,6 +131,17 @@ abstract class AbstractService<I, O> {
             final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
             outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
         }
+
+        GlobalEventExecutor.INSTANCE.schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                if ((requestContext != null) && !requestContext.getFuture().isDone()) {
+                    LOG.debug("RequestContext {} timeout after {} milliseconds", requestContext, deviceContext.getRpcRequestsTimeout());
+                    requestContext.setResult(RpcResultBuilder.<O>failed().build());
+                }
+            }
+        }, deviceContext.getRpcRequestsTimeout(), TimeUnit.MILLISECONDS);
 
         return requestContext.getFuture();
     }

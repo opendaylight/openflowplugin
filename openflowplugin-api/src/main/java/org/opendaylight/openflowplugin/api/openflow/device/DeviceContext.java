@@ -139,5 +139,7 @@ public interface DeviceContext extends
     void replaceConnectionContext(ConnectionContext connectionContext);
 
     boolean isSkipTableFeatures();
+
+    long getRpcRequestsTimeout();
 }
 

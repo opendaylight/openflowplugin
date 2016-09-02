@@ -135,6 +135,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceManager deviceManager;
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
+    private long rpcRequestsTimeout;
     private final DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
@@ -147,7 +148,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final TranslatorLibrary translatorLibrary,
             @Nonnull final DeviceManager manager,
             final ConvertorExecutor convertorExecutor,
-            final boolean skipTableFeatures) {
+            final boolean skipTableFeatures,
+            final long rpcRequestsTimeout) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.deviceState = new DeviceStateImpl();
@@ -177,6 +179,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
+        this.rpcRequestsTimeout = rpcRequestsTimeout;
     }
 
     /**
@@ -571,6 +574,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public boolean isSkipTableFeatures() {
         return this.skipTableFeatures;
+    }
+
+    @Override
+    public long getRpcRequestsTimeout() {
+        return this.rpcRequestsTimeout;
     }
 
     @Override

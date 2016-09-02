@@ -80,4 +80,6 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
 
     void setSkipTableFeatures(boolean skipTableFeatures);
+
+    void setRpcRequestsTimeout(long rpcRequestsTimeout);
 }

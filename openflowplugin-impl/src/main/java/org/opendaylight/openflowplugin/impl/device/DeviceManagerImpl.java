@@ -65,6 +65,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
     private final long globalNotificationQuota;
+    private final long rpcRequestsTimeout;
     private final boolean switchFeaturesMandatory;
     private boolean isNotificationFlowRemovedOff;
     private boolean skipTableFeatures;
@@ -100,12 +101,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures) {
+                             final boolean skipTableFeatures,
+                             final long rpcRequestsTimeout) {
 
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.skipTableFeatures = skipTableFeatures;
+        this.rpcRequestsTimeout = rpcRequestsTimeout;
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
@@ -193,7 +196,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 translatorLibrary,
                 this,
                 convertorExecutor,
-                skipTableFeatures);
+                skipTableFeatures,
+                rpcRequestsTimeout);
 
         deviceContexts.putIfAbsent(deviceInfo, deviceContext);
 
