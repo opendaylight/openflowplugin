@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -112,6 +115,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private static final float LOW_WATERMARK_FACTOR = 0.75f;
     // TODO: high water mark factor should be parametrized
     private static final float HIGH_WATERMARK_FACTOR = 0.95f;
+    private static final Long RETRY_DELAY = 100L;
+    private static final int RETRY_COUNT = 3;
 
     private ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
@@ -139,6 +144,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+
+    private static final int THREAD_POOL_SIZE = 1;
+    ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -220,19 +228,149 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data){
-        transactionChainManager.writeToTransaction(store, path, data, false);
+        try {
+            transactionChainManager.writeToTransaction(store, path, data, false);
+        }catch(final TransactionChainClosedException ex){
+            LOG.warn("Encountered TransactionChainClosedException while invoking writeToTransaction on path {}"
+                    ,path.toString());
+            retryFailedWriteTransaction(store,path,data,false,RETRY_COUNT);
+        }catch(final Exception e){
+            LOG.error("Error prcessing writeToTransaction for path {}",path.toString());
+        }
     }
 
     @Override
     public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
                                                                          final InstanceIdentifier<T> path,
                                                                          final T data){
-        transactionChainManager.writeToTransaction(store, path, data, true);
+        try{
+            transactionChainManager.writeToTransaction(store, path, data, true);
+        }catch(final TransactionChainClosedException ex){
+            LOG.warn("Encountered TransactionChainClosedException while invoking writeToTransactionWithParentsSlow " +
+                    "on path {}",path.toString());
+            retryFailedWriteTransaction(store,path,data,true,RETRY_COUNT);
+        }catch(final Exception e){
+            LOG.error("Error prcessing writeToTransactionWithParentsSlow for path {}",path.toString());
+        }
     }
 
     @Override
-    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) throws TransactionChainClosedException {
-        transactionChainManager.addDeleteOperationTotTxChain(store, path);
+    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
+                                                          final InstanceIdentifier<T> path){
+        try{
+            transactionChainManager.addDeleteOperationTotTxChain(store, path);
+        }catch(final TransactionChainClosedException ex){
+            LOG.warn("Encountered TransactionChainClosedException while invoking addDeleteToTxChain on path {}"
+                    ,path.toString());
+            retryFailedDeleteTransaction(store,path,RETRY_COUNT);
+        }catch(final Exception e){
+            LOG.error("Error prcessing addDeleteToTxChain for path {}",path.toString());
+        }
+    }
+
+    private <T extends DataObject> void retryFailedDeleteTransaction(final LogicalDatastoreType store,
+                                                                     final InstanceIdentifier<T> path,
+                                                                     final int retryCount){
+        DeleteTransactionRetryTask transactionRetryTask = new DeleteTransactionRetryTask(store, path,retryCount);
+        executor.execute(transactionRetryTask);
+    }
+
+    private <T extends DataObject> void retryFailedWriteTransaction(final LogicalDatastoreType store,
+                                                                    final InstanceIdentifier<T> path,
+                                                                    final T data,
+                                                                    final boolean createParents,
+                                                                    final int retryCount){
+        WriteTransactionRetryTask transactionRetryTask = new WriteTransactionRetryTask(store, path, data, createParents,
+                retryCount);
+        executor.execute(transactionRetryTask);
+    }
+
+
+    private class DeleteTransactionRetryTask<T extends DataObject> implements Runnable {
+        private final LogicalDatastoreType store;
+        private final InstanceIdentifier<T> path;
+        private final int retryCount;
+        private int count ;
+
+        DeleteTransactionRetryTask (final LogicalDatastoreType dataStore,
+                                    final InstanceIdentifier<T> IIDath,
+                                    final int retry){
+            store = dataStore;
+            path = IIDath;
+            retryCount = retry;
+            count = 0;
+        }
+        @Override
+        public void run() {
+            while(count < retryCount) {
+                count ++ ;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(RETRY_DELAY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    transactionChainManager.addDeleteOperationTotTxChain(store, path);
+                    break;
+                } catch (final TransactionChainClosedException e) {
+                    LOG.warn("Encountered TransactionChainClosedException while invoking " +
+                            "addDeleteOperationTotTxChain on path {} during retry {}" ,path.toString(),count);
+                }catch (final Exception e){
+                    LOG.warn("Cannot write into transaction even after 3 retries while invoking" +
+                            " addDeleteOperationTotTxChain on path {} during retry {}",path.toString(), count);
+                }
+            }
+            LOG.warn("Cannot write into transaction even after 3 retries while invoking addDeleteOperationTotTxChain" +
+                    " on path {}",path.toString());
+        }
+    }
+
+
+    private class WriteTransactionRetryTask<T extends DataObject> implements Runnable {
+        private final LogicalDatastoreType store;
+        private final InstanceIdentifier<T> path;
+        private final T data;
+        private final boolean createParents;
+        private final int retryCount;
+        private int count ;
+
+        WriteTransactionRetryTask (final LogicalDatastoreType dataStore,
+                                   final InstanceIdentifier<T> IIDath,
+                                   final T dataObject,
+                                   final boolean createParentsAlso,
+                                   final int retry){
+            store = dataStore;
+            path = IIDath;
+            data = dataObject;
+            retryCount = retry;
+            createParents = createParentsAlso;
+            count = 0;
+        }
+        @Override
+        public void run() {
+            while(count < retryCount) {
+                count ++ ;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(RETRY_DELAY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    transactionChainManager.writeToTransaction(store, path, data, createParents);
+                    break;
+                } catch (final TransactionChainClosedException e) {
+                    LOG.warn("Encountered TransactionChainClosedException while invoking writeToTransaction on path {} " +
+                            "during retry {}" ,path.toString(),count);
+                }catch(final Exception e){
+                    LOG.warn("Cannot write into transaction even after 3 retries while invoking" +
+                            " writeToTransaction on path {} during retry {}",path.toString(), count);
+                }
+            }
+            LOG.warn("Cannot write into transaction even after 3 retries while invoking writeToTransaction on path {}",
+                    path.toString());
+        }
     }
 
     @Override
@@ -319,24 +457,35 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, getDeviceInfo(), null);
-
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         try {
-            if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
-                // because of ADD status node connector has to be created
-                final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
-                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-            } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
-            }
-            submitTransaction();
+            updatePortStatusMessage(portStatus);
         } catch (final Exception e) {
             LOG.warn("Error processing port status message:  for port {} on device {}", e, portStatus.getPortNo(),
                     getDeviceInfo().getNodeId().toString());
         }
+    }
+
+
+
+    void updatePortStatusMessage(final PortStatusMessage portStatusMessage){
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatusMessage,
+                getDeviceInfo(), null);
+
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
+                provideIIToNodeConnector(portStatusMessage.getPortNo(), portStatusMessage.getVersion());
+
+        if (portStatusMessage.getReason().equals(PortReason.OFPPRADD) || portStatusMessage.getReason().
+                equals(PortReason.OFPPRMODIFY)) {
+            // because of ADD status node connector has to be created
+            final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
+            nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
+                    new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+            nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
+        } else if (portStatusMessage.getReason().equals(PortReason.OFPPRDELETE)) {
+            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        }
+        submitTransaction();
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
@@ -412,7 +561,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
             final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
-                .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
+                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
