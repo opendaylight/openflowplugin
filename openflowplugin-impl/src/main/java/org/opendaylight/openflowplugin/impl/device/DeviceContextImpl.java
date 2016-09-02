@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -319,24 +321,70 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, getDeviceInfo(), null);
-
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         try {
-            if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
-                // because of ADD status node connector has to be created
-                final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
-                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-            } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
-            }
-            submitTransaction();
+            updatePortStatusMessage(portStatus);
         } catch (final Exception e) {
             LOG.warn("Error processing port status message:  for port {} on device {}", e, portStatus.getPortNo(),
                     getDeviceInfo().getNodeId().toString());
+           retryProcessPortStatusMessage(portStatus,3);
         }
+    }
+
+    private void retryProcessPortStatusMessage(final PortStatusMessage portStatus, final int retryCount){
+        Thread thread = new Thread(new PortStatusRetryRunnable(portStatus, retryCount));
+        thread.start();
+    }
+
+    private class PortStatusRetryRunnable implements Runnable {
+        private final PortStatusMessage portStatusMessage;
+        private final int retryCount;
+        private int count ;
+
+        PortStatusRetryRunnable (final PortStatusMessage portStatus,final int retry){
+            portStatusMessage = portStatus;
+            retryCount = retry;
+            count = 0;
+        }
+        @Override
+        public void run() {
+            while(count < retryCount) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    updatePortStatusMessage(portStatusMessage);
+                    break;
+                } catch (final Exception e) {
+                    LOG.warn("Error processing port status message:  for port {} on device {}", e, portStatusMessage.getPortNo(),
+                            getDeviceInfo().getNodeId().toString());
+                    count ++ ;
+                }
+            }
+        }
+    }
+
+    void updatePortStatusMessage(final PortStatusMessage portStatusMessage){
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatusMessage,
+                getDeviceInfo(), null);
+
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
+                provideIIToNodeConnector(portStatusMessage.getPortNo(), portStatusMessage.getVersion());
+
+        if (portStatusMessage.getReason().equals(PortReason.OFPPRADD) || portStatusMessage.getReason().
+                equals(PortReason.OFPPRMODIFY)) {
+            // because of ADD status node connector has to be created
+            final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
+            nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
+                    new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+            nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
+        } else if (portStatusMessage.getReason().equals(PortReason.OFPPRDELETE)) {
+            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        }
+        submitTransaction();
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
