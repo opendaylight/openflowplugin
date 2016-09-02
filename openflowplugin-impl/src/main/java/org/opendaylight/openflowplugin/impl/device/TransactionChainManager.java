@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -258,9 +259,20 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     @Nullable
     private WriteTransaction getTransactionSafely() {
             synchronized (txLock) {
-                if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                    if (wTx == null && txChainFactory != null) {
-                        wTx = txChainFactory.newWriteOnlyTransaction();
+                int trial = 0;
+                while(trial <=3) {
+                    if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
+                        if (wTx == null && txChainFactory != null) {
+                            wTx = txChainFactory.newWriteOnlyTransaction();
+                            break;
+                        }
+                    } else {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(100);
+                        } catch (InterruptedException e) {
+                            LOG.debug("Timer interrupted in getTransactionSafely : {}", e);
+                        }
+                        trial++;
                     }
                 }
             }
