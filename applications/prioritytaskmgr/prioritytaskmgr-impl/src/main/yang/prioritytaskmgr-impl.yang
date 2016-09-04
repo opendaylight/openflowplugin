@@ -1,0 +1,37 @@
+module prioritytaskmgr-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:prioritytaskmgr:impl";
+    prefix "priotaskmgr-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+	import prioritytaskmgr-api { prefix priotaskmgr-api; revision-date 2016-02-10;}
+
+    description
+        "Service definition for prioritytaskmgr project";
+
+    revision "2016-02-11" {
+        description
+            "Initial revision";
+    }
+
+    identity prioritytaskmgr-impl {
+        base config:module-type;
+        config:provided-service priotaskmgr-api:prioritytaskmgr-api;
+        config:java-name-prefix PriorityTaskManagerImpl;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case prioritytaskmgr-impl {
+            when "/config:modules/config:module/config:type = 'prioritytaskmgr-impl'";
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+}
