@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Abhijit Kumbhare <abhijit.kumbhare@ericsson.com>
+Submitted-by: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-at: Tue, 06 Sep 2016 16:52:56 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/45125
+Project: openflowplugin
+Branch: refs/heads/stable/boron
