@@ -56,6 +56,7 @@ import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
 
 import com.google.common.base.Preconditions;
 
@@ -122,6 +123,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(ArpThaCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ARP_THA_CODEC);
         registrator.registerMatchEntrySerializer(ArpTpaCodec.SERIALIZER_KEY, NiciraMatchCodecs.ARP_TPA_CODEC);
         registrator.registerMatchEntryDeserializer(ArpTpaCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ARP_TPA_CODEC);
+        registrator.registerMatchEntrySerializer(InPortCodec.SERIALIZER_KEY, NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC);
+        registrator.registerMatchEntryDeserializer(InPortCodec.DESERIALIZER_KEY, NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC);
         registrator.registerMatchEntrySerializer(EthDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_DST_CODEC);
         registrator.registerMatchEntryDeserializer(EthDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ETH_DST_CODEC);
         registrator.registerMatchEntrySerializer(EthSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_SRC_CODEC);
@@ -219,6 +222,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(ArpThaCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(ArpTpaCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(ArpTpaCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(InPortCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(InPortCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(EthDstCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(EthDstCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(EthSrcCodec.SERIALIZER_KEY);
