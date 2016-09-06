@@ -68,6 +68,11 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping nxm-of-in-port-grouping {
+        leaf of-in-port {
+            type empty;
+        }
+    }
     grouping nxm-nx-tun-ipv4-dst-grouping {
         leaf nx-tun-ipv4-dst {
             type empty;
@@ -187,6 +192,9 @@ module openflowplugin-extension-nicira-action {
             case dst-of-arp-tpa-case {
                 uses nxm-of-arp-tpa-grouping;
             }
+            case dst-nx-of-in-port-case {
+                uses nxm-of-in-port-grouping;
+            }
             case dst-nx-tun-ipv4-dst-case {
                 uses nxm-nx-tun-ipv4-dst-grouping;
             }
@@ -266,6 +274,9 @@ module openflowplugin-extension-nicira-action {
             }
             case src-of-arp-tpa-case {
                 uses nxm-of-arp-tpa-grouping;
+            }
+            case src-nx-of-in-port-case {
+                uses nxm-of-in-port-grouping;
             }
             case src-nx-tun-ipv4-dst-case {
                 uses nxm-nx-tun-ipv4-dst-grouping;
