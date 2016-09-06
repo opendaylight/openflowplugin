@@ -64,6 +64,9 @@ module openflowplugin-extension-nicira-match {
     identity nxm-of-arp-tpa-key {
         base ext-gen:extension-key;
     }
+    identity nxm-of-in-port-key {
+        base ext-gen:extension-key;
+    }
     identity nxm-nx-tun-ipv4-dst-key {
         base ext-gen:extension-key;
     }
@@ -194,6 +197,13 @@ module openflowplugin-extension-nicira-match {
         container nxm-of-arp-spa {
             description "Prereqs: NXM_OF_ETH_TYPE must match either 0x0806 or 0x8035.";
             uses ipv4-address-grouping;
+        }
+    }
+    grouping nxm-of-in-port-grouping {
+        container of-in-port {
+            leaf value {
+                type uint16;
+            }
         }
     }
     grouping nxm-of-tcp-src-grouping {
@@ -393,6 +403,7 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-arp-op-grouping;
         uses nxm-of-arp-spa-grouping;
         uses nxm-of-arp-tpa-grouping;
+        uses nxm-of-in-port-grouping;
         uses nxm-nx-tun-ipv4-dst-grouping;
         uses nxm-nx-tun-ipv4-src-grouping;
         uses nxm-of-eth-src-grouping;
