@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpShaCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpThaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpThaCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfInPortCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfInPortCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1Case;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2Case;
@@ -140,7 +142,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpSrcCaseBuilder;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfInPortCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfInPortCaseBuilder;
 
 import com.google.common.base.Preconditions;
 
@@ -191,6 +194,9 @@ public class RegMoveConvertor implements
         }
         if (dstValue == NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstOfArpTpaCaseBuilder().setOfArpTpa(true).build();
+        }
+        if (dstValue == NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong()) {
+            return new DstOfInPortCaseBuilder().setOfInPort(true).build();
         }
         if (dstValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstOfEthDstCaseBuilder().setOfEthDst(true).build();
@@ -272,6 +278,9 @@ public class RegMoveConvertor implements
         }
         if (srcValue == NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcOfArpTpaCaseBuilder().setOfArpTpa(true).build();
+        }
+        if (srcValue == NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong()) {
+            return new SrcNxOfInPortCaseBuilder().setOfInPort(true).build();
         }
         if (srcValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcOfEthDstCaseBuilder().setOfEthDst(true).build();
@@ -416,6 +425,9 @@ public class RegMoveConvertor implements
         if (dstChoice instanceof DstOfArpTpaCase) {
             return NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong();
         }
+        if (dstChoice instanceof DstOfInPortCase) {
+            return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
+        }
         if (dstChoice instanceof DstNxTunIpv4DstCase) {
             return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
         }
@@ -502,6 +514,9 @@ public class RegMoveConvertor implements
         }
         if (srcChoice instanceof SrcOfArpTpaCase) {
             return NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong();
+        }
+        if (srcChoice instanceof SrcNxOfInPortCase) {
+            return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
         }
         if (srcChoice instanceof SrcNxTunIpv4DstCase) {
             return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
