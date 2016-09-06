@@ -63,6 +63,9 @@ module nicira-match {
     identity nxm-of-arp-tpa {
         base ofoxm:match-field;
     }
+    identity nxm-of-in-port {
+        base ofoxm:match-field;
+    }
     identity nxm-nx-tun-ipv4-dst {
         base ofoxm:match-field;
     }
@@ -189,6 +192,13 @@ module nicira-match {
         container arp-tpa-values {
             leaf value {
                 type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-of-in-port-type-grouping {
+        container nxm-of-in-port-values {
+            leaf value {
+                type uint16;
             }
         }
     }
@@ -413,6 +423,9 @@ module nicira-match {
         }
         case arp-tpa-case-value {
             uses ofj-nxm-of-match-arp-tpa-grouping;
+        }
+        case in-port-case-value {
+            uses ofj-nxm-of-in-port-type-grouping;
         }
         case tun-ipv4-dst-case-value {
             uses ofj-nxm-nx-match-tun-ipv4-dst-grouping;

@@ -31,6 +31,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -108,6 +109,7 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.N
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunGpeNpConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.UdpDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.UdpSrcConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NxmInPortConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrack;
@@ -236,6 +238,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,6 +261,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private final static ArpSpaConvertor ARP_SPA_CONVERTOR = new ArpSpaConvertor();
     private final static ArpTpaConvertor ARP_TPA_CONVERTOR = new ArpTpaConvertor();
     private final static ArpThaConvertor ARP_THA_CONVERTOR = new ArpThaConvertor();
+    private final static NxmInPortConvertor NXM_IN_PORT_CONVERTOR = new NxmInPortConvertor();
     private final static EthDstConvertor ETH_DST_CONVERTOR = new EthDstConvertor();
     private final static EthSrcConvertor ETH_SRC_CONVERTOR = new EthSrcConvertor();
     private final static RegLoadConvertor REG_LOAD_CONVERTOR = new RegLoadConvertor();
@@ -456,6 +460,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(ArpSpaCodec.SERIALIZER_KEY, ARP_SPA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfArpTpaKey.class, EncodeConstants.OF13_VERSION_ID), ARP_TPA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(ArpTpaCodec.SERIALIZER_KEY, ARP_TPA_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfInPortKey.class, EncodeConstants.OF13_VERSION_ID), NXM_IN_PORT_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(InPortCodec.SERIALIZER_KEY, NXM_IN_PORT_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfEthSrcKey.class, EncodeConstants.OF13_VERSION_ID), ETH_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(EthSrcCodec.SERIALIZER_KEY, ETH_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmOfEthDstKey.class, EncodeConstants.OF13_VERSION_ID), ETH_DST_CONVERTOR));
