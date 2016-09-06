@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -46,7 +47,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = HashBiMap.create();
+    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -162,28 +163,24 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
-        synchronized (flowRegistryKey) {
-            try {
-                LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                        flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-                flowRegistry.put(flowRegistryKey, flowDescriptor);
-            } catch (IllegalArgumentException ex) {
-                LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
-                        flowDescriptor.getTableKey().getId());
-                final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
-                final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
-                        create(flowDescriptor.getTableKey().getId(), newFlowId);
-                flowRegistry.put(flowRegistryKey, newFlowDescriptor);
-            }
+        try {
+          LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
+          flowRegistry.put(flowRegistryKey, flowDescriptor);
+        } catch (IllegalArgumentException ex) {
+          LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
+                    flowDescriptor.getTableKey().getId());
+          final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
+          final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
+            create(flowDescriptor.getTableKey().getId(), newFlowId);
+          flowRegistry.put(flowRegistryKey, newFlowDescriptor);
         }
     }
 
     @Override
     public void update(final FlowRegistryKey newFlowRegistryKey, final FlowDescriptor flowDescriptor) {
-        synchronized (newFlowRegistryKey) {
-            LOG.trace("Updating the entry with hash: {}", newFlowRegistryKey.hashCode());
-            flowRegistry.forcePut(newFlowRegistryKey, flowDescriptor);
-        }
+        LOG.trace("Updating the entry with hash: {}", newFlowRegistryKey.hashCode());
+        flowRegistry.forcePut(newFlowRegistryKey, flowDescriptor);
     }
 
     @Override
@@ -210,10 +207,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
-        synchronized (flowRegistryKey) {
-            LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-            flowRegistry.remove(flowRegistryKey);
-        }
+        LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+        flowRegistry.remove(flowRegistryKey);
     }
 
     @Override
