@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +28,10 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
@@ -48,7 +49,7 @@ class RoleContextImpl implements RoleContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
     // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
-    private static final int MAX_CLEAN_DS_RETRIES = 3;
+    private static final int MAX_CLEAN_DS_RETRIES = 0;
 
     private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
@@ -56,14 +57,17 @@ class RoleContextImpl implements RoleContext {
     private CONTEXT_STATE state;
     private final RoleManager myManager;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private final LifecycleService lifecycleService;
 
     RoleContextImpl(final DeviceInfo deviceInfo,
                     final HashedWheelTimer hashedWheelTimer,
-                    final RoleManager myManager) {
+                    final RoleManager myManager,
+                    final LifecycleService lifecycleService) {
         this.deviceInfo = deviceInfo;
         state = CONTEXT_STATE.WORKING;
         this.myManager = myManager;
         this.hashedWheelTimer = hashedWheelTimer;
+        this.lifecycleService = lifecycleService;
     }
 
     @Nullable
@@ -114,6 +118,7 @@ class RoleContextImpl implements RoleContext {
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
+                lifecycleService.closeConnection();
             }
         });
     }
@@ -142,13 +147,12 @@ class RoleContextImpl implements RoleContext {
                 public void onFailure(final Throwable throwable) {
                     LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
                     LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                    myManager.removeDeviceFromOperationalDS(deviceInfo, MAX_CLEAN_DS_RETRIES);
-
+                    myManager.removeDeviceFromOperationalDS(deviceInfo);
                 }
             });
             return future;
         } else {
-            return myManager.removeDeviceFromOperationalDS(deviceInfo, MAX_CLEAN_DS_RETRIES);
+            return myManager.removeDeviceFromOperationalDS(deviceInfo);
         }
     }
 
@@ -159,27 +163,24 @@ class RoleContextImpl implements RoleContext {
 
     @VisibleForTesting
     ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
-        LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
-        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-        final Short version = deviceInfo.getVersion();
-        if (null == version) {
-            LOG.debug("Device version is null");
-            return Futures.immediateFuture(null);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         }
-        if (version < OFConstants.OFP_VERSION_1_3) {
-            LOG.debug("Device version not support ROLE");
-            return Futures.immediateFuture(null);
-        } else {
+        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+        if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
-                    .setNode(new NodeRef(DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId()))).build();
+                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier())).build();
             setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
-                    LOG.warn("New role {} was not propagated to device {} during 10 sec", newRole, deviceInfo.getLOGValue());
+                    LOG.warn("New role {} was not propagated to device {} during 5 sec", newRole, deviceInfo.getLOGValue());
                     setRoleOutputFuture.cancel(true);
                 }
             };
-            hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
+            hashedWheelTimer.newTimeout(timerTask, 5, TimeUnit.SECONDS);
+        } else {
+            LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
+            return Futures.immediateFuture(null);
         }
         return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
@@ -208,6 +209,7 @@ class RoleContextImpl implements RoleContext {
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
+                lifecycleService.closeConnection();
             }
         });
 

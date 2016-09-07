@@ -33,7 +33,7 @@ public interface DeviceInfo extends XidSequencer {
     /**
      * @return version
      */
-    Short getVersion();
+    short getVersion();
 
     /**
      * @return datapathId
