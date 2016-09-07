@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_5f060387",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Could be renamed to of-in-port-case-value",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 8
+      },
+      "revId": "2d5615c6d45ea9be60fd98cb1c80dd87476bef64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_7feadfac",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/MatchUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "static final should be always in CAPS, to be in-line with existing impl, we can ignore this changes",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 4
+      },
+      "revId": "2d5615c6d45ea9be60fd98cb1c80dd87476bef64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_3fda274c",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Variable names still points to ethType and also if the objects are not reset, make it final",
+      "revId": "2d5615c6d45ea9be60fd98cb1c80dd87476bef64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5fb8c3c7",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Call from static context",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 8
+      },
+      "revId": "2d5615c6d45ea9be60fd98cb1c80dd87476bef64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_df21734e",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "rename dst-of-in-port-case to dst-nxm-of-in-port-case. Such that there is uniformity and clear distinction between oxm-of-in-port and nxm-of-in-port",
+      "revId": "2d5615c6d45ea9be60fd98cb1c80dd87476bef64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
