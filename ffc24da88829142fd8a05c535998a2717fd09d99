@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_c0e86be4",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Could be renamed to of-in-port or nxm-of-in-port",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 8
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_20daff4b",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "If variables are not reset set it to final",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 2
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c0218b4e",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Variable still referring to ethType",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 8
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e01487ea",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Could be called using static reference",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 8
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_40d57b1a",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/match/NxmInPortConvertor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Variable name still refers to ethType",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 8
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6012370a",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-09-07T06:31:43Z",
+      "side": 1,
+      "message": "Rename it to dst-nx-of-in-port-case, such that there is uniformity and it clearly distinguishes from oxm in port",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 195,
+        "endChar": 12
+      },
+      "revId": "ffc24da88829142fd8a05c535998a2717fd09d99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
