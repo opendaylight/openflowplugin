@@ -237,7 +237,7 @@ public class DeviceContextImplTest {
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-        ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialiaztion();
+        ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
 
         Mockito.doNothing().when(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
 
