@@ -600,7 +600,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
 
-        lazyTransactionManagerInitialiaztion();
+        lazyTransactionManagerInitialization();
 
         this.transactionChainManager.activateTransactionManager();
 
@@ -615,7 +615,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @VisibleForTesting
-    void lazyTransactionManagerInitialiaztion() {
+    void lazyTransactionManagerInitialization() {
         if (!this.initialized) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());

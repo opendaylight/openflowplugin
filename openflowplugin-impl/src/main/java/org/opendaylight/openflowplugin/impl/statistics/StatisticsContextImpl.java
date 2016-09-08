@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,10 +77,12 @@ class StatisticsContextImpl implements StatisticsContext {
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private ClusterInitializationPhaseHandler initialSubmitHandler;
 
+    private ListenableFuture<Boolean> lastDataGathering;
+
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
                           final boolean shuttingDownStatisticsPolling,
                           @Nonnull final LifecycleService lifecycleService,
-			  @Nonnull final ConvertorExecutor convertorExecutor,
+                          @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager) {
         this.lifecycleService = lifecycleService;
         this.deviceContext = lifecycleService.getDeviceContext();
@@ -94,6 +97,7 @@ class StatisticsContextImpl implements StatisticsContext {
         setState(CONTEXT_STATE.INITIALIZATION);
         this.deviceInfo = deviceInfo;
         this.myManager = myManager;
+        this.lastDataGathering = null;
     }
 
     @Override
@@ -136,6 +140,7 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     private ListenableFuture<Boolean> gatherDynamicData(final boolean initial) {
+        this.lastDataGathering = null;
         if (shuttingDownStatisticsPolling) {
             LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
@@ -166,6 +171,7 @@ class StatisticsContextImpl implements StatisticsContext {
                     }
                 }
             });
+            this.lastDataGathering = settableStatResultFuture;
             return settableStatResultFuture;
         }
     }
@@ -225,6 +231,7 @@ class StatisticsContextImpl implements StatisticsContext {
                 LOG.debug("Statistics context is already in state TERMINATION.");
             }
         } else {
+            stopGatheringData();
             setState(CONTEXT_STATE.TERMINATION);
             schedulingEnabled = false;
             for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
@@ -267,12 +274,12 @@ class StatisticsContextImpl implements StatisticsContext {
         }
         if ( ! iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
-            LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getNodeId());
+            LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getLOGValue());
             return;
         }
 
         final MultipartType nextType = iterator.next();
-        LOG.debug("Stats iterating to next type for node {} of type {}", getDeviceInfo().getNodeId(), nextType);
+        LOG.debug("Stats iterating to next type for node {} of type {}", getDeviceInfo().getLOGValue(), nextType);
 
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = chooseStat(nextType, initial);
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
@@ -431,6 +438,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
+        stopGatheringData();
         myManager.stopScheduling(deviceInfo);
         return Futures.immediateFuture(null);
     }
@@ -438,6 +446,16 @@ class StatisticsContextImpl implements StatisticsContext {
     @Override
     public LifecycleService getLifecycleService() {
         return lifecycleService;
+    }
+
+    @Override
+    public void stopGatheringData() {
+        if (Objects.nonNull(this.lastDataGathering)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stop the running statistics gathering for node {}", this.deviceInfo.getLOGValue());
+            }
+            this.lastDataGathering.cancel(true);
+        }
     }
 
     @Override

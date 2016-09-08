@@ -73,5 +73,13 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable, O
      */
     boolean isSchedulingEnabled();
 
+    /**
+     * @return lifecycle service to be able close connection
+     */
     LifecycleService getLifecycleService();
+
+    /**
+     * In case to change mastership to slave or connection interrupted stop the future and release thread
+     */
+    void stopGatheringData();
 }
