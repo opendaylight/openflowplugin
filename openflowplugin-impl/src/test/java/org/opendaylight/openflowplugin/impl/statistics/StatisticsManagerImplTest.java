@@ -85,8 +85,6 @@ public class StatisticsManagerImplTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImplTest.class);
 
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
-    private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     public static final NodeId NODE_ID = new NodeId("ofp-unit-dummy-node-id");
 
     @Mock
@@ -257,7 +255,8 @@ public class StatisticsManagerImplTest {
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
-        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
+        when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
         when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
@@ -297,7 +296,8 @@ public class StatisticsManagerImplTest {
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
-        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
+        when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
         when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
@@ -336,7 +336,8 @@ public class StatisticsManagerImplTest {
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
-        when(statisticContext.getLifecycleService()).thenReturn(lifecycleService);
+        when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
+        when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
         when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =

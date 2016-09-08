@@ -56,7 +56,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConvertorExecutor converterExecutor;
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
@@ -84,18 +84,29 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
-	this.convertorExecutor = convertorExecutor;
-        this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry.addRpcImplementation(
-                StatisticsManagerControlService.class, this));
+	    this.converterExecutor = convertorExecutor;
+        this.controlServiceRegistration = Preconditions.checkNotNull(
+                rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
+        );
         this.isStatisticsPollingEnabled = isStatisticsPollingEnabled;
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
     @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
+    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo,
+                                       final LifecycleService lifecycleService) throws Exception {
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceInfo, isStatisticsPollingEnabled, lifecycleService, convertorExecutor, this);
-        Verify.verify(contexts.putIfAbsent(deviceInfo, statisticsContext) == null, "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue());
+        final StatisticsContext statisticsContext =
+                new StatisticsContextImpl(
+                        deviceInfo,
+                        isStatisticsPollingEnabled,
+                        lifecycleService,
+                        converterExecutor,
+                        this);
+        Verify.verify(
+                contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
+                "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
+        );
         lifecycleService.setStatContext(statisticsContext);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
@@ -134,15 +145,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
                 }
                 calculateTimerDelay(timeCounter);
-                if (throwable instanceof CancellationException) {
-                    /* This often happens when something wrong with akka or DS, so closing connection will help to restart device **/
-                    contexts.get(deviceInfo).getLifecycleService().closeConnection();
+                if (throwable instanceof IllegalStateException) {
+                    stopScheduling(deviceInfo);
                 } else {
-                    if (throwable instanceof IllegalStateException) {
-                        stopScheduling(deviceInfo);
-                    } else {
-                        scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
-                    }
+                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
             }
         });
@@ -230,10 +236,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     final DeviceInfo deviceInfo = entry.getKey();
                     final StatisticsContext statisticsContext = entry.getValue();
-                    final DeviceContext deviceContext = statisticsContext.getLifecycleService().getDeviceContext();
+                    final DeviceContext deviceContext = statisticsContext.gainDeviceContext();
                     switch (targetWorkMode) {
                         case COLLECTALL:
-                            scheduleNextPolling(deviceContext.getDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
+                            scheduleNextPolling(statisticsContext.gainDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
                             for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(null);
                             }
@@ -285,8 +291,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         LOG.info("Scheduling statistics poll for device: {}", deviceInfo.getNodeId());
 
         statisticsContext.setSchedulingEnabled(true);
-        final DeviceState deviceState = contexts.get(deviceInfo).getLifecycleService().getDeviceContext().getDeviceState();
-        scheduleNextPolling(deviceState, deviceInfo, statisticsContext, new TimeCounter());
+        scheduleNextPolling(
+                statisticsContext.gainDeviceState(),
+                deviceInfo,
+                statisticsContext,
+                new TimeCounter()
+        );
     }
 
     @Override
@@ -300,7 +310,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             LOG.warn("Statistics context not found for device: {}", deviceInfo.getNodeId());
             return;
         }
-
         statisticsContext.setSchedulingEnabled(false);
     }
 
