@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -416,7 +417,9 @@ public class DeviceInitializationUtils {
     // FIXME : remove after ovs tableFeatures fix
     private static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII,
                                         final Short nrOfTables) {
-        LOG.debug("About to create {} empty tables.", nrOfTables);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("About to create {} empty tables.", nrOfTables);
+        }
         for (int i = 0; i < nrOfTables; i++) {
             final short tId = (short) i;
             final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class,
@@ -447,7 +450,7 @@ public class DeviceInitializationUtils {
                 } else {
                     for (RpcError rpcError : rpcResult.getErrors()) {
                         LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
-                        if (null != rpcError.getCause()) {
+                        if (LOG.isTraceEnabled() && Objects.nonNull(rpcError.getCause())) {
                             LOG.trace("Detailed error:", rpcError.getCause());
                         }
                     }
@@ -466,7 +469,9 @@ public class DeviceInitializationUtils {
     }
 
     private static ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type,
-                                                                                       final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final short version) {
+                                                                                       final DeviceContext deviceContext,
+                                                                                       final InstanceIdentifier<Node> nodeII,
+                                                                                       final short version) {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
@@ -521,21 +526,30 @@ public class DeviceInitializationUtils {
                                          final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
 
         try {
-            LOG.trace("Waiting for protocol version 1.0");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Waiting for protocol version 1.0");
+            }
             List<RpcResult<List<MultipartReply>>> results = deviceFeaturesFuture.get();
             boolean allSucceeded = true;
             for (final RpcResult<List<MultipartReply>> rpcResult : results) {
                 allSucceeded &= rpcResult.isSuccessful();
             }
             if (allSucceeded) {
-                LOG.debug("Creating emtpy flow capable node: {}", deviceContext.getDeviceInfo().getNodeId().getValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Creating empty flow capable node: {}", deviceContext.getDeviceInfo().getLOGValue());
+                }
                 createEmptyFlowCapableNodeInDs(deviceContext);
-                LOG.debug("Creating emtpy tables for {}", deviceContext.getDeviceInfo().getNodeId().getValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Creating empty tables for {}", deviceContext.getDeviceInfo().getLOGValue());
+                }
                 makeEmptyTables(deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
                         deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceContext.getDeviceInfo().getNodeId().getValue());
+            LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceContext.getDeviceInfo().getLOGValue());
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Error for node {} : ", deviceContext.getDeviceInfo().getLOGValue(), e);
+            }
         }
     }
 }
