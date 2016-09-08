@@ -12,6 +12,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
@@ -73,5 +75,20 @@ public interface StatisticsContext extends RequestContextStack, AutoCloseable, O
      */
     boolean isSchedulingEnabled();
 
-    LifecycleService getLifecycleService();
+    /**
+     * Gain device state
+     * @return device state from device context from lifecycle service
+     */
+    DeviceState gainDeviceState();
+
+    /**
+     * Gain device context
+     * @return device context from lifecycle service
+     */
+    DeviceContext gainDeviceContext();
+
+    /**
+     * In case to change mastership to slave or connection interrupted stop the future and release thread
+     */
+    void stopGatheringData();
 }
