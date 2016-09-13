@@ -27,12 +27,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>, AutoCloseable {
+public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataChangeListenerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataTreeChangeListenerImpl.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    protected final ListenerRegistration<DataTreeChangeListener> dataChangeListenerRegistration;
+    protected final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
     protected OperationProcessor operationProcessor;
 
     /**
@@ -43,16 +43,16 @@ public abstract class DataChangeListenerImpl<T extends DataObject> implements Da
             .create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
 
-    public DataChangeListenerImpl(final OperationProcessor operationProcessor,
-                                  final DataBroker dataBroker,
-                                  final InstanceIdentifier<T> ii) {
+    public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor,
+                                      final DataBroker dataBroker,
+                                      final InstanceIdentifier<T> ii) {
         final DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
                 public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(identifier, DataChangeListenerImpl.this);
+                    return dataBroker.registerDataTreeChangeListener(identifier, DataTreeChangeListenerImpl.this);
                 }
             });
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public abstract class DataChangeListenerImpl<T extends DataObject> implements Da
 
     @Override
     public void close() throws Exception {
-        dataChangeListenerRegistration.close();
+        listenerRegistration.close();
     }
 
     protected <T extends DataObject> void sendToTransactionChain(final T node, final InstanceIdentifier<T> iiToTopologyNode) {

@@ -79,7 +79,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChangeList
                 }
             });
         } catch (Exception e) {
-            throw new IllegalStateException("registerDataChangeListener failed", e);
+            throw new IllegalStateException("registerDataTreeChangeListener failed", e);
         }
     }
 

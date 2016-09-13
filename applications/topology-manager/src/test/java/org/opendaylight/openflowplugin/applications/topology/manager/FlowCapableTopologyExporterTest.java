@@ -38,7 +38,6 @@ import org.mockito.MockitoAnnotations;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
@@ -51,30 +50,18 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowCapableTopologyExporterTest {
 
+    private OperationProcessor processor;
+    private FlowCapableTopologyExporter exporter;
+    private InstanceIdentifier<Topology> topologyIID;
+    private final ExecutorService executor = Executors.newFixedThreadPool(1);
     @Mock
     private DataBroker mockDataBroker;
-
     @Mock
     private BindingTransactionChain mockTxChain;
-
-    private OperationProcessor processor;
-
-    private FlowCapableTopologyExporter exporter;
-
-    private TerminationPointChangeListenerImpl terminationPointListener;
-    private NodeChangeListenerImpl nodeChangeListener;
-
-    private InstanceIdentifier<Topology> topologyIID;
-
-    private final ExecutorService executor = Executors.newFixedThreadPool(1);
-
-    @Mock
-    private AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> mockedDataChangeListener;
 
     @Before
     public void setUp() {
@@ -88,9 +75,6 @@ public class FlowCapableTopologyExporterTest {
         topologyIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
         exporter = new FlowCapableTopologyExporter(processor, topologyIID);
-        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor);
-        nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor);
-
         executor.execute(processor);
     }
 
