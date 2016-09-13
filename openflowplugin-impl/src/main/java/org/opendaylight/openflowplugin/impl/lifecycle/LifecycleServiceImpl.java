@@ -89,6 +89,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void close() throws Exception {
         if (registration != null) {
+            LOG.info("Unregistering clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
             registration.close();
             registration = null;
         }
@@ -96,6 +97,8 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void registerService(final ClusterSingletonServiceProvider singletonServiceProvider) {
+        LOG.info("Registering clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
+
         //lifecycle service -> device context -> statistics context -> rpc context -> role context -> lifecycle service
         this.clusterInitializationPhaseHandler = deviceContext;
         this.deviceContext.setLifecycleInitializationPhaseHandler(this.statContext);

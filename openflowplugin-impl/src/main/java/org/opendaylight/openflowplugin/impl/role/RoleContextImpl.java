@@ -51,6 +51,9 @@ class RoleContextImpl implements RoleContext {
     // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
     private static final int MAX_CLEAN_DS_RETRIES = 0;
 
+    // Timeout in seconds after what we will give up on propagating role
+    private static final int SET_ROLE_TIMEOUT = 10;
+
     private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
     private final DeviceInfo deviceInfo;
@@ -177,7 +180,7 @@ class RoleContextImpl implements RoleContext {
                     setRoleOutputFuture.cancel(true);
                 }
             };
-            hashedWheelTimer.newTimeout(timerTask, 5, TimeUnit.SECONDS);
+            hashedWheelTimer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
         } else {
             LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
             return Futures.immediateFuture(null);
