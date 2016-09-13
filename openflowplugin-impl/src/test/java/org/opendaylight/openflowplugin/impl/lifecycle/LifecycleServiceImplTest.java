@@ -54,12 +54,6 @@ public class LifecycleServiceImplTest {
 
     @Before
     public void setUp() {
-        lifecycleService = new LifecycleServiceImpl();
-        lifecycleService.setDeviceContext(deviceContext);
-        lifecycleService.setRpcContext(rpcContext);
-        lifecycleService.setRoleContext(roleContext);
-        lifecycleService.setStatContext(statContext);
-        lifecycleService.registerService(clusterSingletonServiceProvider);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
@@ -67,6 +61,13 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceFlowRegistry.fill()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
+
+        lifecycleService = new LifecycleServiceImpl();
+        lifecycleService.setDeviceContext(deviceContext);
+        lifecycleService.setRpcContext(rpcContext);
+        lifecycleService.setRoleContext(roleContext);
+        lifecycleService.setStatContext(statContext);
+        lifecycleService.registerService(clusterSingletonServiceProvider);
     }
 
     @Test
