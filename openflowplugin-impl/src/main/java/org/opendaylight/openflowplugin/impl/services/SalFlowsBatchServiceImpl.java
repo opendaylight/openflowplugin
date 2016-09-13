@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * default implementation of {@link SalFlowsBatchService} - delegates work to {@link SalFlowService}
+ * Default implementation of {@link SalFlowsBatchService} - delegates work to {@link SalFlowService}.
  */
 public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowsBatchServiceImpl.class);

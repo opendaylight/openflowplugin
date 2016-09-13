@@ -9,19 +9,19 @@
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 /**
- * batch step types - holding combinations of target object type and action type (e.g.: flow + update)
+ * Batch step types - holding combinations of target object type and action type.
  */
 public enum BatchStepType {
 
-    /** flow -&gt; add operation */FLOW_ADD,
-    /** flow -&gt; remove operation */FLOW_REMOVE,
-    /** flow -&gt; update operation */FLOW_UPDATE,
+    /** flow add operation */FLOW_ADD,
+    /** flow remove operation */FLOW_REMOVE,
+    /** flow update operation */FLOW_UPDATE,
 
-    /** group -&gt; add operation */GROUP_ADD,
-    /** group -&gt; remove operation */GROUP_REMOVE,
-    /** group -&gt; update operation */GROUP_UPDATE,
+    /** group add operation */GROUP_ADD,
+    /** group remove operation */GROUP_REMOVE,
+    /** group update operation */GROUP_UPDATE,
 
-    /** meter -&gt; add operation */METER_ADD,
-    /** meter -&gt; remove operation */METER_REMOVE,
-    /** meter -&gt; update operation */METER_UPDATE
+    /** meter add operation */METER_ADD,
+    /** meter remove operation */METER_REMOVE,
+    /** meter update operation */METER_UPDATE
 }

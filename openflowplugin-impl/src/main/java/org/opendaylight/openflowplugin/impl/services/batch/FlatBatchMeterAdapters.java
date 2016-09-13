@@ -44,7 +44,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * transform between FlatBatch API and meter batch API
+ * Transform between FlatBatch API and meter batch API.
  */
 public class FlatBatchMeterAdapters {
 

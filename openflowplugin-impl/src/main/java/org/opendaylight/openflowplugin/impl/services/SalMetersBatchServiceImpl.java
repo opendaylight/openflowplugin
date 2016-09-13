@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * default implementation of {@link SalMetersBatchService} - delegates work to {@link SalMeterService}
+ * Default implementation of {@link SalMetersBatchService} - delegates work to {@link SalMeterService}.
  */
 public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
