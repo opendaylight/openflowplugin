@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * default implementation of {@link SalGroupsBatchService} - delegates work to {@link SalGroupService}
+ * Default implementation of {@link SalGroupsBatchService} - delegates work to {@link SalGroupService}.
  */
 public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 

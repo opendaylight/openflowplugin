@@ -116,10 +116,8 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                     LOG.debug("error on flat batch chain occurred -> skipping step {}", planStep.getStepType());
                     return FlatBatchUtil.createEmptyRpcBatchResultFuture(false);
                 }
-
-                LOG.trace("batch progressing on step type {}", planStep.getStepType());
-                LOG.trace("batch progressing previous steps result: {}", chainInput.isSuccessful());
-
+                LOG.trace("batch progressing on step type {}, previous steps result: {}", planStep.getStepType(),
+                        chainInput.isSuccessful());
                 return getChainOutput(node, planStep, currentOffset);
             }));
             stepOffset += planStep.getTaskBag().size();
