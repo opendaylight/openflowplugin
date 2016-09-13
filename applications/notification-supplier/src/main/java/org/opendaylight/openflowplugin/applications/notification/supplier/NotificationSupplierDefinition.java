@@ -14,7 +14,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Default definition for every Notification Supplier. Migration from notification
- * to {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener} has one
+ * to {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener} has one
  * keyed component - WildCarded Path which represent a changes checker in DataStoreTreeNode
  *
  * @param <O> - {@link DataObject} represent Data Tree Item from DataStore
