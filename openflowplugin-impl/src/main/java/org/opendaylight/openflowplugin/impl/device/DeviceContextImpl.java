@@ -18,14 +18,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -100,9 +98,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper{
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
@@ -180,7 +175,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void initialSubmitTransaction() {
-        transactionChainManager.initialSubmitWriteTransaction();
+        if (initialized) {
+            transactionChainManager.initialSubmitWriteTransaction();
+        }
     }
 
     @Override
@@ -215,7 +212,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data){
-        if (Objects.nonNull(transactionChainManager)) {
+        if (initialized) {
             transactionChainManager.writeToTransaction(store, path, data, false);
         }
     }
@@ -224,21 +221,21 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
                                                                          final InstanceIdentifier<T> path,
                                                                          final T data){
-        if (Objects.nonNull(transactionChainManager)) {
+        if (initialized) {
             transactionChainManager.writeToTransaction(store, path, data, true);
         }
     }
 
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
-        if (Objects.nonNull(transactionChainManager)) {
+        if (initialized) {
             transactionChainManager.addDeleteOperationTotTxChain(store, path);
         }
     }
 
     @Override
     public boolean submitTransaction() {
-        return Objects.nonNull(transactionChainManager) && transactionChainManager.submitWriteTransaction();
+        return initialized && transactionChainManager.submitWriteTransaction();
     }
 
     @Override
@@ -505,26 +502,29 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getLOGValue());
             return;
         }
-        /* Terminate Auxiliary Connection */
+
+        // Terminate Auxiliary Connection
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             LOG.debug("Closing auxiliary connection {}", connectionContext.getNodeId());
             connectionContext.closeConnection(false);
         }
-        /* Terminate Primary Connection */
+
+        // Terminate Primary Connection
         getPrimaryConnectionContext().closeConnection(true);
-        /* Close all Group Registry */
-        deviceGroupRegistry.close();
-        deviceFlowRegistry.close();
-        deviceMeterRegistry.close();
+
+        // Close all datastore registries
+        if (initialized) {
+            deviceGroupRegistry.close();
+            deviceFlowRegistry.close();
+            deviceMeterRegistry.close();
+        }
     }
 
     @Override
     public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
-        ListenableFuture<Void> future = Futures.immediateFuture(null);
-        if (Objects.nonNull(this.transactionChainManager)) {
-            future = this.transactionChainManager.shuttingDown();
-        }
-        return future;
+        return initialized
+                ? this.transactionChainManager.shuttingDown()
+                : Futures.immediateFuture(null);
     }
 
     @VisibleForTesting
@@ -549,11 +549,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        ListenableFuture<Void> future = Futures.immediateFuture(null);
-        if (Objects.nonNull(this.transactionChainManager)) {
-            future = this.transactionChainManager.deactivateTransactionManager();
-        }
-        return future;
+        return initialized
+                ? this.transactionChainManager.deactivateTransactionManager()
+                : Futures.immediateFuture(null);
     }
 
     @Override
@@ -568,7 +566,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
-        if (Objects.nonNull(this.transactionChainManager)) {
+        if (initialized) {
             this.transactionChainManager.setLifecycleService(lifecycleService);
         }
     }
