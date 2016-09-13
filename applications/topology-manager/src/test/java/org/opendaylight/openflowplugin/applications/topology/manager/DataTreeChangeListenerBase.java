@@ -37,23 +37,17 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class DataChangeListenerBase {
-
-    @Mock
-    private DataBroker mockDataBroker;
-
-    @Mock
-    protected BindingTransactionChain mockTxChain;
+public abstract class DataTreeChangeListenerBase {
 
     private OperationProcessor processor;
-
     protected InstanceIdentifier<Topology> topologyIID;
-
     protected TerminationPointChangeListenerImpl terminationPointListener;
     protected NodeChangeListenerImpl nodeChangeListener;
-
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
-
+    @Mock
+    private DataBroker mockDataBroker;
+    @Mock
+    protected BindingTransactionChain mockTxChain;
 
     @Before
     public void setUp() {

@@ -47,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Test for {@link LLDPPacketPuntEnforcer}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LLDPDataChangeListenerTest {
+public class LLDPDataTreeChangeListenerTest {
     private LLDPPacketPuntEnforcer lldpPacketPuntEnforcer;
     private final static InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
