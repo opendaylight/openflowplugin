@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.it;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
@@ -122,8 +121,6 @@ public abstract class ScenarioFactory {
     /**
      * Attempt to simulate the MLX running 1.0 talking to ODL
      *
-     * @param auxId
-     * @param pluginVersionBitmap
      * @return handshake scenario without switch version bitmap
      */
     public static Deque<ClientEvent> createHandshakeScenarioNoVBM_OF10_TwoHello() {
@@ -240,8 +237,6 @@ public abstract class ScenarioFactory {
     /**
      * Attempt to simulate the MLX running 1.0 talking to ODL
      *
-     * @param auxId
-     * @param pluginVersionBitmap
      * @return handshake scenario without switch version bitmap
      */
     public static Deque<ClientEvent> createHandshakeScenarioNOVBM_OF10_OneHello() {
