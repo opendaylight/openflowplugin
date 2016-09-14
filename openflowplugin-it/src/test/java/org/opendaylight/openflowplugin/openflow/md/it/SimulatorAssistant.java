@@ -11,19 +11,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.junit.Assert;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- */
 public abstract class SimulatorAssistant {
-    
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SimulatorAssistant.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimulatorAssistant.class);
 
     /**
      * @param switchSim 

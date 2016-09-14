@@ -16,12 +16,13 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,11 +30,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -76,7 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -155,23 +156,21 @@ public class OFPluginFlowTest {
         }
     }
 
-    final class TriggerTestListener implements DataChangeListener {
+    final class TriggerTestListener implements DataTreeChangeListener<FlowCapableNode> {
 
         public TriggerTestListener() {
             // NOOP
         }
 
         @Override
-        public void onDataChanged(
-                AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> arg0) {
-            Set<InstanceIdentifier<?>> keySet = arg0.getCreatedData().keySet();
-            if (keySet.size() == 1) {
-                for (InstanceIdentifier<?> key : keySet) {
-                    InstanceIdentifier<FlowCapableNode> neededKey =
-                            key.firstIdentifierOf(FlowCapableNode.class);
-                    if (neededKey != null) {
-                        LOG.info("Node was added (brm) {}", neededKey);
-                        writeFlow(createTestFlow(), neededKey);
+        public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
+
+            for (DataTreeModification modification : modifications) {
+                if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
+                    InstanceIdentifier<FlowCapableNode> ii = modification.getRootPath().getRootIdentifier();
+                    if (ii != null) {
+                        LOG.info("Node was added (brm) {}", ii);
+                        writeFlow(createTestFlow(), ii);
                         break;
                     }
                 }
@@ -188,8 +187,8 @@ public class OFPluginFlowTest {
         LOG.debug("testFlowMod integration test");
         TriggerTestListener brmListener = new TriggerTestListener();
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                getWildcardPath(), brmListener, DataChangeScope.BASE);
+        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, getWildcardPath());
+        dataBroker.registerDataTreeChangeListener(dataTreeIdentifier, brmListener);
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
