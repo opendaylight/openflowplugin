@@ -155,23 +155,21 @@ public class OFPluginFlowTest {
         }
     }
 
-    final class TriggerTestListener implements DataChangeListener {
+    final class TriggerTestListener implements DataTreeChangeListener<FlowCapableNode> {
 
         public TriggerTestListener() {
             // NOOP
         }
 
         @Override
-        public void onDataChanged(
-                AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> arg0) {
-            Set<InstanceIdentifier<?>> keySet = arg0.getCreatedData().keySet();
-            if (keySet.size() == 1) {
-                for (InstanceIdentifier<?> key : keySet) {
-                    InstanceIdentifier<FlowCapableNode> neededKey =
-                            key.firstIdentifierOf(FlowCapableNode.class);
-                    if (neededKey != null) {
-                        LOG.info("Node was added (brm) {}", neededKey);
-                        writeFlow(createTestFlow(), neededKey);
+        public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<>> modifications) {
+
+            for (DataTreeModification modification : modifications) {
+                if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
+                    InstanceIdentifier<FlowCapableNode> ii = modification.getRootPath().getRootIdentifier();
+                    if (ii != null) {
+                        LOG.info("Node was added (brm) {}", ii);
+                        writeFlow(createTestFlow(), ii);
                         break;
                     }
                 }
@@ -188,8 +186,8 @@ public class OFPluginFlowTest {
         LOG.debug("testFlowMod integration test");
         TriggerTestListener brmListener = new TriggerTestListener();
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                getWildcardPath(), brmListener, DataChangeScope.BASE);
+        final DataTreeIdentifier<Table> dataTreeIdentifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, getWildcardPath());
+        dataBroker.registerDataTreeChangeListener(dataTreeIdentifier, brmListener);
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
