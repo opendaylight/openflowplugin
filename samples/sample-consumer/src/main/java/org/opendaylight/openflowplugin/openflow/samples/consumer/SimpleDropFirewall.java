@@ -7,19 +7,18 @@
  */
 package org.opendaylight.openflowplugin.openflow.samples.consumer;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -29,17 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public class SimpleDropFirewall {
 
     private ConsumerContext context;
     private SalFlowService flowService;
-    private DataChangeListener listener = new NodeListener();
-    private DataBrokerService data; 
-    
+    private DataTreeChangeListener listener = new NodeListener();
+    private DataBrokerService data;
+
     public void setContext(ConsumerContext session) {
         this.context = session;
     }
@@ -59,19 +56,13 @@ public class SimpleDropFirewall {
         return result.get(5, TimeUnit.SECONDS).isSuccessful();
     }
     
-    private class NodeListener implements DataChangeListener {
-        
+    private class NodeListener implements DataTreeChangeListener<Node> {
         
         @Override
-        public void onDataChanged(
-                DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            
-            Map<InstanceIdentifier<?>, DataObject> updated = change.getUpdatedConfigurationData();
-            Set<Entry<InstanceIdentifier<?>, DataObject>> set = updated.entrySet();
-            for (Entry<InstanceIdentifier<?>, DataObject> entry : set) {
-                Class<?> changedObjectType = entry.getKey().getTargetType();
-                if(Node.class.equals(changedObjectType)) {
-                    // We now that this is node updated
+        public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<Node>> modifications) {
+            for (DataTreeModification modification : modifications) {
+                if (modification.getRootNode().getModificationType() == ModificationType.SUBTREE_MODIFIED) {
+                    // node updated
                 }
             }
         }

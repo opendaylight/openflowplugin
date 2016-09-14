@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -40,20 +39,16 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
          * In order to get path we shorten path to the first node reference
          * by using firstIdentifierOf helper method provided by InstanceIdentifier,
          * this will effectively shorten the path to /nodes/node.
-         * 
          */
         InstanceIdentifier<?> ingressPort = notification.getIngress().getValue();
         InstanceIdentifier<Node> nodeOfPacket = ingressPort.firstIdentifierOf(Node.class);
         /**
          * We lookup up the the packet-in listener for this node.
-         * 
          */
         PacketProcessingListener nodeHandler = handlerMapping.get(nodeOfPacket);
         
         /**
-         * 
          * If we have packet-processing listener, we delegate notification.
-         * 
          */
         if (nodeHandler != null) {
             nodeHandler.onPacketReceived(notification);

@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
-import org.opendaylight.openflowplugin.learningswitch.DataChangeListenerRegistrationHolder;
-import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
+import org.opendaylight.openflowplugin.learningswitch.DataTreeChangeListenerRegistrationHolder;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
+import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandler;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandlerSimpleImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHandler {
     
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MultipleLearningSwitchHandlerFacadeImpl.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(MultipleLearningSwitchHandlerFacadeImpl.class);
     private FlowCommitWrapper dataStoreAccessor;
     private PacketProcessingService packetProcessingService;
     private PacketInDispatcherImpl packetInDispatcher;
@@ -39,14 +37,12 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
         /**
          * appearedTablePath is in form of /nodes/node/node-id/table/table-id
          * so we shorten it to /nodes/node/node-id to get identifier of switch.
-         * 
          */
         InstanceIdentifier<Node> nodePath = InstanceIdentifierUtils.getNodePath(appearedTablePath);
         
         /**
          * We check if we already initialized dispatcher for that node,
          * if not we create new handler for switch.
-         * 
          */
         if (!packetInDispatcher.getHandlerMapping().containsKey(nodePath)) {
             // delegate this node (owning appearedTable) to SimpleLearningSwitchHandler  
@@ -70,7 +66,7 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
 
     @Override
     public void setRegistrationPublisher(
-            DataChangeListenerRegistrationHolder registrationPublisher) {
+            DataTreeChangeListenerRegistrationHolder registrationPublisher) {
         //NOOP
     }
     
