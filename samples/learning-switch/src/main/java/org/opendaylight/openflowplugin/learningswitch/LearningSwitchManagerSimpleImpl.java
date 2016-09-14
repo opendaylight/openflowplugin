@@ -8,7 +8,8 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -31,19 +32,14 @@ import org.slf4j.LoggerFactory;
  * corresponding MACs)</li>
  * </ul>
  */
-public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegistrationHolder,
-        LearningSwitchManager {
+public class LearningSwitchManagerSimpleImpl implements DataTreeChangeListenerRegistrationHolder, LearningSwitchManager {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(LearningSwitchManagerSimpleImpl.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerSimpleImpl.class);
     private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
     private DataBroker data;
-
     private Registration packetInRegistration;
-
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
 
     /**
      * @param notificationService the notificationService to set
@@ -86,13 +82,12 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
 
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        dataChangeListenerRegistration = data.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class)
-                    .augmentation(FlowCapableNode.class)
-                    .child(Table.class).build(),
-                wakeupListener,
-                DataBroker.DataChangeScope.SUBTREE);
+        final InstanceIdentifier<Table> instanceIdentifier = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class)
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class);
+        final DataTreeIdentifier<Table> dataTreeIdentifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+        dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
         LOG.debug("start() <--");
     }
 
@@ -110,17 +105,16 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
             LOG.debug("closing packetInRegistration failed..", e);
         }
         try {
-            dataChangeListenerRegistration.close();
+            dataTreeChangeListenerRegistration.close();
         } catch (Exception e) {
-            LOG.warn("failed to close dataChangeListenerRegistration: {}", e.getMessage());
-            LOG.debug("failed to close dataChangeListenerRegistration..", e);
+            LOG.warn("failed to close dataTreeChangeListenerRegistration: {}", e.getMessage());
+            LOG.debug("failed to close dataTreeChangeListenerRegistration..", e);
         }
         LOG.debug("stop() <--");
     }
 
-
     @Override
-    public ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration() {
-        return dataChangeListenerRegistration;
+    public ListenerRegistration<DataTreeChangeListener> getDataTreeChangeListenerRegistration() {
+        return dataTreeChangeListenerRegistration;
     }
 }
