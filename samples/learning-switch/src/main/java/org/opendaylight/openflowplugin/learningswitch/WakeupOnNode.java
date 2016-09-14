@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import java.util.Collection;
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -21,30 +22,27 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class WakeupOnNode implements DataChangeListener {
+public class WakeupOnNode implements DataTreeChangeListener<Table> {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(WakeupOnNode.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(WakeupOnNode.class);
     private LearningSwitchHandler learningSwitchHandler;
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<Table>> modifications) {
         Short requiredTableId = 0;
-
         // TODO add flow
 
-        Map<InstanceIdentifier<?>, DataObject> updated = change.getUpdatedData();
-        for (Entry<InstanceIdentifier<?>, DataObject> updateItem : updated.entrySet()) {
-            DataObject table = updateItem.getValue();
-            if (table instanceof Table) {
-                Table tableSure = (Table) table;
-                LOG.trace("table: {}", table);
+        for (DataTreeModification modification : modifications) {
+            if (modification.getRootNode().getModificationType() == ModificationType.SUBTREE_MODIFIED) {
+                DataObject table = modification.getRootNode().getDataAfter();
+                if (table instanceof Table) {
+                    Table tableSure = (Table) table;
+                    LOG.trace("table: {}", table);
 
-                if (requiredTableId.equals(tableSure.getId())) {
-                    @SuppressWarnings("unchecked")
-                    InstanceIdentifier<Table> tablePath = (InstanceIdentifier<Table>) updateItem.getKey();
-                    learningSwitchHandler.onSwitchAppeared(tablePath);
+                    if (requiredTableId.equals(tableSure.getId())) {
+                        InstanceIdentifier<Table> tablePath = (InstanceIdentifier<Table>) modification.getRootPath().getRootIdentifier();
+                        learningSwitchHandler.onSwitchAppeared(tablePath);
+                    }
                 }
             }
         }

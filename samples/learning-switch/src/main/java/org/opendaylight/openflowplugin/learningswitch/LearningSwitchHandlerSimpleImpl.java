@@ -42,18 +42,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple Learning Switch implementation which does mac learning for one switch.
- *
- *
  */
 public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandlerSimpleImpl.class);
-
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
-
     private static final int DIRECT_FLOW_PRIORITY = 512;
 
-    private DataChangeListenerRegistrationHolder registrationPublisher;
+    private DataTreeChangeListenerRegistrationHolder registrationPublisher;
     private FlowCommitWrapper dataStoreAccessor;
     private PacketProcessingService packetProcessingService;
 
@@ -81,8 +77,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
         // disable listening - simple learning handles only one node (switch)
         if (registrationPublisher != null) {
             try {
-                LOG.debug("closing dataChangeListenerRegistration");
-                registrationPublisher.getDataChangeListenerRegistration().close();
+                LOG.debug("closing dataTreeChangeListenerRegistration");
+                registrationPublisher.getDataTreeChangeListenerRegistration().close();
             } catch (Exception e) {
                 LOG.warn("closing registration upon flowCapable node update listener failed: {}", e.getMessage());
                 LOG.debug("closing registration upon flowCapable node update listener failed.. ", e);
@@ -113,7 +109,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     }
 
     @Override
-    public void setRegistrationPublisher(DataChangeListenerRegistrationHolder registrationPublisher) {
+    public void setRegistrationPublisher(DataTreeChangeListenerRegistrationHolder registrationPublisher) {
         this.registrationPublisher = registrationPublisher;
     }
 
