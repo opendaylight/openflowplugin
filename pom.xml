@@ -27,6 +27,7 @@
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>openflowplugin-impl</module>
+      <module>openflowplugin-it</module>
       <module>openflowplugin-common</module>
       <module>extension</module>
       <module>distribution/karaf</module>
