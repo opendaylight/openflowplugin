@@ -23,6 +23,18 @@
         <instance-name>openflow-switch-connection-provider-default-impl</instance-name>
         <port>6633</port>
         <transport-protocol>TCP</transport-protocol>
+        <tls>
+           <keystore>configuration/ssl/ctl.jks</keystore>
+           <keystore-type>JKS</keystore-type>
+           <keystore-path-type>PATH</keystore-path-type>
+           <keystore-password>opendaylight</keystore-password>
+           <truststore>configuration/ssl/truststore.jks</truststore>
+           <truststore-type>JKS</truststore-type>
+           <truststore-path-type>PATH</truststore-path-type>
+           <truststore-password>opendaylight</truststore-password>
+           <certificate-password>opendaylight</certificate-password>
+           <cipher-suites></cipher-suites>
+        </tls>
       </switch-connection-config>
     ]]></odl:default-config>
   </odl:clustered-app-config>
@@ -43,6 +55,18 @@
         <instance-name>openflow-switch-connection-provider-legacy-impl</instance-name>
         <port>6653</port>
         <transport-protocol>TCP</transport-protocol>
+        <tls>
+           <keystore>configuration/ssl/ctl.jks</keystore>
+           <keystore-type>JKS</keystore-type>
+           <keystore-path-type>PATH</keystore-path-type>
+           <keystore-password>opendaylight</keystore-password>
+           <truststore>configuration/ssl/truststore.jks</truststore>
+           <truststore-type>JKS</truststore-type>
+           <truststore-path-type>PATH</truststore-path-type>
+           <truststore-password>opendaylight</truststore-password>
+           <certificate-password>opendaylight</certificate-password>
+           <cipher-suites></cipher-suites>
+        </tls>
       </switch-connection-config>
     ]]></odl:default-config>
   </odl:clustered-app-config>
