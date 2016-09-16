@@ -43,6 +43,16 @@
                                <type>cfg</type>
                                <classifier>config</classifier>
                            </artifact>
+                           <artifact>
+                               <file>${project.build.directory}/classes/initial/default-openflow-connection-config.xml</file>
+                               <type>xml</type>
+                               <classifier>config</classifier>
+                           </artifact>
+                           <artifact>
+                               <file>${project.build.directory}/classes/initial/legacy-openflow-connection-config.xml</file>
+                               <type>xml</type>
+                               <classifier>legacyConfig</classifier>
+                           </artifact>
                        </artifacts>
                    </configuration>
                </execution>
