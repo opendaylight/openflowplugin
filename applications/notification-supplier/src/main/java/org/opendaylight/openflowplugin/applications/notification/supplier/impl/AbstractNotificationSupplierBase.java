@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import com.google.common.base.Preconditions;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -27,11 +28,9 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
-
 /**
  * Public abstract basic Supplier implementation contains code for a make Supplier instance,
- * registration Supplier like {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}
+ * registration Supplier like {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
  * and close method. In additional case, it contains help methods for all Supplier implementations.
  *
  * @param <O> - data tree item Object extends {@link DataObject}
