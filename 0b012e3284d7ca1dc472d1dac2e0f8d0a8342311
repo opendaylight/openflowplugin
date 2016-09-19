@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_bfec50bc",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/DataTreeChangeListenerRegistrationHolder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-09-19T06:27:38Z",
+      "side": 1,
+      "message": "Would be nice to have description is an interface ...",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
