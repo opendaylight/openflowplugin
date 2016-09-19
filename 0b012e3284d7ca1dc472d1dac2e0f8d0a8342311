@@ -22,6 +22,78 @@
       "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_bf8d70d5",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/DataTreeChangeListenerRegistrationHolder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-09-19T08:03:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_bfec50bc",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_3fb96079",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/MultipleLearningSwitchHandlerFacadeImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-09-19T08:03:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_045417fd",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 8
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_bfa4504b",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/PacketInDispatcherImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-09-19T08:03:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_2451530f",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 4
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
