@@ -13,7 +13,7 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.service.batch.common.rev160322.BatchOrderGrouping;
 
 /**
- * Container of CRUD actions for one type of object (flow, group, meter, ..) of same type (add, remove, update)
+ * Container of CRUD actions for one type of object (flow, group, meter, ..) of same type (add, remove, update).
  */
 public class BatchPlanStep {
     private final List<? extends BatchOrderGrouping> taskBag;

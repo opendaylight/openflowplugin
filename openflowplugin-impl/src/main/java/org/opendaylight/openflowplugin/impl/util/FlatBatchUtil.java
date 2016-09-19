@@ -38,7 +38,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * provides flat batch util methods
+ * Provides flat batch util methods.
  */
 public final class FlatBatchUtil {
 
@@ -175,9 +175,6 @@ public final class FlatBatchUtil {
         return type;
     }
 
-    /**
-     * @return RPC result incorporating partial results (state, errors, batch failures)
-     */
     @VisibleForTesting
     static Function<List<RpcResult<ProcessFlatBatchOutput>>, RpcResult<ProcessFlatBatchOutput>> mergeRpcResults() {
         return jobsResults -> {
@@ -202,7 +199,6 @@ public final class FlatBatchUtil {
 
     /**
      * Merge list of Futures with partial results into one ListenableFuture with single result.
-     * shortcut for {@link #mergeRpcResults()}
      * @param firedJobs list of ListenableFutures with RPC results {@link ProcessFlatBatchOutput}
      * @return ListenableFuture of RPC result with combined status and all errors + batch failures
      */
@@ -212,7 +208,7 @@ public final class FlatBatchUtil {
     }
 
     /**
-     *
+     * Creates empty result future for flat batch service.
      * @param status RPC result status
      * @return ListenableFuture of RPC result with empty list of errors and batch failures
      */
