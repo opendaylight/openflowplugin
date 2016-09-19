@@ -67,7 +67,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
     private static final int TICKS_PER_WHEEL = 500;
-    private static final long TICK_DURATION = 10; // 0.5 sec.
+    // 0.5 sec.
+    private static final long TICK_DURATION = 10;
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
