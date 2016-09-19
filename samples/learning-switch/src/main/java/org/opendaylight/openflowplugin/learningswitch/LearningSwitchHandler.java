@@ -34,5 +34,5 @@ public interface LearningSwitchHandler {
    /**
     * @param registrationPublisher the registrationPublisher to set
     */
-   void setRegistrationPublisher(DataChangeListenerRegistrationHolder registrationPublisher);
+   void setRegistrationPublisher(DataTreeChangeListenerRegistrationHolder registrationPublisher);
 }

@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
 public class InstanceIdentifierUtils {
 
     private InstanceIdentifierUtils() {
@@ -49,7 +48,6 @@ public class InstanceIdentifierUtils {
     public static final InstanceIdentifier<Node> getNodePath(final InstanceIdentifier<?> nodeChild) {
         return nodeChild.firstIdentifierOf(Node.class);
     }
-
 
     /**
      * Creates a table path by appending table specific location to node path
@@ -86,14 +84,11 @@ public class InstanceIdentifierUtils {
 
     /**
      * Extracts NodeConnectorKey from node connector path.
-     *
      */
     public static NodeConnectorKey getNodeConnectorKey(final InstanceIdentifier<?> nodeConnectorPath) {
         return nodeConnectorPath.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
     }
 
-
-    //
     public static final InstanceIdentifier<NodeConnector> createNodeConnectorPath(final InstanceIdentifier<Node> nodeKey,final NodeConnectorKey nodeConnectorKey) {
         return nodeKey.child(NodeConnector.class,nodeConnectorKey);
     }
