@@ -33,7 +33,7 @@ public class MeterNotificationSupplierImpl extends
     private static final InstanceIdentifier<Meter> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class).child(Meter.class);
 
     /**
-     * Constructor register supplier as DataChangeLister and create wildCarded InstanceIdentifier.
+     * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db - {@link DataBroker}

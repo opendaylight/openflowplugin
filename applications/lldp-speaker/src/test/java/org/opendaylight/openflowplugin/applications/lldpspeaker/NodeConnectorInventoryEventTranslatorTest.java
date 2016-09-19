@@ -59,7 +59,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
-     * for each FlowCapableNodeConnector item that @{AsyncDataChangeEvent#getCreatedData} return.
+     * for each FlowCapableNodeConnector item added in
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorCreation() {
@@ -92,8 +93,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
-     * that have link down state.
+     * for each FlowCapableNodeConnector item that have link down state removed in
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorUpdateToLinkDown() {
@@ -105,8 +106,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
-     * that have administrative down state.
+     * for each FlowCapableNodeConnector item with administrative down state removed in
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorUpdateToAdminDown() {
@@ -118,8 +119,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
-     * for each FlowCapableNodeConnector item inside @{AsyncDataChangeEvent#getUpdatedData}
-     * that have administrative up and link up state.
+     * for each FlowCapableNodeConnector item with administrative up and link up state added in
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorUpdateToUp() {
@@ -130,7 +131,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
 
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector path that @{AsyncDataChangeEvent#getRemovedPaths} return.
+     * for each FlowCapableNodeConnector path that
+     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification} return.
      */
     @Test
     public void testNodeConnectorRemoval() {
@@ -153,7 +155,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         List<DataTreeModification> modifications = new ArrayList();
         modifications.add(setupDataTreeChange(WRITE, iiToConnector, fcnc));
         modifications.add(setupDataTreeChange(DELETE, iiToConnector2, null));
-        // Invoke onDataChanged and check that both observers notified
+        // Invoke onDataTreeChanged and check that both observers notified
         translator.onDataTreeChanged(modifications);
         verify(eventsObserver).nodeConnectorAdded(id, fcnc);
         verify(eventsObserver).nodeConnectorRemoved(id2);
@@ -167,8 +169,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     private <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
-                                                            final InstanceIdentifier<T> ii,
-                                                            final FlowCapableNodeConnector connector) {
+                                                                            final InstanceIdentifier<T> ii,
+                                                                            final FlowCapableNodeConnector connector) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);

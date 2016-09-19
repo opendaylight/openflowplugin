@@ -8,16 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper;
 
-import static org.mockito.Mockito.mock;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  *

@@ -20,7 +20,7 @@ public class TestSupplierVerifyHelper {
         throw new UnsupportedOperationException("Test utility class");
     }
 
-    public static void verifyDataChangeRegistration(DataBroker dataBroker) {
+    public static void verifyDataTreeChangeListenerRegistration(DataBroker dataBroker) {
 
         Mockito.verify(dataBroker).registerDataTreeChangeListener(
                 Matchers.<DataTreeIdentifier>any(),

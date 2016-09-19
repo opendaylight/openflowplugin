@@ -46,18 +46,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * MeterForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
+ * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
  * for WildCardedPath to {@link Meter} and ForwardingRulesCommiter interface for methods:
- *  add, update and remove {@link Meter} processing for
- *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
+ * add, update and remove {@link Meter} processing for
+ * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  *
  */
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-
     private final DataBroker dataBroker;
-
     private ListenerRegistration<MeterForwarder> listenerRegistration;
 
     public MeterForwarder (final ForwardingRulesManager manager, final DataBroker db) {

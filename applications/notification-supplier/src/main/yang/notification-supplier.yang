@@ -6,7 +6,7 @@ module notification-supplier {
     import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
 
     description
-        "Translator tool for relevant wildcard path DataChangeEvent to Notifications.";
+        "Translator tool for relevant wildcard path DataTreeModification to Notifications.";
 
     revision "2015-08-20" {
         description

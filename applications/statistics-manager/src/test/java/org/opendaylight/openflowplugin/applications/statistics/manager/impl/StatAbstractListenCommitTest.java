@@ -142,7 +142,7 @@ public class StatAbstractListenCommitTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testReadLatestConfigurationWithInterveningOnDataChanged() {
+    public void testReadLatestConfigurationWithInterveningOnDataTreeChanged() {
 
         InstanceIdentifier<DataObject> path = InstanceIdentifier.create(DataObject.class);
 

@@ -9,13 +9,10 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import com.google.common.base.Preconditions;
-
 import java.util.Collection;
-import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierForItemRoot;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -42,11 +39,12 @@ abstract class AbstractNotificationSupplierForItemRoot<O extends DataObject,
      * Default constructor for all Root Item Notification Supplier implementation
      *
      * @param notificationProviderService - notification publisher
-     * @param db - DataBroker for DataChangeEvent registration
+     * @param db - DataBroker for DataTreeChangeListener registration
      * @param clazz - Statistics Notification Class
      */
-    public AbstractNotificationSupplierForItemRoot(final NotificationProviderService notificationProviderService, final DataBroker db,
-            final Class<O> clazz) {
+    public AbstractNotificationSupplierForItemRoot(final NotificationProviderService notificationProviderService,
+                                                   final DataBroker db,
+                                                   final Class<O> clazz) {
         super(db, clazz);
         this.notificationProviderService = Preconditions.checkNotNull(notificationProviderService);
     }

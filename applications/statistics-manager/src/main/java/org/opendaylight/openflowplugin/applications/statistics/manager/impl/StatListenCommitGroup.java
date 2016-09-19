@@ -66,10 +66,7 @@ import com.google.common.base.Preconditions;
  * StatListenCommitGroup
  * Class is a NotifyListener for GroupStatistics and DataTreeChangeListener for Config/DataStore for Group node.
  * All expected (registered) GroupStatistics will be builded and commit to Operational/DataStore.
- * DataChangeEven should call create/delete Group in Operational/DS
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
+ * DataTreeModification should call create/delete Group in Operational/DS
  */
 public class StatListenCommitGroup extends StatAbstractListenCommit<Group, OpendaylightGroupStatisticsListener>
                                                     implements OpendaylightGroupStatisticsListener {
