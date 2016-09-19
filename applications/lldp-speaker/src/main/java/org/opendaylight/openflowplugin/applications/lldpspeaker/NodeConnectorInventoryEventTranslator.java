@@ -62,7 +62,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
 
-    private final ListenerRegistration<DataTreeChangeListener> dataChangeListenerRegistration;
+    private final ListenerRegistration<DataTreeChangeListener> listenerOnPortRegistration;
     private final ListenerRegistration<DataTreeChangeListener> listenerOnPortStateRegistration;
     private final Set<NodeConnectorEventsObserver> observers;
     private final Map<InstanceIdentifier<?>,FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors = new HashMap<>();
@@ -75,7 +75,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
                 new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, II_TO_STATE);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+            listenerOnPortRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
                 public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
                     return dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, NodeConnectorInventoryEventTranslator.this);
@@ -96,8 +96,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
 
     @Override
     public void close() {
-        if (dataChangeListenerRegistration != null) {
-            dataChangeListenerRegistration.close();
+        if (listenerOnPortRegistration != null) {
+            listenerOnPortRegistration.close();
         }
         if (listenerOnPortStateRegistration != null) {
             listenerOnPortStateRegistration.close();

@@ -25,7 +25,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NodeChangeListenerImpl extends DataChangeListenerImpl<FlowCapableNode> {
+public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
     public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
