@@ -154,15 +154,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         });
 
         final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
-        final long STATS_TIMEOUT_SEC = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
+        final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), STATS_TIMEOUT_SEC);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), statsTimeoutSec);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
 
-        hashedWheelTimer.newTimeout(timerTask, STATS_TIMEOUT_SEC, TimeUnit.SECONDS);
+        hashedWheelTimer.newTimeout(timerTask, statsTimeoutSec, TimeUnit.SECONDS);
     }
 
     private void scheduleNextPolling(final DeviceState deviceState,
