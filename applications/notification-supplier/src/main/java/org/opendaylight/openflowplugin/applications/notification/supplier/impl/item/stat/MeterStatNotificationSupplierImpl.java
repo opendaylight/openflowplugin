@@ -34,7 +34,7 @@ public class MeterStatNotificationSupplierImpl extends
                     .augmentation(NodeMeterStatistics.class).child(MeterStatistics.class);
 
     /**
-     * Constructor register supplier as DataChangeLister and create wildCarded InstanceIdentifier.
+     * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db - {@link DataBroker}

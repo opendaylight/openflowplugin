@@ -65,7 +65,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             });
         } catch (final Exception e) {
             LOG.warn(" FlowNodeConnectorInventoryTranslatorImpl listener registration fail!");
-            LOG.debug("FlowNodeConnectorInventoryTranslatorImpl DataChange listener registration fail ..", e);
+            LOG.debug("FlowNodeConnectorInventoryTranslatorImpl DataTreeChangeListener registration fail ..", e);
             throw new IllegalStateException("FlowNodeConnectorInventoryTranslatorImpl startup fail! System needs restart.", e);
         }
     }

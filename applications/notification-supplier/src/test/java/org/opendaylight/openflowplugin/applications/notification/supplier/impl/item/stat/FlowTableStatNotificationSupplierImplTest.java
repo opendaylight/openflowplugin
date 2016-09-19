@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -31,7 +29,6 @@ import org.opendaylight.openflowplugin.applications.notification.supplier.impl.h
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
@@ -40,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowTableStatNotificationSupplierImplTest {
@@ -57,7 +53,7 @@ public class FlowTableStatNotificationSupplierImplTest {
         notifProviderService = mock(NotificationProviderService.class);
         dataBroker = mock(DataBroker.class);
         notifSupplierImpl = new FlowTableStatNotificationSupplierImpl(notifProviderService, dataBroker);
-        TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
+        TestSupplierVerifyHelper.verifyDataTreeChangeListenerRegistration(dataBroker);
     }
 
     @Test(expected = NullPointerException.class)
