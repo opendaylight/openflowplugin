@@ -74,7 +74,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
                     if (!ConnectionStatus.MAY_CONTINUE.equals(connectionStatusResult)) {
-                        connectionContext.closeConnection(ConnectionStatus.ALREADY_CONNECTED.equals(connectionStatusResult));
+                        connectionContext.closeConnection(true);
                     }
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);

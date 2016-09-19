@@ -48,8 +48,6 @@ import org.slf4j.LoggerFactory;
 class RoleContextImpl implements RoleContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
-    // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
-    private static final int MAX_CLEAN_DS_RETRIES = 0;
 
     private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
@@ -64,7 +62,7 @@ class RoleContextImpl implements RoleContext {
                     final RoleManager myManager,
                     final LifecycleService lifecycleService) {
         this.deviceInfo = deviceInfo;
-        state = CONTEXT_STATE.WORKING;
+        this.state = CONTEXT_STATE.WORKING;
         this.myManager = myManager;
         this.hashedWheelTimer = hashedWheelTimer;
         this.lifecycleService = lifecycleService;
@@ -107,20 +105,7 @@ class RoleContextImpl implements RoleContext {
     }
 
     public void startupClusterServices() throws ExecutionException, InterruptedException {
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new FutureCallback<RpcResult<SetRoleOutput>>() {
-            @Override
-            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
-            }
-        });
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
     }
 
     @Override
@@ -198,21 +183,22 @@ class RoleContextImpl implements RoleContext {
             return false;
         }
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new FutureCallback<RpcResult<SetRoleOutput>>() {
-            @Override
-            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
-            }
-        });
-
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+    }
+
+    private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+        @Override
+        public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
+            }
+        }
+
+        @Override
+        public void onFailure(final Throwable throwable) {
+            LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
+            lifecycleService.closeConnection();
+        }
     }
 }
