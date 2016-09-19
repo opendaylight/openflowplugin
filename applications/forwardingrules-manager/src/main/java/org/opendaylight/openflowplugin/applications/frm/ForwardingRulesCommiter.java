@@ -20,10 +20,9 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * org.opendaylight.openflowplugin.applications.frm
  *
  * ForwardingRulesCommiter
- * It represent a contract between DataStore DataChangeEvent and relevant
+ * It represent a contract between DataStore DataTreeModification and relevant
  * SalRpcService for device. Every implementation has to be registered for
  * Configurational/DS tree path.
- *
  */
 public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, ClusteredDataTreeChangeListener<D> {
 

@@ -61,7 +61,7 @@ public class DefaultConfigPusherTest {
     }
 
     @Test
-    public void testOnDataChanged() {
+    public void testOnDataTreeChanged() {
         defaultConfigPusher.onDataTreeChanged(Collections.singleton(dataTreeModification));
         Mockito.verify(nodeConfigService).setConfig(setConfigInputCaptor.capture());
         final SetConfigInput captured = setConfigInputCaptor.getValue();

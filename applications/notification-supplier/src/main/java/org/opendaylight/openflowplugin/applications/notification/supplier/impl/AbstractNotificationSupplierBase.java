@@ -67,7 +67,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
                 }
             });
         }catch(final Exception ex){
-            LOG.debug(" AbstractNotificationSupplierBase DataChange listener registration fail ..{}", ex.getMessage());
+            LOG.debug("AbstractNotificationSupplierBase DataTreeChange listener registration fail ..{}", ex.getMessage());
             throw new IllegalStateException("Notification supplier startup fail! System needs restart.", ex);
         }
     }

@@ -33,7 +33,7 @@ public class NodeConnectorNotificationSupplierImpl extends
     private static final InstanceIdentifier<FlowCapableNodeConnector> wildCardedInstanceIdent = getNodeWildII().child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class);
 
     /**
-     * Constructor register supplier as DataChangeLister and create wildCarded InstanceIdentifier.
+     * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db                   - {@link DataBroker}

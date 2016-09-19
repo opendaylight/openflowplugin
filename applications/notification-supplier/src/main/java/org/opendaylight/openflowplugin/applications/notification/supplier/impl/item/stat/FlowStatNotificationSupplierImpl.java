@@ -36,7 +36,7 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
                     .child(Flow.class).augmentation(FlowStatisticsData.class).child(FlowStatistics.class);
 
     /**
-     * Constructor register supplier as DataChangeLister and create wildCarded InstanceIdentifier.
+     * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db - {@link DataBroker}

@@ -9,13 +9,10 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item;
 
 import com.google.common.base.Preconditions;
-
 import java.util.Collection;
-import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierForItem;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.AbstractNotificationSupplierBase;
@@ -45,7 +42,7 @@ abstract class AbstractNotificationSupplierForItem<O extends DataObject,
      * Default constructor for all item Notification Supplier implementation
      *
      * @param notifProviderService - notification publisher
-     * @param db - DataBroker for DataChangeEvent registration
+     * @param db - DataBroker for DataTreeChangeListener registration
      * @param clazz - Statistics Notification Class
      */
     public AbstractNotificationSupplierForItem(final NotificationProviderService notifProviderService, final DataBroker db,

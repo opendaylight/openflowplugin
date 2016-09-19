@@ -74,11 +74,8 @@ import org.slf4j.LoggerFactory;
  * StatListenCommitFlow
  * Class is a NotifyListener for FlowStatistics and DataTreeChangeListener for Config/DataStore for Flow node.
  * All expected (registered) FlowStatistics will be builded and commit to Operational/DataStore.
- * DataChangeEven should call create/delete Flow in Operational/DS create process needs to pair
+ * DataTreeModification should call create/delete Flow in Operational/DS create process needs to pair
  * Device Flow HashCode and FlowId from Config/DS
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
  */
 public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, OpendaylightFlowStatisticsListener>
                                             implements OpendaylightFlowStatisticsListener {
