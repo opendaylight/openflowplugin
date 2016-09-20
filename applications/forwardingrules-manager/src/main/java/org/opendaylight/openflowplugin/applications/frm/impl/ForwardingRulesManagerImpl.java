@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.CheckedFuture;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -98,11 +99,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider);
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
         flowNodeConnectorInventoryTranslatorImpl =
                 new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
@@ -258,7 +259,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
-        return deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
+        return Objects.nonNull(ident) && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
 
     @VisibleForTesting
