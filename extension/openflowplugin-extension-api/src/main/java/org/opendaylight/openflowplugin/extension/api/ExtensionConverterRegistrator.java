@@ -13,11 +13,15 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.BandType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
@@ -69,4 +73,20 @@ public interface ExtensionConverterRegistrator {
      */
     <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>> registerMessageConvertor(
             MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor);
+
+    /**
+     * @param key       consists of: experimenter ID, meterBandSubType, version
+     * @param convertor TO OFJava
+     * @return closeable registration
+     */
+    <IN extends BandType, INOUT extends MeterBandExperimenterBuilder> ObjectRegistration<ConvertorMeterBandTypeToOFJava<IN, INOUT>> registerMeterBandTypeConvertor(
+            ExperimenterIdMeterBandKey key, ConvertorMeterBandTypeToOFJava<IN, INOUT> convertor);
+
+    /**
+     * @param key       consists of: experimenter ID, version
+     * @param convertor FROM OFJava
+     * @return closeable registration
+     */
+    <IN extends MeterBandExperimenter, INOUT extends ExperimenterBuilder> ObjectRegistration<ConvertorMeterBandTypeFromOFJava<IN, INOUT>> registerMeterBandTypeConvertor(
+            ExperimenterIdMeterBandKey key, ConvertorMeterBandTypeFromOFJava<IN, INOUT> convertor);
 }

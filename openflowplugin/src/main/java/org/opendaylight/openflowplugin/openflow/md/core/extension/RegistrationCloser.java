@@ -14,10 +14,17 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExperimenterIdMeterBandKey;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.BandType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
@@ -157,5 +164,34 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
         }
     }
 
+    /**
+     * standalone deregistrator
+     *
+     * @param <IN> source type of wrapped convertor
+     * @param <INOUT> target type of wrapped convertor
+     */
+    public static class RegistrationCloserMeterBandTypeToOFJava<IN extends BandType, INOUT extends MeterBandExperimenterBuilder> extends
+            RegistrationCloser<ExperimenterIdMeterBandKey, ConvertorMeterBandTypeToOFJava<IN, INOUT>> {
+
+        @Override
+        public void close() throws Exception {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+
+    /**
+     * standalone deregistrator
+     *
+     * @param <IN> source type of wrapped convertor
+     * @param <INOUT> target type of wrapped convertor
+     */
+    public static class RegistrationCloserMeterBandTypeFromOFJava<IN extends MeterBandExperimenter, INOUT extends ExperimenterBuilder> extends
+            RegistrationCloser<ExperimenterIdMeterBandKey, ConvertorMeterBandTypeFromOFJava<IN, INOUT>> {
+
+        @Override
+        public void close() throws Exception {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
 
 }
