@@ -38,7 +38,6 @@
 
     <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: Li southbound API implementation " version='${project.version}'>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
-        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
         <feature version="${project.version}">odl-openflowplugin-onf-extensions</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
@@ -56,6 +55,7 @@
     <feature name='odl-openflowplugin-nsf-model' version='${project.version}' description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
         <!-- general models -->
         <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
         <!-- openflow specific models -->

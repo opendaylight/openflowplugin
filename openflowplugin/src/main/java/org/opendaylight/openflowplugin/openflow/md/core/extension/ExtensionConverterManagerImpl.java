@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -18,7 +19,10 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExperimenterIdMeterBandKey;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -30,12 +34,18 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCl
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserFromOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserMessageFromOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserMessageToOFJava;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserMeterBandTypeFromOFJava;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserMeterBandTypeToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserToOFJava;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.BandType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
@@ -52,6 +62,9 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     private final Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
     private final Map<TypeVersionKey<?>, ConverterMessageToOFJava<? extends ExperimenterMessageOfChoice, ? extends DataContainer>> registryMessageToOFJAva;
     private final Map<MessageTypeKey<?>, ConvertorMessageFromOFJava<? extends ExperimenterDataOfChoice, MessagePath>> registryMessageFromOFJAva;
+    private final Map<ExperimenterIdMeterBandKey, ConvertorMeterBandTypeFromOFJava<? extends MeterBandExperimenter, ? extends ExperimenterBuilder>> registryMeterBandTypeFromOFJava;
+    private final Map<ExperimenterIdMeterBandKey, ConvertorMeterBandTypeToOFJava<? extends BandType, ? extends MeterBandExperimenterBuilder>> registryMeterBandTypeToOFJava;
+
 
     /**
      * default ctor
@@ -63,6 +76,8 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
         registryActionFromOFJAva = new ConcurrentHashMap<>();
         registryMessageToOFJAva = new ConcurrentHashMap<>();
         registryMessageFromOFJAva = new ConcurrentHashMap<>();
+        registryMeterBandTypeFromOFJava = new ConcurrentHashMap<>();
+        registryMeterBandTypeToOFJava = new ConcurrentHashMap<>();
     }
 
     /**
@@ -154,6 +169,36 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     /**
+     * @param key message type key
+     * @param extConvertor extension convertor
+     * @return registration closure
+     */
+    private <IN extends BandType, INOUT extends MeterBandExperimenterBuilder> RegistrationCloserMeterBandTypeToOFJava<IN, INOUT> hireMeterBandTypeJanitor(
+            final ExperimenterIdMeterBandKey key,
+            final ConvertorMeterBandTypeToOFJava<IN, INOUT> extConvertor) {
+        RegistrationCloserMeterBandTypeToOFJava<IN, INOUT> janitor = new RegistrationCloserMeterBandTypeToOFJava<>();
+        janitor.setConverter(extConvertor);
+        janitor.setKey(key);
+        janitor.setRegistrator(this);
+        return janitor;
+    }
+
+    /**
+     * @param key message type key
+     * @param extConvertor extension convertor
+     * @return registration closure
+     */
+    private <IN extends MeterBandExperimenter, INOUT extends ExperimenterBuilder> RegistrationCloserMeterBandTypeFromOFJava<IN, INOUT> hireMeterBandTypeJanitor(
+            final ExperimenterIdMeterBandKey key,
+            final ConvertorMeterBandTypeFromOFJava<IN, INOUT> extConvertor) {
+        RegistrationCloserMeterBandTypeFromOFJava<IN, INOUT> janitor = new RegistrationCloserMeterBandTypeFromOFJava<>();
+        janitor.setConverter(extConvertor);
+        janitor.setKey(key);
+        janitor.setRegistrator(this);
+        return janitor;
+    }
+
+    /**
      * cancel registration of given converter
      *
      * @param key message key
@@ -231,6 +276,32 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
         }
     }
 
+    /**
+     * cancel registration of given converter
+     *
+     * @param key message key
+     * @param converter extension convertor
+     */
+    public void unregister(final ExperimenterIdMeterBandKey key, final ConvertorMeterBandTypeFromOFJava<?, ?> converter) {
+        ConvertorMeterBandTypeFromOFJava<?, ?> registeredConverter = registryMeterBandTypeFromOFJava.get(key);
+        if (registeredConverter != null && registeredConverter == converter) {
+            registryMeterBandTypeFromOFJava.remove(key);
+        }
+    }
+
+    /**
+     * cancel registration of given converter
+     *
+     * @param key message key
+     * @param converter extension convertor
+     */
+    public void unregister(final ExperimenterIdMeterBandKey key, final ConvertorMeterBandTypeToOFJava<?, ?> converter) {
+        ConvertorMeterBandTypeToOFJava<?, ?> registeredConverter = registryMeterBandTypeToOFJava.get(key);
+        if (registeredConverter != null && registeredConverter == converter) {
+            registryMeterBandTypeToOFJava.remove(key);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer> ConvertorToOFJava<FROM> getConverter(
@@ -257,6 +328,20 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     public <FROM extends DataContainer, PATH extends AugmentationPath> ConvertorActionFromOFJava<FROM, PATH> getActionConverter(
             final MessageTypeKey<?> key) {
         return (ConvertorActionFromOFJava<FROM, PATH>) registryActionFromOFJAva.get(key);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <IN extends MeterBandExperimenter, INOUT extends ExperimenterBuilder> ConvertorMeterBandTypeFromOFJava<IN, INOUT> getMeterBandTypeConverter(
+            final ExperimenterIdMeterBandKey key) {
+        return (ConvertorMeterBandTypeFromOFJava<IN, INOUT>) registryMeterBandTypeFromOFJava.get(key);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <IN extends BandType, INOUT extends MeterBandExperimenterBuilder> ConvertorMeterBandTypeToOFJava<IN, INOUT> getMeterBandTypeParseConverter(
+            final ExperimenterIdMeterBandKey key) {
+        return (ConvertorMeterBandTypeToOFJava<IN, INOUT>) registryMeterBandTypeToOFJava.get(key);
     }
 
     @Override
@@ -304,6 +389,19 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
             MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor) {
         registryMessageFromOFJAva.put(key, convertor);
         return hireMessageJanitor(key, convertor);
+    }
+
+    public <IN extends BandType, INOUT extends MeterBandExperimenterBuilder> ObjectRegistration<ConvertorMeterBandTypeToOFJava<IN, INOUT>> registerMeterBandTypeConvertor(
+            ExperimenterIdMeterBandKey key, ConvertorMeterBandTypeToOFJava<IN, INOUT> convertor) {
+        registryMeterBandTypeToOFJava.put(key, convertor);
+        return hireMeterBandTypeJanitor(key, convertor);
+    }
+
+    @Override
+    public <IN extends MeterBandExperimenter, INOUT extends ExperimenterBuilder> ObjectRegistration<ConvertorMeterBandTypeFromOFJava<IN, INOUT>> registerMeterBandTypeConvertor(
+            ExperimenterIdMeterBandKey key, ConvertorMeterBandTypeFromOFJava<IN, INOUT> convertor) {
+        registryMeterBandTypeFromOFJava.put(key, convertor);
+        return hireMeterBandTypeJanitor(key, convertor);
     }
 
     @Override
