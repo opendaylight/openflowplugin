@@ -40,8 +40,6 @@ public class SyncReactorRetryDecorator implements SyncReactor {
                                             final SyncupEntry syncupEntry) throws InterruptedException {
 
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup retry decorator: {}", nodeId.getValue());
-
         if (syncupEntry.isOptimizedConfigDelta() && reconciliationRegistry.isRegistered(nodeId)) {
             LOG.debug("Config change ignored because {} is in reconcile.", nodeId.getValue());
             return Futures.immediateFuture(Boolean.FALSE);
@@ -52,7 +50,6 @@ public class SyncReactorRetryDecorator implements SyncReactor {
         return Futures.transform(syncupResult, new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(Boolean result) {
-                LOG.trace("syncup return in retry decorator: {} [{}]", nodeId.getValue(), result);
                 if (result) {
                     reconciliationRegistry.unregisterIfRegistered(nodeId);
                     return true;

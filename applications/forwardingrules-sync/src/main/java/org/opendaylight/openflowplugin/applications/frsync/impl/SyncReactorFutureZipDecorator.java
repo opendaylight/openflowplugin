@@ -16,10 +16,8 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
-import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +39,8 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) throws InterruptedException {
-        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup zip decorator: {}", nodeId.getValue());
-
         try {
             compressionGuard.acquire();
-
             final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
             if (newFutureNecessary) {
                 super.syncup(flowcapableNodePath, syncupEntry);
@@ -59,9 +53,6 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                                          final SyncupEntry syncupEntry) throws InterruptedException {
-        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture zip decorator: {}", nodeId.getValue());
-
         final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
         if (lastCompressionState == null) {
             return Futures.immediateFuture(true);
@@ -86,25 +77,24 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         return previousEntry == null;
     }
 
-    private void updateOptimizedConfigDelta(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, SyncupEntry actual,
-                                            SyncupEntry previous) {
-        compressionQueue.put(flowcapableNodePath, new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
-                                                                  previous.getBefore(), previous.getDsTypeBefore()));
+    private void updateOptimizedConfigDelta(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+                                            final SyncupEntry actual,
+                                            final SyncupEntry previous) {
+        final SyncupEntry updatedEntry = new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
+                                                         previous.getBefore(), previous.getDsTypeBefore());
+        compressionQueue.put(flowcapableNodePath, updatedEntry);
     }
 
-    private SyncupEntry removeLastCompressionState(
-            final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
+    private SyncupEntry removeLastCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
         try {
             try {
                 compressionGuard.acquire();
             } catch (InterruptedException e) {
                 return null;
             }
-
             return compressionQueue.remove(flowcapableNodePath);
         } finally {
             compressionGuard.release();
         }
     }
-
 }
