@@ -39,16 +39,11 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("syncup future decorator: {}", nodeId.getValue());
-
         return executorService.submit(() -> {
             final String oldThreadName = updateThreadName(nodeId);
-
             try {
-                final Boolean ret = doSyncupInFuture(flowcapableNodePath, syncupEntry)
-                        .get(10000, TimeUnit.MILLISECONDS);
-                LOG.trace("syncup return in future decorator: {} [{}]", nodeId.getValue(), ret);
-                return true;
+                final Boolean ret = doSyncupInFuture(flowcapableNodePath, syncupEntry).get(10000, TimeUnit.MILLISECONDS);
+                return ret;
             } catch (TimeoutException e) {
                 LOG.error("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
                 return false;
@@ -60,9 +55,6 @@ public class SyncReactorFutureDecorator implements SyncReactor {
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                                          final SyncupEntry syncupEntry) throws InterruptedException {
-        final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
-        LOG.trace("doSyncupInFuture future decorator: {}", nodeId.getValue());
-
         return delegate.syncup(flowcapableNodePath, syncupEntry);
     }
 
@@ -73,10 +65,10 @@ public class SyncReactorFutureDecorator implements SyncReactor {
             if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
                 currentThread.setName(oldName + "@" + nodeId.getValue());
             } else {
-                LOG.warn("try to update foreign thread name {} {}", nodeId, oldName);
+                LOG.warn("Try to update foreign thread name {} {}", nodeId, oldName);
             }
         } catch (Exception e) {
-            LOG.error("failed updating threadName {}", nodeId, e);
+            LOG.error("Failed updating threadName {}", nodeId, e);
         }
         return oldName;
     }
@@ -88,10 +80,10 @@ public class SyncReactorFutureDecorator implements SyncReactor {
             if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
                 currentThread.setName(name);
             } else {
-                LOG.warn("try to update foreign thread name {} {}", oldName, name);
+                LOG.warn("Try to update foreign thread name {} {}", oldName, name);
             }
         } catch (Exception e) {
-            LOG.error("failed updating threadName {}", name, e);
+            LOG.error("Failed updating threadName {}", name, e);
         }
     }
 }
