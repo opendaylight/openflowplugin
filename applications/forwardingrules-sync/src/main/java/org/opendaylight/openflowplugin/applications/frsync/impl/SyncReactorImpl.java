@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,11 +62,6 @@ public class SyncReactorImpl implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         FlowCapableNode configTree = syncupEntry.getAfter();
         FlowCapableNode operationalTree = syncupEntry.getBefore();
-
-        LOG.trace("syncup reactor {} cfg:{} oper:{}",
-                nodeId.getValue(),
-                configTree == null ? "is null" : "non null",
-                operationalTree == null ? "is null" : "non null");
         final SyncCrudCounters counters = new SyncCrudCounters();
 
         /**
@@ -76,7 +72,6 @@ public class SyncReactorImpl implements SyncReactor {
          *  - recommended order follows:
          * reconciliation strategy - phase 1: - add/update missing objects in following order:
          *  - table features - groups (reordered) - meters - flows
-         *
          * reconciliation strategy - phase 2: - remove redundant objects in following order:
          *  - flows - meters - groups (reordered)
          **/
@@ -98,9 +93,6 @@ public class SyncReactorImpl implements SyncReactor {
         final ListenableFuture<RpcResult<Void>> resultVehicle = syncPlanPushStrategy.executeSyncStrategy(
                 bootstrapResultFuture, input, counters);
 
-        // log final result
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "final result"));
-
         return Futures.transform(resultVehicle, new Function<RpcResult<Void>, Boolean>() {
             @Override
             public Boolean apply(RpcResult<Void> input) {
@@ -111,14 +103,15 @@ public class SyncReactorImpl implements SyncReactor {
                     final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, meter={}/{}/{}, took={} ms",
+                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, " +
+                                    "meter={}/{}/{}, took={} ms, errors={}",
                             nodeId.getValue(),
                             flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),
                             groupCrudCounts.getAdded(), groupCrudCounts.getUpdated(), groupCrudCounts.getRemoved(),
                             meterCrudCounts.getAdded(), meterCrudCounts.getUpdated(), meterCrudCounts.getRemoved(),
-                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano()));
+                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano()),
+                            Arrays.toString(input.getErrors().toArray()));
                 }
-                LOG.trace("syncup errors: {}", input.getErrors());
                 return input.isSuccessful();
             }});
     }
@@ -202,5 +195,4 @@ public class SyncReactorImpl implements SyncReactor {
 
         return ReconcileUtil.resolveAndDivideGroupDiffs(nodeId, groupConfiguredMap, pendingGroups, false);
     }
-
 }

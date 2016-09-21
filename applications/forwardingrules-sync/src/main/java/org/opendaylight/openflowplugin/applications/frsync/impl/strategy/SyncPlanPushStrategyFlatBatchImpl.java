@@ -105,9 +105,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
                                                                  final SynchronizationDiffInput diffInput,
                                                                  final SyncCrudCounters counters) {
-        final InstanceIdentifier<FlowCapableNode> nodeIdent = diffInput.getNodeIdent();
-        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
-
         // prepare default (full) counts
         counters.getGroupCrudCounts().setAdded(ReconcileUtil.countTotalPushed(diffInput.getGroupsToAddOrUpdate()));
         counters.getGroupCrudCounts().setUpdated(ReconcileUtil.countTotalUpdated(diffInput.getGroupsToAddOrUpdate()));
@@ -161,8 +158,6 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                         ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-batch"));
             }
         });
-
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "flat-batch"));
         return resultVehicle;
     }
 
