@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExperimenterIdMeterBandKey;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
@@ -72,7 +77,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                 .setFlags(new MeterFlags(false, false, true, false));
     }
 
-    private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
+    private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands, short version) {
         for (MeterBandHeader meterBandHeader : meterBandHeaders.getMeterBandHeader()) {
             // The band types :drop,DSCP_Remark or experimenter.
             if (null != meterBandHeader.getMeterBandTypes() &&
@@ -114,22 +119,33 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                         logBandTypeMissing(MeterBandType.OFPMBTDSCPREMARK);
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtExperimenter()) {
-                    if (meterBandHeader.getBandType() != null) {
+                    BandType bandType = meterBandHeader.getBandType();
+                    if (bandType != null) {
                         MeterBandExperimenterCaseBuilder experimenterCaseBuilder = new MeterBandExperimenterCaseBuilder();
                         MeterBandExperimenterBuilder meterBandExperimenterBuilder = new MeterBandExperimenterBuilder();
                         meterBandExperimenterBuilder.setType(MeterBandType.OFPMBTEXPERIMENTER);
-                        Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
+                        Experimenter experimenter = (Experimenter) bandType;
                         meterBandExperimenterBuilder.setBurstSize(experimenter.getExperimenterBurstSize());
                         meterBandExperimenterBuilder.setRate(experimenter.getExperimenterRate());
                         ExperimenterIdMeterBandBuilder expBuilder = new ExperimenterIdMeterBandBuilder();
                         expBuilder.setExperimenter(new ExperimenterId(experimenter.getExperimenter()));
+                        expBuilder.setSubType(experimenter.getSubType());
                         meterBandExperimenterBuilder.addAugmentation(ExperimenterIdMeterBand.class, expBuilder.build());
-                        // TODO - implement / finish experimenter meter band translation
+                        if (OFSessionUtil.getExtensionConvertorProvider() != null) {
+                            ExperimenterIdMeterBandKey key = new ExperimenterIdMeterBandKey(experimenter.getSubType(), version, experimenter.getExperimenter());
+                            ConvertorMeterBandTypeToOFJava<BandType, MeterBandExperimenterBuilder> convertor = OFSessionUtil.getExtensionConvertorProvider().getMeterBandTypeParseConverter(key);
+                            if(convertor != null){
+                                try {
+                                    convertor.convert(bandType, meterBandExperimenterBuilder);
+                                } catch (ConversionException e) {
+                                    LOG.error("Conversion of MeterBandTypeToOFJava failed! " + e);
+                                }
+                            }
+                        }
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
                         MeterBand meterBandItem = experimenterCaseBuilder.build();
                         BandsBuilder bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
-                        // Bands list
                         bands.add(bandsB.build());
                     } else {
                         logBandTypeMissing(MeterBandType.OFPMBTEXPERIMENTER);
@@ -183,7 +199,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
         }
 
         if (source.getMeterBandHeaders() != null) {
-            getBandsFromSAL(source.getMeterBandHeaders(), bands);
+            getBandsFromSAL(source.getMeterBandHeaders(), bands, data.getVersion());
             meterModInputBuilder.setBands(bands);
         } else {
             LOG.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
