@@ -3,7 +3,7 @@ module opendaylight-meter-types {
     prefix meter;
 
     import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
-
+    import openflow-types {prefix oft;}
 
     revision "2013-09-18" {
         description "Initial revision of meter service";
@@ -114,6 +114,12 @@ module opendaylight-meter-types {
                 leaf experimenter {
                     description "Experimenter id";
                     type uint32;
+                }
+
+                leaf sub-type {
+                    type identityref {
+                        base oft:experimenter-meter-band-sub-type;
+                    }
                 }
             }
         }
