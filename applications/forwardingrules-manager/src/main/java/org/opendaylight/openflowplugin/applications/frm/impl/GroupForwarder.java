@@ -46,18 +46,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * GroupForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
+ * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
  * for WildCardedPath to {@link Group} and ForwardingRulesCommiter interface for methods:
- *  add, update and remove {@link Group} processing for
- *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
- *
+ * add, update and remove {@link Group} processing for
+ * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  */
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
-
     private final DataBroker dataBroker;
-
     private ListenerRegistration<GroupForwarder> listenerRegistration;
 
     public GroupForwarder (final ForwardingRulesManager manager, final DataBroker db) {

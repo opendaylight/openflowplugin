@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -42,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowStatNotificationSupplierImplTest {
@@ -59,7 +56,7 @@ public class FlowStatNotificationSupplierImplTest {
         notifProviderService = mock(NotificationProviderService.class);
         dataBroker = mock(DataBroker.class);
         notifSupplierImpl = new FlowStatNotificationSupplierImpl(notifProviderService, dataBroker);
-        TestSupplierVerifyHelper.verifyDataChangeRegistration(dataBroker);
+        TestSupplierVerifyHelper.verifyDataTreeChangeListenerRegistration(dataBroker);
     }
 
     @Test(expected = NullPointerException.class)

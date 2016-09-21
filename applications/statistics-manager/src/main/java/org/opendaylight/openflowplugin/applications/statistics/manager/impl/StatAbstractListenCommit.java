@@ -10,13 +10,14 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.opendaylight.controller.md.sal.binding.api.*;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -24,13 +25,11 @@ import org.opendaylight.openflowplugin.applications.statistics.manager.StatListe
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,10 @@ import org.slf4j.LoggerFactory;
  * org.opendaylight.openflowplugin.applications.statistics.manager.impl
  *
  * StatAbstractListeneningCommiter
- * Class is abstract implementation for all Configuration/DataStore DataChange
+ * Class is abstract implementation for all Configuration/DataStore DataTreeModification
  * listenable DataObjects like flows, groups, meters. It is a holder for common
- * functionality needed by construction/destruction class and for DataChange
+ * functionality needed by construction/destruction class and for DataTreeModification
  * event processing.
- *
  */
 public abstract class StatAbstractListenCommit<T extends DataObject, N extends NotificationListener>
                                             extends StatAbstractNotifyCommit<N> implements StatListeningCommiter<T,N> {
@@ -80,15 +78,15 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
         this.nodeRegistrationManager = nodeRegistrationManager;
 
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-        try{
+        try {
             listenerRegistration =  looper.loopUntilNoException(new Callable<ListenerRegistration<StatAbstractListenCommit<T, N>>>() {
                 @Override
                 public ListenerRegistration<StatAbstractListenCommit<T, N>> call() throws Exception {
                     return db.registerDataTreeChangeListener(treeId,StatAbstractListenCommit.this);
                 }
             });
-        }catch(final Exception ex){
-            LOG.debug(" StatAbstractListenCommit DataChange listener registration failed {}", ex.getMessage());
+        } catch (final Exception ex) {
+            LOG.debug(" StatAbstractListenCommit DataTreeChangeListener registration failed {}", ex.getMessage());
             throw new IllegalStateException("Notification supplier startup fail! System needs restart.", ex);
         }
     }
@@ -138,7 +136,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
             try {
                 listenerRegistration.close();
             } catch (final Exception e) {
-                LOG.error("Error by stop {} DataChange StatListeningCommiter.", clazz.getSimpleName(), e);
+                LOG.error("Error by stop {} DataTreeChangeListener StatListeningCommiter.", clazz.getSimpleName(), e);
             }
             listenerRegistration = null;
         }

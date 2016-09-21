@@ -50,17 +50,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * FlowForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}}
+ * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
  * for WildCardedPath to {@link Flow} and ForwardingRulesCommiter interface for methods:
- *  add, update and remove {@link Flow} processing for
- *  {@link org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent}.
+ * add, update and remove {@link Flow} processing for
+ * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  */
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
-
     private final DataBroker dataBroker;
-
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
     public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {

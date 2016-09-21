@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -37,7 +36,6 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
-
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
@@ -50,8 +48,8 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
             listenerRegistration = looper.loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
         } catch (final Exception e) {
-            LOG.warn("FRM Table DataChange listener registration fail!");
-            LOG.debug("FRM Table DataChange listener registration fail ..", e);
+            LOG.warn("FRM Table DataTreeChangeListener registration fail!");
+            LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
             throw new IllegalStateException("TableForwarder startup fail! System needs restart.", e);
         }
     }

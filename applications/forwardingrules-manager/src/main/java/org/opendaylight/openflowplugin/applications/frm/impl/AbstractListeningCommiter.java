@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -21,18 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * AbstractChangeListner implemented basic {@link AsyncDataChangeEvent} processing for
- * flow node subDataObject (flows, groups and meters).
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
+ * AbstractChangeListner implemented basic {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}
+ * processing for flow node subDataObject (flows, groups and meters).
  */
 public abstract class AbstractListeningCommiter <T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-
     ForwardingRulesManager provider;
-
     private final Class<T> clazz;
 
     public AbstractListeningCommiter (ForwardingRulesManager provider, Class<T> clazz) {

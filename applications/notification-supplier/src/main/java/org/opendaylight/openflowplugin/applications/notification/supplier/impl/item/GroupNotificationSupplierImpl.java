@@ -33,7 +33,7 @@ public class GroupNotificationSupplierImpl extends
     private static final InstanceIdentifier<Group> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class).child(Group.class);
 
     /**
-     * Constructor register supplier as DataChangeLister and create wildCarded InstanceIdentifier.
+     * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db - {@link DataBroker}
