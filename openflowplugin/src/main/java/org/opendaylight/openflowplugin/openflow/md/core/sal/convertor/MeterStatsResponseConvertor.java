@@ -8,8 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExperimenterIdMeterBandKey;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
@@ -35,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdMeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
@@ -44,6 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.meter.stats.MeterBandStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class is an utility class for converting group related statistics messages coming from switch to MD-SAL
@@ -52,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author avishnoi@in.ibm.com
  */
 public class MeterStatsResponseConvertor {
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(MeterStatsResponseConvertor.class);
 
     /**
      * Method converts list of OF Meter Stats to SAL Meter Stats.
@@ -184,20 +193,30 @@ public class MeterStatsResponseConvertor {
                     ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
                     experimenterBuilder.setExperimenterBurstSize(experimenterBand.getBurstSize());
                     experimenterBuilder.setExperimenterRate(experimenterBand.getRate());
+                    if(OFSessionUtil.getExtensionConvertorProvider() != null){
+                        ExperimenterIdMeterBand expIdMeterBand = experimenterBand.getAugmentation(ExperimenterIdMeterBand.class);
+                        if(expIdMeterBand != null) {
+                            ExperimenterIdMeterBandKey key = new ExperimenterIdMeterBandKey(expIdMeterBand.getSubType(), OFConstants.OFP_VERSION_1_3, expIdMeterBand.getExperimenter().getValue());
+                            ConvertorMeterBandTypeFromOFJava<MeterBandExperimenter, ExperimenterBuilder> messageConverter = OFSessionUtil.getExtensionConvertorProvider().getMeterBandTypeConverter(key);
+                            if(messageConverter != null){
+                                try {
+                                    messageConverter.convert(experimenterBand, experimenterBuilder);
+                                } catch (ConversionException e) {
+                                    LOG.error("Conversion of MeterBandTypeFromOFJava failed! " + e);
+                                }
+                            }
+                        }
+                    }
                     meterBandHeaderBuilder.setBandType(experimenterBuilder.build());
-
                     meterBandHeaderBuilder.setBandBurstSize(experimenterBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(experimenterBand.getRate());
                     BandId bandId = new BandId((long) bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
-
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
                     meterBandTypesBuilder.setFlags(new MeterBandType(false, false, true));
                     meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
-
                     listBandHeaders.add(meterBandHeaderBuilder.build());
-
                 }
                 bandKey++;
             }
