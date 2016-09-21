@@ -43,8 +43,10 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        LOG.trace("Config changes: {}", modifications.size());
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Config changes: {}", modifications.size());
+        }
         super.onDataTreeChanged(modifications);
     }
 
@@ -54,7 +56,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<FlowCapableNode> modification) throws InterruptedException {
+            final DataTreeModification<FlowCapableNode> modification) throws InterruptedException {
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
@@ -62,7 +64,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (!operationalNode.isPresent()) {
-            LOG.info("Skip syncup, {} operational is not present", nodeId.getValue());
+            LOG.debug("Skip syncup, {} operational is not present", nodeId.getValue());
             return Optional.absent();
         }
 
@@ -89,9 +91,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                   final FlowCapableNode dataAfter,
                                                   final FlowCapableNode operationalNode) throws InterruptedException {
-        NodeId nodeId = PathUtil.digNodeId(nodePath);
-        LOG.trace("onNodeAdded {}", nodeId.getValue());
-        LOG.debug("Reconciliation {}: {}", dsType(), nodeId.getValue());
+        LOG.debug("Reconciliation {}: {}", dsType(), PathUtil.digNodeId(nodePath).getValue());
         final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL);
         return reactor.syncup(nodePath, syncupEntry);
     }
@@ -106,8 +106,6 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     private ListenableFuture<Boolean> onNodeUpdated(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore,
                                                     final FlowCapableNode dataAfter) throws InterruptedException {
-        NodeId nodeId = PathUtil.digNodeId(nodePath);
-        LOG.trace("onNodeUpdated {}", nodeId.getValue());
         final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), dataBefore, dsType());
         return reactor.syncup(nodePath, syncupEntry);
     }
@@ -118,8 +116,6 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      */
     private ListenableFuture<Boolean> onNodeDeleted(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore) throws InterruptedException {
-        NodeId nodeId = PathUtil.digNodeId(nodePath);
-        LOG.trace("onNodeDeleted {}", nodeId.getValue());
         final SyncupEntry syncupEntry = new SyncupEntry(null, dsType(), dataBefore, dsType());
         return reactor.syncup(nodePath, syncupEntry);
     }
@@ -128,5 +124,4 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     public LogicalDatastoreType dsType() {
         return LogicalDatastoreType.CONFIGURATION;
     }
-
 }
