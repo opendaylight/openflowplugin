@@ -13,8 +13,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMeterBandTypeFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExperimenterIdMeterBandKey;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
@@ -30,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdMeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
@@ -39,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.slf4j.Logger;
 
 /**
  * Converts list of OF library config meter stats to MD-SAL config meter stats.
@@ -54,6 +60,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfig>, List<MeterConfigStats>, VersionConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MeterConfig.class);
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(MeterStatsResponseConvertor.class);
 
     @Override
     public Collection<Class<? extends DataContainer>> getTypes() {
@@ -127,6 +134,20 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
                     experimenterBuilder.setExperimenterBurstSize(experimenterBand.getBurstSize());
                     experimenterBuilder.setExperimenterRate(experimenterBand.getRate());
+                    if(OFSessionUtil.getExtensionConvertorProvider() != null){
+                        ExperimenterIdMeterBand expIdMeterBand = experimenterBand.getAugmentation(ExperimenterIdMeterBand.class);
+                        if(expIdMeterBand != null) {
+                            ExperimenterIdMeterBandKey key = new ExperimenterIdMeterBandKey(expIdMeterBand.getSubType(), data.getVersion(), expIdMeterBand.getExperimenter().getValue());
+                            ConvertorMeterBandTypeFromOFJava<MeterBandExperimenter, ExperimenterBuilder> messageConverter = OFSessionUtil.getExtensionConvertorProvider().getMeterBandTypeConverter(key);
+                            if(messageConverter != null){
+                                try {
+                                    messageConverter.convert(experimenterBand, experimenterBuilder);
+                                } catch (ConversionException e) {
+                                    LOG.error("Conversion of MeterBandTypeFromOFJava failed! " + e);
+                                }
+                            }
+                        }
+                    }
                     meterBandHeaderBuilder.setBandType(experimenterBuilder.build());
 
                     meterBandHeaderBuilder.setBandBurstSize(experimenterBand.getBurstSize());
