@@ -32,9 +32,9 @@ public class DeviceMastershipManager {
     }
 
     public void onDeviceConnected(final NodeId nodeId) {
+        LOG.debug("FRS service registered for: {}", nodeId.getValue());
         final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry, clusterSingletonService);
         deviceMasterships.put(nodeId, mastership);
-        LOG.debug("FRS service registered for: {}", nodeId.getValue());
     }
 
     public void onDeviceDisconnected(final NodeId nodeId) {
@@ -53,5 +53,4 @@ public class DeviceMastershipManager {
     ConcurrentHashMap<NodeId, DeviceMastership> getDeviceMasterships() {
         return deviceMasterships;
     }
-
 }

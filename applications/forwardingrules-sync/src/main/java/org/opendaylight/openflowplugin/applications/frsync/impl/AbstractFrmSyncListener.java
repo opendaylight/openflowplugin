@@ -32,18 +32,22 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<T>> modifications) {
         for (DataTreeModification<T> modification : modifications) {
             final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
-
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("DataTreeModification of {} in {} datastore", nodeId, dsType());
+            }
             try {
                 final Optional<ListenableFuture<Boolean>> optFuture = processNodeModification(modification);
                 if (optFuture.isPresent()) {
                     final ListenableFuture<Boolean> future = optFuture.get();
                     final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
-                    LOG.debug("syncup return in {} listener for: {} [{}] thread:{}", dsType(), nodeId.getValue(), ret, threadName());
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("syncup return [{}] for {} from {} listener", dsType(), nodeId.getValue(), ret);
+                    }
                 }
             } catch (InterruptedException e) {
-                LOG.warn("permit for forwarding rules sync not acquired: {}", nodeId.getValue());
+                LOG.warn("Permit for forwarding rules sync not acquired: {}", nodeId.getValue());
             } catch (Exception e) {
-                LOG.error("error processing inventory node modification: {}", nodeId.getValue(), e);
+                LOG.error("Error processing inventory node modification: {}, {}", nodeId.getValue(), e);
             }
         }
     }
@@ -53,8 +57,4 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
 
     protected abstract LogicalDatastoreType dsType();
 
-    private static String threadName() {
-        final Thread currentThread = Thread.currentThread();
-        return currentThread.getName();
-    }
 }

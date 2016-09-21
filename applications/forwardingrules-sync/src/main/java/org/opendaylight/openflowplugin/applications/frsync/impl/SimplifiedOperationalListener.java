@@ -65,8 +65,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<Node>> modifications) {
-        LOG.trace("Operational changes: {}", modifications.size());
+    public void onDataTreeChanged(final Collection<DataTreeModification<Node>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
@@ -76,7 +75,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            DataTreeModification<Node> modification) throws InterruptedException {
+            final DataTreeModification<Node> modification) throws InterruptedException {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         updateCache(modification);
 
@@ -96,7 +95,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * Unregister for device mastership.
      * @param modification Datastore modification
      */
-    private void updateCache(DataTreeModification<Node> modification) {
+    private void updateCache(final DataTreeModification<Node> modification) {
         NodeId nodeId = ModificationUtil.nodeId(modification);
         if (isDelete(modification) || isDeleteLogical(modification)) {
             operationalSnapshot.updateCache(nodeId, Optional.absent());
@@ -106,62 +105,43 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
     }
 
-    private Optional<ListenableFuture<Boolean>> skipModification(DataTreeModification<Node> modification) {
-        LOG.trace("Skipping operational modification: {}, before {}, after {}",
-                ModificationUtil.nodeIdValue(modification),
-                modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
-                modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
+    private Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Skipping operational modification: {}, before {}, after {}",
+                    ModificationUtil.nodeIdValue(modification),
+                    modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
+                    modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
+        }
         return Optional.absent();
     }
 
     /**
      * ModificationType.DELETE.
      */
-    private boolean isDelete(DataTreeModification<Node> modification) {
-        if (ModificationType.DELETE == modification.getRootNode().getModificationType()) {
-            LOG.trace("Delete {} (physical)", ModificationUtil.nodeIdValue(modification));
-            return true;
-        }
-
-        return false;
+    private boolean isDelete(final DataTreeModification<Node> modification) {
+        return ModificationType.DELETE == modification.getRootNode().getModificationType();
     }
 
     /**
      * All connectors disappeared from operational store (logical delete).
      */
-    private boolean isDeleteLogical(DataTreeModification<Node> modification) {
+    private boolean isDeleteLogical(final DataTreeModification<Node> modification) {
         final DataObjectModification<Node> rootNode = modification.getRootNode();
-        if (!safeConnectorsEmpty(rootNode.getDataBefore()) && safeConnectorsEmpty(rootNode.getDataAfter())) {
-            LOG.trace("Delete {} (logical)", ModificationUtil.nodeIdValue(modification));
-            return true;
-        }
+        return !safeConnectorsEmpty(rootNode.getDataBefore()) && safeConnectorsEmpty(rootNode.getDataAfter());
 
-        return false;
     }
 
-    private boolean isAdd(DataTreeModification<Node> modification) {
+    private boolean isAdd(final DataTreeModification<Node> modification) {
         final DataObjectModification<Node> rootNode = modification.getRootNode();
-        final Node dataAfter = rootNode.getDataAfter();
-        final Node dataBefore = rootNode.getDataBefore();
-
-        final boolean nodeAppearedInOperational = dataBefore == null && dataAfter != null;
-        if (nodeAppearedInOperational) {
-            LOG.trace("Add {} (physical)", ModificationUtil.nodeIdValue(modification));
-        }
-        return nodeAppearedInOperational;
+        return rootNode.getDataBefore() == null && rootNode.getDataAfter() != null;
     }
 
     /**
      * All connectors appeared in operational store (logical add).
      */
-    private boolean isAddLogical(DataTreeModification<Node> modification) {
+    private boolean isAddLogical(final DataTreeModification<Node> modification) {
         final DataObjectModification<Node> rootNode = modification.getRootNode();
-        if (safeConnectorsEmpty(rootNode.getDataBefore()) && !safeConnectorsEmpty(rootNode.getDataAfter())) {
-            LOG.trace("Add {} (logical)", ModificationUtil.nodeIdValue(modification));
-            return true;
-        }
-
-        return false;
+        return safeConnectorsEmpty(rootNode.getDataBefore()) && !safeConnectorsEmpty(rootNode.getDataAfter());
     }
 
     /**
@@ -171,7 +151,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @return optional syncup future
      * @throws InterruptedException from syncup
      */
-    private Optional<ListenableFuture<Boolean>> reconciliation(DataTreeModification<Node> modification) throws InterruptedException {
+    private Optional<ListenableFuture<Boolean>> reconciliation(final DataTreeModification<Node> modification)
+            throws InterruptedException {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
 
@@ -191,7 +172,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
     }
 
-    private boolean isConsistentForReconcile(DataTreeModification<Node> modification) {
+    private boolean isConsistentForReconcile(final DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
         final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().getDataAfter()
                 .getAugmentation(FlowCapableStatisticsGatheringStatus.class);
@@ -222,13 +203,13 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                 return true;
             }
         } catch (ParseException e) {
-            LOG.error("Timestamp parsing error {}", e);
+            LOG.warn("Timestamp parsing error {}", e);
         }
         LOG.debug("Fresh operational not present: {}", nodeId.getValue());
         return false;
     }
 
-    private static boolean safeConnectorsEmpty(Node node) {
+    private static boolean safeConnectorsEmpty(final Node node) {
         if (node == null) {
             return true;
         }
@@ -240,5 +221,4 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     public LogicalDatastoreType dsType() {
         return LogicalDatastoreType.OPERATIONAL;
     }
-
 }
