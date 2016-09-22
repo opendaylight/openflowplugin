@@ -106,8 +106,8 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     datapathIdConvertorData.setDatapathId(dpid);
 
                     final OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-                    final Optional<MatchBuilder> matchOptional = convertorExecutor.convert(message.getMatch(), datapathIdConvertorData);
-                    final MatchBuilder matchBuilder = new MatchBuilder(matchOptional.orElse(new MatchBuilder()).build());
+                    final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = convertorExecutor.convert(message.getMatch(), datapathIdConvertorData);
+                    final MatchBuilder matchBuilder = new MatchBuilder(matchOptional.orElse(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder()).build());
 
                     AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(
