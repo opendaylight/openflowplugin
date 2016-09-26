@@ -41,8 +41,8 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
                                             final SyncupEntry syncupEntry) throws InterruptedException {
         try {
             compressionGuard.acquire();
-            final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
-            if (newFutureNecessary) {
+            final boolean newTaskNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
+            if (newTaskNecessary) {
                 super.syncup(flowcapableNodePath, syncupEntry);
             }
             return Futures.immediateFuture(true);
@@ -62,14 +62,14 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     /**
-     * If there is config delta in compression queue for the device and new configuration is coming,
-     * update its zip queue entry. Create/replace zip queue entry for the device with operational delta otherwise.
+     * If there is a syncup entry for the device in compression queue and new configuration diff is coming - update
+     * the entry in compression queue (zip). Create new (no entry in queue for device) or replace entry (config
+     * vs. operational is coming) in queue otherwise.
      */
     private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                            final SyncupEntry syncupEntry) {
         final SyncupEntry previousEntry = compressionQueue.get(flowcapableNodePath);
-
-        if (previousEntry != null && syncupEntry.isOptimizedConfigDelta() && previousEntry.isOptimizedConfigDelta()) {
+        if (previousEntry != null && syncupEntry.isOptimizedConfigDelta()) {
             updateOptimizedConfigDelta(flowcapableNodePath, syncupEntry, previousEntry);
         } else {
             compressionQueue.put(flowcapableNodePath, syncupEntry);
