@@ -19,8 +19,6 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Enriches {@link SyncReactorFutureDecorator} with state compression.
@@ -31,7 +29,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
     private final Semaphore compressionGuard = new Semaphore(1, true);
 
-    public SyncReactorFutureZipDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+    public SyncReactorFutureZipDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
         super(delegate, executorService);
     }
 

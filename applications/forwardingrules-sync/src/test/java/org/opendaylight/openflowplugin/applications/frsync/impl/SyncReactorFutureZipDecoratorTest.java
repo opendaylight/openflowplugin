@@ -65,7 +65,7 @@ public class SyncReactorFutureZipDecoratorTest {
     public void setUp() {
         final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                 .setDaemon(false)
-                .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)
+                .setNameFormat("frsync-test-%d")
                 .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);

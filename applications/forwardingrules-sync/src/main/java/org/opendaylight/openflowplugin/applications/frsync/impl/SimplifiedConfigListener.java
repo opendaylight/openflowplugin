@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -44,7 +45,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
@@ -82,9 +83,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     /**
-     * Add only what is missing on device. If node was added to config DS and it is already present
-     * in operational DS (connected) diff between current new configuration and actual configuration
-     * (seen in operational) should be calculated and sent to device.
+     * If node was added to config DS and it is already present in operational DS (connected) diff between current
+     * new configuration and actual configuration (seen in operational) should be calculated and sent to device.
      */
     private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                   final FlowCapableNode dataAfter,

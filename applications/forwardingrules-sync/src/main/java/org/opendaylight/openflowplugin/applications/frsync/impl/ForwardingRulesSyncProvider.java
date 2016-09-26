@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
+    private static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
 
     private final DataBroker dataService;
     private final ClusterSingletonServiceProvider clusterSingletonService;
@@ -75,7 +77,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                                        final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry,
                                        final ClusterSingletonServiceProvider clusterSingletonService) {
-        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null!");
+        Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonServiceProvider can not be null!");
@@ -88,7 +90,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
         final ExecutorService executorService= Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
                 .setDaemon(false)
                 .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
                 .build());
@@ -137,12 +139,12 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     }
 
     public void close() throws InterruptedException {
-        if (dataTreeConfigChangeListener != null) {
+        if (Objects.nonNull(dataTreeConfigChangeListener)) {
             dataTreeConfigChangeListener.close();
             dataTreeConfigChangeListener = null;
         }
 
-        if (dataTreeOperationalChangeListener != null) {
+        if (Objects.nonNull(dataTreeOperationalChangeListener)) {
             dataTreeOperationalChangeListener.close();
             dataTreeOperationalChangeListener = null;
         }
