@@ -27,11 +27,10 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorFutureDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
-    public static final String FRM_RPC_CLIENT_PREFIX = "FRS-executor-";
     private final SyncReactor delegate;
     private final ListeningExecutorService executorService;
 
-    public SyncReactorFutureDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+    public SyncReactorFutureDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
         this.delegate = delegate;
         this.executorService = executorService;
     }

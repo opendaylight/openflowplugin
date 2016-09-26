@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
+    public static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
 
     private final DataBroker dataService;
     private final ClusterSingletonServiceProvider clusterSingletonService;
@@ -88,7 +89,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
         final ExecutorService executorService= Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                .setNameFormat(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX + "%d")
+                .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
                 .setDaemon(false)
                 .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
                 .build());

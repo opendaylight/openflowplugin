@@ -34,8 +34,8 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     private final SyncReactor delegate;
     private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
 
-    public SyncReactorGuardDecorator(SyncReactor delegate,
-            SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper) {
+    public SyncReactorGuardDecorator(final SyncReactor delegate,
+                                     final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper) {
         this.delegate = delegate;
         this.semaphoreKeeper = semaphoreKeeper;
     }
