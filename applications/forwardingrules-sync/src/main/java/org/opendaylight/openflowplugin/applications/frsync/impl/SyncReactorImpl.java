@@ -51,7 +51,7 @@ public class SyncReactorImpl implements SyncReactor {
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorImpl.class);
     private final SyncPlanPushStrategy syncPlanPushStrategy;
 
-    public SyncReactorImpl(SyncPlanPushStrategy syncPlanPushStrategy) {
+    public SyncReactorImpl(final SyncPlanPushStrategy syncPlanPushStrategy) {
         this.syncPlanPushStrategy = Preconditions.checkNotNull(syncPlanPushStrategy, "execution strategy is mandatory");
     }
 
