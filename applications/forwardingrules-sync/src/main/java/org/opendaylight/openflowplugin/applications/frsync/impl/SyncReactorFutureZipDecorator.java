@@ -29,7 +29,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
     @GuardedBy("compressionGuard")
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
-    private final Semaphore compressionGuard = new Semaphore(1, false);
+    private final Semaphore compressionGuard = new Semaphore(1, true);
 
     public SyncReactorFutureZipDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
         super(delegate, executorService);
