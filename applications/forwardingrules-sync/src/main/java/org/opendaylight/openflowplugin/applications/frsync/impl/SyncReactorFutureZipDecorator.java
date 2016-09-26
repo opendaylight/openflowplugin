@@ -41,11 +41,12 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
                                             final SyncupEntry syncupEntry) throws InterruptedException {
         try {
             compressionGuard.acquire();
-            final boolean newFutureNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
-            if (newFutureNecessary) {
-                super.syncup(flowcapableNodePath, syncupEntry);
+            final boolean newTaskNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
+            if (newTaskNecessary) {
+                return super.syncup(flowcapableNodePath, syncupEntry);
+            } else {
+                return Futures.immediateFuture(Boolean.TRUE);
             }
-            return Futures.immediateFuture(true);
         } finally {
             compressionGuard.release();
         }
