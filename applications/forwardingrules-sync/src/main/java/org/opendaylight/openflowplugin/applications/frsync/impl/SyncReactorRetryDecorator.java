@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorRetryDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorRetryDecorator.class);
-
     private final SyncReactor delegate;
     private final ReconciliationRegistry reconciliationRegistry;
 
@@ -42,7 +41,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         if (syncupEntry.isOptimizedConfigDelta() && reconciliationRegistry.isRegistered(nodeId)) {
             LOG.debug("Config change ignored because {} is in reconcile.", nodeId.getValue());
-            return Futures.immediateFuture(Boolean.FALSE);
+            return Futures.immediateFuture(Boolean.TRUE);
         }
 
         ListenableFuture<Boolean> syncupResult = delegate.syncup(flowcapableNodePath,syncupEntry);
@@ -52,11 +51,10 @@ public class SyncReactorRetryDecorator implements SyncReactor {
             public Boolean apply(Boolean result) {
                 if (result) {
                     reconciliationRegistry.unregisterIfRegistered(nodeId);
-                    return true;
                 } else {
                     reconciliationRegistry.register(nodeId);
-                    return false;
                 }
+                return result;
             }
         });
     }
