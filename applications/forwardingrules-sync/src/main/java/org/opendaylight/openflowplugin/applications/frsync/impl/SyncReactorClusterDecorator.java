@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * Decorator for cluster related issues.
  */
 public class SyncReactorClusterDecorator implements SyncReactor {
+
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorClusterDecorator.class);
     private final SyncReactor delegate;
     private final DeviceMastershipManager deviceMastershipManager;

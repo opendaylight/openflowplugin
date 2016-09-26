@@ -87,7 +87,6 @@ public class SyncReactorImpl implements SyncReactor {
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
                 flowsToRemove, metersToRemove, groupsToRemove);
 
-        counters.setStartNano(System.nanoTime());
         final ListenableFuture<RpcResult<Void>> bootstrapResultFuture = RpcResultBuilder.<Void>success().buildFuture();
         final ListenableFuture<RpcResult<Void>> resultVehicle = syncPlanPushStrategy.executeSyncStrategy(
                 bootstrapResultFuture, input, counters);
@@ -103,12 +102,11 @@ public class SyncReactorImpl implements SyncReactor {
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
                     LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, " +
-                                    "meter={}/{}/{}, took={} ms, errors={}",
+                                    "meter={}/{}/{}, errors={}",
                             nodeId.getValue(),
                             flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),
                             groupCrudCounts.getAdded(), groupCrudCounts.getUpdated(), groupCrudCounts.getRemoved(),
                             meterCrudCounts.getAdded(), meterCrudCounts.getUpdated(), meterCrudCounts.getRemoved(),
-                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - counters.getStartNano()),
                             Arrays.toString(input.getErrors().toArray()));
                 }
                 return input.isSuccessful();
