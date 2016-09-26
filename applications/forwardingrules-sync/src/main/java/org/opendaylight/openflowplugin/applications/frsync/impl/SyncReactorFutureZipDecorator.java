@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureZipDecorator.class);
-
     @GuardedBy("compressionGuard")
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
     private final Semaphore compressionGuard = new Semaphore(1, false);
@@ -45,7 +43,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
             if (newFutureNecessary) {
                 super.syncup(flowcapableNodePath, syncupEntry);
             }
-            return Futures.immediateFuture(true);
+            return Futures.immediateFuture(Boolean.TRUE);
         } finally {
             compressionGuard.release();
         }
@@ -55,7 +53,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
                                                          final SyncupEntry syncupEntry) throws InterruptedException {
         final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
         if (lastCompressionState == null) {
-            return Futures.immediateFuture(true);
+            return Futures.immediateFuture(Boolean.TRUE);
         } else {
             return super.doSyncupInFuture(flowcapableNodePath, lastCompressionState);
         }

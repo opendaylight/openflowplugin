@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * Listens to config changes and delegates sync entry to {@link SyncReactor}.
  */
 public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapableNode> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedConfigListener.class);
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao configSnapshot;
