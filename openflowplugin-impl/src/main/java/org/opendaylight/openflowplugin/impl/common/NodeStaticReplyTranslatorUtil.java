@@ -79,7 +79,7 @@ public class NodeStaticReplyTranslatorUtil {
      * @param reply
      * @return
      */
-    public static FlowCapableNode nodeDescTranslator(@CheckForNull final MultipartReplyDesc reply, final IpAddress ipAddress) {
+    public static FlowCapableNodeBuilder nodeDescTranslator(@CheckForNull final MultipartReplyDesc reply, final IpAddress ipAddress) {
         Preconditions.checkArgument(reply != null);
         final FlowCapableNodeBuilder flowCapAugBuilder = new FlowCapableNodeBuilder();
         flowCapAugBuilder.setDescription(reply.getDpDesc());
@@ -93,7 +93,7 @@ public class NodeStaticReplyTranslatorUtil {
         if (ipAddress != null) {
             flowCapAugBuilder.setIpAddress(ipAddress);
         }
-        return flowCapAugBuilder.build();
+        return flowCapAugBuilder;
     }
 
     /**
