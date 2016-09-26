@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorFutureDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
-    public static final String FRM_RPC_CLIENT_PREFIX = "FRM-RPC-client-";
+    public static final String FRM_RPC_CLIENT_PREFIX = "FRS-executor-";
     private final SyncReactor delegate;
     private final ListeningExecutorService executorService;
 
@@ -40,15 +40,13 @@ public class SyncReactorFutureDecorator implements SyncReactor {
                                             final SyncupEntry syncupEntry) throws InterruptedException {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         return executorService.submit(() -> {
-            final String oldThreadName = updateThreadName(nodeId);
             try {
-                final Boolean ret = doSyncupInFuture(flowcapableNodePath, syncupEntry).get(10000, TimeUnit.MILLISECONDS);
-                return ret;
+                final Boolean futureResult = doSyncupInFuture(flowcapableNodePath, syncupEntry)
+                        .get(10000, TimeUnit.MILLISECONDS);
+                return futureResult;
             } catch (TimeoutException e) {
-                LOG.warn("doSyncupInFuture timeout occured {}", nodeId.getValue(), e);
-                return false;
-            } finally {
-                updateThreadName(oldThreadName);
+                LOG.warn("Syncup future timeout occured {}", nodeId.getValue(), e);
+                return Boolean.FALSE;
             }
         });
     }
@@ -56,26 +54,5 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                                          final SyncupEntry syncupEntry) throws InterruptedException {
         return delegate.syncup(flowcapableNodePath, syncupEntry);
-    }
-
-    private String updateThreadName(final NodeId nodeId) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
-            currentThread.setName(oldName + "@" + nodeId.getValue());
-        } else {
-            LOG.warn("Try to update foreign thread name {} {}", nodeId, oldName);
-        }
-        return oldName;
-    }
-
-    private void updateThreadName(final String name) {
-        final Thread currentThread = Thread.currentThread();
-        final String oldName = currentThread.getName();
-        if (oldName.startsWith(SyncReactorFutureDecorator.FRM_RPC_CLIENT_PREFIX)) {
-            currentThread.setName(name);
-        } else {
-            LOG.warn("Try to update foreign thread name {} {}", oldName, name);
-        }
     }
 }

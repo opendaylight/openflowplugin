@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * Abstract Listener for node changes.
  */
 public abstract class AbstractFrmSyncListener<T extends DataObject> implements NodeListener<T> {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFrmSyncListener.class);
 
     @Override
@@ -41,7 +42,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                     final ListenableFuture<Boolean> future = optFuture.get();
                     final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
                     if (LOG.isTraceEnabled()) {
-                        LOG.trace("syncup return [{}] for {} from {} listener", ret, nodeId.getValue(), dsType());
+                        LOG.trace("Syncup return [{}] for {} from {} listener", ret, nodeId.getValue(), dsType());
                     }
                 }
             } catch (InterruptedException e) {
