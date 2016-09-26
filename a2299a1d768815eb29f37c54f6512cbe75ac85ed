@@ -22,6 +22,30 @@
       "revId": "a2299a1d768815eb29f37c54f6512cbe75ac85ed",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_03422dad",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorFutureDecorator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-09-26T15:05:05Z",
+      "side": 1,
+      "message": "It\u0027s used in FRS provider where ListeningExecutorService is created and also in tests.",
+      "parentUuid": "7a6b29fe_63316159",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 71
+      },
+      "revId": "a2299a1d768815eb29f37c54f6512cbe75ac85ed",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
