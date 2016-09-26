@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorGuardDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorGuardDecorator.class);
-
     private final SyncReactor delegate;
     private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
 
@@ -47,24 +46,19 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         final long stampBeforeGuard = System.nanoTime();
         final Semaphore guard = summonGuardAndAcquire(flowcapableNodePath);
         if (guard == null) {
-            return Futures.immediateFuture(false);
+            return Futures.immediateFuture(Boolean.FALSE);
         }
         final long stampAfterGuard = System.nanoTime();
 
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("syncup start {} waiting:{} guard:{} thread:{}",
-                        nodeId.getValue(),
-                        formatNanos(stampAfterGuard - stampBeforeGuard),
-                        guard,
-                        threadName());
+                LOG.debug("Syncup guard acquired and running for {} ", nodeId.getValue());
             }
-
             final ListenableFuture<Boolean> endResult = delegate.syncup(flowcapableNodePath, syncupEntry);
             Futures.addCallback(endResult, createSyncupCallback(guard, stampBeforeGuard, stampAfterGuard, nodeId));
             return endResult;
         } catch (InterruptedException e) {
-            releaseGuardForNodeId(guard);
+            releaseGuard(guard);
             throw e;
         }
     }
@@ -78,19 +72,19 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             public void onSuccess(@Nullable final Boolean result) {
                 if (LOG.isDebugEnabled()) {
                     final long stampFinished = System.nanoTime();
-                    LOG.debug("syncup finished {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                    LOG.debug("Syncup finished {} took:{} rpc:{} wait:{}", nodeId.getValue(),
                             formatNanos(stampFinished - stampBeforeGuard), formatNanos(stampFinished - stampAfterGuard),
-                            formatNanos(stampAfterGuard - stampBeforeGuard), guard.availablePermits(), threadName());
+                            formatNanos(stampAfterGuard - stampBeforeGuard));
                 }
-                releaseGuardForNodeId(guard);
+                releaseGuard(guard);
             }
             @Override
             public void onFailure(final Throwable t) {
                 final long stampFinished = System.nanoTime();
-                LOG.warn("syncup failed {} took:{} rpc:{} wait:{} guard:{} permits thread:{}", nodeId.getValue(),
+                LOG.warn("Syncup failed {} took:{} rpc:{} wait:{}", nodeId.getValue(),
                         formatNanos(stampFinished - stampBeforeGuard), formatNanos(stampFinished - stampAfterGuard),
-                        formatNanos(stampAfterGuard - stampBeforeGuard), guard.availablePermits(), threadName());
-                releaseGuardForNodeId(guard);
+                        formatNanos(stampAfterGuard - stampBeforeGuard));
+                releaseGuard(guard);
             }};
     }
 
@@ -106,15 +100,15 @@ public class SyncReactorGuardDecorator implements SyncReactor {
     private Semaphore summonGuardAndAcquire(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         final Semaphore guard = Preconditions.checkNotNull(semaphoreKeeper.summonGuard(flowcapableNodePath),
-                "no guard for " + nodeId.getValue());
+                "No guard for " + nodeId.getValue());
         try {
             guard.acquire();
         } catch (InterruptedException e) {
-            LOG.warn("syncup summon {} failed {}", nodeId.getValue(), e);
+            LOG.warn("Syncup summon {} failed {}", nodeId.getValue(), e);
             return null;
         }
         if (LOG.isTraceEnabled()) {
-            LOG.trace("syncup summon {} guard:{} thread:{}", nodeId.getValue(), guard, threadName());
+            LOG.trace("Syncup summon {} guard:{}", nodeId.getValue(), guard);
         }
         return guard;
     }
@@ -123,17 +117,12 @@ public class SyncReactorGuardDecorator implements SyncReactor {
      * Unlock and release guard.
      * @param guard semaphore guard which should be unlocked
      */
-    private static void releaseGuardForNodeId(final Semaphore guard) {
+    private static void releaseGuard(final Semaphore guard) {
         if (guard != null) {
             guard.release();
             if (LOG.isTraceEnabled()) {
-                LOG.trace("syncup release guard:{} thread:{}", guard, threadName());
+                LOG.trace("Syncup release guard:{} thread:{}", guard);
             }
         }
-    }
-
-    private static String threadName() {
-        final Thread currentThread = Thread.currentThread();
-        return currentThread.getName();
     }
 }

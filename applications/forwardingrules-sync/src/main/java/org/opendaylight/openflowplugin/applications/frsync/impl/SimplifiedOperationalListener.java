@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  * Listens to operational changes and starts reconciliation through {@link SyncReactor} when necessary.
  */
 public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SimplifiedOperationalListener.class);
     public static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
-
     private final SyncReactor reactor;
     private final FlowCapableNodeSnapshotDao operationalSnapshot;
     private final FlowCapableNodeDao configDao;
