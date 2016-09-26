@@ -82,7 +82,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final CountDownLatch latchForFirst = new CountDownLatch(1);
         final CountDownLatch latchForNext = new CountDownLatch(1);
 
-        final SyncupEntry first = new SyncupEntry(dataBefore, configDS, null, configDS);
+        final SyncupEntry first = new SyncupEntry(dataBefore, configDS, null, operationalDS);
         final SyncupEntry second = new SyncupEntry(dataAfter, configDS, dataBefore, configDS);
         final SyncupEntry third = new SyncupEntry(null, configDS, dataAfter, configDS);
         final SyncupEntry fourth = new SyncupEntry(dataAfter2, configDS, null, configDS);
