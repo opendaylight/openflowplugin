@@ -38,9 +38,10 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -59,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -108,7 +110,7 @@ public class DeviceInitializationUtils {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final short version = deviceInfo.getVersion();
         LOG.trace("initalizeNodeInformation for node {}", deviceInfo.getNodeId());
-        final SettableFuture<Void> returnFuture = SettableFuture.<Void>create();
+        final SettableFuture<Void> returnFuture = SettableFuture.create();
         addNodeToOperDS(deviceContext, returnFuture);
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
         if (OFConstants.OFP_VERSION_1_0 == version) {
@@ -160,7 +162,7 @@ public class DeviceInitializationUtils {
     private static void addNodeToOperDS(final DeviceContext deviceContext, final SettableFuture<Void> future) {
         Preconditions.checkArgument(deviceContext != null);
         final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceContext.getDeviceInfo().getNodeId()).setNodeConnector(
-                Collections.<NodeConnector>emptyList());
+                Collections.emptyList());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
                     nodeBuilder.build());
@@ -209,7 +211,7 @@ public class DeviceInitializationUtils {
 
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures;
 
-                        if (deviceContext.isSkipTableFeatures()){
+                        if (deviceContext.isSkipTableFeatures()) {
                             replyTableFeatures = RpcResultBuilder.<List<MultipartReply>>success().buildFuture();
                         } else {
                             replyTableFeatures = getNodeStaticInfo(
@@ -266,8 +268,12 @@ public class DeviceInitializationUtils {
 
         Preconditions.checkArgument(body instanceof MultipartReplyDescCase);
         final MultipartReplyDesc replyDesc = ((MultipartReplyDescCase) body).getMultipartReplyDesc();
-        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc,
-                getIpAddressOf(dContext));
+        final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil
+                .nodeDescTranslator(replyDesc, getIpAddressOf(dContext))
+                .setSwitchFeatures(SwitchFeaturesUtil.getInstance().buildSwitchFeatures(
+                        new GetFeaturesOutputBuilder(dContext.getPrimaryConnectionContext().getFeatures()).build()))
+                .build();
+
         final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
         return true;
