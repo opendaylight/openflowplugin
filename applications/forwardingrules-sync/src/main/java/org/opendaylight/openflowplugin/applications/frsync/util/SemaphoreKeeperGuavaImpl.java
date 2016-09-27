@@ -8,18 +8,24 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Key-based semaphore provider.
  */
 public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SemaphoreKeeperGuavaImpl.class);
     private final LoadingCache<K, Semaphore> semaphoreCache;
 
     public SemaphoreKeeperGuavaImpl(final int permits, final boolean fair) {
@@ -37,12 +43,26 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
     }
 
     @Override
-    public Semaphore summonGuard(final @Nonnull K key) {
+    public Semaphore summonGuard(@Nonnull final K key) {
         return semaphoreCache.getUnchecked(key);
     }
 
     @Override
-    public String toString() {
-        return super.toString() + " size:" + (semaphoreCache == null ? null : semaphoreCache.size()) + " " + semaphoreCache;
+    public Semaphore summonGuardAndAcquire(@Nonnull final K key) {
+        final Semaphore guard = Preconditions.checkNotNull(summonGuard(key), "Guard not available for " + key);
+        try {
+            guard.acquire();
+        } catch (InterruptedException e) {
+            LOG.warn("Could not acquire guard for {}, {}", key, e);
+            return null;
+        }
+        return guard;
+    }
+
+    @Override
+    public void releaseGuard(@Nullable final Semaphore guard) {
+        if (Objects.nonNull(guard)) {
+            guard.release();
+        }
     }
 }

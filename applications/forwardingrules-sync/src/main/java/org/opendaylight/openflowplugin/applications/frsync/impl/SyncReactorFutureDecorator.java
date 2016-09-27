@@ -36,7 +36,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry syncupEntry) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         return executorService.submit(() -> {
             try {
@@ -49,7 +49,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                                         final SyncupEntry syncupEntry) throws InterruptedException {
+                                                         final SyncupEntry syncupEntry) {
         return delegate.syncup(flowcapableNodePath, syncupEntry);
     }
 }

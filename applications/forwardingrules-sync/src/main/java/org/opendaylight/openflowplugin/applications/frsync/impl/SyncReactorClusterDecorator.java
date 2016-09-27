@@ -37,7 +37,7 @@ public class SyncReactorClusterDecorator implements SyncReactor {
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry syncupEntry) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         if (!deviceMastershipManager.isDeviceMastered(nodeId)) {
             LOG.debug("Skip syncup since not master for: {}", nodeId.getValue());

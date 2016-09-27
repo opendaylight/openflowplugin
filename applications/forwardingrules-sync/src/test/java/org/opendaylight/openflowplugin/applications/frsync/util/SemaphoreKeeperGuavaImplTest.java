@@ -25,14 +25,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Test for {@link SemaphoreKeeperGuavaImpl}.
  */
-public class SemaphoreKeeperTest {
-    private static final Logger LOG = LoggerFactory.getLogger(SemaphoreKeeperTest.class);
+public class SemaphoreKeeperGuavaImplTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SemaphoreKeeperGuavaImplTest.class);
     private SemaphoreKeeperGuavaImpl<String> semaphoreKeeper;
     private final String key = "11";
 
     @Before
     public void setUp() throws Exception {
-        semaphoreKeeper = new SemaphoreKeeperGuavaImpl(1, true);
+        semaphoreKeeper = new SemaphoreKeeperGuavaImpl<>(1, true);
     }
 
     @Test
