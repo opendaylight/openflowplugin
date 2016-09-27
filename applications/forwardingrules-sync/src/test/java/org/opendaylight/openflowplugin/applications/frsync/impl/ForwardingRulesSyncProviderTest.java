@@ -74,7 +74,7 @@ public class ForwardingRulesSyncProviderTest {
     }
 
     @After
-    public void tearDown() throws InterruptedException {
+    public void tearDown() {
         provider.close();
     }
 

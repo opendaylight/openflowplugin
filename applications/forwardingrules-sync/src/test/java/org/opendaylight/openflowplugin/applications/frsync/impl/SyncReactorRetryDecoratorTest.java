@@ -51,7 +51,7 @@ public class SyncReactorRetryDecoratorTest {
     }
 
     @Test
-    public void testSyncupSuccess() throws InterruptedException {
+    public void testSyncupSuccess() {
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
@@ -63,7 +63,7 @@ public class SyncReactorRetryDecoratorTest {
     }
 
     @Test
-    public void testSyncupFail() throws InterruptedException {
+    public void testSyncupFail() {
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.FALSE));
 
@@ -75,7 +75,7 @@ public class SyncReactorRetryDecoratorTest {
     }
 
     @Test
-    public void testSyncupConfigIgnoreInRetry() throws InterruptedException {
+    public void testSyncupConfigIgnoreInRetry() {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
         Mockito.when(syncupEntry.isOptimizedConfigDelta()).thenReturn(true);
 
