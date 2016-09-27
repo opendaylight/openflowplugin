@@ -259,7 +259,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     private SyncupEntry loadConfigDSAndPrepareSyncupEntry(final FlowCapableNode after, final LogicalDatastoreType dsTypeAfter,
-                                                          final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) throws InterruptedException {
+                                                          final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
         Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(configNode)));
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);

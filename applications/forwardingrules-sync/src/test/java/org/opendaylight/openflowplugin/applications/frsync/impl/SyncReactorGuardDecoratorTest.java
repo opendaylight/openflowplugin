@@ -16,6 +16,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
@@ -47,7 +48,7 @@ public class SyncReactorGuardDecoratorTest {
 
     @Before
     public void setUp() throws Exception {
-        final SemaphoreKeeperGuavaImpl semaphoreKeeper = new SemaphoreKeeperGuavaImpl<InstanceIdentifier<FlowCapableNode>>(1, true);
+        final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper = new SemaphoreKeeperGuavaImpl<>(1, true);
         reactor = new SyncReactorGuardDecorator(delegate, semaphoreKeeper);
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
@@ -58,8 +59,8 @@ public class SyncReactorGuardDecoratorTest {
     }
 
     @Test
-    public void testSyncupSuccess() throws Exception {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+    public void testSyncupSuccess() {
+        Mockito.when(delegate.syncup(Matchers.any(), Matchers.any()))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         reactor.syncup(fcNodePath, syncupEntry);
@@ -69,15 +70,13 @@ public class SyncReactorGuardDecoratorTest {
     }
 
     @Test
-    public void testSyncupFail() throws Exception {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+    public void testSyncupFail() {
+        Mockito.when(delegate.syncup(Matchers.any(), Matchers.any()))
                 .thenReturn(Futures.immediateFailedFuture(new Exception()));
 
         reactor.syncup(fcNodePath, syncupEntry);
 
         Mockito.verify(delegate).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(delegate);
-
     }
-
 }

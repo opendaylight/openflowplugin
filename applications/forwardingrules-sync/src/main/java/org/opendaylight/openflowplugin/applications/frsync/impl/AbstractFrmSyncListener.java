@@ -45,8 +45,6 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                         LOG.trace("Syncup for {} return from {} listener", nodeId.getValue(), dsType());
                     }
                 }
-            } catch (InterruptedException e) {
-                LOG.warn("Permit for forwarding rules sync not acquired: {}", nodeId.getValue());
             } catch (Exception e) {
                 LOG.error("Error processing inventory node modification: {}, {}", nodeId.getValue(), e);
             }
@@ -54,7 +52,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     }
 
     protected abstract Optional<ListenableFuture<Boolean>> processNodeModification(
-            final DataTreeModification<T> modification) throws InterruptedException;
+            final DataTreeModification<T> modification);
 
     protected abstract LogicalDatastoreType dsType();
 
