@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
@@ -51,7 +50,7 @@ public class SyncReactorImpl implements SyncReactor {
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorImpl.class);
     private final SyncPlanPushStrategy syncPlanPushStrategy;
 
-    public SyncReactorImpl(SyncPlanPushStrategy syncPlanPushStrategy) {
+    public SyncReactorImpl(final SyncPlanPushStrategy syncPlanPushStrategy) {
         this.syncPlanPushStrategy = Preconditions.checkNotNull(syncPlanPushStrategy, "execution strategy is mandatory");
     }
 

@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -65,12 +66,12 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<Node>> modifications) {
+    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<Node>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
     /**
-     * Update cache, register for device masterhip when device connected and start reconciliation if device
+     * Update cache, register for device mastership when device connected and start reconciliation if device
      * is registered and actual modification is consistent.Skip the event otherwise.
      * @throws InterruptedException from syncup
      */

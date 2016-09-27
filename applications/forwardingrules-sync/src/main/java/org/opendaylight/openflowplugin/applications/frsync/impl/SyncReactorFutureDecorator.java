@@ -27,11 +27,10 @@ import org.slf4j.LoggerFactory;
 public class SyncReactorFutureDecorator implements SyncReactor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureDecorator.class);
-    public static final String FRM_RPC_CLIENT_PREFIX = "FRS-executor-";
     private final SyncReactor delegate;
     private final ListeningExecutorService executorService;
 
-    public SyncReactorFutureDecorator(SyncReactor delegate, ListeningExecutorService executorService) {
+    public SyncReactorFutureDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
         this.delegate = delegate;
         this.executorService = executorService;
     }
@@ -41,9 +40,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         return executorService.submit(() -> {
             try {
-                final Boolean futureResult = doSyncupInFuture(flowcapableNodePath, syncupEntry)
-                        .get(10000, TimeUnit.MILLISECONDS);
-                return futureResult;
+                return doSyncupInFuture(flowcapableNodePath, syncupEntry).get(10000, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 LOG.warn("Syncup future timeout occured {}", nodeId.getValue(), e);
                 return Boolean.FALSE;

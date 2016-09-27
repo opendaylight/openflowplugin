@@ -40,9 +40,9 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                 final Optional<ListenableFuture<Boolean>> optFuture = processNodeModification(modification);
                 if (optFuture.isPresent()) {
                     final ListenableFuture<Boolean> future = optFuture.get();
-                    final Boolean ret = future.get(15000, TimeUnit.MILLISECONDS);
+                    future.get(15000, TimeUnit.MILLISECONDS);
                     if (LOG.isTraceEnabled()) {
-                        LOG.trace("Syncup return [{}] for {} from {} listener", ret, nodeId.getValue(), dsType());
+                        LOG.trace("Syncup for {} return from {} listener", nodeId.getValue(), dsType());
                     }
                 }
             } catch (InterruptedException e) {
