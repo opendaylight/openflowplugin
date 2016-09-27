@@ -112,7 +112,7 @@ public class SyncReactorFutureZipDecoratorTest {
         allResults.add(reactor.syncup(fcNodePath, fourth));
         latchForFirst.countDown();
 
-        Futures.successfulAsList(allResults).get(1, TimeUnit.SECONDS);
+        Futures.allAsList(allResults).get(1, TimeUnit.SECONDS);
         LOG.info("all configs done");
 
         syncThreadPool.shutdown();

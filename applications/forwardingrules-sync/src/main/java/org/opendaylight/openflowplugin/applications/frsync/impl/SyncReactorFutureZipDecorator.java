@@ -39,10 +39,9 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
             compressionGuard.acquire();
             final boolean newTaskNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
             if (newTaskNecessary) {
-                return super.syncup(flowcapableNodePath, syncupEntry);
-            } else {
-                return Futures.immediateFuture(Boolean.TRUE);
+                super.syncup(flowcapableNodePath, syncupEntry);
             }
+            return Futures.immediateFuture(Boolean.TRUE);
         } finally {
             compressionGuard.release();
         }
