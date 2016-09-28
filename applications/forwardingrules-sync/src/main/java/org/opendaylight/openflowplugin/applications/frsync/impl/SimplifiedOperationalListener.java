@@ -79,11 +79,15 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         updateCache(modification);
 
-        if (isAdd(modification) || isAddLogical(modification)) {
+        final boolean isAdd = isAdd(modification) || isAddLogical(modification);
+
+        if (isAdd) {
             deviceMastershipManager.onDeviceConnected(nodeId);
         }
 
-        if (reconciliationRegistry.isRegistered(nodeId) && isConsistentForReconcile(modification)) {
+        // if node is registered for reconcile we need consistent data from operational DS (skip partial collections)
+        // but we can accept first modification since all statistics are intentionally collected in one step on startup
+        if (reconciliationRegistry.isRegistered(nodeId) && (isAdd || isConsistentForReconcile(modification))) {
             return reconciliation(modification);
         } else {
             return skipModification(modification);
@@ -115,9 +119,6 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return Optional.absent();
     }
 
-    /**
-     * ModificationType.DELETE.
-     */
     private boolean isDelete(final DataTreeModification<Node> modification) {
         return ModificationType.DELETE == modification.getRootNode().getModificationType();
     }
@@ -170,6 +171,12 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
     }
 
+    /**
+     * Check if modification is consistent for reconciliation. We need fresh data, which means that current statistics
+     * were collected after registration for reconcile and whole bunch of statistics was collected successfully.
+     * @param modification from DS
+     * @return status of modification
+     */
     private boolean isConsistentForReconcile(final DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
         final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().getDataAfter()
