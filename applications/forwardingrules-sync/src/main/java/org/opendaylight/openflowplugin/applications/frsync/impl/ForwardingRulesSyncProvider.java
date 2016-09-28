@@ -34,7 +34,6 @@ import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.Devic
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
-import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -112,10 +111,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
-        final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
-                new SemaphoreKeeperGuavaImpl<>(1, true));
-        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool,
-                new SemaphoreKeeperGuavaImpl<>(1, true));
+        final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry);
+        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
         final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
 

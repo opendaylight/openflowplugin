@@ -20,9 +20,6 @@ import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Key-based semaphore provider.
- */
 public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SemaphoreKeeperGuavaImpl.class);

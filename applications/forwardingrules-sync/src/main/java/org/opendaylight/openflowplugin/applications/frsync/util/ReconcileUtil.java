@@ -268,7 +268,7 @@ public final class ReconcileUtil {
      * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
      * @return list of safe synchronization steps
      */
-    public static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
+    private static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
                                                             final Map<FlowDescriptor, Flow> flowOperationalMap,
                                                             final boolean gatherUpdates) {
         final ItemSyncBox<Flow> flowsSyncBox = new ItemSyncBox<>();

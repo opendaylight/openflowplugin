@@ -42,7 +42,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
             try {
                 return doSyncupInFuture(flowcapableNodePath, syncupEntry).get(10000, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
-                LOG.warn("Syncup future timeout occured {}", nodeId.getValue(), e);
+                LOG.warn("Syncup future timeout occured {}", nodeId.getValue());
                 return Boolean.FALSE;
             }
         });
