@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -27,13 +28,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
-    private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
+    private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper =
+            new SemaphoreKeeperGuavaImpl<>(1, true);
 
-    public SyncReactorFutureZipDecorator(final SyncReactor delegate,
-                                         final ListeningExecutorService executorService,
-                                         final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper) {
+    public SyncReactorFutureZipDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
         super(delegate, executorService);
-        this.semaphoreKeeper = semaphoreKeeper;
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,

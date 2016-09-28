@@ -13,27 +13,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Proposal for how a key based semaphore provider should look like.
- * <ul>
- * <li>thread safe</li>
- * <li>garbage-collect unused semaphores</li>
- * <li>for the same key there must be always only one semaphore available</li>
- * </ul>
- *
- *
- * usage:
- * <pre>
- * final Semaphore guard = semaphoreKeeper.summonGuard(key);
- * guard.acquire();
- * // guard protected logic ...
- * guard.release();
- * </pre>
- *
+ * Key based semaphore provider.
+ * For the same key there is always only one semaphore available. Unused semaphores are garbage-collect.
  * @param <K> key type
  */
 
 public interface SemaphoreKeeper<K> {
     /**
+     * Create or load semaphore for key from cache.
      * @param key semaphore identifier
      * @return new or existing semaphore for given key, for one key there is always only one semaphore available
      */
