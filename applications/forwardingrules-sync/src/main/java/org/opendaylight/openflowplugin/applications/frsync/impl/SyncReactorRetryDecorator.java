@@ -36,7 +36,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry syncupEntry) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) {
 
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         if (syncupEntry.isOptimizedConfigDelta() && reconciliationRegistry.isRegistered(nodeId)) {

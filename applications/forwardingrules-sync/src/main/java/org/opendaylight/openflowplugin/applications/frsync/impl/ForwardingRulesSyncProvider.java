@@ -114,7 +114,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
         final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry,
                 new SemaphoreKeeperGuavaImpl<>(1, true));
-        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
+        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool,
+                new SemaphoreKeeperGuavaImpl<>(1, true));
 
         final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
 
@@ -138,7 +139,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         LOG.info("ForwardingRulesSync has started.");
     }
 
-    public void close() throws InterruptedException {
+    public void close() {
         if (Objects.nonNull(dataTreeConfigChangeListener)) {
             dataTreeConfigChangeListener.close();
             dataTreeConfigChangeListener = null;

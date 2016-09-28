@@ -31,7 +31,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
+import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -63,13 +65,14 @@ public class SyncReactorFutureZipDecoratorTest {
 
     @Before
     public void setUp() {
+        final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper = new SemaphoreKeeperGuavaImpl<>(1, true);
         final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                 .setDaemon(false)
                 .setNameFormat("frsync-test-%d")
                 .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
-        reactor = new SyncReactorFutureZipDecorator(delegate, syncThreadPool);
+        reactor = new SyncReactorFutureZipDecorator(delegate, syncThreadPool, semaphoreKeeper);
         fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
                 .augmentation(FlowCapableNode.class);
     }
@@ -202,8 +205,8 @@ public class SyncReactorFutureZipDecoratorTest {
         Mockito.verify(delegate, Mockito.times(1)).syncup(fcNodePath, second);
     }
 
-    private void mockSyncupWithEntry(final SyncupEntry entry) throws InterruptedException {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(entry)))
+    private void mockSyncupWithEntry(final SyncupEntry entry) {
+        Mockito.when(delegate.syncup(Matchers.any(), Mockito.eq(entry)))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
     }
 

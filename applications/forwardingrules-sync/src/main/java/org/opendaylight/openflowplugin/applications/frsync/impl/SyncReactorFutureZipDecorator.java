@@ -13,8 +13,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
-import javax.annotation.concurrent.GuardedBy;
+import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -25,31 +26,38 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
-    @GuardedBy("compressionGuard")
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
-    private final Semaphore compressionGuard = new Semaphore(1, true);
+    private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper;
 
-    public SyncReactorFutureZipDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
+    public SyncReactorFutureZipDecorator(final SyncReactor delegate,
+                                         final ListeningExecutorService executorService,
+                                         final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper) {
         super(delegate, executorService);
+        this.semaphoreKeeper = semaphoreKeeper;
     }
 
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry syncupEntry) throws InterruptedException {
+                                            final SyncupEntry syncupEntry) {
+        Semaphore guard = null;
         try {
-            compressionGuard.acquire();
+            guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
+            if (Objects.isNull(guard)) {
+                return Futures.immediateFuture(Boolean.FALSE);
+            }
             final boolean newTaskNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
             if (newTaskNecessary) {
                 super.syncup(flowcapableNodePath, syncupEntry);
             }
             return Futures.immediateFuture(Boolean.TRUE);
         } finally {
-            compressionGuard.release();
+            semaphoreKeeper.releaseGuard(guard);
         }
     }
 
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                                         final SyncupEntry syncupEntry) throws InterruptedException {
+                                                         final SyncupEntry syncupEntry) {
         final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
+
         if (lastCompressionState == null) {
             return Futures.immediateFuture(Boolean.TRUE);
         } else {
@@ -65,6 +73,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                            final SyncupEntry syncupEntry) {
         final SyncupEntry previousEntry = compressionQueue.get(flowcapableNodePath);
+
         if (previousEntry != null && syncupEntry.isOptimizedConfigDelta()) {
             updateOptimizedConfigDelta(flowcapableNodePath, syncupEntry, previousEntry);
         } else {
@@ -82,15 +91,15 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     private SyncupEntry removeLastCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
+        Semaphore guard = null;
         try {
-            try {
-                compressionGuard.acquire();
-            } catch (InterruptedException e) {
+            guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
+            if (Objects.isNull(guard)) {
                 return null;
             }
             return compressionQueue.remove(flowcapableNodePath);
         } finally {
-            compressionGuard.release();
+            semaphoreKeeper.releaseGuard(guard);
         }
     }
 }

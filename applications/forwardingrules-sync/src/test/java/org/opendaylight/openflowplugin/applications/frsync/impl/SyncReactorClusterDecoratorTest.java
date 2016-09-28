@@ -50,7 +50,7 @@ public class SyncReactorClusterDecoratorTest {
     }
 
     @Test
-    public void testSyncupMaster() throws InterruptedException {
+    public void testSyncupMaster() {
         Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
 
         reactor.syncup(fcNodePath, syncupEntry);
@@ -60,7 +60,7 @@ public class SyncReactorClusterDecoratorTest {
     }
 
     @Test
-    public void testSyncupSlave() throws InterruptedException {
+    public void testSyncupSlave() {
         Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(false);
 
         reactor.syncup(fcNodePath, syncupEntry);

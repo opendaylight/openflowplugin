@@ -100,7 +100,7 @@ public class SyncReactorImpl implements SyncReactor {
                     final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
                     final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
                     final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, " +
+                    LOG.debug("Syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, " +
                                     "meter={}/{}/{}, errors={}",
                             nodeId.getValue(),
                             flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),

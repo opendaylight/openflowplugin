@@ -89,7 +89,7 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedAdd() throws InterruptedException {
+    public void testOnDataTreeChangedAdd() {
         Mockito.when(configModification.getDataBefore()).thenReturn(null);
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, operationalDS);
@@ -102,7 +102,7 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedUpdate() throws InterruptedException {
+    public void testOnDataTreeChangedUpdate() {
         Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, confgDS);
@@ -115,7 +115,7 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedDelete() throws InterruptedException {
+    public void testOnDataTreeChangedDelete() {
         Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
         Mockito.when(configModification.getDataAfter()).thenReturn(null);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(null, confgDS, dataBefore, confgDS);
@@ -139,7 +139,7 @@ public class SimplifiedConfigListenerTest {
     }
 
     private SyncupEntry loadOperationalDSAndPrepareSyncupEntry(final FlowCapableNode after, final LogicalDatastoreType dsTypeAfter,
-                                                               final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) throws InterruptedException {
+                                                               final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);

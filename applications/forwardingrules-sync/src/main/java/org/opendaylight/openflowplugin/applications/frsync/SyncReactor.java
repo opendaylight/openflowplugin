@@ -21,8 +21,7 @@ public interface SyncReactor {
      * @param flowcapableNodePath path to openflow augmentation of node
      * @param syncupEntry configured node + device reflection
      * @return synchronization outcome
-     * @throws InterruptedException
      */
     ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                     final SyncupEntry syncupEntry) throws InterruptedException;
+                                     final SyncupEntry syncupEntry);
 }

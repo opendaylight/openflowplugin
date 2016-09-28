@@ -73,10 +73,9 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     /**
      * Update cache, register for device mastership when device connected and start reconciliation if device
      * is registered and actual modification is consistent.Skip the event otherwise.
-     * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            final DataTreeModification<Node> modification) throws InterruptedException {
+            final DataTreeModification<Node> modification) {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         updateCache(modification);
 
@@ -150,10 +149,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * configuration (coming from operational) should be calculated and sent to device.
      * @param modification from DS
      * @return optional syncup future
-     * @throws InterruptedException from syncup
      */
-    private Optional<ListenableFuture<Boolean>> reconciliation(final DataTreeModification<Node> modification)
-            throws InterruptedException {
+    private Optional<ListenableFuture<Boolean>> reconciliation(final DataTreeModification<Node> modification) {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         final Optional<FlowCapableNode> nodeConfiguration = configDao.loadByNodeId(nodeId);
 

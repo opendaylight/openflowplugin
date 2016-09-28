@@ -52,10 +52,9 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     /**
      * Update cache. If operational data are present, choose appropriate data and start syncup.
      * Otherwise skip incoming change.
-     * @throws InterruptedException from syncup
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
-            final DataTreeModification<FlowCapableNode> modification) throws InterruptedException {
+            final DataTreeModification<FlowCapableNode> modification) {
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
@@ -88,7 +87,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      */
     private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                   final FlowCapableNode dataAfter,
-                                                  final FlowCapableNode operationalNode) throws InterruptedException {
+                                                  final FlowCapableNode operationalNode) {
         LOG.debug("Reconciliation {}: {}", dsType(), PathUtil.digNodeId(nodePath).getValue());
         final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL);
         return reactor.syncup(nodePath, syncupEntry);
@@ -103,7 +102,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      */
     private ListenableFuture<Boolean> onNodeUpdated(final InstanceIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore,
-                                                    final FlowCapableNode dataAfter) throws InterruptedException {
+                                                    final FlowCapableNode dataAfter) {
         final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), dataBefore, dsType());
         return reactor.syncup(nodePath, syncupEntry);
     }
@@ -113,7 +112,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * Note, this could be probably optimized using dedicated wipe-out RPC.
      */
     private ListenableFuture<Boolean> onNodeDeleted(final InstanceIdentifier<FlowCapableNode> nodePath,
-                                                    final FlowCapableNode dataBefore) throws InterruptedException {
+                                                    final FlowCapableNode dataBefore) {
         final SyncupEntry syncupEntry = new SyncupEntry(null, dsType(), dataBefore, dsType());
         return reactor.syncup(nodePath, syncupEntry);
     }
