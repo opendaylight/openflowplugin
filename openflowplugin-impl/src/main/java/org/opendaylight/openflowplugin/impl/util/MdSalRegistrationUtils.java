@@ -7,11 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-import com.google.common.reflect.TypeToken;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.CheckForNull;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -21,6 +19,7 @@ import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalExperimenterMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlatBatchServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowsBatchServiceImpl;
@@ -39,6 +38,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueu
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.OpendaylightFlowStatisticsServiceDelegateImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -55,6 +55,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.O
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import com.google.common.reflect.TypeToken;
 
 public class MdSalRegistrationUtils {
 
@@ -111,6 +115,7 @@ public class MdSalRegistrationUtils {
 
         // TODO: experimenter symmetric and multipart message services
         rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class, new SalExperimenterMessageServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMpMessageService.class, new SalExperimenterMpMessageServiceImpl(rpcContext, deviceContext));
     }
 
     /**
@@ -152,6 +157,7 @@ public class MdSalRegistrationUtils {
         rpcContext.unregisterRpcServiceImplementation(SalFlatBatchService.class);
         // TODO: experimenter symmetric and multipart message services
         rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
+        rpcContext.unregisterRpcServiceImplementation(SalExperimenterMpMessageService.class);
     }
 
     /**
