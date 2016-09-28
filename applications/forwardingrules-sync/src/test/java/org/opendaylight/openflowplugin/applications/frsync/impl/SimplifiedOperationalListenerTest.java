@@ -215,6 +215,20 @@ public class SimplifiedOperationalListenerTest {
         Mockito.verify(roTx).close();
     }
 
+
+    @Test
+    public void testOnDataTreeChangedReconcileAndFreshOperationalNotPresentButAdd() throws ParseException {
+        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
+        operationalAdd();
+        prepareFreshOperational(false);
+        final SyncupEntry syncupEntry = loadConfigDSAndPrepareSyncupEntry(configNode, configDS, fcOperationalNode, operationalDS);
+
+        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
+        Mockito.verify(roTx).close();
+    }
+
     @Test
     public void testOnDataTreeChangedReconcileAndConfigNotPresent() throws Exception {
         // Related to bug 5920 -> https://bugs.opendaylight.org/show_bug.cgi?id=5920
