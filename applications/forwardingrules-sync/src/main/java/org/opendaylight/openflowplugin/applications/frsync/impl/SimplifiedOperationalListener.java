@@ -79,11 +79,13 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         final NodeId nodeId = ModificationUtil.nodeId(modification);
         updateCache(modification);
 
-        if (isAdd(modification) || isAddLogical(modification)) {
+        final boolean isAdd = isAdd(modification) || isAddLogical(modification);
+
+        if (isAdd) {
             deviceMastershipManager.onDeviceConnected(nodeId);
         }
 
-        if (reconciliationRegistry.isRegistered(nodeId) && isConsistentForReconcile(modification)) {
+        if (reconciliationRegistry.isRegistered(nodeId) && (isAdd || isConsistentForReconcile(modification))) {
             return reconciliation(modification);
         } else {
             return skipModification(modification);
