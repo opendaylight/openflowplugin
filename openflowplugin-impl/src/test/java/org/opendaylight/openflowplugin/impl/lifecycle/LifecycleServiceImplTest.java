@@ -20,7 +20,6 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
@@ -62,6 +61,11 @@ public class LifecycleServiceImplTest {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
 
+        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(roleContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+
         lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
         lifecycleService.setRpcContext(rpcContext);
@@ -73,11 +77,11 @@ public class LifecycleServiceImplTest {
     @Test
     public void instantiateServiceInstance() throws Exception {
         lifecycleService.instantiateServiceInstance();
-        Mockito.verify(deviceContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
-        Mockito.verify(statContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
-        Mockito.verify(statContext).setInitialSubmitHandler(Mockito.<ClusterInitializationPhaseHandler>any());
-        Mockito.verify(rpcContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
-        Mockito.verify(roleContext).setLifecycleInitializationPhaseHandler(Mockito.<ClusterInitializationPhaseHandler>any());
+        Mockito.verify(deviceContext).setLifecycleInitializationPhaseHandler(Mockito.any());
+        Mockito.verify(statContext).setLifecycleInitializationPhaseHandler(Mockito.any());
+        Mockito.verify(statContext).setInitialSubmitHandler(Mockito.any());
+        Mockito.verify(rpcContext).setLifecycleInitializationPhaseHandler(Mockito.any());
+        Mockito.verify(roleContext).setLifecycleInitializationPhaseHandler(Mockito.any());
     }
 
     @Test

@@ -161,7 +161,7 @@ class RoleContextImpl implements RoleContext {
             setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
-                    LOG.warn("New role {} was not propagated to device {} during 5 sec", newRole, deviceInfo.getLOGValue());
+                    LOG.warn("New role {} was not propagated to device {} during {} sec", newRole, deviceInfo.getLOGValue(), SET_ROLE_TIMEOUT);
                     setRoleOutputFuture.cancel(true);
                 }
             };
