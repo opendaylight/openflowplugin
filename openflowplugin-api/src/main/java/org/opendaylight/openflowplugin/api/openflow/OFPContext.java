@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifec
 /**
  * General API for all OFP Context
  */
-public interface OFPContext extends ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
     void setState(CONTEXT_STATE contextState);
 
@@ -58,4 +58,8 @@ public interface OFPContext extends ClusterLifecycleSupervisor, ClusterInitializ
      */
     DeviceInfo getDeviceInfo();
 
+    @Override
+    default void close() {
+        // NOOP
+    }
 }
