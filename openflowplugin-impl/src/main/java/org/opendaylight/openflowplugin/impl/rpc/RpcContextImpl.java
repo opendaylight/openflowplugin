@@ -73,7 +73,7 @@ class RpcContextImpl implements RpcContext {
         tracker = new Semaphore(maxRequests, true);
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
-        setState(CONTEXT_STATE.WORKING);
+        setState(CONTEXT_STATE.INITIALIZATION);
         this.deviceInfo = deviceInfo;
         this.deviceContext = deviceContext;
         this.convertorExecutor = convertorExecutor;
@@ -100,32 +100,6 @@ class RpcContextImpl implements RpcContext {
         RoutedRpcRegistration<?> registration = rpcRegistrations.get(serviceClass);
         final RpcService rpcService = registration.getInstance();
         return (S) rpcService;
-    }
-
-    /**
-     * Unregisters all services.
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
-    @Override
-    public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())){
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext is already in TERMINATION state.");
-            }
-        } else {
-            setState(CONTEXT_STATE.TERMINATION);
-            for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
-                    .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-                final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-                rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
-                rpcRegistration.close();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
-                            nodeInstanceIdentifier.getKey().getId().getValue());
-                }
-            }
-        }
     }
 
     @Override
@@ -177,11 +151,6 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public boolean isStatisticsRpcEnabled() {
-        return isStatisticsRpcEnabled;
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -203,6 +172,25 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RpcContext is already in TERMINATION state.");
+            }
+        } else {
+            setState(CONTEXT_STATE.TERMINATION);
+
+            for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                    .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+                final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
+                rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+                rpcRegistration.close();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                            nodeInstanceIdentifier.getKey().getId().getValue());
+                }
+            }
+        }
+
         MdSalRegistrationUtils.unregisterServices(this);
         return Futures.immediateFuture(null);
     }
@@ -221,6 +209,7 @@ class RpcContextImpl implements RpcContext {
         }
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
@@ -228,6 +217,13 @@ class RpcContextImpl implements RpcContext {
                     notificationPublishService,
                     convertorExecutor);
         }
+
+        setState(CONTEXT_STATE.WORKING);
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+    }
+
+    @Override
+    public void close() {
+        stopClusterServices(true);
     }
 }

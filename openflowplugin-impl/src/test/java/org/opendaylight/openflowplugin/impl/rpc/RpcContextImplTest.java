@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -168,7 +167,7 @@ public class RpcContextImplTest {
     }
 
     @Test
-    public void testClose() {
+    public void testClose() throws Exception {
         serviceClass = TestRpcService.class;
         when(routedRpcReg.getServiceType()).thenReturn(serviceClass);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);

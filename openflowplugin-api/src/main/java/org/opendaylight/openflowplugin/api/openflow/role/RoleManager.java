@@ -12,12 +12,14 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 
 /**
  * Manager for role change on device
  */
 public interface RoleManager extends
+        DeviceRemovedHandler,
         DeviceLifecycleSupervisor,
         DeviceInitializationPhaseHandler,
         AutoCloseable,

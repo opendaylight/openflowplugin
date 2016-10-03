@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.base.VerifyException;
+import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
 import org.junit.Rule;
@@ -123,10 +124,11 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
-                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
+                Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
         Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
+        Mockito.when(removedContexts.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
     }
 
     @Test
@@ -165,7 +167,7 @@ public class RpcManagerImplTest {
      */
     @Test
     public void onDeviceContextLevelDown1() {
-        rpcManager.addRecordToContexts(deviceInfo,removedContexts);
+        rpcManager.addRecordToContexts(deviceInfo, removedContexts);
         rpcManager.onDeviceContextLevelDown(deviceInfo);
         verify(removedContexts,times(1)).close();
         verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
@@ -184,7 +186,7 @@ public class RpcManagerImplTest {
     }
 
     @Test
-    public void close() {
+    public void close() throws Exception {
         rpcManager.addRecordToContexts(deviceInfo,removedContexts);
         rpcManager.close();
         verify(removedContexts,atLeastOnce()).close();
