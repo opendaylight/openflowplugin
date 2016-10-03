@@ -42,7 +42,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  */
 public interface DeviceContext extends
         OFPContext,
-        AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
         DeviceRegistry,
@@ -126,9 +125,6 @@ public interface DeviceContext extends
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
-
-    @Override
-    void close();
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
 
