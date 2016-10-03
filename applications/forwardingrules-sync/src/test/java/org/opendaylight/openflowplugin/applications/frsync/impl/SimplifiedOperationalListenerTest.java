@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -43,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -83,6 +81,10 @@ public class SimplifiedOperationalListenerTest {
     private ReconciliationRegistry reconciliationRegistry;
     @Mock
     private DeviceMastershipManager deviceMastershipManager;
+    @Mock
+    private List nodeConnector;
+    @Mock
+    private Node operationalNodeEmpty;
 
     @Before
     public void setUp() throws Exception {
@@ -123,8 +125,6 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedDeletePhysical() throws Exception {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
-        Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.DELETE);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -135,9 +135,10 @@ public class SimplifiedOperationalListenerTest {
     @Test
     public void testOnDataTreeChangedDeleteLogical() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
-        List<NodeConnector> nodeConnectorList = Mockito.mock(List.class);
-        Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnectorList);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
+        Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnector);
+        Mockito.when(operationalNodeEmpty.getId()).thenReturn(NODE_ID);
+        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNodeEmpty);
+        Mockito.when(operationalNodeEmpty.getNodeConnector()).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
