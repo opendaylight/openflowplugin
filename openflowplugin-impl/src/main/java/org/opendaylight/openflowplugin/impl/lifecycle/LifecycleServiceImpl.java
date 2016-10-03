@@ -23,6 +23,7 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -34,14 +35,13 @@ import org.slf4j.LoggerFactory;
 public class LifecycleServiceImpl implements LifecycleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
-
-    private boolean inClosing = false;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
     private RoleContext roleContext;
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
 
 
     @Override
@@ -51,42 +51,21 @@ public class LifecycleServiceImpl implements LifecycleService {
         if (!this.clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
             this.closeConnection();
         }
-
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Closing clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
-
-        final boolean connectionInterrupted =
-                this.deviceContext
-                        .getPrimaryConnectionContext()
-                        .getConnectionState()
-                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
-
-        // If connection was interrupted and we are not trying to close service, then we received something
-        // we do not wanted to receive, so do not continue
-        if (connectionInterrupted && !inClosing) {
-            LOG.warn("Failed to close clustering MASTER services for node {} because they are already closed",
-                    LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
-
-            return Futures.immediateCancelledFuture();
-        }
-
-        // Chain all jobs that will stop our services
-        final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(roleContext.stopClusterServices(connectionInterrupted));
-        futureList.add(statContext.stopClusterServices(connectionInterrupted));
-        futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
-        futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
-
-        // When we stopped all jobs then we are not in closing state anymore (at least from plugin perspective)
-        return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
+        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
             @Nullable
             @Override
-            public Void apply(@Nullable List<Void> input) {
-                LOG.debug("Closed clustering MASTER services for node {}",
-                        LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
+            public Void apply(@Nullable Object input) {
+                if (Objects.isNull(registration)) {
+                    // We are closing, so cleanup all managers
+                    deviceRemovedHandlers.forEach(deviceRemovedHandler ->
+                            deviceRemovedHandler.onDeviceRemoved(deviceContext.getDeviceInfo()));
+                }
+
+                LOG.debug("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
                 return null;
             }
         });
@@ -97,12 +76,10 @@ public class LifecycleServiceImpl implements LifecycleService {
         return deviceContext.getServiceIdentifier();
     }
 
-
     @Override
     public void close() throws Exception {
         // If we are still registered and we are not already closing, then close the registration
-        if (Objects.nonNull(registration) && !inClosing) {
-            inClosing = true;
+        if (Objects.nonNull(registration)) {
             registration.close();
             registration = null;
         }
@@ -122,6 +99,13 @@ public class LifecycleServiceImpl implements LifecycleService {
         this.statContext.setInitialSubmitHandler(this.deviceContext);
         //Register cluster singleton service
         this.registration = singletonServiceProvider.registerClusterSingletonService(this);
+    }
+
+    @Override
+    public void registerDeviceRemovedHandler(DeviceRemovedHandler deviceRemovedHandler) {
+        if (!deviceRemovedHandlers.contains(deviceRemovedHandler)) {
+            deviceRemovedHandlers.add(deviceRemovedHandler);
+        }
     }
 
     @Override
@@ -181,7 +165,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
 
-        public DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
+        DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
         }
 

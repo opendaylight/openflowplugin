@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
@@ -16,6 +17,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
@@ -46,9 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 public class RoleManagerImpl implements RoleManager {
     private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
-
-    // Maximum limit of timeout retries when cleaning DS, to prevent infinite recursive loops
-    private static final int MAX_CLEAN_DS_RETRIES = 3;
 
     private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
@@ -86,7 +85,9 @@ public class RoleManagerImpl implements RoleManager {
                         lifecycleService.closeConnection();
                     }
                 });
+
         lifecycleService.setRoleContext(roleContext);
+        lifecycleService.registerDeviceRemovedHandler(this);
         deviceInitializationPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
@@ -102,9 +103,17 @@ public class RoleManagerImpl implements RoleManager {
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        contexts.remove(deviceInfo);
-        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo, final boolean connectionInterrupted) {
+        Optional.ofNullable(contexts.get(deviceInfo)).ifPresent(context -> Futures.transform(
+                context.stopServices(connectionInterrupted),
+                new Function<Void, Void>() {
+                    @Nullable
+                    @Override
+                    public Void apply(@Nullable Void input) {
+                        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo, connectionInterrupted);
+                        return null;
+                    }
+                }));
     }
 
     @Override
@@ -140,4 +149,9 @@ public class RoleManagerImpl implements RoleManager {
         return contexts.get(deviceInfo);
     }
 
+    @Override
+    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+        contexts.remove(deviceInfo);
+        LOG.debug("Role context removed for node {}", deviceInfo.getLOGValue());
+    }
 }

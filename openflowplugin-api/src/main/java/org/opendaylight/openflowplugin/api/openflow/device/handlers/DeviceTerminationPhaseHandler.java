@@ -21,8 +21,8 @@ public interface DeviceTerminationPhaseHandler {
 
     /**
      * Method represents a termination cycle for {@link DeviceContext}.
-     *
-     * @param deviceInfo - {@link DeviceInfo}
+     *  @param deviceInfo - {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo}
+     * @param connectionInterrupted - cluster singleton service
      */
-    void onDeviceContextLevelDown(@CheckForNull DeviceInfo deviceInfo);
+    void onDeviceContextLevelDown(final @CheckForNull DeviceInfo deviceInfo, final boolean connectionInterrupted);
 }

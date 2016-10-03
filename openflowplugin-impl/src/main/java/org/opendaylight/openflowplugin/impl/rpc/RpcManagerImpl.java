@@ -8,12 +8,16 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.Futures;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -33,7 +37,7 @@ public class RpcManagerImpl implements RpcManager {
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
-    private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
+    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private final int maxRequestsQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
@@ -78,6 +82,7 @@ public class RpcManagerImpl implements RpcManager {
 
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
         lifecycleService.setRpcContext(rpcContext);
+        lifecycleService.registerDeviceRemovedHandler(this);
         rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         // finish device initialization cycle back to DeviceManager
@@ -88,23 +93,27 @@ public class RpcManagerImpl implements RpcManager {
     public void close() {
         for (final Iterator<RpcContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
                 iterator.hasNext();) {
-            iterator.next().close();
+            iterator.next().stopServices(true);
         }
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        final RpcContext removedContext = contexts.remove(deviceInfo);
-        if (removedContext != null) {
-            LOG.debug("Unregister RPCs services for  node {}", deviceInfo.getLOGValue());
-            removedContext.close();
-        }
-        deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo, boolean connectionInterrupted) {
+        Optional.ofNullable(contexts.get(deviceInfo)).ifPresent(context -> Futures.transform(
+                context.stopServices(connectionInterrupted),
+                new Function<Void, Void>() {
+                    @Nullable
+                    @Override
+                    public Void apply(@Nullable Void input) {
+                        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo, connectionInterrupted);
+                        return null;
+                    }
+                }));
     }
 
     @Override
     public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
-        this.deviceTerminPhaseHandler = handler;
+        this.deviceTerminationPhaseHandler = handler;
     }
 
     /**
@@ -121,5 +130,11 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
         isStatisticsRpcEnabled = statisticsRpcEnabled;
+    }
+
+    @Override
+    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+        contexts.remove(deviceInfo);
+        LOG.debug("Rpc context removed for node {}", deviceInfo.getLOGValue());
     }
 }
