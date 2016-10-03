@@ -86,7 +86,7 @@ public class LifecycleServiceImplTest {
 
     @Test
     public void closeServiceInstance() throws Exception {
-        lifecycleService.closeServiceInstance();
+        lifecycleService.closeServiceInstance().get();
         Mockito.verify(statContext).stopClusterServices(false);
         Mockito.verify(deviceContext).stopClusterServices(false);
         Mockito.verify(rpcContext).stopClusterServices(false);

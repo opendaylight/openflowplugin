@@ -113,7 +113,6 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected) {
-
         if (!deviceDisconnected) {
             ListenableFuture<Void> future = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
                 @Nullable

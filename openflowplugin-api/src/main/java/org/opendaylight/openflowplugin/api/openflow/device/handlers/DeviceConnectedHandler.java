@@ -11,9 +11,6 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
- */
 public interface DeviceConnectedHandler {
 
     /**
