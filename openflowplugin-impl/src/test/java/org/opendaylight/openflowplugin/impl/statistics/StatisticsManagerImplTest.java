@@ -40,7 +40,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -221,7 +220,7 @@ public class StatisticsManagerImplTest {
         statisticsManager.onDeviceContextLevelDown(deviceInfo);
         verify(statisticContext).close();
         verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
-        Assert.assertEquals(0, contextsMap.size());
+        Assert.assertEquals(1, contextsMap.size());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

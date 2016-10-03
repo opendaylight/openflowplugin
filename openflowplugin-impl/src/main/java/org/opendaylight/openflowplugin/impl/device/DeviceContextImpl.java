@@ -117,7 +117,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper{
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
@@ -505,15 +505,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public synchronized void close() {
-        LOG.debug("closing deviceContext: {}, nodeId:{}",
-                getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
-                getDeviceInfo().getLOGValue());
-        // NOOP
-        throw new UnsupportedOperationException("Autocloseble.close will be removed soon");
-    }
-
-    @Override
     public void setCurrentBarrierTimeout(final Timeout timeout) {
         barrierTaskTimeout = timeout;
     }
@@ -536,7 +527,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void onPublished() {
         Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
-        setState(CONTEXT_STATE.WORKING);
+        this.state = CONTEXT_STATE.WORKING;
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
@@ -623,18 +614,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setState(CONTEXT_STATE state) {
-        this.state = state;
-    }
+    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+        final ListenableFuture<Void> deactivateTxManagerFuture = initialized
+                ? transactionChainManager.deactivateTransactionManager()
+                : Futures.immediateFuture(null);
 
-    @Override
-    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-
-        ListenableFuture<Void> deactivateTxManagerFuture =
-                initialized ? transactionChainManager.deactivateTransactionManager() : Futures.immediateFuture(null);
-
-        if (!deviceDisconnected) {
-            ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
+        if (!connectionInterrupted) {
+            final ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
@@ -654,14 +640,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 public void onFailure(final Throwable throwable) {
                     LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
                     LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                    myManager.removeDeviceFromOperationalDS(deviceInfo);
                 }
             });
 
             return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
                 @Override
                 public ListenableFuture<Void> apply(Void aVoid) throws Exception {
-                    return makeSlaveFuture;
+                    // Add fallback to remove device from operational DS if setting slave fails
+                    return Futures.withFallback(makeSlaveFuture, t ->
+                            myManager.removeDeviceFromOperationalDS(deviceInfo));
                 }
             });
         } else {
@@ -685,6 +672,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public void close() {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+            }
+        } else {
+            this.state = CONTEXT_STATE.TERMINATION;
+        }
+    }
+
+    @Override
     public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
         if (initialized) {
             this.transactionChainManager.setLifecycleService(lifecycleService);
@@ -694,7 +692,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void replaceConnectionContext(final ConnectionContext connectionContext){
         // Act like we are initializing the context
-        setState(CONTEXT_STATE.INITIALIZATION);
+        this.state = CONTEXT_STATE.INITIALIZATION;
         this.primaryConnectionContext = connectionContext;
         this.onPublished();
     }
@@ -769,22 +767,28 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         }
+
         final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+
         if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
                     .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier())).build();
+
             setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
+
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
                     LOG.warn("New role {} was not propagated to device {} during {} sec", newRole, deviceInfo.getLOGValue(), SET_ROLE_TIMEOUT);
                     setRoleOutputFuture.cancel(true);
                 }
             };
+
             hashedWheelTimer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
         } else {
             LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
             return Futures.immediateFuture(null);
         }
+
         return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
     }
 
