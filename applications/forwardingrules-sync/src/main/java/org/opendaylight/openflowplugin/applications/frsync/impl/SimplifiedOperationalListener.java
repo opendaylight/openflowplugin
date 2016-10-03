@@ -77,7 +77,16 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<Node> modification) {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
-        updateCache(modification);
+
+        // if delete remove from cache and unregister for device mastership
+        if (isDelete(modification) || isDeleteLogical(modification)) {
+            operationalSnapshot.updateCache(nodeId, Optional.absent());
+            deviceMastershipManager.onDeviceDisconnected(nodeId);
+            return skipModification(modification);
+        }
+
+        // update only if FlowCapableNode Augmentation modified
+        operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
 
         final boolean isAdd = isAdd(modification) || isAddLogical(modification);
 
@@ -92,21 +101,6 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         } else {
             return skipModification(modification);
         }
-    }
-
-    /**
-     * Remove if delete. Update only if FlowCapableNode Augmentation modified.
-     * Unregister for device mastership.
-     * @param modification Datastore modification
-     */
-    private void updateCache(final DataTreeModification<Node> modification) {
-        NodeId nodeId = ModificationUtil.nodeId(modification);
-        if (isDelete(modification) || isDeleteLogical(modification)) {
-            operationalSnapshot.updateCache(nodeId, Optional.absent());
-            deviceMastershipManager.onDeviceDisconnected(nodeId);
-            return;
-        }
-        operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
     }
 
     private Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
