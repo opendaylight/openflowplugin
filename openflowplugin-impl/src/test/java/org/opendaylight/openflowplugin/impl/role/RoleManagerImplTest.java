@@ -9,14 +9,11 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 
-import static org.mockito.Mockito.verify;
-
 import com.google.common.base.VerifyException;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,11 +38,8 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoleManagerImplTest {
@@ -81,7 +75,6 @@ public class RoleManagerImplTest {
     @Mock
     LifecycleService lifecycleService;
 
-    private RoleManagerImpl roleManager;
     private RoleManagerImpl roleManagerSpy;
     private RoleContext roleContextSpy;
     private final NodeId nodeId = NodeId.getDefaultInstance("openflow:1");
@@ -103,8 +96,8 @@ public class RoleManagerImplTest {
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(new BigInteger("1"));
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
-        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.<DeviceInfo>any(), Mockito.<LifecycleService>any());
-        Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.<DeviceInfo>any());
+        Mockito.doNothing().when(deviceInitializationPhaseHandler).onDeviceContextLevelUp(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(deviceTerminationPhaseHandler).onDeviceContextLevelDown(Mockito.any());
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         Mockito.when(writeTransaction.submit()).thenReturn(future);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
@@ -112,7 +105,7 @@ public class RoleManagerImplTest {
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DeviceStateUtil.createNodeInstanceIdentifier(nodeId));
         Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
-        roleManager = new RoleManagerImpl(dataBroker, new HashedWheelTimer());
+        RoleManagerImpl roleManager = new RoleManagerImpl(dataBroker, new HashedWheelTimer());
         roleManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
         roleManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         roleManagerSpy = Mockito.spy(roleManager);
@@ -123,28 +116,21 @@ public class RoleManagerImplTest {
         inOrder = Mockito.inOrder(roleManagerSpy, roleContextSpy);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test(expected = VerifyException.class)
     public void testOnDeviceContextLevelUp() throws Exception {
         roleManagerSpy.onDeviceContextLevelUp(deviceInfo, lifecycleService);
         inOrder.verify(roleManagerSpy).onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testCloseMaster() throws Exception {
         roleManagerSpy.close();
         inOrder.verify(roleManagerSpy).removeDeviceFromOperationalDS(Mockito.eq(deviceInfo));
-        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testOnDeviceContextLevelDown() throws Exception {
         roleManagerSpy.onDeviceContextLevelDown(deviceInfo);
         inOrder.verify(roleManagerSpy).onDeviceContextLevelDown(deviceInfo);
-        inOrder.verifyNoMoreInteractions();
     }
 }

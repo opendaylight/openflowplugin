@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -21,8 +21,8 @@ public interface DeviceTerminationPhaseHandler {
 
     /**
      * Method represents a termination cycle for {@link DeviceContext}.
+     * @param deviceInfo - {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo}
      *
-     * @param deviceInfo - {@link DeviceInfo}
      */
-    void onDeviceContextLevelDown(@CheckForNull DeviceInfo deviceInfo);
+    void onDeviceContextLevelDown(final @CheckForNull DeviceInfo deviceInfo);
 }

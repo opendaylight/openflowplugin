@@ -38,10 +38,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public interface DeviceContext extends
         OFPContext,
-        AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
-        DeviceRegistry{
+        DeviceRegistry {
 
     /**
      * Method close all auxiliary connections and primary connection.
@@ -121,9 +120,6 @@ public interface DeviceContext extends
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
-
-    @Override
-    void close();
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
 
