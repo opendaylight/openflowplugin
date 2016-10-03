@@ -10,11 +10,9 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 
 /**
@@ -22,9 +20,11 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  * registering transaction chain for each DeviceContext. Each device
  * has its own device context managed by this manager.
  */
-public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnectedHandler, DeviceLifecycleSupervisor,
-        DeviceInitializationPhaseHandler, DeviceTerminationPhaseHandler, TranslatorLibrarian, AutoCloseable {
-
+public interface DeviceManager extends
+        OFPManager,
+        DeviceConnectedHandler,
+        DeviceDisconnectedHandler,
+        TranslatorLibrarian {
 
     /**
      * invoked after all services injected

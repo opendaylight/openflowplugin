@@ -114,7 +114,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper{
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
@@ -452,15 +452,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public synchronized void close() {
-        LOG.debug("closing deviceContext: {}, nodeId:{}",
-                getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
-                getDeviceInfo().getLOGValue());
-        // NOOP
-        throw new UnsupportedOperationException("Autocloseble.close will be removed soon");
-    }
-
-    @Override
     public void setCurrentBarrierTimeout(final Timeout timeout) {
         barrierTaskTimeout = timeout;
     }
@@ -575,13 +566,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
+    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+        final ListenableFuture<Void> deactivateTxManagerFuture = initialized
+                ? transactionChainManager.deactivateTransactionManager()
+                : Futures.immediateFuture(null);
 
-        ListenableFuture<Void> deactivateTxManagerFuture =
-                initialized ? transactionChainManager.deactivateTransactionManager() : Futures.immediateFuture(null);
-
-        if (!deviceDisconnected) {
-            ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
+        if (!connectionInterrupted) {
+            final ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
@@ -629,6 +620,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
+    }
+
+    @Override
+    public void close() {
+        try {
+            stopClusterServices(true).get();
+        } catch (Exception e) {
+            LOG.debug("Failed to close DeviceContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
+        }
     }
 
     @Override

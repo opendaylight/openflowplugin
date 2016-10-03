@@ -31,5 +31,6 @@ public interface DeviceInitializationPhaseHandler {
      * @param lifecycleService - cluster singleton service
      * @throws Exception - needs to be catch in ConnectionHandler implementation
      */
-    void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception;
+    void onDeviceContextLevelUp(final @CheckForNull DeviceInfo deviceInfo,
+                                final  @CheckForNull LifecycleService lifecycleService) throws Exception;
 }
