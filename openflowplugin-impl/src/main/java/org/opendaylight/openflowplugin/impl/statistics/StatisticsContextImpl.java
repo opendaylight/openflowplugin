@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
@@ -94,7 +95,7 @@ class StatisticsContextImpl implements StatisticsContext {
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, convertorExecutor);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
-        setState(CONTEXT_STATE.INITIALIZATION);
+        this.state = CONTEXT_STATE.INITIALIZATION;
         this.deviceInfo = deviceInfo;
         this.myManager = myManager;
         this.lastDataGathering = null;
@@ -228,16 +229,22 @@ class StatisticsContextImpl implements StatisticsContext {
     public void close() {
         if (CONTEXT_STATE.TERMINATION.equals(getState())) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Statistics context is already in state TERMINATION.");
+                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
         } else {
-            stopGatheringData();
-            setState(CONTEXT_STATE.TERMINATION);
-            schedulingEnabled = false;
+            try {
+                stopClusterServices(true).get();
+            } catch (Exception e) {
+                LOG.debug("Failed to close StatisticsContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
+            }
+
+            this.state = CONTEXT_STATE.TERMINATION;
+
             for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
                  iterator.hasNext(); ) {
                 RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
             }
+
             if (null != pollTimeout && !pollTimeout.isExpired()) {
                 pollTimeout.cancel();
             }
@@ -422,11 +429,6 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public void setState(CONTEXT_STATE state) {
-        this.state = state;
-    }
-
-    @Override
     public ServiceGroupIdentifier getServiceIdentifier() {
         return this.deviceInfo.getServiceIdentifier();
     }
@@ -437,10 +439,20 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        stopGatheringData();
-        myManager.stopScheduling(deviceInfo);
-        return Futures.immediateFuture(null);
+    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+            return Futures.immediateCancelledFuture();
+        }
+
+        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable Object input) {
+                schedulingEnabled = false;
+                stopGatheringData();
+                return null;
+            }
+        });
     }
 
     @Override
@@ -459,7 +471,8 @@ class StatisticsContextImpl implements StatisticsContext {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop the running statistics gathering for node {}", this.deviceInfo.getLOGValue());
             }
-            this.lastDataGathering.cancel(true);
+
+            lastDataGathering.cancel(true);
         }
     }
 
@@ -470,7 +483,6 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-
         if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
             return false;

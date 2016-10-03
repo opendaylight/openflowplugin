@@ -12,7 +12,8 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
+ * Represents handler for new connected device that will propagate information about
+ * established connection with device. It is important for correct order in device connection chain.
  */
 public interface DeviceConnectedHandler {
 

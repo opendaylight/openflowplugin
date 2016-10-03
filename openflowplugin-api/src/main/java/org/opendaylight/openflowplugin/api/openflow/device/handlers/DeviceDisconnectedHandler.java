@@ -11,10 +11,11 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 22.4.2015.
+ * Represents handler for just disconnected device that will propagate device's
+ * connection context. It is important for correct order in device disconnection chain.
  */
-
 public interface DeviceDisconnectedHandler {
+
     /**
      * Method is used to propagate information about closed connection with device.
      * It propagates connected device's connection context.
