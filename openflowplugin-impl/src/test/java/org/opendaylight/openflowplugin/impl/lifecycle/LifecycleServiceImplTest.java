@@ -61,10 +61,10 @@ public class LifecycleServiceImplTest {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
 
-        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(roleContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(deviceContext.stopClusterServices(connectionInterrupted)).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(roleContext.stopClusterServices(connectionInterrupted)).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(statContext.stopClusterServices(connectionInterrupted)).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(rpcContext.stopClusterServices(connectionInterrupted)).thenReturn(Futures.immediateFuture(null));
 
         lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
@@ -86,11 +86,11 @@ public class LifecycleServiceImplTest {
 
     @Test
     public void closeServiceInstance() throws Exception {
-        lifecycleService.closeServiceInstance();
-        Mockito.verify(statContext).stopClusterServices(false);
-        Mockito.verify(deviceContext).stopClusterServices(false);
-        Mockito.verify(rpcContext).stopClusterServices(false);
-        Mockito.verify(roleContext).stopClusterServices(false);
+        lifecycleService.closeServiceInstance().get();
+        Mockito.verify(statContext).stopClusterServices(connectionInterrupted);
+        Mockito.verify(deviceContext).stopClusterServices(connectionInterrupted);
+        Mockito.verify(rpcContext).stopClusterServices(connectionInterrupted);
+        Mockito.verify(roleContext).stopClusterServices(connectionInterrupted);
     }
 
     @Test

@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -49,7 +51,7 @@ class RpcContextImpl implements RpcContext {
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private CONTEXT_STATE state;
+    private volatile CONTEXT_STATE state;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -73,7 +75,7 @@ class RpcContextImpl implements RpcContext {
         tracker = new Semaphore(maxRequests, true);
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
-        setState(CONTEXT_STATE.WORKING);
+        setState(CONTEXT_STATE.INITIALIZATION);
         this.deviceInfo = deviceInfo;
         this.deviceContext = deviceContext;
         this.convertorExecutor = convertorExecutor;
@@ -111,20 +113,16 @@ class RpcContextImpl implements RpcContext {
     public void close() {
         if (CONTEXT_STATE.TERMINATION.equals(getState())){
             if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext is already in TERMINATION state.");
+                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
         } else {
-            setState(CONTEXT_STATE.TERMINATION);
-            for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
-                    .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-                final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-                rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
-                rpcRegistration.close();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
-                            nodeInstanceIdentifier.getKey().getId().getValue());
-                }
+            try {
+                stopClusterServices(connectionInterrupted).get();
+            } catch (Exception e) {
+                LOG.debug("Failed to close RpcContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
             }
+
+            setState(CONTEXT_STATE.TERMINATION);
         }
     }
 
@@ -177,11 +175,6 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public boolean isStatisticsRpcEnabled() {
-        return isStatisticsRpcEnabled;
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -202,9 +195,30 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        MdSalRegistrationUtils.unregisterServices(this);
-        return Futures.immediateFuture(null);
+    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+            return Futures.immediateCancelledFuture();
+        }
+
+        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable Object input) {
+                for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                        .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+                    final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
+                    rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+                    rpcRegistration.close();
+
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                                nodeInstanceIdentifier.getKey().getId().getValue());
+                    }
+                }
+
+                return null;
+            }
+        });
     }
 
     @Override
@@ -214,13 +228,13 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-
         if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
             return false;
         }
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
@@ -228,6 +242,7 @@ class RpcContextImpl implements RpcContext {
                     notificationPublishService,
                     convertorExecutor);
         }
+
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
     }
 }
