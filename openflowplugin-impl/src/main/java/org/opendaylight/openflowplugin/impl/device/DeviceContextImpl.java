@@ -98,7 +98,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper{
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
@@ -422,15 +422,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public TranslatorLibrary oook() {
         return translatorLibrary;
-    }
-
-    @Override
-    public synchronized void close() {
-        LOG.debug("closing deviceContext: {}, nodeId:{}",
-                getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress(),
-                getDeviceInfo().getLOGValue());
-        // NOOP
-        throw new UnsupportedOperationException("Autocloseble.close will be removed soon");
     }
 
     @Override

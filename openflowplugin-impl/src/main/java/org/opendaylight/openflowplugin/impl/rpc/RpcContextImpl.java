@@ -177,11 +177,6 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public boolean isStatisticsRpcEnabled() {
-        return isStatisticsRpcEnabled;
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -221,6 +216,7 @@ class RpcContextImpl implements RpcContext {
         }
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
@@ -228,6 +224,7 @@ class RpcContextImpl implements RpcContext {
                     notificationPublishService,
                     convertorExecutor);
         }
+
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
     }
 }

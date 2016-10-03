@@ -17,16 +17,11 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * {@link org.opendaylight.openflowplugin.api.openflow.device.RequestContext} to perform requests.
  * <p>
  */
-public interface RpcContext extends RequestContextStack, AutoCloseable, OFPContext {
+public interface RpcContext extends RequestContextStack, OFPContext {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
     <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
     <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
 
-    @Override
-    void close();
-
     void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
-
-    boolean isStatisticsRpcEnabled();
 }

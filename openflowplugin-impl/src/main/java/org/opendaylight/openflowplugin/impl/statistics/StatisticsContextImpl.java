@@ -231,13 +231,14 @@ class StatisticsContextImpl implements StatisticsContext {
                 LOG.debug("Statistics context is already in state TERMINATION.");
             }
         } else {
-            stopGatheringData();
+            stopClusterServices(true);
             setState(CONTEXT_STATE.TERMINATION);
-            schedulingEnabled = false;
+
             for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
                  iterator.hasNext(); ) {
                 RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
             }
+
             if (null != pollTimeout && !pollTimeout.isExpired()) {
                 pollTimeout.cancel();
             }
@@ -439,7 +440,8 @@ class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
         stopGatheringData();
-        myManager.stopScheduling(deviceInfo);
+        schedulingEnabled = false;
+
         return Futures.immediateFuture(null);
     }
 
@@ -459,7 +461,9 @@ class StatisticsContextImpl implements StatisticsContext {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop the running statistics gathering for node {}", this.deviceInfo.getLOGValue());
             }
-            this.lastDataGathering.cancel(true);
+
+            lastDataGathering.cancel(true);
+            lastDataGathering = null;
         }
     }
 
@@ -470,33 +474,29 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-
         if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
             return false;
         }
 
         if (!this.shuttingDownStatisticsPolling) {
-
             LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
 
             this.statListForCollectingInitialization();
             Futures.addCallback(this.initialGatherDynamicData(), new FutureCallback<Boolean>() {
+                @Override
+                public void onSuccess(@Nullable Boolean aBoolean) {
+                    initialSubmitHandler.initialSubmitTransaction();
+                }
 
-                        @Override
-                        public void onSuccess(@Nullable Boolean aBoolean) {
-                            initialSubmitHandler.initialSubmitTransaction();
-                        }
+                @Override
+                public void onFailure(Throwable throwable) {
+                    LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
+                    lifecycleService.closeConnection();
+                }
+            });
 
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
-                            lifecycleService.closeConnection();
-                        }
-                    });
-
-                    myManager.startScheduling(deviceInfo);
-
+            myManager.startScheduling(deviceInfo);
         }
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
