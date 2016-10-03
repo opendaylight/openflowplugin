@@ -143,14 +143,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
+        lifecycleService.registerDeviceRemovedHandler(this);
         lifecycleService.registerService(this.singletonServiceProvider);
     }
 
     @Override
     public ConnectionStatus deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
         Preconditions.checkArgument(connectionContext != null);
+        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
-        DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         /*
          * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
@@ -173,10 +174,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         // Add Disconnect handler
         connectionContext.setDeviceDisconnectedHandler(DeviceManagerImpl.this);
+
         // Cache this for clarity
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
 
-        //FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
+        // FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
         connectionAdapter.setPacketInFiltering(true);
 
         final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(deviceInfo.getVersion());
@@ -261,28 +263,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-
-        LifecycleService lifecycleService = lifecycleServices.remove(deviceInfo);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
-        }
-
+    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) {
+        lifecycleService.registerDeviceRemovedHandler(this);
         updatePacketInRateLimiters();
-        if (Objects.nonNull(lifecycleService)) {
-            try {
-                lifecycleService.close();
-                LOG.debug("Lifecycle service successfully closed for node {}", deviceInfo.getLOGValue());
-            } catch (Exception e) {
-                LOG.warn("Closing lifecycle service for node {} was unsuccessful ", deviceInfo.getLOGValue(), e);
-            }
-        }
 
-        deviceContexts.remove(deviceInfo);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
+        try {
+            lifecycleService.close();
+            LOG.debug("Lifecycle service successfully closed for node {}", deviceInfo.getLOGValue());
+        } catch (Exception e) {
+            LOG.warn("Closing lifecycle service for node {} was unsuccessful ", deviceInfo.getLOGValue(), e);
         }
-
     }
 
     @Override
@@ -310,9 +300,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo);
+        final LifecycleService lifecycleService = this.lifecycleServices.get(deviceInfo);
 
-        if (null == deviceCtx) {
+        if (Objects.isNull(deviceCtx)) {
             LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getLOGValue());
+            return;
+        }
+
+        if (Objects.isNull(lifecycleService)) {
+            LOG.info("LifecycleService for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getLOGValue());
             return;
         }
 
@@ -328,22 +324,22 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             /* Connection is not PrimaryConnection so try to remove from Auxiliary Connections */
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
         }
-        //TODO: Auxiliary connections supported ?
-            /* Device is disconnected and so we need to close TxManager */
+
+        // TODO: Auxiliary connections supported ?
+        // Device is disconnected and so we need to close TxManager
         final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
         Futures.addCallback(future, new FutureCallback<Void>() {
-
             @Override
             public void onSuccess(final Void result) {
                 LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getLOGValue());
-                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo, lifecycleService);
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getLOGValue());
                 LOG.trace("TxChainManager failed by closing. ", t);
-                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
+                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo, lifecycleService);
             }
         });
         /* Add timer for Close TxManager because it could fain ind cluster without notification */
@@ -377,4 +373,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         skipTableFeatures = skipTableFeaturesValue;
     }
 
+    @Override
+    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+        deviceContexts.remove(deviceInfo);
+        LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
+
+        lifecycleServices.remove(deviceInfo);
+        LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
+    }
 }

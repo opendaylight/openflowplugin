@@ -13,6 +13,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -27,6 +28,13 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      * @param singletonServiceProvider from md-sal binding
      */
     void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
+
+    /**
+     * This method registers device removed handler what will be executed when device should be removed
+     * from managers,
+     * @param deviceRemovedHandler device removed handler
+     */
+    void registerDeviceRemovedHandler(final DeviceRemovedHandler deviceRemovedHandler);
 
     /**
      * Setter for device context
@@ -58,6 +66,8 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      * @return device context for this device
      */
     DeviceContext getDeviceContext();
+
+    boolean isConnectionInterrupted();
 
     /**
      * if some services not started properly need to close connection

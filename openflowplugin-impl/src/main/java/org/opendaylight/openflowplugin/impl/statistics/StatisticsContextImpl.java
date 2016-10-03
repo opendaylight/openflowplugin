@@ -225,26 +225,6 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Statistics context is already in state TERMINATION.");
-            }
-        } else {
-            stopGatheringData();
-            setState(CONTEXT_STATE.TERMINATION);
-            schedulingEnabled = false;
-            for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
-                 iterator.hasNext(); ) {
-                RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
-            }
-            if (null != pollTimeout && !pollTimeout.isExpired()) {
-                pollTimeout.cancel();
-            }
-        }
-    }
-
-    @Override
     public void setSchedulingEnabled(final boolean schedulingEnabled) {
         this.schedulingEnabled = schedulingEnabled;
     }
@@ -438,8 +418,23 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        stopGatheringData();
-        myManager.stopScheduling(deviceInfo);
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Statistics context is already in state TERMINATION.");
+            }
+        } else {
+            stopGatheringData();
+            setState(CONTEXT_STATE.TERMINATION);
+            schedulingEnabled = false;
+            for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
+                 iterator.hasNext(); ) {
+                RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), CONNECTION_CLOSED);
+            }
+            if (null != pollTimeout && !pollTimeout.isExpired()) {
+                pollTimeout.cancel();
+            }
+        }
+
         return Futures.immediateFuture(null);
     }
 

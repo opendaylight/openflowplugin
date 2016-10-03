@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -23,6 +22,7 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -42,6 +42,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
 
 
     @Override
@@ -51,45 +52,27 @@ public class LifecycleServiceImpl implements LifecycleService {
         if (!this.clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
             this.closeConnection();
         }
-
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Closing clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
+        if (isConnectionInterrupted()) {
+            if (inClosing) {
+                // We are closing, so cleanup all managers
+                deviceRemovedHandlers.forEach(deviceRemovedHandler ->
+                        deviceRemovedHandler.onDeviceRemoved(deviceContext.getDeviceInfo()));
+            } else {
+                // If connection was interrupted and we are not trying to close service, then we received something
+                // we do not wanted to receive, so do not continue
+                LOG.warn("Failed to close clustering MASTER services for node {} because they are already closed",
+                        deviceContext.getDeviceInfo().getLOGValue());
 
-        final boolean connectionInterrupted =
-                this.deviceContext
-                        .getPrimaryConnectionContext()
-                        .getConnectionState()
-                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
-
-        // If connection was interrupted and we are not trying to close service, then we received something
-        // we do not wanted to receive, so do not continue
-        if (connectionInterrupted && !inClosing) {
-            LOG.warn("Failed to close clustering MASTER services for node {} because they are already closed",
-                    LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
-
-            return Futures.immediateCancelledFuture();
+                return Futures.immediateCancelledFuture();
+            }
         }
 
-        // Chain all jobs that will stop our services
-        final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(roleContext.stopClusterServices(connectionInterrupted));
-        futureList.add(statContext.stopClusterServices(connectionInterrupted));
-        futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
-        futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
-
-        // When we stopped all jobs then we are not in closing state anymore (at least from plugin perspective)
-        return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable List<Void> input) {
-                LOG.debug("Closed clustering MASTER services for node {}",
-                        LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
-                return null;
-            }
-        });
+        LOG.debug("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
+        return Futures.immediateFuture(null);
     }
 
     @Override
@@ -125,6 +108,13 @@ public class LifecycleServiceImpl implements LifecycleService {
     }
 
     @Override
+    public void registerDeviceRemovedHandler(DeviceRemovedHandler deviceRemovedHandler) {
+        if (!deviceRemovedHandlers.contains(deviceRemovedHandler)) {
+            deviceRemovedHandlers.add(deviceRemovedHandler);
+        }
+    }
+
+    @Override
     public void setDeviceContext(final DeviceContext deviceContext) {
         this.deviceContext = deviceContext;
     }
@@ -147,6 +137,12 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public DeviceContext getDeviceContext() {
         return this.deviceContext;
+    }
+
+    @Override
+    public boolean isConnectionInterrupted() {
+        return deviceContext.getPrimaryConnectionContext().getConnectionState()
+                .equals(ConnectionContext.CONNECTION_STATE.RIP);
     }
 
     @Override
@@ -181,7 +177,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
 
-        public DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
+        DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
         }
 
