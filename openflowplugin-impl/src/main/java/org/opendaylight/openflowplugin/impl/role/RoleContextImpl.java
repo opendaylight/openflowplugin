@@ -16,8 +16,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
-
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -25,6 +23,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
@@ -55,7 +54,7 @@ class RoleContextImpl implements RoleContext {
     private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
     private final DeviceInfo deviceInfo;
-    private CONTEXT_STATE state;
+    private volatile CONTEXT_STATE state;
     private final RoleManager myManager;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final LifecycleService lifecycleService;
@@ -69,6 +68,7 @@ class RoleContextImpl implements RoleContext {
         this.myManager = myManager;
         this.hashedWheelTimer = hashedWheelTimer;
         this.lifecycleService = lifecycleService;
+        setState(CONTEXT_STATE.INITIALIZATION);
     }
 
     @Nullable
@@ -107,41 +107,38 @@ class RoleContextImpl implements RoleContext {
         return this.deviceInfo;
     }
 
-    public void startupClusterServices() throws ExecutionException, InterruptedException {
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
-    }
-
     @Override
-    public ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected) {
-
-        if (!deviceDisconnected) {
-            ListenableFuture<Void> future = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                    return null;
-                }
-            });
-
-            Futures.addCallback(future, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                    }
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
-                    LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                    myManager.removeDeviceFromOperationalDS(deviceInfo);
-                }
-            });
-            return future;
-        } else {
+    public ListenableFuture<Void> stopClusterServices() {
+        if (CONNECTION_STATE.RIP.equals(lifecycleService.getDeviceContext()
+                .getPrimaryConnectionContext().getConnectionState())
+                || CONTEXT_STATE.TERMINATION.equals(getState())) {
             return myManager.removeDeviceFromOperationalDS(deviceInfo);
         }
+
+        final ListenableFuture<RpcResult<SetRoleOutput>> rpcResultListenableFuture = makeDeviceSlave();
+        Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<SetRoleOutput> result) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
+                LOG.trace("Error occurred on device role setting, probably connection loss: {}", throwable);
+                myManager.removeDeviceFromOperationalDS(deviceInfo);
+            }
+        });
+
+        return Futures.transform(rpcResultListenableFuture, new Function<RpcResult<SetRoleOutput>, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                return null;
+            }
+        });
     }
 
     @Override
@@ -180,7 +177,6 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-
         if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
             return false;
@@ -202,6 +198,17 @@ class RoleContextImpl implements RoleContext {
         public void onFailure(final Throwable throwable) {
             LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
             lifecycleService.closeConnection();
+        }
+    }
+
+    @Override
+    public void close() {
+        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RoleContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+            }
+        } else {
+            setState(CONTEXT_STATE.TERMINATION);
         }
     }
 }

@@ -123,7 +123,7 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
-                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
+                Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
         Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
@@ -165,7 +165,7 @@ public class RpcManagerImplTest {
      */
     @Test
     public void onDeviceContextLevelDown1() {
-        rpcManager.addRecordToContexts(deviceInfo,removedContexts);
+        rpcManager.addRecordToContexts(deviceInfo, removedContexts);
         rpcManager.onDeviceContextLevelDown(deviceInfo);
         verify(removedContexts,times(1)).close();
         verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);

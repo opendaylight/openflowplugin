@@ -18,10 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifec
 /**
  * General API for all OFP Context
  */
-public interface OFPContext extends ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
-
-    void setState(CONTEXT_STATE contextState);
-
+public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
     /**
      * Context state
      */
@@ -35,27 +32,39 @@ public interface OFPContext extends ClusterLifecycleSupervisor, ClusterInitializ
     }
 
     /**
+     * Get actual context state
      * @return actual context state
      */
     CONTEXT_STATE getState();
 
     /**
+     * Change actual context state
+     * @param contextState new context state
+     */
+    void setState(CONTEXT_STATE contextState);
+
+    /**
      * About to stop services in cluster not master anymore or going down
      * @return Future most of services need time to be closed
-     * @param deviceDisconnected true if clustering services stopping by device disconnect
      */
-    default ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected){
+    default ListenableFuture<Void> stopClusterServices() {
         return Futures.immediateFailedFuture(new RejectedExecutionException("Cannot stop abstract services, check implementation of cluster services"));
     }
 
     /**
+     * Get cluster singleton service identifier
      * @return cluster singleton service identifier
      */
     ServiceGroupIdentifier getServiceIdentifier();
 
     /**
+     * Get device info
      * @return device info
      */
     DeviceInfo getDeviceInfo();
 
+    @Override
+    default void close() {
+        // NOOP
+    }
 }
