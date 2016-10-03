@@ -77,7 +77,14 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<Node> modification) {
         final NodeId nodeId = ModificationUtil.nodeId(modification);
-        updateCache(modification);
+
+        if (isDelete(modification) || isDeleteLogical(modification)) {
+            operationalSnapshot.updateCache(nodeId, Optional.absent());
+            deviceMastershipManager.onDeviceDisconnected(nodeId);
+            return skipModification(modification);
+        }
+
+        operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
 
         final boolean isAdd = isAdd(modification) || isAddLogical(modification);
 
@@ -94,21 +101,6 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         }
     }
 
-    /**
-     * Remove if delete. Update only if FlowCapableNode Augmentation modified.
-     * Unregister for device mastership.
-     * @param modification Datastore modification
-     */
-    private void updateCache(final DataTreeModification<Node> modification) {
-        NodeId nodeId = ModificationUtil.nodeId(modification);
-        if (isDelete(modification) || isDeleteLogical(modification)) {
-            operationalSnapshot.updateCache(nodeId, Optional.absent());
-            deviceMastershipManager.onDeviceDisconnected(nodeId);
-            return;
-        }
-        operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
-    }
-
     private Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Skipping operational modification: {}, before {}, after {}",
@@ -120,7 +112,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     private boolean isDelete(final DataTreeModification<Node> modification) {
-        return ModificationType.DELETE == modification.getRootNode().getModificationType();
+        return modification.getRootNode().getDataBefore() != null && modification.getRootNode().getDataAfter() == null;
     }
 
     /**
