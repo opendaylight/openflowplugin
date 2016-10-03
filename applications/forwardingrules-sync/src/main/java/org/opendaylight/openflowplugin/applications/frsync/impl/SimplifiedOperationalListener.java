@@ -15,9 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -76,37 +76,32 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<Node> modification) {
+        Optional<ListenableFuture<Boolean>> result;
         final NodeId nodeId = ModificationUtil.nodeId(modification);
-        updateCache(modification);
+        final DataObjectModification<Node> rootNode = modification.getRootNode();
 
-        final boolean isAdd = isAdd(modification) || isAddLogical(modification);
-
-        if (isAdd) {
-            deviceMastershipManager.onDeviceConnected(nodeId);
-        }
-
-        // if node is registered for reconcile we need consistent data from operational DS (skip partial collections)
-        // but we can accept first modification since all statistics are intentionally collected in one step on startup
-        if (reconciliationRegistry.isRegistered(nodeId) && (isAdd || isConsistentForReconcile(modification))) {
-            return reconciliation(modification);
-        } else {
-            return skipModification(modification);
-        }
-    }
-
-    /**
-     * Remove if delete. Update only if FlowCapableNode Augmentation modified.
-     * Unregister for device mastership.
-     * @param modification Datastore modification
-     */
-    private void updateCache(final DataTreeModification<Node> modification) {
-        NodeId nodeId = ModificationUtil.nodeId(modification);
-        if (isDelete(modification) || isDeleteLogical(modification)) {
+        if (isDelete(rootNode) || isDeleteLogical(rootNode)) {
             operationalSnapshot.updateCache(nodeId, Optional.absent());
             deviceMastershipManager.onDeviceDisconnected(nodeId);
-            return;
+            result = skipModification(modification);
+        } else {
+            operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
+
+            final boolean isAdd = isAdd(rootNode) || isAddLogical(rootNode);
+
+            if (isAdd) {
+                deviceMastershipManager.onDeviceConnected(nodeId);
+            }
+
+            // if node is registered for reconcile we need consistent data from operational DS (skip partial collections)
+            // but we can accept first modification since all statistics are intentionally collected in one step on startup
+            if (reconciliationRegistry.isRegistered(nodeId) && (isAdd || isConsistentForReconcile(modification))) {
+                result = reconciliation(modification);
+            } else {
+                result = skipModification(modification);
+            }
         }
-        operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
+        return result;
     }
 
     private Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
@@ -119,29 +114,26 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return Optional.absent();
     }
 
-    private boolean isDelete(final DataTreeModification<Node> modification) {
-        return ModificationType.DELETE == modification.getRootNode().getModificationType();
+    private boolean isDelete(final DataObjectModification<Node> rootNode) {
+        return Objects.nonNull(rootNode.getDataBefore()) && Objects.isNull(rootNode.getDataAfter());
     }
 
     /**
      * All connectors disappeared from operational store (logical delete).
      */
-    private boolean isDeleteLogical(final DataTreeModification<Node> modification) {
-        final DataObjectModification<Node> rootNode = modification.getRootNode();
+    private boolean isDeleteLogical(final DataObjectModification<Node> rootNode) {
         return !safeConnectorsEmpty(rootNode.getDataBefore()) && safeConnectorsEmpty(rootNode.getDataAfter());
 
     }
 
-    private boolean isAdd(final DataTreeModification<Node> modification) {
-        final DataObjectModification<Node> rootNode = modification.getRootNode();
-        return rootNode.getDataBefore() == null && rootNode.getDataAfter() != null;
+    private boolean isAdd(final DataObjectModification<Node> rootNode) {
+        return Objects.isNull(rootNode.getDataBefore()) && Objects.nonNull(rootNode.getDataAfter());
     }
 
     /**
      * All connectors appeared in operational store (logical add).
      */
-    private boolean isAddLogical(final DataTreeModification<Node> modification) {
-        final DataObjectModification<Node> rootNode = modification.getRootNode();
+    private boolean isAddLogical(final DataObjectModification<Node> rootNode) {
         return safeConnectorsEmpty(rootNode.getDataBefore()) && !safeConnectorsEmpty(rootNode.getDataAfter());
     }
 
