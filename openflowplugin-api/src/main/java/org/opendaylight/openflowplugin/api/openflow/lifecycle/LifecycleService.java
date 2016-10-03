@@ -8,24 +8,32 @@
 
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import javax.annotation.CheckForNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 
 /**
  * Service for starting or stopping all services in plugin in cluster
  */
-public interface LifecycleService extends ClusterSingletonService, AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+public interface LifecycleService extends ClusterSingletonService, OFPContext {
 
     /**
      * This method registers lifecycle service to the given provider
      * @param singletonServiceProvider from md-sal binding
      */
     void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
+
+    /**
+     * This method registers device removed handler what will be executed when device should be removed
+     * from managers,
+     * @param deviceRemovedHandler device removed handler
+     */
+    void registerDeviceRemovedHandler(final @CheckForNull DeviceRemovedHandler deviceRemovedHandler);
 
     /**
      * Setter for device context
