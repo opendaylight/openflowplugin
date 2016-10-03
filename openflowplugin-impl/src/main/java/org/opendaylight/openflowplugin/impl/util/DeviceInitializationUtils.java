@@ -241,20 +241,26 @@ public class DeviceInitializationUtils {
     static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
                                        final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result,
                                        final ConvertorExecutor convertorExecutor) {
-        try {
-            result.stream()
-                    .map(MultipartReply::getMultipartReplyBody)
-                    .forEach(multipartReplyBody -> {
-                        if (!(writeDesc(type, multipartReplyBody, dContext, nodeII)
-                                || writeTableFeatures(type, multipartReplyBody, dContext, nodeII, convertorExecutor)
-                                || writeMeterFeatures(type, multipartReplyBody, dContext, nodeII)
-                                || writeGroupFeatures(type, multipartReplyBody, dContext, nodeII)
-                                || writePortDesc(type, multipartReplyBody, dContext, nodeII))) {
-                            throw new IllegalArgumentException("Unexpected MultipartType " + type);
-                        }
-                    });
-        } catch (final Exception e) {
-            LOG.debug("translateAndWriteReply: Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
+        if (Objects.nonNull(result)) {
+            try {
+                result.stream()
+                        .map(MultipartReply::getMultipartReplyBody)
+                        .forEach(multipartReplyBody -> {
+                            if (!(writeDesc(type, multipartReplyBody, dContext, nodeII)
+                                    || writeTableFeatures(type, multipartReplyBody, dContext, nodeII, convertorExecutor)
+                                    || writeMeterFeatures(type, multipartReplyBody, dContext, nodeII)
+                                    || writeGroupFeatures(type, multipartReplyBody, dContext, nodeII)
+                                    || writePortDesc(type, multipartReplyBody, dContext, nodeII))) {
+                                throw new IllegalArgumentException("Unexpected MultipartType " + type);
+                            }
+                        });
+            } catch (final Exception e) {
+                LOG.debug("translateAndWriteReply: Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
+            }
+        } else {
+            LOG.debug("translateAndWriteReply: Failed to write node {} to DS because we failed to gather device" +
+                            "info.",
+                    dContext.getDeviceInfo().getNodeId().toString());
         }
     }
 
@@ -491,6 +497,11 @@ public class DeviceInitializationUtils {
         };
 
         final Xid xid = requestContext.getXid();
+
+        if (Objects.isNull(xid)) {
+            LOG.debug("Xid is not present, so cancelling node static info gathering.");
+            return Futures.immediateCancelledFuture();
+        }
 
         LOG.trace("Hooking xid {} to device context - precaution.", reserved);
 

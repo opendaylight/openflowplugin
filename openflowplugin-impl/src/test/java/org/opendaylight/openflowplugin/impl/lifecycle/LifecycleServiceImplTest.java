@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -48,6 +49,8 @@ public class LifecycleServiceImplTest {
     private DeviceFlowRegistry deviceFlowRegistry;
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    @Mock
+    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
 
     private LifecycleService lifecycleService;
 
@@ -60,6 +63,8 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceFlowRegistry.fill()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
+        Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
+                .thenReturn(clusterSingletonServiceRegistration);
 
         Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
         Mockito.when(roleContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
@@ -86,7 +91,7 @@ public class LifecycleServiceImplTest {
 
     @Test
     public void closeServiceInstance() throws Exception {
-        lifecycleService.closeServiceInstance();
+        lifecycleService.closeServiceInstance().get();
         Mockito.verify(statContext).stopClusterServices(false);
         Mockito.verify(deviceContext).stopClusterServices(false);
         Mockito.verify(rpcContext).stopClusterServices(false);
