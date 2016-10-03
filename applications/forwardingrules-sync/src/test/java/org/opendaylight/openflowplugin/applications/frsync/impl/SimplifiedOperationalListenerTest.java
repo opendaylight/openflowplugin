@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.sn
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -123,8 +124,6 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedDeletePhysical() throws Exception {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
-        Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.DELETE);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -135,9 +134,11 @@ public class SimplifiedOperationalListenerTest {
     @Test
     public void testOnDataTreeChangedDeleteLogical() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
-        List<NodeConnector> nodeConnectorList = Mockito.mock(List.class);
-        Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnectorList);
-        Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
+        Mockito.when(operationalNode.getNodeConnector()).thenReturn(Mockito.mock(List.class));
+        final Node operationalNodeEmpty = Mockito.mock(Node.class);
+        Mockito.when(operationalNodeEmpty.getId()).thenReturn(NODE_ID);
+        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNodeEmpty);
+        Mockito.when(operationalNodeEmpty.getNodeConnector()).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
