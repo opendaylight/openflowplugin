@@ -16,8 +16,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.TimerTask;
-
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -107,41 +105,36 @@ class RoleContextImpl implements RoleContext {
         return this.deviceInfo;
     }
 
-    public void startupClusterServices() throws ExecutionException, InterruptedException {
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
-    }
-
     @Override
     public ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected) {
-
-        if (!deviceDisconnected) {
-            ListenableFuture<Void> future = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                    return null;
-                }
-            });
-
-            Futures.addCallback(future, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                    }
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
-                    LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                    myManager.removeDeviceFromOperationalDS(deviceInfo);
-                }
-            });
-            return future;
-        } else {
+        if (deviceDisconnected) {
             return myManager.removeDeviceFromOperationalDS(deviceInfo);
         }
+
+        final ListenableFuture<RpcResult<SetRoleOutput>> rpcResultListenableFuture = makeDeviceSlave();
+        Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<SetRoleOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<SetRoleOutput> result) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
+                LOG.trace("Error occurred on device role setting, probably connection loss: {}", throwable);
+                myManager.removeDeviceFromOperationalDS(deviceInfo);
+            }
+        });
+
+        return Futures.transform(rpcResultListenableFuture, new Function<RpcResult<SetRoleOutput>, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                return null;
+            }
+        });
     }
 
     @Override
@@ -180,7 +173,6 @@ class RoleContextImpl implements RoleContext {
 
     @Override
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-
         if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
             return false;
