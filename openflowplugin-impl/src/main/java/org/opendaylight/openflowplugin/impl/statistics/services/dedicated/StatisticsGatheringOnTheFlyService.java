@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -34,8 +34,8 @@ public class StatisticsGatheringOnTheFlyService extends AbstractMultipartOnTheFl
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringOnTheFlyService.class);
 
-    public StatisticsGatheringOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
-        super(requestContextStack, deviceContext, convertorExecutor);
+    public StatisticsGatheringOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
+        super(requestContextStack, deviceContext, converterExecutor);
     }
 
     @Override

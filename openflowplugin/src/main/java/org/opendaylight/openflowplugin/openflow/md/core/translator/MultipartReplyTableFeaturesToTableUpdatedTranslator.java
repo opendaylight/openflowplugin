@@ -16,8 +16,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -38,10 +38,10 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 
     private static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTableFeaturesToTableUpdatedTranslator.class);
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public MultipartReplyTableFeaturesToTableUpdatedTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public MultipartReplyTableFeaturesToTableUpdatedTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -60,8 +60,8 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
             MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) mpReply.getMultipartReplyBody();
             MultipartReplyTableFeatures body = caseBody.getMultipartReplyTableFeatures();
 
-            final VersionConvertorData data = new VersionConvertorData(sc.getPrimaryConductor().getVersion());
-            final Optional<List<TableFeatures>> tableFeaturesList = convertorExecutor.convert(body, data);
+            final VersionConverterData data = new VersionConverterData(sc.getPrimaryConductor().getVersion());
+            final Optional<List<TableFeatures>> tableFeaturesList = converterExecutor.convert(body, data);
             message.setTableFeatures(tableFeaturesList.orElse(Collections.emptyList()));
             listDataObject.add( message.build()) ;
 

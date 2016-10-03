@@ -67,7 +67,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <FROM extends DataContainer, PATH extends AugmentationPath, KEY extends MessageTypeKey<?>>
@@ -82,7 +82,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message type key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <FROM extends DataContainer, PATH extends AugmentationPath, KEY extends MessageTypeKey<?>>
@@ -97,7 +97,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message type key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <TO extends DataContainer> RegistrationCloserToOFJava<TO> hireJanitor(
@@ -111,7 +111,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message type key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <TO extends DataContainer> RegistrationCloserActionToOFJava<TO> hireJanitor(
@@ -125,7 +125,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message type key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <TO extends DataContainer, K extends ExperimenterMessageOfChoice> RegistrationCloserMessageToOFJava<TO, K> hireMessageJanitor(
@@ -140,7 +140,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     /**
      * @param key message type key
-     * @param extConvertor extension convertor
+     * @param extConvertor extension converter
      * @return registration closure
      */
     private <FROM extends DataContainer, PATH extends AugmentationPath, KEY extends MessageTypeKey<?>>
@@ -157,7 +157,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final ConverterExtensionKey<?> key, final ConvertorToOFJava<?> converter) {
         ConvertorToOFJava<?> registeredConverter = registryToOFJAva.get(key);
@@ -170,7 +170,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final TypeVersionKey<? extends Action> key, final ConvertorActionToOFJava<?, ?> converter) {
         ConvertorActionToOFJava<?, ?> registeredConverter = registryActionToOFJAva.get(key);
@@ -183,7 +183,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final MessageTypeKey<?> key, final ConvertorFromOFJava<?, ?> converter) {
         ConvertorFromOFJava<?, ?> registeredConverter = registryFromOFJAva.get(key);
@@ -196,7 +196,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final MessageTypeKey<?> key, final ConvertorActionFromOFJava<?, ?> converter) {
         ConvertorActionFromOFJava<?, ?> registeredConverter = registryActionFromOFJAva.get(key);
@@ -209,7 +209,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final MessageTypeKey<?> key, final ConvertorMessageFromOFJava<?, ?> converter) {
         ConvertorMessageFromOFJava<?, ?> registeredConverter = registryMessageFromOFJAva.get(key);
@@ -222,7 +222,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * cancel registration of given converter
      *
      * @param key message key
-     * @param converter extension convertor
+     * @param converter extension converter
      */
     public void unregister(final TypeVersionKey<?> key, final ConvertorMessageToOFJava<?, ?> converter) {
         ConvertorMessageToOFJava<?, ?> registeredConverter = registryMessageToOFJAva.get(key);

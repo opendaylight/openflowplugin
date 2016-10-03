@@ -40,7 +40,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -58,8 +57,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -182,7 +181,7 @@ public class StatisticsManagerImplTest {
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(), convertorManager);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
     }

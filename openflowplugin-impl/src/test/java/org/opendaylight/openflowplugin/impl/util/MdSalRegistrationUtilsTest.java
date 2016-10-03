@@ -24,8 +24,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -59,7 +59,7 @@ public class MdSalRegistrationUtilsTest {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
 
         final ExtensionConverterProvider extensionConverterProvider = mock(ExtensionConverterProvider.class);
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         MdSalRegistrationUtils.registerServices(mockedRpcContext, mockedDeviceContext, extensionConverterProvider, convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 Matchers.<Class<RpcService>> any(), any(RpcService.class));

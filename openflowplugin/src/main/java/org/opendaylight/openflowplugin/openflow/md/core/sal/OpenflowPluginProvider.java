@@ -22,8 +22,8 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
@@ -69,7 +69,7 @@ public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExte
      * Initialization of services and msgSpy counter
      */
     public void initialization() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();

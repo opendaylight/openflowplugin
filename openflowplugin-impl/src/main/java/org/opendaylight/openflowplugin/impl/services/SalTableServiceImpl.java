@@ -22,8 +22,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -55,14 +55,14 @@ import org.slf4j.Logger;
 public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTableInput> implements SalTableService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalTableServiceImpl.class);
     private final TxFacade txFacade;
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionConverterData data;
 
-    public SalTableServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalTableServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext);
         this.txFacade = deviceContext;
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -147,7 +147,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
                             .getMultipartReplyTableFeatures();
 
                     final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>> salTableFeaturesPartial =
-                            convertorExecutor.convert(salTableFeatures, data);
+                            converterExecutor.convert(salTableFeatures, data);
 
                     if (salTableFeaturesPartial.isPresent()) {
                         salTableFeaturesAll.addAll(salTableFeaturesPartial.get());
@@ -174,7 +174,7 @@ public final class SalTableServiceImpl extends AbstractMultipartService<UpdateTa
         final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         final MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
 
-        final Optional<List<TableFeatures>> ofTableFeatureList = convertorExecutor.convert(input.getUpdatedTable(), data);
+        final Optional<List<TableFeatures>> ofTableFeatureList = converterExecutor.convert(input.getUpdatedTable(), data);
         requestBuilder.setTableFeatures(ofTableFeatureList.orElse(Collections.emptyList()));
         caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 

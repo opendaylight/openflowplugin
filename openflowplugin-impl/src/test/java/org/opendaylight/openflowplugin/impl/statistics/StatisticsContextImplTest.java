@@ -28,8 +28,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -44,7 +44,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private static final Long TEST_XID = 55L;
     private StatisticsContextImpl statisticsContext;
-    private ConvertorManager convertorManager;
+    private ConverterManager convertorManager;
 
     @Before
     public void setUp() throws Exception {

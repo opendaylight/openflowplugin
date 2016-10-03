@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,8 +53,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -139,7 +138,7 @@ public class DeviceInitializationUtilsTest {
     @Mock
     private DeviceInfo deviceInfo;
 
-    private ConvertorManager convertorManager;
+    private ConverterManager convertorManager;
 
     @Before
     public void setUp() throws Exception {

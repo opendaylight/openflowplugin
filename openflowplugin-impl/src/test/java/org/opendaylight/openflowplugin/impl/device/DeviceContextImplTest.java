@@ -75,7 +75,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -173,7 +173,7 @@ public class DeviceContextImplTest {
     @Mock
     private DeviceManager deviceManager;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private MessageSpy messageSpy;
 
@@ -231,7 +231,7 @@ public class DeviceContextImplTest {
                 messageSpy,
                 translatorLibrary,
                 deviceManager,
-                convertorExecutor,
+                converterExecutor,
                 false);
         deviceContextSpy = Mockito.spy(deviceContext);
 
@@ -245,12 +245,12 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor,false).close();
+        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, converterExecutor,false).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor,false).close();
+        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager, converterExecutor,false).close();
     }
 
     @Test

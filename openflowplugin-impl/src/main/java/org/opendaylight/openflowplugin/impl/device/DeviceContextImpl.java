@@ -63,7 +63,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -133,7 +133,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
     private final DeviceInfo deviceInfo;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
@@ -143,7 +143,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final MessageSpy messageSpy,
             @Nonnull final TranslatorLibrary translatorLibrary,
             @Nonnull final DeviceManager manager,
-            final ConvertorExecutor convertorExecutor,
+            final ConverterExecutor converterExecutor,
             final boolean skipTableFeatures) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -168,7 +168,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         this.itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         this.state = CONTEXT_STATE.INITIALIZATION;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.initialized = false;
     }
@@ -604,7 +604,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.transactionChainManager.activateTransactionManager();
 
         try {
-            DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
+            DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.converterExecutor);
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
             return false;

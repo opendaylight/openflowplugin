@@ -13,16 +13,16 @@ import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public abstract class AbstractMultipartOnTheFlyService<I> extends AbstractService<I, List<MultipartReply>> {
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -30,7 +30,7 @@ public abstract class AbstractMultipartOnTheFlyService<I> extends AbstractServic
         return new MultipartRequestOnTheFlyCallback(context, requestType,
                 getMessageSpy(), getEventIdentifier(), getDeviceInfo(),
                 getDeviceContext().getDeviceFlowRegistry(), getTxFacade(),
-                convertorExecutor);
+                converterExecutor);
     }
 
 

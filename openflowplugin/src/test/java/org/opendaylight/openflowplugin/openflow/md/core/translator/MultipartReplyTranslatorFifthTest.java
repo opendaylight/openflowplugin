@@ -24,8 +24,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
@@ -79,7 +79,7 @@ public class MultipartReplyTranslatorFifthTest {
      */
     @Before
     public void startUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         translator = new MultipartReplyTranslator(convertorManager);
         MockitoAnnotations.initMocks(this);
         when(sc.getPrimaryConductor()).thenReturn(conductor);

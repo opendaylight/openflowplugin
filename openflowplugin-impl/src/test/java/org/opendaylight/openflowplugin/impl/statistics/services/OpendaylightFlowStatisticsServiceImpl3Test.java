@@ -11,8 +11,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
@@ -35,7 +35,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
         flowStatisticsService.setDelegate(flowStatisticsDelegate);
     }

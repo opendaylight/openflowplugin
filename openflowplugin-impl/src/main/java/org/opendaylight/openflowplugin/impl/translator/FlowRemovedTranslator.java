@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.translator;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -22,14 +22,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions)
  */
 public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public FlowRemovedTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
-    protected ConvertorExecutor getConvertorExecutor() {
-        return convertorExecutor;
+    protected ConverterExecutor getConverterExecutor() {
+        return converterExecutor;
     }
 
     @Override
@@ -45,10 +45,10 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
     }
 
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
+        final VersionDatapathIdConverterData datapathIdConvertorData = new VersionDatapathIdConverterData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
 
-        final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
+        final Optional<MatchBuilder> matchBuilderOptional = getConverterExecutor().convert(
                 flowRemoved.getMatch(),
                 datapathIdConvertorData);
 

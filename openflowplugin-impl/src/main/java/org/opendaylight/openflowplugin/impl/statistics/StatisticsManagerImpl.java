@@ -21,7 +21,6 @@ import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -39,7 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -56,7 +55,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
-    private final ConvertorExecutor converterExecutor;
+    private final ConverterExecutor converterExecutor;
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
@@ -82,9 +81,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean isStatisticsPollingEnabled,
                                  final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor) {
+                                 final ConverterExecutor converterExecutor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
-	    this.converterExecutor = convertorExecutor;
+	    this.converterExecutor = converterExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );

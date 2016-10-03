@@ -17,9 +17,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
@@ -49,17 +49,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Flow direct statistics service.
  */
 public class FlowDirectStatisticsService extends AbstractDirectStatisticsService<GetFlowStatisticsInput, GetFlowStatisticsOutput> {
-    private final VersionDatapathIdConvertorData data;
+    private final VersionDatapathIdConverterData data;
 
     /**
      * Instantiates a new Flow direct statistics service.
      *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
-     * @param convertorExecutor
+     * @param converterExecutor
      */
-    public FlowDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
-        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, convertorExecutor);
-        data = new VersionDatapathIdConvertorData(getVersion());
+    public FlowDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConverterExecutor converterExecutor) {
+        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, converterExecutor);
+        data = new VersionDatapathIdConverterData(getVersion());
         data.setDatapathId(getDatapathId());
     }
 
@@ -97,7 +97,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder, getConvertorExecutor());
+        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder, getConverterExecutor());
 
         return new MultipartRequestFlowCaseBuilder()
                 .setMultipartRequestFlow(mprFlowRequestBuilder.build())
@@ -112,7 +112,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorExecutor().convert(
+                final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConverterExecutor().convert(
                         replyBody.getFlowStats(), data);
 
                 if (statsListPart.isPresent()) {

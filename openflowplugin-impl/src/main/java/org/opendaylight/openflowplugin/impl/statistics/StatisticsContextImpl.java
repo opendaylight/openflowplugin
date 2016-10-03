@@ -44,7 +44,7 @@ import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerIm
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,16 +82,16 @@ class StatisticsContextImpl implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
                           final boolean shuttingDownStatisticsPolling,
                           @Nonnull final LifecycleService lifecycleService,
-                          @Nonnull final ConvertorExecutor convertorExecutor,
+                          @Nonnull final ConverterExecutor converterExecutor,
                           @Nonnull final StatisticsManager myManager) {
         this.lifecycleService = lifecycleService;
         this.deviceContext = lifecycleService.getDeviceContext();
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
-        multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
+        multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(converterExecutor);
         emptyFuture = Futures.immediateFuture(false);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
-        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, convertorExecutor);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, converterExecutor);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         setState(CONTEXT_STATE.INITIALIZATION);

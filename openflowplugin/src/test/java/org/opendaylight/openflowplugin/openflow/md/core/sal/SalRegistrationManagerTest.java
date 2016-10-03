@@ -37,8 +37,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.role.OfEntityManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -104,7 +104,7 @@ public class SalRegistrationManagerTest {
         Mockito.when(features.getVersion()).thenReturn((short) 1);
         context.setFeatures(features);
         context.setNotificationEnqueuer(notificationEnqueuer);
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         OfEntityManager entManager = new OfEntityManager(entityOwnershipService,getConfig());
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context, convertorManager);

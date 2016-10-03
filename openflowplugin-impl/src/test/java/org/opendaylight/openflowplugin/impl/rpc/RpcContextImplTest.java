@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -70,7 +69,7 @@ public class RpcContextImplTest {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
@@ -91,7 +90,7 @@ public class RpcContextImplTest {
                 nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService);
 
         when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance)).thenReturn(routedRpcReg);
@@ -108,7 +107,7 @@ public class RpcContextImplTest {
                 nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
@@ -125,7 +124,7 @@ public class RpcContextImplTest {
                 nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
@@ -142,7 +141,7 @@ public class RpcContextImplTest {
                 nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);

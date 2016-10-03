@@ -14,9 +14,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.services.ServiceException;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -27,11 +27,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput> {
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public MatchingFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public MatchingFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -65,7 +65,7 @@ final class MatchingFlowsInTableService extends AbstractMultipartService<GetAggr
             mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, convertorExecutor);
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, converterExecutor);
 
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 

@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -112,10 +112,10 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
     protected static final Logger logger = LoggerFactory
             .getLogger(MultipartReplyTranslator.class);
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public MultipartReplyTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public MultipartReplyTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
 
@@ -125,7 +125,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
         OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
+        final VersionDatapathIdConverterData data = new VersionDatapathIdConverterData(sc.getPrimaryConductor().getVersion());
         data.setDatapathId(sc.getFeatures().getDatapathId());
 
         if(msg instanceof MultipartReplyMessage){
@@ -141,7 +141,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
                 MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
 
-                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = convertorExecutor.convert(replyBody.getFlowStats(), data);
+                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = converterExecutor.convert(replyBody.getFlowStats(), data);
 
                 message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
                 logger.debug("Converted flow statistics : {}",message.build().toString());
@@ -232,7 +232,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(replyBody.getGroupStats(), data);
+                final Optional<List<GroupStats>> groupStatsList = converterExecutor.convert(replyBody.getGroupStats(), data);
                 message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -248,7 +248,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-                final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(replyBody.getGroupDesc(), data);
+                final Optional<List<GroupDescStats>> groupDescStatsList = converterExecutor.convert(replyBody.getGroupDesc(), data);
                 message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -314,7 +314,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
 
                 final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>> meterStatsList =
-                        convertorExecutor.convert(replyBody.getMeterStats(), data);
+                        converterExecutor.convert(replyBody.getMeterStats(), data);
 
                 message.setMeterStats(meterStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());
@@ -331,7 +331,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
-                final Optional<List<MeterConfigStats>> meterConfigStatsList = convertorExecutor.convert(replyBody.getMeterConfig(), data);
+                final Optional<List<MeterConfigStats>> meterConfigStatsList = converterExecutor.convert(replyBody.getMeterConfig(), data);
 
                 message.setMeterConfigStats(meterConfigStatsList.orElse(Collections.emptyList()));
                 listDataObject.add(message.build());

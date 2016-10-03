@@ -11,31 +11,31 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.GroupConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class GroupService<I extends Group, O extends DataObject> extends AbstractSimpleService<I, O> {
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionDatapathIdConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionDatapathIdConverterData data;
 
-    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    GroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, clazz);
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionDatapathIdConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionDatapathIdConverterData(getVersion());
         data.setDatapathId(getDatapathId());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) throws ServiceException {
-        final Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(input, data);
+        final Optional<GroupModInputBuilder> ofGroupModInput = converterExecutor.convert(input, data);
 
         final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
-                .orElse(GroupConvertor.defaultResult(getVersion()))
+                .orElse(GroupConverter.defaultResult(getVersion()))
                 .setXid(xid.getValue());
 
         return groupModInputBuilder.build();

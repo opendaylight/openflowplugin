@@ -15,8 +15,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutputBuilder;
@@ -41,17 +41,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Group direct statistics service.
  */
 public class GroupDirectStatisticsService extends AbstractDirectStatisticsService<GetGroupStatisticsInput, GetGroupStatisticsOutput> {
-    private final VersionConvertorData data;
+    private final VersionConverterData data;
 
     /**
      * Instantiates a new Group direct statistics service.
      *  @param requestContextStack the request context stack
      * @param deviceContext       the device context
-     * @param convertorExecutor
+     * @param converterExecutor
      */
-    public GroupDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
-        super(MultipartType.OFPMPGROUP, requestContextStack, deviceContext, convertorExecutor);
-        data = new VersionConvertorData(getVersion());
+    public GroupDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConverterExecutor converterExecutor) {
+        super(MultipartType.OFPMPGROUP, requestContextStack, deviceContext, converterExecutor);
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -77,7 +77,7 @@ public class GroupDirectStatisticsService extends AbstractDirectStatisticsServic
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = getConvertorExecutor().convert(
+                final Optional<List<GroupStats>> groupStatsList = getConverterExecutor().convert(
                         replyBody.getGroupStats(), data);
 
                 if (groupStatsList.isPresent()) {

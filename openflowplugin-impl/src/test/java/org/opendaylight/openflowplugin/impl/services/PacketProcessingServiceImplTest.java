@@ -15,8 +15,8 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -47,7 +47,7 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         packetProcessingService = new PacketProcessingServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
         pathToNodeconnector = KeyedInstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("ofp-ut:123")))

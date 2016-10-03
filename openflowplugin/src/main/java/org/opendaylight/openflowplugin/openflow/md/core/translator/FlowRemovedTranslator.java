@@ -24,9 +24,9 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.common.IpConversionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
@@ -159,10 +159,10 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     private static final String PREFIX_SEPARATOR = "/";
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public FlowRemovedTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -205,10 +205,10 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch, sc.getFeatures().getDatapathId(), ofVersion));
             } else if (ofFlow.getMatchV10() != null) {
-                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
+                final VersionDatapathIdConverterData data = new VersionDatapathIdConverterData(sc.getPrimaryConductor().getVersion());
                 data.setDatapathId(sc.getFeatures().getDatapathId());
 
-                final Optional<MatchBuilder> matchBuilderOptional = convertorExecutor.convert(ofFlow.getMatchV10(), data);
+                final Optional<MatchBuilder> matchBuilderOptional = converterExecutor.convert(ofFlow.getMatchV10(), data);
                 salFlowRemoved.setMatch(matchBuilderOptional.orElse(new MatchBuilder()).build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()

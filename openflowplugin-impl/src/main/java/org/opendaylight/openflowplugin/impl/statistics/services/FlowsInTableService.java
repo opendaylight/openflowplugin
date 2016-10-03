@@ -17,8 +17,8 @@ import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
@@ -34,11 +34,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public final class FlowsInTableService extends AbstractCompatibleStatService<GetFlowStatisticsFromFlowTableInput,
         GetFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public FlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public FlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
         // convert and inject match
         final short version = getVersion();
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder, convertorExecutor);
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder, converterExecutor);
 
         // Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
@@ -96,6 +96,6 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, converterExecutor);
     }
 }

@@ -12,9 +12,9 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.PortConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -25,13 +25,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionConverterData data;
 
-    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, UpdatePortOutput.class);
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -42,10 +42,10 @@ public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortIn
     @Override
     protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) throws ServiceException {
         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-        final Optional<PortModInput> ofPortModInput = convertorExecutor.convert(inputPort, data);
+        final Optional<PortModInput> ofPortModInput = converterExecutor.convert(inputPort, data);
 
         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
-                .orElse(PortConvertor.defaultResult(getVersion())))
+                .orElse(PortConverter.defaultResult(getVersion())))
                 .setXid(xid.getValue());
 
         return mdInput.build();

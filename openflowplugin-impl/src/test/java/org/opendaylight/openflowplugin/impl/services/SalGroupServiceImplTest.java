@@ -17,8 +17,8 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -50,7 +50,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     public void initialization() {
         super.initialization();
         when(mockedDeviceContext.getDeviceGroupRegistry()).thenReturn(mockedDeviceGroupRegistry);
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 

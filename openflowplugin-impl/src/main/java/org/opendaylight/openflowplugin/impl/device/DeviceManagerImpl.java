@@ -50,7 +50,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -72,7 +72,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final int SPY_RATE = 10;
 
     private final DataBroker dataBroker;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
@@ -100,7 +100,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final ClusterSingletonServiceProvider singletonServiceProvider,
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
-                             final ConvertorExecutor convertorExecutor,
+                             final ConverterExecutor converterExecutor,
                              final boolean skipTableFeatures) {
 
         this.dataBroker = dataBroker;
@@ -121,7 +121,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.globalNotificationQuota = globalNotificationQuota;
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
         this.skipTableFeatures = skipTableFeatures;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
@@ -192,7 +192,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 messageSpy,
                 translatorLibrary,
                 this,
-                convertorExecutor,
+                converterExecutor,
                 skipTableFeatures);
 
         deviceContexts.put(deviceInfo, deviceContext);

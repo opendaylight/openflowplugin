@@ -25,8 +25,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManagerOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -540,7 +540,7 @@ public class FlowRemovedTranslatorTest {
 
     @Before
     public void setup() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowRemovedTranslator = new FlowRemovedTranslator(convertorManager);
         when(sessionContext.getPrimaryConductor()).thenReturn(connectionConductor);
         when(connectionConductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);

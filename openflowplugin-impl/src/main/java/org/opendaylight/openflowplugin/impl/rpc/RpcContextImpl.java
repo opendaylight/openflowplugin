@@ -30,7 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -53,7 +53,7 @@ class RpcContextImpl implements RpcContext {
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final NotificationPublishService notificationPublishService;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
@@ -64,7 +64,7 @@ class RpcContextImpl implements RpcContext {
                    final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier,
                    final DeviceContext deviceContext,
                    final ExtensionConverterProvider extensionConverterProvider,
-                   final ConvertorExecutor convertorExecutor,
+                   final ConverterExecutor converterExecutor,
                    final NotificationPublishService notificationPublishService) {
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
         this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
@@ -76,7 +76,7 @@ class RpcContextImpl implements RpcContext {
         setState(CONTEXT_STATE.WORKING);
         this.deviceInfo = deviceInfo;
         this.deviceContext = deviceContext;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     /**
@@ -220,13 +220,13 @@ class RpcContextImpl implements RpcContext {
             return false;
         }
 
-        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, converterExecutor);
         if (isStatisticsRpcEnabled) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
                     deviceContext,
                     notificationPublishService,
-                    convertorExecutor);
+                    converterExecutor);
         }
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
     }

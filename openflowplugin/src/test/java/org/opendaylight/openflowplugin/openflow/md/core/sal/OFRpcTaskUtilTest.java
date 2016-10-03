@@ -27,8 +27,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -61,7 +61,7 @@ public class OFRpcTaskUtilTest {
     private NotificationComposer<?> notificationComposer;
     @Mock
     ListeningExecutorService executorService;
-    private ConvertorManager convertorManager;
+    private ConverterManager convertorManager;
 
 
     @Before

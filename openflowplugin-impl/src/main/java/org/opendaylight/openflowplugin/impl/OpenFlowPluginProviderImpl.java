@@ -56,8 +56,8 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntell
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
-    private final ConvertorManager convertorManager;
+    private final ConverterManager convertorManager;
     private long barrierInterval;
     private int barrierCountLimit;
     private long echoReplyTimeout;

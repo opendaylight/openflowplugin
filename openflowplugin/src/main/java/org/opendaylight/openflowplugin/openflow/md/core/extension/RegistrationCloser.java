@@ -77,7 +77,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
 
     /**
      * standalone deregistrator
-     * @param <TO> target type of wrapped convertor
+     * @param <TO> target type of wrapped converter
      */
     public static class RegistrationCloserToOFJava<TO extends DataContainer> extends
             RegistrationCloser<ConverterExtensionKey<? extends ExtensionKey>, ConvertorToOFJava<TO>> {
@@ -90,7 +90,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
 
     /**
      * standalone deregistrator
-     * @param <FROM> source type of wrapped convertor
+     * @param <FROM> source type of wrapped converter
      * @param <PATH> associated augmentation path
      */
     public static class RegistrationCloserFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<FROM, PATH>> {
@@ -103,7 +103,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
 
     /**
      * standalone deregistrator
-     * @param <TO> target type of wrapped convertor
+     * @param <TO> target type of wrapped converter
      */
     public static class RegistrationCloserActionToOFJava<TO extends DataContainer> extends
             RegistrationCloser<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<Action, TO>> {
@@ -116,7 +116,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
 
     /**
      * standalone deregistrator
-     * @param <FROM> source type of wrapped convertor
+     * @param <FROM> source type of wrapped converter
      * @param <PATH> associated augmentation path
      */
     public static class RegistrationCloserActionFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends
@@ -131,7 +131,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
     /**
      * standalone deregistrator
      *
-     * @param <TO> target type of wrapped convertor
+     * @param <TO> target type of wrapped converter
      */
     public static class RegistrationCloserMessageToOFJava<TO extends DataContainer, K extends ExperimenterMessageOfChoice> extends
             RegistrationCloser<TypeVersionKey<K>, ConvertorMessageToOFJava<K, TO>> {
@@ -145,7 +145,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
     /**
      * standalone deregistrator
      *
-     * @param <FROM> source type of wrapped convertor
+     * @param <FROM> source type of wrapped converter
      * @param <PATH> associated augmentation path
      */
     public static class RegistrationCloserMessageFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends

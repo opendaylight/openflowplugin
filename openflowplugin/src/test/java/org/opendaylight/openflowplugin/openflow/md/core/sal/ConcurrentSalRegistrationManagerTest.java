@@ -43,8 +43,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -96,7 +96,7 @@ public class ConcurrentSalRegistrationManagerTest {
      */
     @Before
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         registrationManager = new SalRegistrationManager(convertorManager);
         SWITCH_SESSION_KEY_OF.setDatapathId(BigInteger.ONE);
         Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);

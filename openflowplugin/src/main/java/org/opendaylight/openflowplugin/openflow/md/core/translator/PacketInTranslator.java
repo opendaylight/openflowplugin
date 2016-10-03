@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -43,10 +43,10 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
 
     private static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public PacketInTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public PacketInTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -102,11 +102,11 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     LOG.warn("Received packet_in, but couldn't find an input port");
                 } else {
                     LOG.trace("Received packet_in from {} on port {}", dpid, port);
-                    final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(sc.getPrimaryConductor().getVersion());
+                    final VersionDatapathIdConverterData datapathIdConvertorData = new VersionDatapathIdConverterData(sc.getPrimaryConductor().getVersion());
                     datapathIdConvertorData.setDatapathId(dpid);
 
                     final OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-                    final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = convertorExecutor.convert(message.getMatch(), datapathIdConvertorData);
+                    final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = converterExecutor.convert(message.getMatch(), datapathIdConvertorData);
                     final MatchBuilder matchBuilder = new MatchBuilder(matchOptional.orElse(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder()).build());
 
                     AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =

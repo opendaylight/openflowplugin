@@ -28,13 +28,13 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.GroupConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.MeterConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.PortConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionDatapathIdConverterData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
@@ -203,22 +203,22 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input flow object input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return UpdateFlow task
      */
     public static OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> createAddFlowTask(
             OFRpcTaskContext taskContext, AddFlowInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionDatapathIdConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
 
-            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddFlowInput input, ConvertorExecutor convertorExecutor) {
+            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddFlowInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -246,12 +246,12 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
-     * Recursive helper method for {@link OFRpcTaskFactory#createAddFlowTask(OFRpcTaskContext, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor)}
-     * and {@link OFRpcTaskFactory#createUpdateFlowTask(OFRpcTaskContext, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor)} to chain results
+     * Recursive helper method for {@link OFRpcTaskFactory#createAddFlowTask(OFRpcTaskContext, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, ConverterExecutor)}
+     * and {@link OFRpcTaskFactory#createUpdateFlowTask(OFRpcTaskContext, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction, ConverterExecutor)} to chain results
      * of multiple flowmods.
      * The next flowmod gets executed if the earlier one is successful.
      * All the flowmods should have the same xid, in-order to cross-reference
@@ -323,21 +323,21 @@ public abstract class OFRpcTaskFactory {
      * @param input update flow input
      * @param cookie switch connection distinguisher cookie value
      * @param rwTx  read write transaction
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return UpdateFlow task
      */
     public static OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> createUpdateFlowTask(
             final OFRpcTaskContext taskContext, UpdateFlowInput input,
-            SwitchConnectionDistinguisher cookie, final ReadWriteTransaction rwTx, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, final ReadWriteTransaction rwTx, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> {
             final ReadWriteTransaction rwTx;
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionDatapathIdConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
             InstanceIdentifier<Table> iiToTable = null;
             String flowId = null;
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 final UpdateFlowInput in, final ReadWriteTransaction rwTx, ConvertorExecutor convertorExecutor) {
+                                 final UpdateFlowInput in, final ReadWriteTransaction rwTx, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, in);
                 this.convertorExecutor = convertorExecutor;
                 final FlowRef flowRef = in.getFlowRef();
@@ -351,7 +351,7 @@ public abstract class OFRpcTaskFactory {
                     }
                 }
                 this.rwTx = rwTx;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -445,7 +445,7 @@ public abstract class OFRpcTaskFactory {
                 return getInput().getUpdatedFlow().isBarrier();
             }
         }
-        return new OFRpcTaskImpl(taskContext, cookie, input, rwTx, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, rwTx, converterExecutor);
     }
 
 
@@ -469,21 +469,21 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext taks context
      * @param input group update input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return update group task
      */
     public static OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> createAddGroupTask(
             final OFRpcTaskContext taskContext, AddGroupInput input,
-            final SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionDatapathIdConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
 
-            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddGroupInput input, ConvertorExecutor convertorExecutor) {
+            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddGroupInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -494,7 +494,7 @@ public abstract class OFRpcTaskFactory {
                 // Convert the AddGroupInput to GroupModInput
                 final java.util.Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(getInput(), data);
                 final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
-                        .orElse(GroupConvertor.defaultResult(getVersion()))
+                        .orElse(GroupConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
@@ -513,7 +513,7 @@ public abstract class OFRpcTaskFactory {
             }
         };
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
 
@@ -538,21 +538,21 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input meter add input
      * @param cookie switch connection distinguisher
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return update meter task
      */
     public static OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> createAddMeterTask(
             OFRpcTaskContext taskContext, AddMeterInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionConverterData data;
 
-            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddMeterInput input, ConvertorExecutor convertorExecutor) {
+            public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, AddMeterInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionConvertorData(getVersion());
+                data = new VersionConverterData(getVersion());
             }
 
             @Override
@@ -563,7 +563,7 @@ public abstract class OFRpcTaskFactory {
                 final java.util.Optional<MeterModInputBuilder> ofMeterModInput = convertorExecutor.convert(getInput(), data);
 
                 final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
-                        .orElse(MeterConvertor.defaultResult(getVersion()))
+                        .orElse(MeterConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
@@ -582,7 +582,7 @@ public abstract class OFRpcTaskFactory {
             }
         };
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -606,22 +606,22 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input update group output
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return UpdateFlow task
      */
     public static OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> createUpdateGroupTask(
             OFRpcTaskContext taskContext, UpdateGroupInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionDatapathIdConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 UpdateGroupInput input, ConvertorExecutor convertorExecutor) {
+                                 UpdateGroupInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -634,7 +634,7 @@ public abstract class OFRpcTaskFactory {
                         convertorExecutor.convert(getInput().getUpdatedGroup(), data);
 
                 final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
-                        .orElse(GroupConvertor.defaultResult(getVersion()))
+                        .orElse(GroupConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateGroupOutput>> resultFromOFLib =
@@ -654,7 +654,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -678,22 +678,22 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input update meter input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return update meter task
      */
     public static OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> createUpdateMeterTask(
             OFRpcTaskContext taskContext, UpdateMeterInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 UpdateMeterInput input, ConvertorExecutor convertorExecutor) {
+                                 UpdateMeterInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionConvertorData(getVersion());
+                data = new VersionConverterData(getVersion());
             }
 
             @Override
@@ -704,7 +704,7 @@ public abstract class OFRpcTaskFactory {
                 final java.util.Optional<MeterModInputBuilder> ofMeterModInput = convertorExecutor.convert(getInput().getUpdatedMeter(), data);
 
                 final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
-                        .orElse(MeterConvertor.defaultResult(getVersion()))
+                        .orElse(MeterConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateMeterOutput>> resultFromOFLib =
@@ -722,7 +722,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -747,22 +747,22 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input update flow input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task remove flow task
      */
     public static OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> createRemoveFlowTask(
             OFRpcTaskContext taskContext, RemoveFlowInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> {
 
-            private final VersionDatapathIdConvertorData data;
-            private final ConvertorExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
+            private final ConverterExecutor convertorExecutor;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 RemoveFlowInput input, ConvertorExecutor convertorExecutor) {
+                                 RemoveFlowInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -788,7 +788,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -813,22 +813,22 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input remove group input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task remove group task
      */
     public static OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> createRemoveGroupTask(
             final OFRpcTaskContext taskContext, RemoveGroupInput input,
-            final SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionDatapathIdConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionDatapathIdConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 RemoveGroupInput input, ConvertorExecutor convertorExecutor) {
+                                 RemoveGroupInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionDatapathIdConvertorData(getVersion());
+                data = new VersionDatapathIdConverterData(getVersion());
                 data.setDatapathId(getSession().getFeatures().getDatapathId());
             }
 
@@ -840,7 +840,7 @@ public abstract class OFRpcTaskFactory {
                 final java.util.Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(getInput(), data);
 
                 final GroupModInputBuilder groupModInputBuilder = ofGroupModInput
-                        .orElse(GroupConvertor.defaultResult(getVersion()))
+                        .orElse(GroupConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
@@ -859,7 +859,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -883,23 +883,23 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input meter removed input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task meter remove task
      */
     public static OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> createRemoveMeterTask(
             OFRpcTaskContext taskContext, RemoveMeterInput input,
-            SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 RemoveMeterInput input, ConvertorExecutor convertorExecutor) {
+                                 RemoveMeterInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionConvertorData(getVersion());
+                data = new VersionConverterData(getVersion());
             }
 
             @Override
@@ -910,7 +910,7 @@ public abstract class OFRpcTaskFactory {
                 final java.util.Optional<MeterModInputBuilder> ofMeterModInput = convertorExecutor.convert(getInput(), data);
 
                 final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
-                        .orElse(MeterConvertor.defaultResult(getVersion()))
+                        .orElse(MeterConverter.defaultResult(getVersion()))
                         .setXid(getSession().getNextXid());
 
                 Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
@@ -929,7 +929,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
 
     }
 
@@ -1661,20 +1661,20 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input get flow statistics from flow table
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task get flow statistics from flow table task
      */
     public static OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>>
     createGetFlowStatisticsFromFlowTableTask(
             final OFRpcTaskContext taskContext,
-            final GetFlowStatisticsFromFlowTableInput input, SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final GetFlowStatisticsFromFlowTableInput input, SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
+            private final ConverterExecutor convertorExecutor;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 GetFlowStatisticsFromFlowTableInput input, ConvertorExecutor convertorExecutor) {
+                                 GetFlowStatisticsFromFlowTableInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
             }
@@ -1740,7 +1740,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -1807,19 +1807,19 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input aggregate flow statistics input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task task to fetch the statistics
      */
     public static OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
     createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(
             final OFRpcTaskContext taskContext,
-            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input, SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input, SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
         class OFRpcTaskImpl extends OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
+            private final ConverterExecutor convertorExecutor;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input, ConvertorExecutor convertorExecutor) {
+                                 GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
             }
@@ -1874,7 +1874,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
@@ -2138,23 +2138,23 @@ public abstract class OFRpcTaskFactory {
      * @param taskContext task context
      * @param input update port input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task task to update port
      */
     public static OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> createUpdatePortTask(
             final OFRpcTaskContext taskContext, final UpdatePortInput input,
-            final SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 UpdatePortInput input, ConvertorExecutor convertorExecutor) {
+                                 UpdatePortInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionConvertorData(getVersion());
+                data = new VersionConverterData(getVersion());
             }
 
             @Override
@@ -2165,7 +2165,7 @@ public abstract class OFRpcTaskFactory {
                 final java.util.Optional<PortModInput> ofPortModInput = convertorExecutor.convert(inputPort, data);
 
                 PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
-                        .orElse(PortConvertor.defaultResult(getVersion())))
+                        .orElse(PortConverter.defaultResult(getVersion())))
                         .setXid(taskContext.getSession().getNextXid());
 
                 Future<RpcResult<UpdatePortOutput>> resultFromOFLib = getMessageService()
@@ -2176,30 +2176,30 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     /**
      * @param taskContext task context
      * @param input update table input
      * @param cookie switch connection distinguisher cookie value
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return task task to udpate table input
      */
     public static OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> createUpdateTableTask(
             final OFRpcTaskContext taskContext, final UpdateTableInput input,
-            final SwitchConnectionDistinguisher cookie, ConvertorExecutor convertorExecutor) {
+            final SwitchConnectionDistinguisher cookie, ConverterExecutor converterExecutor) {
 
         class OFRpcTaskImpl extends OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> {
 
-            private final ConvertorExecutor convertorExecutor;
-            private final VersionConvertorData data;
+            private final ConverterExecutor convertorExecutor;
+            private final VersionConverterData data;
 
             public OFRpcTaskImpl(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie,
-                                 UpdateTableInput input, ConvertorExecutor convertorExecutor) {
+                                 UpdateTableInput input, ConverterExecutor convertorExecutor) {
                 super(taskContext, cookie, input);
                 this.convertorExecutor = convertorExecutor;
-                data = new VersionConvertorData(getVersion());
+                data = new VersionConverterData(getVersion());
             }
 
             @Override
@@ -2237,7 +2237,7 @@ public abstract class OFRpcTaskFactory {
             }
         }
 
-        return new OFRpcTaskImpl(taskContext, cookie, input, convertorExecutor);
+        return new OFRpcTaskImpl(taskContext, cookie, input, converterExecutor);
     }
 
     public static OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> createSetNodeConfigTask(final OFRpcTaskContext taskContext,

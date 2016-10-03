@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -45,11 +45,11 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         this.deviceContext = deviceContext;
-        addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorExecutor);
-        updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorExecutor);
-        removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorExecutor);
+        addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, converterExecutor);
+        updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, converterExecutor);
+        removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, converterExecutor);
     }
 
     @Override

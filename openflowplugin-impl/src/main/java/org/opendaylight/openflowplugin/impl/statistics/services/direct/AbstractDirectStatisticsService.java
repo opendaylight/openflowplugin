@@ -22,7 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.services.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.StoreStatsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -69,7 +69,7 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
             };
 
     private final MultipartType multipartType;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final OpenflowVersion ofVersion = OpenflowVersion.get(getVersion());
     /**
      * Instantiates a new Abstract direct statistics service.
@@ -77,17 +77,17 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
      * @param multipartType       the multipart type
      * @param requestContextStack the request context stack
      * @param deviceContext       the device context
-     * @param convertorExecutor
+     * @param converterExecutor
      */
     protected AbstractDirectStatisticsService(MultipartType multipartType, RequestContextStack requestContextStack,
-                                              DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
+                                              DeviceContext deviceContext, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext);
         this.multipartType = multipartType;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
-    protected ConvertorExecutor getConvertorExecutor() {
-        return convertorExecutor;
+    protected ConverterExecutor getConverterExecutor() {
+        return converterExecutor;
     }
 
     /**

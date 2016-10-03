@@ -38,7 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegist
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -86,7 +86,7 @@ public class RpcManagerImplTest {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private NotificationPublishService notificationPublishService;
 
@@ -100,7 +100,7 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, extensionConverterProvider, convertorExecutor, notificationPublishService);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, extensionConverterProvider, converterExecutor, notificationPublishService);
         rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()

@@ -16,8 +16,8 @@ import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -199,13 +199,13 @@ public class NodeStaticReplyTranslatorUtil {
      *
      * @param reply reply
      * @param version Openflow version
-     * @param convertorExecutor convertor executor
+     * @param converterExecutor converter executor
      * @return list of table features
      */
-    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply, final short version, @CheckForNull final ConvertorExecutor convertorExecutor) {
+    public static List<TableFeatures> nodeTableFeatureTranslator(@CheckForNull final MultipartReplyTableFeatures reply, final short version, @CheckForNull final ConverterExecutor converterExecutor) {
         Preconditions.checkArgument(reply != null);
-        Preconditions.checkArgument(convertorExecutor != null);
-        final Optional<List<TableFeatures>> tableFeaturesList = convertorExecutor.convert(reply, new VersionConvertorData(version));
+        Preconditions.checkArgument(converterExecutor != null);
+        final Optional<List<TableFeatures>> tableFeaturesList = converterExecutor.convert(reply, new VersionConverterData(version));
         return tableFeaturesList.orElse(Collections.emptyList());
     }
 

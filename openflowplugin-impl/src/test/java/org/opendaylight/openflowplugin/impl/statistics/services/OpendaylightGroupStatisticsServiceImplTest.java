@@ -21,8 +21,8 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInputBuilder;
@@ -67,7 +67,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
     private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
 
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService, convertorManager);
 

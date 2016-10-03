@@ -11,9 +11,9 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.MeterConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -21,20 +21,20 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 
 final class MeterService<I extends Meter, O extends DataObject> extends AbstractSimpleService<I, O> {
 
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionConverterData data;
 
-    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    MeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, clazz);
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final I input) throws ServiceException {
-        final Optional<MeterModInputBuilder> ofMeterModInput = convertorExecutor.convert(input, data);
+        final Optional<MeterModInputBuilder> ofMeterModInput = converterExecutor.convert(input, data);
         final MeterModInputBuilder meterModInputBuilder = ofMeterModInput
-                .orElse(MeterConvertor.defaultResult(getVersion()));
+                .orElse(MeterConverter.defaultResult(getVersion()));
 
         meterModInputBuilder.setXid(xid.getValue());
         return meterModInputBuilder.build();
