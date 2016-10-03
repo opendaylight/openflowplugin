@@ -24,7 +24,7 @@ public interface ConnectionManager extends SwitchConnectionHandler {
      * Method registers handler responsible handling operations related to connected device after
      * device is connected.
      *
-     * @param deviceConnectedHandler
+     * @param deviceConnectedHandler device connected handler
      */
     void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler);
     void setEchoReplyTimeout(long echoReplyTimeout);
