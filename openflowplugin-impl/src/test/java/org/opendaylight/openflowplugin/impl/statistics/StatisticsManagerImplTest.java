@@ -40,7 +40,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -212,16 +211,17 @@ public class StatisticsManagerImplTest {
     @Test
     public void testOnDeviceContextClosed() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        Mockito.when(statisticContext.stopServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
         final Map<DeviceInfo, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
 
         contextsMap.put(deviceInfo, statisticContext);
         Assert.assertEquals(1, contextsMap.size());
 
         statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
-        statisticsManager.onDeviceContextLevelDown(deviceInfo);
-        verify(statisticContext).close();
-        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
-        Assert.assertEquals(0, contextsMap.size());
+        statisticsManager.onDeviceContextLevelDown(deviceInfo, true);
+        verify(statisticContext).stopServices(true);
+        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo, true);
+        Assert.assertEquals(1, contextsMap.size());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

@@ -95,14 +95,14 @@ public class RoleContextImplTest {
 
     @Test
     public void stopClusterServicesNotDisconnected() throws Exception {
-        roleContextSpy.stopClusterServices(false);
+        roleContextSpy.stopServices(false);
         Mockito.verify(roleContextSpy).sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
         Mockito.verify(roleManager, Mockito.never()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 
     @Test
     public void stopClusterServicesDisconnected() throws Exception {
-        roleContextSpy.stopClusterServices(true);
+        roleContextSpy.stopServices(true);
         Mockito.verify(roleManager, Mockito.atLeastOnce()).removeDeviceFromOperationalDS(Mockito.<DeviceInfo>any());
     }
 

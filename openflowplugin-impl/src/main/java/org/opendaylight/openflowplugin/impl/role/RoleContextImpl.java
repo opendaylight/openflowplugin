@@ -112,8 +112,7 @@ class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(final boolean deviceDisconnected) {
-
+    public ListenableFuture<Void> stopServices(final boolean deviceDisconnected) {
         if (!deviceDisconnected) {
             ListenableFuture<Void> future = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
                 @Nullable
@@ -203,5 +202,10 @@ class RoleContextImpl implements RoleContext {
             LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
             lifecycleService.closeConnection();
         }
+    }
+
+    @Override
+    public void close() {
+        stopServices(true);
     }
 }

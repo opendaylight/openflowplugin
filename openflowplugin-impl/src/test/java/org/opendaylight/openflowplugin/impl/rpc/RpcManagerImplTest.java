@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.base.VerifyException;
+import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
 import org.junit.Rule;
@@ -123,10 +124,11 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
-                Matchers.<Class<RpcService>>any(), Matchers.any(RpcService.class)))
+                Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
         Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
+        Mockito.when(removedContexts.stopServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
     }
 
     @Test
@@ -156,8 +158,8 @@ public class RpcManagerImplTest {
 
     @Test
     public void testOnDeviceContextLevelDown() throws Exception {
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(deviceTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
+        rpcManager.onDeviceContextLevelDown(deviceInfo, true);
+        verify(deviceTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo, true);
     }
 
     /**
@@ -165,10 +167,10 @@ public class RpcManagerImplTest {
      */
     @Test
     public void onDeviceContextLevelDown1() {
-        rpcManager.addRecordToContexts(deviceInfo,removedContexts);
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(removedContexts,times(1)).close();
-        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
+        rpcManager.addRecordToContexts(deviceInfo, removedContexts);
+        rpcManager.onDeviceContextLevelDown(deviceInfo, true);
+        verify(removedContexts,times(1)).stopServices(true);
+        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo, true);
     }
 
 
@@ -177,9 +179,9 @@ public class RpcManagerImplTest {
      */
     @Test
     public void onDeviceContextLevelDown2() {
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(removedContexts,never()).close();
-        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
+        rpcManager.onDeviceContextLevelDown(deviceInfo, true);
+        verify(removedContexts,never()).stopServices(true);
+        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo, true);
 
     }
 
