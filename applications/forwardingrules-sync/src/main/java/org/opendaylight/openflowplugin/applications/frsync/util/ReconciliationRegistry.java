@@ -25,7 +25,7 @@ public class ReconciliationRegistry {
     public Date register(NodeId nodeId) {
         Date timestamp = new Date();
         registration.put(nodeId, timestamp);
-        LOG.debug("Registered for next consistent operational: {}", nodeId.getValue());
+        LOG.debug("Registered for reconciliation: {}", nodeId.getValue());
         // TODO  elicit statistics gathering if not running actually
         return timestamp;
     }
@@ -33,7 +33,7 @@ public class ReconciliationRegistry {
     public Date unregisterIfRegistered(NodeId nodeId) {
         Date timestamp = registration.remove(nodeId);
         if (timestamp != null) {
-            LOG.debug("Unregistered for next consistent operational: {}", nodeId.getValue());
+            LOG.debug("Unregistered for reconciliation: {}", nodeId.getValue());
         }
         return timestamp;
     }
