@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2016 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:scale-reference-app:impl?module=scale-reference-app-impl&amp;revision=2016-09-23</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:flow:inventory?module=flow-node-inventory&amp;revision=2013-08-19</capability>
+        <capability>urn:ietf:params:xml:ns:yang:ietf-yang-types?module=ietf-yang-types&amp;revision=2010-09-24</capability>
+        <capability>urn:opendaylight:inventory?module=opendaylight-inventory&amp;revision=2013-08-19</capability>
+        <capability>urn:opendaylight:flow:types?module=opendaylight-flow-types&amp;revision=2013-10-26</capability>
+    </required-capabilities>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:scale-reference-app:impl">prefix:scale-reference-app-impl</type>
+                    <name>scale-reference-app-default</name>
+                    <osgi-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                        <name>binding-osgi-broker</name>
+                    </osgi-broker>
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>pingpong-binding-data-broker</name>
+                    </data-broker>
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
+                    <southboundmanager>
+                        <type xmlns:southboundmanager="urn:opendaylight:params:xml:ns:yang:openflow:applications:southboundmanager:api">southboundmanager:southboundmanager-api</type>
+                        <name>southboundmanager</name>
+                    </southboundmanager>
+                    <prioritytaskmgr>
+                        <type xmlns:prioritytaskmgr="urn:opendaylight:params:xml:ns:yang:openflow:applications:prioritytaskmgr:api">prioritytaskmgr:prioritytaskmgr-api</type>
+                        <name>prioritytaskmgr</name>
+                    </prioritytaskmgr>
+                </module>
+            </modules>
+        </data>
+    </configuration>
+</snapshot>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2016 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:applications:jobcoordinator:api?module=jobcoordinator-api&amp;revision=2016-02-25</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:applications:jobcoordinator:impl?module=jobcoordinator-impl&amp;revision=2016-02-25</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+    </required-capabilities>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:applications:jobcoordinator:impl">prefix:jobcoordinator-impl</type>
+                    <name>jobcoordinator-default</name>
+                    <osgi-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                        <name>binding-osgi-broker</name>
+                    </osgi-broker>
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
+                </module>
+            </modules>
+            <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <service>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:applications:jobcoordinator:api">prefix:jobcoordinator-api</type>
+                    <instance>
+                        <name>jobcoordinator</name>
+                        <provider>/modules/module[type='jobcoordinator-impl'][name='jobcoordinator-default']</provider>
+                    </instance>
+                </service>
+            </services>
+        </data>
+    </configuration>
+</snapshot>
