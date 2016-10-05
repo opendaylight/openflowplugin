@@ -1,0 +1,121 @@
+module scale-ref-app-model {
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:scale-ref-app";
+  prefix scale-ref-app;
+
+  import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+  
+  description
+    "This YANG module defines a component that describing the
+    configuration of scale-reference-app model.";
+
+  revision 2016-09-23 {
+    description
+      "Initial revision";
+	}
+
+    rpc add-subscriber-filter {
+		description "rpc for adding subscriber filter.";
+        input {
+
+ 	        leaf scf-id {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "starting unique index for subscriber filter";
+ 			}
+
+			leaf src-ip-prefix {
+				type inet:ipv4-prefix;
+ 				mandatory true;
+ 				status current;
+				description
+				"ip address assign to subscriber filter.";
+			}
+		
+ 	        leaf vni {
+ 				type uint32;
+ 				mandatory false;
+ 				status current;
+ 				description "vni for the subscriber filter";
+ 			}
+			
+            leaf port-start {
+ 				type uint16;
+ 				mandatory false;
+ 				status current;
+ 				description "port start";
+ 			}
+
+			leaf port-end {
+ 				type uint16;
+ 				mandatory false;
+ 				status current;
+ 				description "port end";
+ 			}
+			
+			leaf priority {
+ 				type uint16;
+ 				mandatory false;
+ 				status current;
+ 				description "priority";
+ 			}
+			
+			leaf sub-profile-id {
+ 				type uint16;
+ 				mandatory false;
+ 				status current;
+ 				description "subscriber profile id";
+ 			}
+			
+			leaf display-name {
+ 				type string;
+ 				mandatory false;
+ 				status current;
+ 				description "subscriber display name";
+ 			}
+ 		}
+    }
+
+	rpc remove-subscriber-filter {
+		description "rpc for removing subscriber filter.";
+        input {
+
+ 	        leaf sub-profile-id {
+ 				type uint16;
+ 				mandatory true;
+ 				status current;
+ 				description "starting unique index for subscriber filter";
+ 			}
+
+			leaf src-ip-prefix {
+				type inet:ipv4-prefix;
+ 				mandatory true;
+ 				status current;
+				description
+				"ip address assign to subscriber filter.";
+			}
+			
+ 		}
+    }
+    
+	rpc bulk-add-subscriber-filter {
+		description "rpc for bulk add subscriber filter.";
+        input {
+
+ 	        leaf sub-filter-count {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "starting unique index for subscriber filter";
+ 			}
+			
+			leaf parallelism {
+ 				type uint16;
+ 				mandatory false;
+ 				status current;
+ 				description "the thread pool size to execute the bulk add operation";
+ 			}
+ 		}
+    }
+}

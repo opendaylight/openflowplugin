@@ -1,0 +1,132 @@
+module ref-app-model {
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:ref-app";
+  prefix ref-app;
+
+  description
+    "This YANG module defines a component that describing the
+    configuration of reference-app model.";
+
+  revision 2016-05-04 {
+    description
+      "Initial revision";
+	}
+
+   container subscriber-list-entries {
+        description
+          "The subscriber-list-entries container contains
+          a list of subscriber-list-entries.";
+        list subscriber-list-entry {
+			key "index";
+			description
+			"List of subscriber list entries";
+	
+			leaf subscriber-ip {
+				type string;
+				description
+				"ip address assign to subscriber.";
+			}
+          
+            leaf index {
+				type uint32;
+				description
+				"A unique id identifying this Subscriber List Entry.";
+            }
+        }
+      }
+	
+	typedef oper-status {
+        type enumeration {
+            enum SUCCESS {
+                description "operation is successful.";
+            }
+            enum FAILED {
+                description "operation is failed.";
+            }
+			enum INPROGRESS {
+                description "operation is in-progress.";
+            }
+        }
+    }
+	
+    rpc add-subscribers {
+		description "rpc for adding subscribers.";
+        input {
+
+ 	        leaf starting-index {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "starting unique index for subscriber";
+ 			}
+
+			leaf starting-ip {
+				type string;
+ 				mandatory true;
+ 				status current;
+				description
+				"ip address assign to subscriber starting from this ip.";
+			}
+		
+ 	        leaf subscriber-count {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "Number of Subscribers to be added";
+ 			}
+			
+            leaf batch-size {
+ 				type uint32;
+ 				mandatory false;
+ 				status current;
+ 				description "batch size";
+ 			}
+
+
+ 		}
+    }
+
+    rpc remove-subscribers {
+		description "rpc for removing subscribers.";
+        input {
+
+ 	        leaf starting-index {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "unique index from where start removing subscriber.";
+ 			}
+		
+ 	        leaf subscriber-count {
+ 				type uint32;
+ 				mandatory true;
+ 				status current;
+ 				description "Number of Subscribers to be removed";
+ 			}
+
+            leaf batch-size {
+ 				type uint32;
+ 				mandatory false;
+ 				status current;
+ 				description "batch size";
+ 			}
+
+ 		}
+    }
+	
+    rpc get-subscriber-count {
+		description "get total number of subscribers in config ds.";
+        output {
+
+ 	        leaf subscriber-count {
+ 				type uint32;
+ 				description "No of Subscribers";
+ 			}
+
+ 			leaf operational-status {
+                type oper-status;
+                description "get status of subscriber count operations.";
+            }
+ 		}
+    }
+}

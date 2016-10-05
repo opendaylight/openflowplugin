@@ -1,0 +1,45 @@
+module jobcoordinator-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:jobcoordinator:impl";
+    prefix "jobcoordinator-impl";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+    import jobcoordinator-api { prefix jc-api; revision-date 2016-02-25;}
+
+    description
+        "Service definition for Job Coordinator project";
+
+    revision "2016-02-25" {
+        description
+            "Initial revision";
+    }
+
+    identity jobcoordinator-impl {
+        base config:module-type;
+        config:provided-service jc-api:jobcoordinator-api;
+        config:java-name-prefix JobCoordinatorImpl;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case jobcoordinator-impl {
+            when "/config:modules/config:module/config:type = 'jobcoordinator-impl'";
+            container osgi-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-broker-osgi-registry;
+                    }
+                }
+            }
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+        }
+    }
+}

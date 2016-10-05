@@ -99,6 +99,10 @@
         <!--<module>features</module>-->
         <!-- experimental apps -->
         <module>bulk-o-matic</module>
+        <module>southboundmanager</module>
+        <module>jobcoordinator</module>
+        <module>prioritytaskmgr</module>
+        <module>scale-reference-app</module>
     </modules>
 
 </project>
