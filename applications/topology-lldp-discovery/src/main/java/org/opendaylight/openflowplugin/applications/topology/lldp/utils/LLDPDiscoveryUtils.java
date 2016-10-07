@@ -12,6 +12,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import java.lang.management.ManagementFactory;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -39,6 +40,11 @@ import org.slf4j.LoggerFactory;
 public class LLDPDiscoveryUtils {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtils.class);
 
+    private static final short MINIMUM_LLDP_SIZE = 61;
+    private static final short ETHERTYPE_OFFSET = 12;
+    public static final short ETHERTYPE_VLAN = (short) 0x8100;
+    public static final short ETHERTYPE_LLDP = (short) 0x88cc;
+
     public static String macToString(byte[] mac) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
@@ -63,16 +69,17 @@ public class LLDPDiscoveryUtils {
      * @return nodeConnectorId - encoded in custom TLV of given lldp
      */
     public static NodeConnectorRef lldpToNodeConnectorRef(byte[] payload, boolean useExtraAuthenticatorCheck)  {
-        Ethernet ethPkt = new Ethernet();
-        try {
-            ethPkt.deserialize(payload, 0,payload.length * NetUtils.NumBitsInAByte);
-        } catch (Exception e) {
-            LOG.warn("Failed to decode LLDP packet {}", e);
-        }
-
         NodeConnectorRef nodeConnectorRef = null;
 
-        if (ethPkt.getPayload() instanceof LLDP) {
+        if (isLLDP(payload)) {
+            Ethernet ethPkt = new Ethernet();
+            try {
+                ethPkt.deserialize(payload, 0, payload.length * NetUtils.NumBitsInAByte);
+            } catch (Exception e) {
+                LOG.warn("Failed to decode LLDP packet {}", e);
+                return nodeConnectorRef;
+            }
+
             LLDP lldp = (LLDP) ethPkt.getPayload();
 
             try {
@@ -81,7 +88,7 @@ public class LLDPDiscoveryUtils {
 
                 final LLDPTLV systemIdTLV = lldp.getSystemNameId();
                 if (systemIdTLV != null) {
-                    String srcNodeIdString = new String(systemIdTLV.getValue(),Charset.defaultCharset());
+                    String srcNodeIdString = new String(systemIdTLV.getValue(), Charset.defaultCharset());
                     srcNodeId = new NodeId(srcNodeIdString);
                 } else {
                     throw new Exception("Node id wasn't specified via systemNameId in LLDP packet.");
@@ -98,14 +105,14 @@ public class LLDPDiscoveryUtils {
 
                 if (useExtraAuthenticatorCheck) {
                     boolean secure = checkExtraAuthenticator(lldp, srcNodeConnectorId);
-                    if (! secure) {
+                    if (!secure) {
                         LOG.warn("SECURITY ALERT: there is probably a LLDP spoofing attack in progress.");
                         throw new Exception("Attack. LLDP packet with inconsistent extra authenticator field was received.");
                     }
                 }
 
                 InstanceIdentifier<NodeConnector> srcInstanceId = InstanceIdentifier.builder(Nodes.class)
-                        .child(Node.class,new NodeKey(srcNodeId))
+                        .child(Node.class, new NodeKey(srcNodeId))
                         .child(NodeConnector.class, new NodeConnectorKey(srcNodeConnectorId))
                         .toInstance();
                 nodeConnectorRef = new NodeConnectorRef(srcInstanceId);
@@ -156,5 +163,23 @@ public class LLDPDiscoveryUtils {
         }
 
         return secAuthenticatorOk;
+    }
+
+    private static boolean isLLDP(final byte[] packet) {
+        // check packet minimum size
+        if (packet == null || packet.length < MINIMUM_LLDP_SIZE) {
+            return false;
+        }
+
+        final ByteBuffer bb = ByteBuffer.wrap(packet);
+
+        // fetch ethertype, skip VLAN tag if it's there
+        short etherType = bb.getShort(ETHERTYPE_OFFSET);
+
+        if (etherType == ETHERTYPE_VLAN) {
+            etherType = bb.getShort(ETHERTYPE_OFFSET + 4);
+        }
+
+        return (etherType == ETHERTYPE_LLDP);
     }
 }
