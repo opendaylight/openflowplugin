@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_2d4573b3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "http://chris.beams.io/posts/git-commit/",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 43
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_cd0b1f7c",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "too many returns\nand this is duplicated",
+      "range": {
+        "startLine": 84,
+        "startChar": 12,
+        "endLine": 84,
+        "endChar": 50
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6d164ba9",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "too many returns",
+      "range": {
+        "startLine": 98,
+        "startChar": 12,
+        "endLine": 98,
+        "endChar": 48
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8d1127b2",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "too many returns\nand this is duplicated",
+      "range": {
+        "startLine": 100,
+        "startChar": 11,
+        "endLine": 100,
+        "endChar": 50
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8d7807fa",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "same code here, werent better to send here DataObjectModification\u003cNode\u003e",
+      "range": {
+        "startLine": 115,
+        "startChar": 8,
+        "endLine": 115,
+        "endChar": 81
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ad1063a9",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "use Objects please",
+      "range": {
+        "startLine": 116,
+        "startChar": 15,
+        "endLine": 116,
+        "endChar": 83
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6d7dabe7",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "same code here, werent better to send here DataObjectModification\u003cNode\u003e",
+      "range": {
+        "startLine": 123,
+        "startChar": 8,
+        "endLine": 123,
+        "endChar": 81
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_cd82ffc7",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "same code here, werent better to send here DataObjectModification\u003cNode\u003e",
+      "range": {
+        "startLine": 129,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 81
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ad87c3d6",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "same code here, werent better to send here DataObjectModification\u003cNode\u003e",
+      "range": {
+        "startLine": 137,
+        "startChar": 8,
+        "endLine": 137,
+        "endChar": 81
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8d5f6775",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "annotations ?",
+      "range": {
+        "startLine": 137,
+        "startChar": 68,
+        "endLine": 137,
+        "endChar": 92
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2d73b316",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/SimplifiedOperationalListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-07T06:53:02Z",
+      "side": 1,
+      "message": "some mock are created through annotation, some as Mockito.mock, it is more readable when use one approach in one test class, isnt it ?",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 138,
+        "endChar": 67
+      },
+      "revId": "cf6efb7e30b67997bbe72f35a5d4e46cd1ec3780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
