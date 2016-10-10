@@ -28,11 +28,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 
@@ -118,6 +114,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private static final String SEPARATOR = ":";
 
     private ListenerRegistration<FlowNodeReconciliationImpl> listenerRegistration;
+
+    private volatile ConcurrentMap<BigInteger, Cancellable> reconTaskMap = new ConcurrentHashMap<>();
 
     private static final int THREAD_POOL_SIZE = 4;
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -229,6 +227,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode) {
+        cancelReconciliationTask(disconnectedNode);
         provider.unregistrateNode(disconnectedNode);
     }
 
@@ -253,19 +252,40 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
-    private class ReconciliationTask implements Runnable {
+    private void cancelReconciliationTask(InstanceIdentifier<FlowCapableNode> disconnectedNode) {
+        BigInteger dpId = getDpIdFromNodeId(disconnectedNode);
+        Cancellable reconTask = reconTaskMap.get(dpId);
+        if (reconTask != null) {
+            reconTask.cancel();
+        }
+    }
+
+
+    private BigInteger getDpIdFromNodeId(InstanceIdentifier<FlowCapableNode> nodeIdent){
+        String nodeName = nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+        String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
+        return new BigInteger(dpId);
+    }
+
+    private interface Cancellable {
+        public void cancel();
+    }
+
+    private class ReconciliationTask implements Runnable ,Cancellable{
 
         InstanceIdentifier<FlowCapableNode> nodeIdentity;
+        private volatile boolean isCancelled;
 
         public ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
            nodeIdentity = nodeIdent;
+            isCancelled = false;
         }
 
         @Override
         public void run() {
 
             String sNode = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
-            BigInteger nDpId = getDpnIdFromNodeName(sNode);
+            BigInteger dpId = getDpIdFromNodeId(nodeIdentity);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode = Optional.absent();
@@ -278,7 +298,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 LOG.error("Fail with read Config/DS for Node {} !", nodeIdentity, e);
             }
 
-            if (flowNode.isPresent()) {
+            if (flowNode.isPresent() && !isCancelled) {
+
+                reconTaskMap.put(dpId, this);
             /* Tables - have to be pushed before groups */
                 // CHECK if while pusing the update, updateTableInput can be null to emulate a table add
                 List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
@@ -334,7 +356,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                                     //check if the nodeconnector is there in the multimap
                                     boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
-                                            .isNodeConnectorUpdated(nDpId, nodeConnectorUri);
+                                            .isNodeConnectorUpdated(dpId, nodeConnectorUri);
                                     //if yes set okToInstall = true
 
                                     if (isPresent) {
@@ -415,7 +437,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
+                reconTaskMap.remove(dpId);
             }
+
         /* clean transaction */
             trans.close();
         }
@@ -494,13 +518,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
             }
         }
+
+        @Override
+        public void cancel() {
+            isCancelled = true;
+        }
     }
 
-    private BigInteger getDpnIdFromNodeName(String nodeName) {
 
-        String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-        return new BigInteger(dpId);
-    }
 
     private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
