@@ -35,5 +35,9 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
 
     void setSkipTableFeatures(boolean skipTableFeatures);
 
+    void setBarrierCountLimit(int barrierCountLimit);
+
+    void setBarrierInterval(long barrierTimeoutLimit);
+
 }
 

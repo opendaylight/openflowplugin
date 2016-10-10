@@ -80,8 +80,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceInfo, LifecycleService> lifecycleServices = new ConcurrentHashMap<>();
 
-    private final long barrierIntervalNanos;
-    private final int barrierCountLimit;
+    private long barrierIntervalNanos;
+    private int barrierCountLimit;
 
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
@@ -375,6 +375,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void setSkipTableFeatures(boolean skipTableFeaturesValue) {
         skipTableFeatures = skipTableFeaturesValue;
+    }
+
+    @Override
+    public void setBarrierCountLimit(final int barrierCountLimit) {
+        this.barrierCountLimit = barrierCountLimit;
+    }
+
+    @Override
+    public void setBarrierInterval(final long barrierTimeoutLimit) {
+        this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierTimeoutLimit);
     }
 
 }
