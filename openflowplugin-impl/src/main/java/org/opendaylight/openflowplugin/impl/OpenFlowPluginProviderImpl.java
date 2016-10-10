@@ -276,6 +276,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(deviceManager != null && props.containsKey("skip-table-features")) {
             deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
         }
+        if(rpcManager != null && props.containsKey("is-statistics-rpc-enabled")){
+            rpcManager.setStatisticsRpcEnabled(Boolean.valueOf((props.get("is-statistics-rpc-enabled").toString())));
+        }
+        if(deviceManager != null && props.containsKey("barrier-count-limit")){
+            deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
+        }
+        if(deviceManager !=null && props.containsKey("barrier-interval-timeout-limit")){
+            deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
+        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
