@@ -69,7 +69,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private boolean isStatisticsPollingEnabled;
+    private boolean isStatisticsPollingOff;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
     private final HashedWheelTimer hashedWheelTimer;
@@ -80,7 +80,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
-                                 final boolean isStatisticsPollingEnabled,
+                                 final boolean isStatisticsPollingOff,
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
@@ -88,7 +88,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
-        this.isStatisticsPollingEnabled = isStatisticsPollingEnabled;
+        this.isStatisticsPollingOff = isStatisticsPollingOff;
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
@@ -99,7 +99,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext =
                 new StatisticsContextImpl(
                         deviceInfo,
-                        isStatisticsPollingEnabled,
+                        isStatisticsPollingOff,
                         lifecycleService,
                         converterExecutor,
                         this);
@@ -172,7 +172,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (LOG.isDebugEnabled()) {
             LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
         }
-        if (!isStatisticsPollingEnabled) {
+        if (!isStatisticsPollingOff) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
                     timeout -> pollStatistics(
                             deviceState,
@@ -231,7 +231,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             if (!workMode.equals(targetWorkMode)) {
-                isStatisticsPollingEnabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+                isStatisticsPollingOff = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
                 // iterate through stats-ctx: propagate mode
                 for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     final DeviceInfo deviceInfo = entry.getKey();
@@ -271,7 +271,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
-        if (isStatisticsPollingEnabled) {
+        if (isStatisticsPollingOff) {
             LOG.info("Statistics are shutdown for device: {}", deviceInfo.getNodeId());
             return;
         }
@@ -328,6 +328,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
         this.deviceTerminPhaseHandler = handler;
+    }
+
+    @Override
+    public void setIsStatisticsPollingOff(boolean isStatisticsPollingOff){
+        this.isStatisticsPollingOff = isStatisticsPollingOff;
     }
 
 }
