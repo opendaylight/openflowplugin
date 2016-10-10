@@ -27,4 +27,5 @@ public interface ConnectionManager extends SwitchConnectionHandler {
      * @param deviceConnectedHandler
      */
     void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler);
+    void setEchoReplyTimeout(long echoReplyTimeout);
 }
