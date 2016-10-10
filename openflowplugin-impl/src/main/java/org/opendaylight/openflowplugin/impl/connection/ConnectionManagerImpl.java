@@ -38,7 +38,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
     private DeviceConnectedHandler deviceConnectedHandler;
-    private final long echoReplyTimeout;
+    private long echoReplyTimeout;
     private final ThreadPoolExecutor threadPool;
 
     public ConnectionManagerImpl(long echoReplyTimeout, final ThreadPoolExecutor threadPool) {
@@ -100,5 +100,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void setDeviceConnectedHandler(final DeviceConnectedHandler deviceConnectedHandler) {
         this.deviceConnectedHandler = deviceConnectedHandler;
+    }
+
+    public void setEchoReplyTimeout(long echoReplyTimeout){
+        this.echoReplyTimeout = echoReplyTimeout;
     }
 }
