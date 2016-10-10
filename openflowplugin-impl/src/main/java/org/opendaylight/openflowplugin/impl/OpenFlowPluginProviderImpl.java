@@ -282,8 +282,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(deviceManager != null && props.containsKey("barrier-count-limit")){
             deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
         }
-        if(deviceManager !=null && props.containsKey("barrier-interval-timeout-limit")){
+        if(deviceManager != null && props.containsKey("barrier-interval-timeout-limit")){
             deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
+        }
+        if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
+            connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
         }
     }
 
