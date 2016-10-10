@@ -276,6 +276,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(deviceManager != null && props.containsKey("skip-table-features")) {
             deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
         }
+        if(rpcManager != null && props.containsKey("is-statistics-rpc-enabled")){
+            rpcManager.setStatisticsRpcEnabled(Boolean.valueOf((props.get("is-statistics-rpc-enabled").toString())));
+        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
