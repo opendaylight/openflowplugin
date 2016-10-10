@@ -330,4 +330,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         this.deviceTerminPhaseHandler = handler;
     }
 
+    @Override
+    public void setIsStatisticsPollingEnabled(boolean isStatisticsPollingEnabled){
+        this.isStatisticsPollingEnabled = isStatisticsPollingEnabled;
+    }
+
 }

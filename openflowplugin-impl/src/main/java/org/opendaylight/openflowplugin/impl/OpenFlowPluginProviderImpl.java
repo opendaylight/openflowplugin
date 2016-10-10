@@ -288,6 +288,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
             connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
         }
+
+        if(statisticsManager != null && props.containsKey("is-statistics-polling-off")){
+            statisticsManager.setIsStatisticsPollingEnabled(Boolean.valueOf(props.get("is-statistics-polling-off").toString()));
+        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {

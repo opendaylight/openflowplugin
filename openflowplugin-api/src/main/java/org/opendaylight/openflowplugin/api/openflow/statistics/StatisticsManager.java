@@ -34,4 +34,6 @@ public interface StatisticsManager extends DeviceLifecycleSupervisor, DeviceInit
     @Override
     void close();
 
+    void setIsStatisticsPollingEnabled(boolean isStatisticsPollingEnabled);
+
 }
