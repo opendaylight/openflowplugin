@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_e40eede4",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2016-10-11T08:39:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_a42515b0",
+      "range": {
+        "startLine": 170,
+        "startChar": 12,
+        "endLine": 170,
+        "endChar": 26
+      },
+      "revId": "609e22ca1313ba86c4c435fbcbcfb3562557b142",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_641c9d6b",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-11T07:31:22Z",
       "side": 1,
       "message": "could be constant too",
+      "range": {
+        "startLine": 180,
+        "startChar": 36,
+        "endLine": 180,
+        "endChar": 56
+      },
+      "revId": "609e22ca1313ba86c4c435fbcbcfb3562557b142",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c413f10b",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2016-10-11T08:39:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_641c9d6b",
       "range": {
         "startLine": 180,
         "startChar": 36,
