@@ -48,6 +48,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
