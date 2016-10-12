@@ -180,6 +180,11 @@ module sal-bulk-flow {
 
     rpc flow-rpc-add-test {
 	input {
+	    leaf direct {
+            type boolean;
+            default false;
+        }
+
 	    leaf dpn-id {
 		type string;
 		mandatory true;
@@ -202,19 +207,24 @@ module sal-bulk-flow {
     }
 
     rpc flow-rpc-add-multiple {
-	input {
-	    leaf flow-count {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Flows to be pushed per DPN";
-	    }
-	    leaf rpc-batch-size {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
-	    }
-	}
+        input {
+            leaf direct {
+                type boolean;
+                default false;
+            }
+
+            leaf flow-count {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Flows to be pushed per DPN";
+            }
+            leaf rpc-batch-size {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
+            }
+        }
     }
 }

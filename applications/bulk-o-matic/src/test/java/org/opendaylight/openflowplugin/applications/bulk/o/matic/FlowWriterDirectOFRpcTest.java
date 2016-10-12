@@ -87,13 +87,13 @@ public class FlowWriterDirectOFRpcTest {
 
     @Test
     public void testRpcFlowAdd() throws Exception {
-        flowWriterDirectOFRpc.rpcFlowAdd("1", FLOWS_PER_DPN, 10);
+        flowWriterDirectOFRpc.rpcFlowAdd(false, "1", FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
     }
 
     @Test
     public void testRpcFlowAddAll() throws Exception {
-        flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
+        flowWriterDirectOFRpc.rpcFlowAddAll(false, FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
     }
 
