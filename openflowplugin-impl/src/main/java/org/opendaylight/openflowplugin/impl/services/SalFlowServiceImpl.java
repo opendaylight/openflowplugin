@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -34,9 +35,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowRawInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowRawOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
@@ -58,6 +63,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final FlowService<UpdateFlowOutput> flowUpdate;
     private final FlowService<AddFlowOutput> flowAdd;
     private final FlowService<RemoveFlowOutput> flowRemove;
+    private final FlowService<AddFlowDirectOutput> flowAddDirect;
+    private final FlowRawService<AddFlowRawOutput> flowAddRaw;
+
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
@@ -66,6 +74,8 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         flowRemove = new FlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
         flowAdd = new FlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
         flowUpdate = new FlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
+        flowAddDirect = new FlowService<>(requestContextStack, deviceContext, AddFlowDirectOutput.class, convertorExecutor);
+        flowAddRaw = new FlowRawService<>(requestContextStack, deviceContext, AddFlowRawOutput.class);
     }
 
     @Override
@@ -74,11 +84,49 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     }
 
     @Override
+    public Future<RpcResult<AddFlowDirectOutput>> addFlowDirect(AddFlowDirectInput input) {
+        final ListenableFuture<RpcResult<AddFlowDirectOutput>> future =
+                flowAddDirect.processFlowModInputBuilders(Collections.singletonList(new FlowModInputBuilder(input)));
+
+        Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowDirectOutput>>() {
+            @Override
+            public void onSuccess(final RpcResult<AddFlowDirectOutput> rpcResult) {
+                if (rpcResult.isSuccessful()) {
+                    if (LOG.isDebugEnabled()) {
+                        if (Objects.nonNull(input.getFlowRef())) {
+                            final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                            LOG.debug("Flow add with id={} finished without error", flowId.getValue());
+                        } else {
+                            LOG.debug("Flow add for flow={} finished without error", input);
+                        }
+                    }
+                } else {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Flow add failed for flow={}, errors={}", input, ErrorUtil.errorsToString(rpcResult.getErrors()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("Service call for adding flow={} failed, reason: {}", input, throwable);
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<RpcResult<AddFlowRawOutput>> addFlowRaw(AddFlowRawInput input) {
+        final ListenableFuture<RpcResult<AddFlowRawOutput>> future = flowAddRaw.processInput(input);
+        Futures.addCallback(future, new AddFlowRawCallback(input, FlowRegistryKeyFactory.create(input)));
+        return future;
+    }
+
+    @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-        final ListenableFuture<RpcResult<AddFlowOutput>> future =
-                flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
-        Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+        final ListenableFuture<RpcResult<AddFlowOutput>> future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
+        Futures.addCallback(future, new AddFlowCallback(input, FlowRegistryKeyFactory.create(input)));
         return future;
     }
 
@@ -138,6 +186,54 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
         @Override
         public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
+            if (rpcResult.isSuccessful()) {
+                final FlowDescriptor flowDescriptor;
+
+                if (Objects.nonNull(input.getFlowRef())) {
+                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
+                } else {
+                    final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
+                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                }
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
+                }
+
+                if (itemLifecycleListener != null) {
+                    KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
+                            deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+                    final FlowBuilder flowBuilder = new FlowBuilder(input).setId(flowDescriptor.getFlowId());
+                    itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Flow add failed for flow={}, errors={}", input,
+                            ErrorUtil.errorsToString(rpcResult.getErrors()));
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(final Throwable throwable) {
+            LOG.warn("Service call for adding flow={} failed, reason: {}", input, throwable);
+        }
+    }
+
+    private class AddFlowRawCallback implements FutureCallback<RpcResult<AddFlowRawOutput>> {
+        private final AddFlowRawInput input;
+        private final FlowRegistryKey flowRegistryKey;
+
+        private AddFlowRawCallback(final AddFlowRawInput input,
+                                final FlowRegistryKey flowRegistryKey) {
+            this.input = input;
+            this.flowRegistryKey = flowRegistryKey;
+        }
+
+        @Override
+        public void onSuccess(final RpcResult<AddFlowRawOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 final FlowDescriptor flowDescriptor;
 
