@@ -4,14 +4,54 @@
         odl:use-default-for-reference-types="true">
 
   <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+  <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+  <reference id="switchConnProviderFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
 
-  <odl:rpc-service id="flowService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+  <!-- SwitchConnectionProvider on port 6633 -->
+  <odl:clustered-app-config id="defaultSwitchConnConfig"
+                            default-config-file-name="default-openflow-connection-config.xml"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
+                            list-key-value="openflow-switch-connection-provider-default-impl"/>
 
+  <bean id="defaultSwitchConnProvider" factory-ref="switchConnProviderFactory" factory-method="newInstance">
+    <argument ref="defaultSwitchConnConfig"/>
+  </bean>
+
+  <service ref="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+           odl:type="openflow-switch-connection-provider-default-impl"/>
+
+  <!-- SwitchConnectionProvider on port 6653 -->
+  <odl:clustered-app-config id="legacySwitchConnConfig"
+                            default-config-file-name="legacy-openflow-connection-config.xml"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
+                            list-key-value="openflow-switch-connection-provider-legacy-impl"/>
+
+  <bean id="legacySwitchConnProvider" factory-ref="switchConnProviderFactory" factory-method="newInstance">
+    <argument ref="legacySwitchConnConfig"/>
+  </bean>
+
+  <service ref="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+           odl:type="openflow-switch-connection-provider-legacy-impl"/>
+
+  <!-- Create our own openflow provider -->
+  <reference id="openflowJavaProviderFactory" interface="org.opendaylight.openflowplugin.applications.bulk.o.matic.ofjava.OpenFlowJavaProviderFactory"/>
+  <bean id="openflowJavaProvider" factory-ref="openflowJavaProviderFactory" factory-method="newInstance">
+    <argument>
+      <set>
+        <ref component-id="defaultSwitchConnProvider"/>
+        <ref component-id="legacySwitchConnProvider"/>
+      </set>
+    </argument>
+    <argument ref="dataBroker"/>
+  </bean>
+  <service ref="openflowJavaProvider" interface="org.opendaylight.openflowplugin.applications.bulk.o.matic.ofjava.OpenFlowJavaProvider" odl:type="default"/>
+
+  <!-- Bulk flow service implementation -->
+  <odl:rpc-service id="flowService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
   <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowServiceImpl">
     <argument ref="flowService"/>
     <argument ref="dataBroker"/>
+    <argument ref="openflowJavaProvider"/>
   </bean>
-
   <odl:rpc-implementation ref="bulkFlowService"/>
 </blueprint>
