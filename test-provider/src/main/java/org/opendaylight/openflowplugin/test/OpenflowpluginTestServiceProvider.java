@@ -13,6 +13,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -161,6 +163,11 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         String plus = ("updateFlow - " + input);
         OpenflowpluginTestServiceProvider.LOG.info(plus);
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<AddFlowDirectOutput>> addFlowDirect(AddFlowDirectInput input) {
         return null;
     }
 

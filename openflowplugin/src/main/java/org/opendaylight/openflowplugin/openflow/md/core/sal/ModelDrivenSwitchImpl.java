@@ -24,6 +24,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutC
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -250,6 +252,11 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
         return result;
+    }
+
+    @Override
+    public Future<RpcResult<AddFlowDirectOutput>> addFlowDirect(AddFlowDirectInput input) {
+        return null;
     }
 
     @Override
