@@ -191,6 +191,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     public Future<RpcResult<Void>> flowRpcAddTest(FlowRpcAddTestInput input) {
         FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowAddRpcTestImpl.rpcFlowAdd(
+                input.isDirect(),
                 input.getDpnId(),
                 input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
@@ -201,7 +202,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     }
 
     @Override
-    public Future<RpcResult<Void>> register() {
+    public Future<RpcResult<Void>>register() {
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         try {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -286,7 +287,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     @Override
     public Future<RpcResult<Void>> flowRpcAddMultiple(FlowRpcAddMultipleInput input) {
         FlowWriterDirectOFRpc flowTesterRPC = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
-        flowTesterRPC.rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
+        flowTesterRPC.rpcFlowAddAll(input.isDirect(), input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
