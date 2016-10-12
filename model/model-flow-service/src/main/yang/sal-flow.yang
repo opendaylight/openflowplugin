@@ -9,6 +9,7 @@ module sal-flow {
     import opendaylight-meter-types {prefix meter-type;revision-date "2013-09-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
     import flow-errors {prefix error; revision-date "2013-11-16";}
+    import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
 
     description "Openflow flow management.";
 
@@ -20,7 +21,7 @@ module sal-flow {
         description "Openflow table identifier";
         type instance-identifier;
     }
-    
+
     grouping node-flow-removed {
         description "Flow removed message structure.";
         leaf node {
@@ -41,7 +42,19 @@ module sal-flow {
         leaf flow-table {
             type flow-table-ref;
         }
+
         uses types:flow;
+    }
+
+    grouping node-flow-direct {
+        description "Top openflow flow structure suitable for rpc input (contains node-context) for ofjava direct.";
+        uses "inv:node-context-ref";
+
+        leaf flow-table {
+            type flow-table-ref;
+        }
+
+        uses ofproto:flow-mod;
     }
 
     grouping base-node-error-notification {
@@ -86,6 +99,38 @@ module sal-flow {
         }
     }
 
+    rpc add-flow-direct {
+        description "Adding flow to openflow device.";
+
+        input {
+            uses tr:transaction-metadata;
+            uses node-flow-direct;
+
+            leaf flow-ref {
+                type types:flow-ref;
+            }
+        }
+
+        output {
+            uses tr:transaction-aware;
+        }
+    }
+
+    rpc add-flow-raw {
+        description "Adding flow to openflow device.";
+        input {
+            uses tr:transaction-metadata;
+            leaf flow-ref {
+                type types:flow-ref;
+            }
+
+            uses node-flow;
+        }
+        output {
+            uses tr:transaction-aware;
+        }
+    }
+
     rpc add-flow {
         description "Adding flow to openflow device.";
         input {
@@ -93,6 +138,7 @@ module sal-flow {
             leaf flow-ref {
                 type types:flow-ref;
             }
+
             uses node-flow;            
         }
         output {

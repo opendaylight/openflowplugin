@@ -98,7 +98,7 @@ public class SalBulkFlowServiceImplTest {
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNode)));
-        salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
+        salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker, null);
     }
 
     @Test

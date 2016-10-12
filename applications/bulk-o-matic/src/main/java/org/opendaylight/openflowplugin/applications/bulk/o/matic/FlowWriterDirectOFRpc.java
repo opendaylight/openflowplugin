@@ -7,155 +7,196 @@
  */
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
-import com.google.common.base.Optional;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowAddType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowDirectInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowRawInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
-public class FlowWriterDirectOFRpc {
-
+class FlowWriterDirectOFRpc {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterDirectOFRpc.class);
+    private static final long PAUSE_BETWEEN_BATCH_MILLIS = 40;
+    private static final short TABLE_ID = (short)1;
+    private static final int INIT_FLOW_ID = 501;
+
     private final DataBroker dataBroker;
     private final SalFlowService flowService;
     private final ExecutorService flowPusher;
-    private static final long PAUSE_BETWEEN_BATCH_MILLIS = 40;
+    private final ConvertorExecutor convertorExecutor;
 
-    public FlowWriterDirectOFRpc(final DataBroker dataBroker,
-                                 final SalFlowService salFlowService,
-                                 final ExecutorService flowPusher) {
+    FlowWriterDirectOFRpc(final DataBroker dataBroker,
+                          final SalFlowService salFlowService,
+                          final ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
         this.flowService = salFlowService;
         this.flowPusher = flowPusher;
+        this.convertorExecutor = ConvertorManagerFactory.createDefaultManager();
     }
 
 
-    public void rpcFlowAdd(String dpId, int flowsPerDpn, int batchSize){
-        if (!getAllNodes().isEmpty() && getAllNodes().contains(dpId)) {
-            FlowRPCHandlerTask addFlowRpcTask = new FlowRPCHandlerTask(dpId, flowsPerDpn, batchSize);
-            flowPusher.execute(addFlowRpcTask);
-        }
+    void rpcFlowAdd(final FlowAddType type, final String nodeId, final int flowsPerNode, final int batchSize){
+        fetchAllNodes()
+                .filter(node -> node.equals(nodeId))
+                .findFirst()
+                .ifPresent(pushFlow(type, flowsPerNode, batchSize));
     }
 
-    public void rpcFlowAddAll(int flowsPerDpn, int batchSize){
-        Set<String> nodeIdSet = getAllNodes();
-        if (nodeIdSet.isEmpty()){
-            LOG.warn("No nodes seen on OPERATIONAL DS. Aborting !!!!");
-        }
-        else{
-            for (String dpId : nodeIdSet){
-                LOG.info("Starting FlowRPCTaskHandler for switch id {}", dpId);
-                FlowRPCHandlerTask addFlowRpcTask = new FlowRPCHandlerTask(dpId, flowsPerDpn, batchSize);
-                flowPusher.execute(addFlowRpcTask);
-            }
-        }
+    void rpcFlowAddAll(final FlowAddType type, final int flowsPerNode, final int batchSize){
+        fetchAllNodes().forEach(pushFlow(type, flowsPerNode, batchSize));
     }
 
-    private Set<String> getAllNodes(){
+    private Consumer<String> pushFlow(final FlowAddType type, final int flowsPerNode, final int batchSize) {
+        return node -> flowPusher.execute(new FlowRPCHandlerTask(type, node, flowsPerNode, batchSize));
+    }
 
-        Set<String> nodeIds = new HashSet<>();
-        InstanceIdentifier<Nodes> nodes = InstanceIdentifier.create(Nodes.class);
-        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-
+    private Stream<String> fetchAllNodes() {
         try {
-            Optional<Nodes> nodesDataNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodes).checkedGet();
-            if (nodesDataNode.isPresent()){
-                List<Node> nodesCollection = nodesDataNode.get().getNode();
-                if (nodesCollection != null && !nodesCollection.isEmpty()) {
-                    for (Node node : nodesCollection) {
-                        LOG.info("Switch with ID {} discovered !!", node.getId().getValue());
-                        nodeIds.add(node.getId().getValue());
-                    }
-                }
-                else{
-                    return Collections.emptySet();
-                }
-            }
-            else{
-                return Collections.emptySet();
-            }
+            return Optional
+                    .ofNullable(dataBroker
+                            .newReadOnlyTransaction()
+                            .read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class))
+                            .checkedGet()
+                            .orNull())
+                    .map(input -> Optional
+                            .ofNullable(input.getNode())
+                            .map(nodes -> nodes
+                                    .stream()
+                                    .map(node -> {
+                                        LOG.info("Switch with id={} discovered", node.getId().getValue());
+                                        return node.getId().getValue();
+                                    }))
+                            .orElse(Stream.empty()))
+                    .orElse(Stream.empty());
+        } catch (ReadFailedException e) {
+            LOG.error("Failed to read connected nodes {}", e);
         }
-        catch(ReadFailedException rdFailedException){
-            LOG.error("Failed to read connected nodes {}", rdFailedException);
-        }
-        return nodeIds;
+
+        return Stream.empty();
     }
 
-    public class FlowRPCHandlerTask implements Runnable {
-        private final String dpId;
-        private final int flowsPerDpn;
+    private class FlowRPCHandlerTask implements Runnable {
+        private final Stream<Runnable> jobs;
         private final int batchSize;
+        private final InstanceIdentifier<Node> nodeIId;
+        private final FlowAddType type;
 
-        public FlowRPCHandlerTask(final String dpId,
-                                  final int flowsPerDpn,
-                                  final int batchSize){
-            this.dpId = dpId;
-            this.flowsPerDpn = flowsPerDpn;
+        FlowRPCHandlerTask(final FlowAddType type,
+                           final String dpId,
+                           final int flowsPerDpn,
+                           final int batchSize){
+            this.type = type;
             this.batchSize = batchSize;
+            this.nodeIId = BulkOMaticUtils.getFlowCapableNodeId(dpId);
+            this.jobs = createJobs(flowsPerDpn);
+        }
+
+        private String typeToString() {
+            switch(type) {
+                case DIRECT: return "DIRECT";
+                case RAW: return "RAW";
+                case NORMAL:
+                default: return "NORMAL";
+            }
+        }
+
+        private Stream<Runnable> createJobs(final int flowsPerNode) {
+            switch (type) {
+                case DIRECT:
+                    return prepareFlows(flowsPerNode)
+                            .map(flow -> {
+                                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+                                data.setDatapathId(InventoryDataServiceUtil.dataPathIdFromNodeId(nodeIId.firstKeyOf(Node.class).getId()));
+                                final Optional<List<FlowModInputBuilder>> directFlow = convertorExecutor.convert(flow, data);
+
+                                return directFlow.map(flowModInputBuilders -> flowModInputBuilders
+                                        .stream()
+                                        .findFirst()
+                                        .map(flowModInputBuilder ->
+                                                new AddFlowDirectInputBuilder(flowModInputBuilder.build())
+                                                        .setNode(flow.getNode())
+                                                        .setFlowTable(flow.getFlowTable())
+                                                        .setFlowRef(flow.getFlowRef())
+                                                        .build()))
+                                        .orElse(Optional.empty());
+                            })
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .map(addFlowDirectInput -> (Runnable) () -> flowService.addFlowDirect(addFlowDirectInput));
+                case RAW:
+                    return prepareFlows(flowsPerNode)
+                            .map(addFlowInput -> new AddFlowRawInputBuilder((NodeFlow)addFlowInput)
+                                    .setFlowRef(addFlowInput.getFlowRef())
+                                    .build())
+                            .map(addFlowRawInput -> (Runnable) () -> flowService.addFlowRaw(addFlowRawInput));
+                case NORMAL:
+                default:
+                    return prepareFlows(flowsPerNode)
+                            .map(addFlowInput -> (Runnable) () -> flowService.addFlow(addFlowInput));
+            }
+        }
+
+        private Stream<AddFlowInput> prepareFlows(final int flowsPerNode) {
+            final InstanceIdentifier<Table> tableIId = BulkOMaticUtils
+                    .getTableId(TABLE_ID, nodeIId.firstKeyOf(Node.class).getId().getValue());
+
+            return IntStream.range(INIT_FLOW_ID, INIT_FLOW_ID + flowsPerNode).mapToObj(i -> new AddFlowInputBuilder(BulkOMaticUtils
+                    .buildComplexFlow(TABLE_ID, Integer.toString(i), BulkOMaticUtils.getComplexMatch(i)))
+                    .setNode(new NodeRef(nodeIId))
+                    .setFlowTable(new FlowTableRef(tableIId))
+                    .setFlowRef(new FlowRef(BulkOMaticUtils.getFlowId(tableIId, Integer.toString(i))))
+                    .build());
         }
 
         @Override
         public void run() {
+            LOG.info("Starting FlowRPCTaskHandler " + typeToString() + " for switch with id={}",
+                    nodeIId.firstKeyOf(Node.class).getId().getValue());
+            final int[] i = {0};
 
-            short tableId = (short)1;
-            int initFlowId = 500;
+            jobs.forEach(runnable -> {
+                LOG.debug("RPC invocation for adding " + typeToString() + " flow with id={}", INIT_FLOW_ID + i[0]);
+                runnable.run();
 
-            for (int i=1; i<= flowsPerDpn; i++){
-
-                String flowId = Integer.toString(initFlowId + i);
-
-                LOG.debug("Framing AddFlowInput for flow-id {}", flowId);
-
-                Match match = BulkOMaticUtils.getMatch(i);
-                InstanceIdentifier<Node> nodeIId = BulkOMaticUtils.getFlowCapableNodeId(dpId);
-                InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
-                InstanceIdentifier<Flow> flowIId = BulkOMaticUtils.getFlowId(tableIId, flowId);
-
-                Flow flow = BulkOMaticUtils.buildFlow(tableId, flowId, match);
-
-                AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
-                builder.setNode(new NodeRef(nodeIId));
-                builder.setFlowTable(new FlowTableRef(tableIId));
-                builder.setFlowRef(new FlowRef(flowIId));
-
-                AddFlowInput addFlowInput = builder.build();
-
-                LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId,
-                        addFlowInput.toString());
-                flowService.addFlow(addFlowInput);
-
-                if (i % batchSize == 0) {
+                if (i[0] > 0 && i[0] % batchSize == 0) {
                     try {
                         LOG.info("Pausing for {} MILLISECONDS after batch of {} RPC invocations",
                                 PAUSE_BETWEEN_BATCH_MILLIS, batchSize);
 
                         TimeUnit.MILLISECONDS.sleep(PAUSE_BETWEEN_BATCH_MILLIS);
                     } catch (InterruptedException iEx) {
-                        LOG.error("Interrupted while pausing after batched push upto {}. Ex {}", i, iEx);
+                        LOG.error("Interrupted while pausing after batched push up to {}. Ex {}", i[0], iEx);
                     }
                 }
-            }
+
+                i[0]++;
+            });
         }
     }
 }
