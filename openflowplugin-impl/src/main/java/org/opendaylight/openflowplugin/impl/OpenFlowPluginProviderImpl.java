@@ -15,13 +15,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -88,6 +88,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private NotificationPublishService notificationPublishService;
     private ExtensionConverterManager extensionConverterManager;
     private DataBroker dataBroker;
+
+    @Override
+    public Collection<SwitchConnectionProvider> getSwitchConnectionProviders() {
+        return switchConnectionProviders;
+    }
+
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOff = false;
@@ -129,19 +135,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     private void startSwitchConnections() {
-        final List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
-        for (final SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
-            switchConnectionPrv.setSwitchConnectionHandler(connectionManager);
-            final ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
-            starterChain.add(isOnlineFuture);
-        }
+        final ListenableFuture<List<Boolean>> starterChain = Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
+            switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
+            return switchConnectionProvider.startup();
+        }).collect(Collectors.toSet()));
 
-        final ListenableFuture<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
-        Futures.addCallback(srvStarted, new FutureCallback<List<Boolean>>() {
+        Futures.addCallback(starterChain, new FutureCallback<List<Boolean>>() {
             @Override
             public void onSuccess(final List<Boolean> result) {
-                LOG.info("All switchConnectionProviders are up and running ({}).",
-                        result.size());
+                LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
             }
 
             @Override

@@ -27,6 +27,7 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowAddType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -87,13 +88,13 @@ public class FlowWriterDirectOFRpcTest {
 
     @Test
     public void testRpcFlowAdd() throws Exception {
-        flowWriterDirectOFRpc.rpcFlowAdd("1", FLOWS_PER_DPN, 10);
+        flowWriterDirectOFRpc.rpcFlowAdd(FlowAddType.NORMAL, "1", FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
     }
 
     @Test
     public void testRpcFlowAddAll() throws Exception {
-        flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
+        flowWriterDirectOFRpc.rpcFlowAddAll(FlowAddType.NORMAL, FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
     }
 
