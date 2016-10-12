@@ -178,43 +178,76 @@ module sal-bulk-flow {
 	}
     }
 
+
+    typedef flow-add-type {
+        type enumeration {
+            enum NORMAL {
+                value 0;
+                description "openflowplugin model -> openflowjava model -> bytes";
+            }
+
+            enum DIRECT {
+                value 1;
+                description "openflowjava model -> bytes";
+            }
+
+            enum RAW {
+                value 2;
+                description "openflowplugin model -> bytes";
+            }
+        }
+    }
+
     rpc flow-rpc-add-test {
-	input {
-	    leaf dpn-id {
-		type string;
-		mandatory true;
-		status current;
-		description "DPID to which flows are pushed";
+        input {
+	        leaf type {
+                type flow-add-type;
+                default NORMAL;
+            }
+
+	        leaf dpn-id {
+	            type string;
+		        mandatory true;
+		        status current;
+		        description "DPID to which flows are pushed";
+	        }
+
+	        leaf flow-count {
+		        type uint32;
+		        mandatory true;
+		        status current;
+		        description "Flows to be pushed per DPN";
+	        }
+
+	        leaf rpc-batch-size {
+		        type uint32;
+		        mandatory true;
+		        status current;
+		        description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
+	        }
 	    }
-	    leaf flow-count {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Flows to be pushed per DPN";
-	    }
-	    leaf rpc-batch-size {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
-	    }
-	}
     }
 
     rpc flow-rpc-add-multiple {
-	input {
-	    leaf flow-count {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Flows to be pushed per DPN";
-	    }
-	    leaf rpc-batch-size {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
-	    }
-	}
+        input {
+            leaf type {
+                type flow-add-type;
+                default NORMAL;
+            }
+
+            leaf flow-count {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Flows to be pushed per DPN";
+            }
+
+            leaf rpc-batch-size {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
+            }
+        }
     }
 }

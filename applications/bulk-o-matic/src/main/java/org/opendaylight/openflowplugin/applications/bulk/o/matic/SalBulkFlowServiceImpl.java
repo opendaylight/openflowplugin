@@ -17,9 +17,11 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
@@ -33,6 +35,12 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHelper;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
+import org.opendaylight.openflowplugin.applications.bulk.o.matic.ofjava.FlowRawSerializer;
+import org.opendaylight.openflowplugin.applications.bulk.o.matic.ofjava.MatchRawSerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
@@ -56,6 +64,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRaw;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -76,9 +86,27 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     private final DataBroker dataBroker;
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
-    public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker) {
+    public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker, OpenFlowPluginProvider openFlowPluginProvider) {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+
+        Optional.ofNullable(openFlowPluginProvider).ifPresent(provider -> provider
+                .getSwitchConnectionProviders()
+                .forEach(p -> {
+                    try {
+                        final Field serializerRegistryField = p.getClass().getDeclaredField("serializerRegistry");
+                        serializerRegistryField.setAccessible(true);
+                        final SerializerRegistry serializerRegistry = SerializerRegistry.class.cast(serializerRegistryField.get(p));
+                        final CommonMessageRegistryHelper commonMessageRegistryHelper =
+                                new CommonMessageRegistryHelper(EncodeConstants.OF13_VERSION_ID, serializerRegistry);
+
+                        commonMessageRegistryHelper.registerSerializer(Match.class, new MatchRawSerializer());
+                        commonMessageRegistryHelper.registerSerializer(FlowRaw.class, new FlowRawSerializer());
+                    } catch (Exception e) {
+                        LOG.warn("Failed to register additional serializers: ", e);
+                    }
+                }));
+
         register();
     }
 
@@ -191,6 +219,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     public Future<RpcResult<Void>> flowRpcAddTest(FlowRpcAddTestInput input) {
         FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowAddRpcTestImpl.rpcFlowAdd(
+                input.getType(),
                 input.getDpnId(),
                 input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
@@ -201,7 +230,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     }
 
     @Override
-    public Future<RpcResult<Void>> register() {
+    public Future<RpcResult<Void>>register() {
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         try {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -286,7 +315,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     @Override
     public Future<RpcResult<Void>> flowRpcAddMultiple(FlowRpcAddMultipleInput input) {
         FlowWriterDirectOFRpc flowTesterRPC = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
-        flowTesterRPC.rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
+        flowTesterRPC.rpcFlowAddAll(input.getType(), input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }

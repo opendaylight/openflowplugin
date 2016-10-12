@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
-        odl:use-default-for-reference-types="true">
+           odl:use-default-for-reference-types="true">
 
   <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+  <reference id="openflowPluginProvider" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider" odl:type="openflow-plugin-provider-impl"/>
 
   <odl:rpc-service id="flowService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+                   interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
 
   <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowServiceImpl">
     <argument ref="flowService"/>
     <argument ref="dataBroker"/>
+    <argument ref="openflowPluginProvider"/>
   </bean>
 
   <odl:rpc-implementation ref="bulkFlowService"/>
