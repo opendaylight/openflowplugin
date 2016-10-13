@@ -33,7 +33,10 @@ public class NotificationProviderImplTest {
     @Test
     public void testCreateAllSuppliers() {
         final NotificationProviderConfig config = createAllConfigSupplier();
-        final NotificationProviderImpl provider = new NotificationProviderImpl(config, notificationProviderService, dataBroker);
+        final NotificationProviderImpl provider = new NotificationProviderImpl(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
+                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
+                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
+                                                                               config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;
@@ -48,7 +51,10 @@ public class NotificationProviderImplTest {
     @Test
     public void testCreateRootSuppliersOnly() {
         final NotificationProviderConfig config = createNonConfigSupplier();
-        final NotificationProviderImpl provider = new NotificationProviderImpl(config, notificationProviderService, dataBroker);
+        final NotificationProviderImpl provider = new NotificationProviderImpl(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
+                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
+                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
+                                                                               config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;
