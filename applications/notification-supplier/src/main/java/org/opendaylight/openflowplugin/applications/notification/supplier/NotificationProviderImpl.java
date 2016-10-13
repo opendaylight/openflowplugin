@@ -93,6 +93,7 @@ public class NotificationProviderImpl implements NotificationProvider {
         this.config = Preconditions.checkNotNull(config);
         this.db = Preconditions.checkNotNull(db);
         this.nps = Preconditions.checkNotNull(nps);
+        start();
     }
 
     @Override
