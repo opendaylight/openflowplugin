@@ -10,9 +10,6 @@ package org.opendaylight.openflowplugin.applications.notification.supplier;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.NodeConnectorNotificationSupplierImpl;
@@ -58,10 +55,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Provider Implementation
  */
-public class NotificationProviderImpl implements NotificationProvider {
+public class NotificationProviderImpl implements AutoCloseable {
 
     private final DataBroker db;
     private final NotificationProviderConfig config;
@@ -83,19 +84,48 @@ public class NotificationProviderImpl implements NotificationProvider {
 
     /**
      * Provider constructor set all needed final parameters
-     *
-     * @param config - Configuration Object
      * @param nps - notifProviderService
      * @param db - dataBroker
+     * @param flowSupp - Flow Support Flag
+     * @param meterSupp - Meter Support Flag
+     * @param groupSupp - Group Support Flag
+     * @param connectorStatSupp - Connector Stat Support Flag
+     * @param flowStatSupp - Flow Stat Support Flag
+     * @param flowTableStatSupp - Flow Table Stat Support Flag
+     * @param meterStatSupp - Meter Stat Support Flag
+     * @param groupStatSupp - Group Stat Support Flag
+     * @param queueStatSupp - Queue Stat Support Flag
      */
-    public NotificationProviderImpl(final NotificationProviderConfig config,
-            final NotificationProviderService nps, final DataBroker db) {
-        this.config = Preconditions.checkNotNull(config);
-        this.db = Preconditions.checkNotNull(db);
+    public NotificationProviderImpl(final NotificationProviderService nps, final DataBroker db,
+                                    boolean flowSupp, boolean meterSupp, boolean groupSupp,
+                                    boolean connectorStatSupp, boolean flowStatSupp, boolean flowTableStatSupp,
+                                    boolean meterStatSupp, boolean groupStatSupp, boolean queueStatSupp) {
         this.nps = Preconditions.checkNotNull(nps);
+        this.db = Preconditions.checkNotNull(db);
+        this.config = initializeNotificationProviderConfig(flowSupp, meterSupp, groupSupp, connectorStatSupp, flowStatSupp,
+                flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp);
     }
 
-    @Override
+    /**
+     * Method to initialize NotificationProviderConfig
+     */
+    private NotificationProviderConfig initializeNotificationProviderConfig(boolean flowSupp, boolean meterSupp, boolean groupSupp,
+                                                      boolean connectorStatSupp, boolean flowStatSupp, boolean flowTableStatSupp,
+                                                      boolean meterStatSupp, boolean groupStatSupp, boolean queueStatSupp){
+        NotificationProviderConfig.NotificationProviderConfigBuilder  notif =
+                new NotificationProviderConfig.NotificationProviderConfigBuilder();
+        notif.setFlowSupport(flowSupp);
+        notif.setMeterSupport(meterSupp);
+        notif.setGroupSupport(groupSupp);
+        notif.setNodeConnectorStatSupport(connectorStatSupp);
+        notif.setFlowStatSupport(flowStatSupp);
+        notif.setFlowTableStatSupport(flowTableStatSupp);
+        notif.setMeterStatSupport(meterStatSupp);
+        notif.setGroupStatSupport(groupStatSupp);
+        notif.setQueueStatSupport(queueStatSupp);
+        return notif.build();
+    }
+
     public void start() {
         nodeSupp = new NodeNotificationSupplierImpl(nps, db);
         connectorSupp = new NodeConnectorNotificationSupplierImpl(nps, db);
