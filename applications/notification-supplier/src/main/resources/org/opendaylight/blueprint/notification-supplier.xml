@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+
+  <reference id="NotificationProviderService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
+
+  <!--
+  Arguments Details:
+  NotificationProviderService
+  DataBroker
+  Flow Support Flag
+  Meter Support Flag
+  Group Support Flag
+  Connector Stat Support Flag
+  Flow Stat Support Flag
+  Flow Table Stat Support Flag
+  Meter Stat Support Flag
+  Group Stat Support Flag
+  Queue Stat Support Flag
+  -->
+
+  <bean id="NotificationProvider" class="org.opendaylight.openflowplugin.applications.notification.supplier.NotificationProvider"
+          init-method="start" destroy-method="close">
+    <argument ref="NotificationProviderService"/>
+    <argument ref="dataBroker"/>
+    <argument value="false"/>
+    <argument value="true"/>
+    <argument value="true"/>
+    <argument value="false"/>
+    <argument value="false"/>
+    <argument value="false"/>
+    <argument value="false"/>
+    <argument value="false"/>
+    <argument value="false"/>
+
+  </bean>
+</blueprint>
