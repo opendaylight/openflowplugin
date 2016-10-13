@@ -18,7 +18,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.tools.NotificationProviderConfig;
 import org.opendaylight.openflowplugin.applications.notification.supplier.tools.NotificationProviderConfig.NotificationProviderConfigBuilder;
 
-public class NotificationProviderImplTest {
+public class NotificationProviderTest {
 
     private NotificationProviderService notificationProviderService;
     private NotificationProviderConfig config;
@@ -33,7 +33,10 @@ public class NotificationProviderImplTest {
     @Test
     public void testCreateAllSuppliers() {
         final NotificationProviderConfig config = createAllConfigSupplier();
-        final NotificationProviderImpl provider = new NotificationProviderImpl(config, notificationProviderService, dataBroker);
+        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
+                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
+                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
+                                                                               config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;
@@ -48,7 +51,10 @@ public class NotificationProviderImplTest {
     @Test
     public void testCreateRootSuppliersOnly() {
         final NotificationProviderConfig config = createNonConfigSupplier();
-        final NotificationProviderImpl provider = new NotificationProviderImpl(config, notificationProviderService, dataBroker);
+        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
+                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
+                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
+                                                                               config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;
