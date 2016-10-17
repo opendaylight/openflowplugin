@@ -67,6 +67,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private static final int TICKS_PER_WHEEL = 500;
     // 0.5 sec.
     private static final long TICK_DURATION = 10;
+    private static final Integer DEFAULT_BARRIER_COUNT = 25600;
+    private static final Long DEFAULT_ECHO_TIMEOUT = 2000L;
+    private static final Long DEFAULT_BARRIER_TIMEOUT = 500L;
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
@@ -180,7 +183,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void setSkipTableFeatures(final boolean skipTableFeatures){
-            this.skipTableFeatures = skipTableFeatures;
+        this.skipTableFeatures = skipTableFeatures;
     }
 
     @Override
@@ -264,23 +267,40 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void update(Map<String,Object> props) {
         LOG.debug("Update managed properties = {}", props.toString());
-        if(deviceManager != null && props.containsKey("notification-flow-removed-off")) {
-            deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+
+        if(deviceManager != null) {
+            if (props.containsKey("notification-flow-removed-off")) {
+                deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+            }
+            if (props.containsKey("skip-table-features")) {
+                deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
+            }
+            if (props.containsKey("barrier-count-limit")) {
+                try {
+                    deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
+                } catch (NumberFormatException ex) {
+                    deviceManager.setBarrierCountLimit(DEFAULT_BARRIER_COUNT);
+                }
+            }
+            if (props.containsKey("barrier-interval-timeout-limit")){
+                try {
+                    deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
+                } catch (NumberFormatException ex) {
+                    deviceManager.setBarrierInterval(DEFAULT_BARRIER_TIMEOUT);
+                }
+            }
         }
-        if(deviceManager != null && props.containsKey("skip-table-features")) {
-            deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
-        }
+
         if(rpcManager != null && props.containsKey("is-statistics-rpc-enabled")){
             rpcManager.setStatisticsRpcEnabled(Boolean.valueOf((props.get("is-statistics-rpc-enabled").toString())));
         }
-        if(deviceManager != null && props.containsKey("barrier-count-limit")){
-            deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
-        }
-        if(deviceManager != null && props.containsKey("barrier-interval-timeout-limit")){
-            deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
-        }
+
         if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
-            connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
+            try {
+                connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
+            }catch (NumberFormatException ex){
+                connectionManager.setEchoReplyTimeout(DEFAULT_ECHO_TIMEOUT);
+            }
         }
 
         if(statisticsManager != null && props.containsKey("is-statistics-polling-off")){
