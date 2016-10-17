@@ -67,6 +67,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private static final int TICKS_PER_WHEEL = 500;
     // 0.5 sec.
     private static final long TICK_DURATION = 10;
+    private static final Integer DEFAULT_BARRIER_COUNT = 25600;
+    private static final Long DEFAULT_ECHO_TIMEOUT = 2000L;
+    private static final Long DEFAULT_BARRIER_TIMEOUT = 500L;
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
@@ -274,13 +277,25 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
             rpcManager.setStatisticsRpcEnabled(Boolean.valueOf((props.get("is-statistics-rpc-enabled").toString())));
         }
         if(deviceManager != null && props.containsKey("barrier-count-limit")){
-            deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
+            try {
+                deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
+            }catch (NumberFormatException ex){
+                deviceManager.setBarrierCountLimit(DEFAULT_BARRIER_COUNT);
+            }
         }
         if(deviceManager != null && props.containsKey("barrier-interval-timeout-limit")){
-            deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
+            try {
+                deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
+            }catch (NumberFormatException ex){
+                deviceManager.setBarrierInterval(DEFAULT_BARRIER_TIMEOUT);
+            }
         }
         if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
-            connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
+            try {
+                connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
+            }catch (NumberFormatException ex){
+                connectionManager.setEchoReplyTimeout(DEFAULT_ECHO_TIMEOUT);
+            }
         }
 
         if(statisticsManager != null && props.containsKey("is-statistics-polling-off")){
