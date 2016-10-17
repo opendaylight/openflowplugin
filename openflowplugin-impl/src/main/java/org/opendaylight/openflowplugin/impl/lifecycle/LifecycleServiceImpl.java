@@ -7,10 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -33,9 +34,9 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
 
+    private boolean inClosing = false;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
-    private RoleContext roleContext;
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
@@ -43,7 +44,6 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void instantiateServiceInstance() {
-
         LOG.info("Starting clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
 
         if (!this.clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
@@ -54,8 +54,7 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-
-        LOG.info("Stopping clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
+        LOG.info("Closing clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
 
         final boolean connectionInterrupted =
                 this.deviceContext
@@ -63,11 +62,31 @@ public class LifecycleServiceImpl implements LifecycleService {
                         .getConnectionState()
                         .equals(ConnectionContext.CONNECTION_STATE.RIP);
 
-        roleContext.stopClusterServices(connectionInterrupted);
-        statContext.stopClusterServices(connectionInterrupted);
-        rpcContext.stopClusterServices(connectionInterrupted);
-        return deviceContext.stopClusterServices(connectionInterrupted);
+        // If connection was interrupted and we are not trying to close service, then we received something
+        // we do not wanted to receive, so do not continue
+        if (connectionInterrupted && !inClosing) {
+            LOG.warn("Failed to close clustering MASTER services for node {} because they are already closed",
+                    LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
 
+            return Futures.immediateCancelledFuture();
+        }
+
+        // Chain all jobs that will stop our services
+        final List<ListenableFuture<Void>> futureList = new ArrayList<>();
+        futureList.add(statContext.stopClusterServices(connectionInterrupted));
+        futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
+        futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
+
+        // When we stopped all jobs then we are not in closing state anymore (at least from plugin perspective)
+        return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable List<Void> input) {
+                LOG.debug("Closed clustering MASTER services for node {}",
+                        LifecycleServiceImpl.this.deviceContext.getDeviceInfo().getLOGValue());
+                return null;
+            }
+        });
     }
 
     @Override
@@ -78,8 +97,9 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void close() throws Exception {
-        if (registration != null) {
-            LOG.info("Unregistering clustering MASTER services for node {}", this.deviceContext.getDeviceInfo().getLOGValue());
+        // If we are still registered and we are not already closing, then close the registration
+        if (Objects.nonNull(registration) && !inClosing) {
+            inClosing = true;
             registration.close();
             registration = null;
         }
@@ -93,8 +113,7 @@ public class LifecycleServiceImpl implements LifecycleService {
         this.clusterInitializationPhaseHandler = deviceContext;
         this.deviceContext.setLifecycleInitializationPhaseHandler(this.statContext);
         this.statContext.setLifecycleInitializationPhaseHandler(this.rpcContext);
-        this.rpcContext.setLifecycleInitializationPhaseHandler(this.roleContext);
-        this.roleContext.setLifecycleInitializationPhaseHandler(this);
+        this.rpcContext.setLifecycleInitializationPhaseHandler(this);
         //Set initial submit handler
         this.statContext.setInitialSubmitHandler(this.deviceContext);
         //Register cluster singleton service
@@ -109,11 +128,6 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void setRpcContext(final RpcContext rpcContext) {
         this.rpcContext = rpcContext;
-    }
-
-    @Override
-    public void setRoleContext(final RoleContext roleContext) {
-        this.roleContext = roleContext;
     }
 
     @Override
@@ -132,8 +146,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     }
 
     private void fillDeviceFlowRegistry() {
-        
-	final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = deviceContext.getDeviceFlowRegistry().fill();
+        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = deviceContext.getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
     }
 
