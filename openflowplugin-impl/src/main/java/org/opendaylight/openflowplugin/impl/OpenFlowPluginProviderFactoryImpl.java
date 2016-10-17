@@ -36,7 +36,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                                               RpcProviderRegistry rpcRegistry,
                                               NotificationService notificationService,
                                               NotificationPublishService notificationPublishService,
-                                              EntityOwnershipService entityOwnershipService,
                                               List<SwitchConnectionProvider> switchConnectionProviders,
                                               ClusterSingletonServiceProvider singletonServiceProvider) {
 
