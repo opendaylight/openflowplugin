@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -39,5 +41,6 @@ public interface DeviceManager extends DeviceConnectedHandler, DeviceDisconnecte
 
     void setBarrierInterval(long barrierTimeoutLimit);
 
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
 }
 
