@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -26,10 +27,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -50,11 +53,14 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,6 +192,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
+        final LifecycleService lifecycleService = new LifecycleServiceImpl();
+
         final DeviceContext deviceContext = new DeviceContextImpl(
                 connectionContext,
                 dataBroker,
@@ -193,15 +201,19 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 translatorLibrary,
                 this,
                 convertorExecutor,
-                skipTableFeatures);
+                skipTableFeatures,
+                hashedWheelTimer,
+                this);
 
+        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContexts.put(deviceInfo, deviceContext);
 
-        final LifecycleService lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
         deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
 
         lifecycleServices.put(deviceInfo, lifecycleService);
+
+        addCallbackToDeviceInitializeToSlave(deviceInfo, deviceContext, lifecycleService);
 
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
 
@@ -216,24 +228,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionAdapter.setMessageListener(messageListener);
         deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleService);
         return ConnectionStatus.MAY_CONTINUE;
-    }
-
-    private void updatePacketInRateLimiters() {
-        synchronized (deviceContexts) {
-            final int deviceContextsSize = deviceContexts.size();
-            if (deviceContextsSize > 0) {
-                long freshNotificationLimit = globalNotificationQuota / deviceContextsSize;
-                if (freshNotificationLimit < 100) {
-                    freshNotificationLimit = 100;
-                }
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("fresh notification limit = {}", freshNotificationLimit);
-                }
-                for (final DeviceContext deviceContext : deviceContexts.values()) {
-                    deviceContext.updatePacketInRateLimit(freshNotificationLimit);
-                }
-            }
-        }
     }
 
     @Override
@@ -386,5 +380,75 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void setBarrierInterval(final long barrierTimeoutLimit) {
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierTimeoutLimit);
     }
+
+    @Override
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
+        final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceInfo.getNodeInstanceIdentifier());
+        final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
+
+        Futures.addCallback(delFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull final Throwable t) {
+                LOG.warn("Delete node {} failed with exception {}", deviceInfo.getLOGValue(), t);
+            }
+        });
+
+        return delFuture;
+    }
+
+
+    private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
+        Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
+                lifecycleService.closeConnection();
+            }
+        });
+    }
+
+    private void updatePacketInRateLimiters() {
+        synchronized (deviceContexts) {
+            final int deviceContextsSize = deviceContexts.size();
+            if (deviceContextsSize > 0) {
+                long freshNotificationLimit = globalNotificationQuota / deviceContextsSize;
+                if (freshNotificationLimit < 100) {
+                    freshNotificationLimit = 100;
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("fresh notification limit = {}", freshNotificationLimit);
+                }
+                for (final DeviceContext deviceContext : deviceContexts.values()) {
+                    deviceContext.updatePacketInRateLimit(freshNotificationLimit);
+                }
+            }
+        }
+    }
+
+    @VisibleForTesting
+    void setDeviceContext(final DeviceInfo deviceInfo, final DeviceContext deviceContext) {
+        this.deviceContexts.putIfAbsent(deviceInfo, deviceContext);
+    }
+
+    @VisibleForTesting
+    int getDeviceContextCount() {
+        return this.deviceContexts.size();
+    }
+
 
 }
