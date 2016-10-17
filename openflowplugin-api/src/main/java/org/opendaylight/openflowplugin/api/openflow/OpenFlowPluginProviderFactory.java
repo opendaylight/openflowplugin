@@ -24,7 +24,6 @@ public interface OpenFlowPluginProviderFactory {
     OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig, DataBroker dataBroker,
                                        RpcProviderRegistry rpcRegistry, NotificationService notificationService,
                                        NotificationPublishService notificationPublishService,
-                                       EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
                                        ClusterSingletonServiceProvider singletonServiceProvider);
 }

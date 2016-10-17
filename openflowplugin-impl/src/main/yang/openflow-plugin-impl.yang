@@ -10,7 +10,6 @@ module openflow-plugin-provider-impl {
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
     import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
-    import opendaylight-entity-ownership-service { prefix ownership-service; revision-date 2015-08-10;}
 
     description
         "openflow-plugin-impl";
@@ -72,14 +71,6 @@ module openflow-plugin-provider-impl {
                     refine type {
                         mandatory true;
                         config:required-identity sal-broker:binding-new-notification-publish-service;
-                    }
-                }
-            }
-            container entity-ownership-service {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity ownership-service:entity-ownership-service;
                     }
                 }
             }
