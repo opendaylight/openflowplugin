@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -31,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -283,13 +285,20 @@ public final class StatisticsGatheringUtils {
 
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
-                    final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
+                    final FlowDescriptor flowDescriptor = registry.retrieveIdForFlow(flowRegistryKey);
 
-                    final FlowKey flowKey = new FlowKey(flowId);
-                    flowBuilder.setKey(flowKey);
-                    final TableKey tableKey = new TableKey(tableId);
-                    final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-                    txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                    if(Objects.nonNull(flowDescriptor)) {
+                        final FlowId flowId = flowDescriptor.getFlowId();
+                        final FlowKey flowKey = new FlowKey(flowId);
+                        flowBuilder.setKey(flowKey);
+                        final TableKey tableKey = new TableKey(tableId);
+                        final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
+                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                    } else {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Skip write statistics. Flow hash: {} not present in DeviceFlowRegistry", flowRegistryKey.hashCode());
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
