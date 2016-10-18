@@ -40,6 +40,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
@@ -105,6 +106,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Mock
     private DeviceFlowRegistry mockedFlowRegistry;
     @Mock
+    private FlowDescriptor mockedFlowDescriptor;
+    @Mock
     private ReadOnlyTransaction mockedReadOnlyTx;
 
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
@@ -134,6 +137,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
+        when(mockedFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
 
         final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
@@ -202,7 +206,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final MatchBuilder matchBuilder = new MatchBuilder()
                 .setMatchEntry(Collections.<MatchEntry>emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
-.setTableId(tableId)
+                .setTableId(tableId)
                 .setPriority(2)
                 .setCookie(BigInteger.ZERO)
                 .setByteCount(BigInteger.TEN)
@@ -238,7 +242,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         verify(mockedReadOnlyTx, times(1)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
         verify(mockedReadOnlyTx, times(1)).close();
-        verify(mockedFlowRegistry).storeIfNecessary(Matchers.<FlowRegistryKey> any());
         verify(mockedDeviceContext, times(1)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 eq(tableIdent), Matchers.<Table> any());
         /*
