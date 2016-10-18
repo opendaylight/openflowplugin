@@ -45,7 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -223,45 +222,38 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
         @Override
         public void onSuccess(final RpcResult<UpdateFlowOutput> o) {
-            final UpdatedFlow updated = input.getUpdatedFlow();
-            final OriginalFlow original = input.getOriginalFlow();
-            FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(original);
-
-            FlowRegistryKey updatedflowRegistryKey = FlowRegistryKeyFactory.create(updated);
-            final FlowRef flowRef = input.getFlowRef();
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
 
-            if (flowRef == null) {
-                // then this is equivalent to a delete
-                deviceFlowRegistry.removeDescriptor(flowRegistryKey);
+            final UpdatedFlow updated = input.getUpdatedFlow();
+            final OriginalFlow original = input.getOriginalFlow();
+            final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(original);
+            final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(updated);
+            final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveIdForFlow(origFlowRegistryKey);
 
-                if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor =
-                            deviceContext.getDeviceFlowRegistry().retrieveIdForFlow( flowRegistryKey);
-                    KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                            deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-                    itemLifecycleListener.onRemoved(flowPath);
-                }
-            } else {
-                // this is either an add or an update
-                final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
+            final boolean isUpdate = Objects.nonNull(origFlowDescriptor);
+            final FlowId fLowId = Objects.nonNull(input.getFlowRef())
+                    ? input.getFlowRef().getValue().firstKeyOf(Flow.class).getId()
+                    : isUpdate ? origFlowDescriptor.getFlowId() : deviceFlowRegistry.storeIfNecessary(updatedFlowRegistryKey);
+            final FlowDescriptor updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), fLowId);
+            if (isUpdate) {
+                deviceFlowRegistry.removeDescriptor(origFlowRegistryKey);
+                deviceFlowRegistry.store(updatedFlowRegistryKey, updatedFlowDescriptor);
+            }
 
-                deviceFlowRegistry.update(updatedflowRegistryKey, flowDescriptor);
+            if (itemLifecycleListener != null) {
+                final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =
+                        createFlowPath(
+                                updatedFlowDescriptor,
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
 
-                if (itemLifecycleListener != null) {
-                    KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                            deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-                    final FlowBuilder flowBuilder = new FlowBuilder(
-                            input.getUpdatedFlow()).setId(flowDescriptor.getFlowId());
+                final Flow flow = new FlowBuilder(updated)
+                        .setId(updatedFlowDescriptor.getFlowId())
+                        .build();
 
-                    boolean isUpdate = null !=
-                            deviceFlowRegistry.retrieveIdForFlow(flowRegistryKey);
-                    if (isUpdate) {
-                        itemLifecycleListener.onUpdated(flowPath, flowBuilder.build());
-                    } else {
-                        itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
-                    }
+                if (Objects.nonNull(origFlowDescriptor)) {
+                    itemLifecycleListener.onUpdated(flowPath, flow);
+                } else {
+                    itemLifecycleListener.onAdded(flowPath, flow);
                 }
             }
         }
