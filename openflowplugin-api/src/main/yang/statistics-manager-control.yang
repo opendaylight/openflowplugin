@@ -41,4 +41,22 @@ module statistics-manager-control {
             }
         }
     }
+
+    rpc set-statistics-time {
+        input {
+          leaf set-time {
+              type int64;
+              description "Set statistics manager time";
+         }   
+      }
+    }
+
+    rpc get-statistics-time {
+        output {
+          leaf get-time {
+              type int64;
+              description "Get statistics manager time";
+         }   
+      }
+    }
 }
