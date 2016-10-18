@@ -37,12 +37,13 @@ import org.slf4j.LoggerFactory;
 public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
+    private static long FLOOD_INTERVAL = LLDP_FLOOD_PERIOD;
 
     private final PacketProcessingService packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
             new ConcurrentHashMap<>();
-    private final ScheduledFuture<?> scheduledSpeakerTask;
+    private ScheduledFuture<?> scheduledSpeakerTask;
     private final MacAddress addressDestionation;
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
@@ -60,6 +61,18 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
 
     public OperStatus getOperationalStatus() {
         return operationalStatus;
+    }
+
+    public void setLldpInterval(long time) {
+        this.FLOOD_INTERVAL = time;
+        scheduledSpeakerTask.cancel(false);
+        scheduledSpeakerTask = this.scheduledExecutorService
+                     .scheduleAtFixedRate(this, time, time, TimeUnit.SECONDS);
+        LOG.info("LLDPSpeaker restarted, it will send LLDP frames each {} seconds", time);
+   }
+
+    public long getLldpInterval() {
+        return FLOOD_INTERVAL;
     }
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService,
