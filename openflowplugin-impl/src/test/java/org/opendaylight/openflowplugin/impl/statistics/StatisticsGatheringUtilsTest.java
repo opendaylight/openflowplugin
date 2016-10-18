@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,6 +42,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -153,6 +155,10 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private DeviceMeterRegistry deviceMeterRegistry;
     @Mock
+    private FlowDescriptor flowDescriptor;
+    @Mock
+    private FlowId flowId;
+    @Mock
     private GetFeaturesOutput features;
     @Mock
     private ReadOnlyTransaction readTx;
@@ -180,6 +186,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
+        when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(txFacade.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
@@ -413,8 +420,6 @@ public class StatisticsGatheringUtilsTest {
     public void testGatherStatistics_flow() throws Exception {
         final short tableId = 0;
         final MultipartType type = MultipartType.OFPMPFLOW;
-        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class)))
-                .thenReturn(new FlowId("openflow:21"));
 
         final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
@@ -424,6 +429,7 @@ public class StatisticsGatheringUtilsTest {
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
         when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        when(flowDescriptor.getFlowId()).thenReturn(flowId);
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
@@ -449,12 +455,16 @@ public class StatisticsGatheringUtilsTest {
         final FlowBuilder flowBld = new FlowBuilder()
                 .setTableId((short) 0)
                 .setMatch(new MatchBuilder().build());
-        final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0))
-                .child(Flow.class, new FlowKey(new FlowId("openflow:21")));
+        final KeyedInstanceIdentifier<Table, TableKey> tablePath = dummyNodePath.augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey((short) 0));
+        final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
+
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceFlowRegistry).storeIfNecessary(FlowRegistryKeyFactory.create(flowBld.build()));
-        verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
+        verify(deviceFlowRegistry).retrieveIdForFlow(FlowRegistryKeyFactory.create(flowBld.build()));
+
+        final InOrder inOrder = Mockito.inOrder(txFacade);
+        inOrder.verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(tablePath), Matchers.any(Table.class));
+        inOrder.verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
     }
 
     @Test
