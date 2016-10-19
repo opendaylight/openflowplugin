@@ -176,19 +176,23 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-blueprint-config</artifactId>
-            <version>${project.version}</version>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-blueprint-config</artifactId>
-            <version>${project.version}</version>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
             <type>xml</type>
             <classifier>legacyConfig</classifier>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>features-dlux</artifactId>
