@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_0f1208b4",
+        "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-19T07:23:53Z",
+      "side": 1,
+      "message": "Sure will take care",
+      "parentUuid": "7a6b29fe_8fc9f85c",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ef16aca6",
+        "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-19T07:23:53Z",
+      "side": 1,
+      "message": "It is still a NotificationProviderImpl. Please explain why it is not",
+      "parentUuid": "7a6b29fe_4fb080dd",
+      "range": {
+        "startLine": 65,
+        "startChar": 13,
+        "endLine": 65,
+        "endChar": 37
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_4f0c0095",
+        "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-19T07:23:53Z",
+      "side": 1,
+      "message": "It is not possible to pass Class as Blueprint Injection to Construct. If you have a link which explain if we can pass please pass on, checked with Jozef also on this",
+      "parentUuid": "7a6b29fe_0fdde814",
+      "range": {
+        "startLine": 99,
+        "startChar": 3,
+        "endLine": 102,
+        "endChar": 106
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2f11c4ac",
+        "filename": "applications/notification-supplier/src/main/resources/org/opendaylight/blueprint/notification-supplier.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-19T07:23:53Z",
+      "side": 1,
+      "message": "Comments are used in the Actual Impl Class. We can discuss over if we need to put here also",
+      "parentUuid": "7a6b29fe_2fec24c7",
+      "range": {
+        "startLine": 15,
+        "startChar": 3,
+        "endLine": 23,
+        "endChar": 29
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6f229c02",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-19T07:23:53Z",
+      "side": 1,
+      "message": "Same as indicated on Impl file",
+      "parentUuid": "7a6b29fe_6fcd7c5d",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
