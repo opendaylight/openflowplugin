@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -38,7 +37,6 @@ public class LifecycleServiceImpl implements LifecycleService {
     private boolean inClosing = false;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
-    private RoleContext roleContext;
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
@@ -75,7 +73,6 @@ public class LifecycleServiceImpl implements LifecycleService {
 
         // Chain all jobs that will stop our services
         final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(roleContext.stopClusterServices(connectionInterrupted));
         futureList.add(statContext.stopClusterServices(connectionInterrupted));
         futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
         futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
@@ -116,8 +113,7 @@ public class LifecycleServiceImpl implements LifecycleService {
         this.clusterInitializationPhaseHandler = deviceContext;
         this.deviceContext.setLifecycleInitializationPhaseHandler(this.statContext);
         this.statContext.setLifecycleInitializationPhaseHandler(this.rpcContext);
-        this.rpcContext.setLifecycleInitializationPhaseHandler(this.roleContext);
-        this.roleContext.setLifecycleInitializationPhaseHandler(this);
+        this.rpcContext.setLifecycleInitializationPhaseHandler(this);
         //Set initial submit handler
         this.statContext.setInitialSubmitHandler(this.deviceContext);
         //Register cluster singleton service
@@ -132,11 +128,6 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void setRpcContext(final RpcContext rpcContext) {
         this.rpcContext = rpcContext;
-    }
-
-    @Override
-    public void setRoleContext(final RoleContext roleContext) {
-        this.roleContext = roleContext;
     }
 
     @Override

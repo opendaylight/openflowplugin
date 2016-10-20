@@ -38,7 +38,6 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -48,7 +47,6 @@ import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegi
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
-import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -79,7 +77,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private int barrierCountLimit;
     private long echoReplyTimeout;
     private DeviceManager deviceManager;
-    private RoleManager roleManager;
     private RpcManager rpcManager;
     private RpcProviderRegistry rpcProviderRegistry;
     private StatisticsManager statisticsManager;
@@ -242,7 +239,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
-        roleManager = new RoleManagerImpl(dataBroker, hashedWheelTimer);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, hashedWheelTimer, convertorManager);
 
         /* Initialization Phase ordering - OFP Device Context suite */
@@ -250,14 +246,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
-        rpcManager.setDeviceInitializationPhaseHandler(roleManager);
-        roleManager.setDeviceInitializationPhaseHandler(deviceManager);
+        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         /* Termination Phase ordering - OFP Device Context suite */
         deviceManager.setDeviceTerminationPhaseHandler(rpcManager);
         rpcManager.setDeviceTerminationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceTerminationPhaseHandler(roleManager);
-        roleManager.setDeviceTerminationPhaseHandler(deviceManager);
+        statisticsManager.setDeviceTerminationPhaseHandler(deviceManager);
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
@@ -336,10 +330,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.close();
         rpcManager.close();
         statisticsManager.close();
-
-        // TODO: needs to close org.opendaylight.openflowplugin.impl.role.OpenflowOwnershipListener after RoleContexts are down
-        // TODO: must not be executed prior to all living RoleContexts have been closed (via closing living DeviceContexts)
-        roleManager.close();
 
         // Manually shutdown all remaining running threads in pool
         threadPool.shutdown();

@@ -13,7 +13,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 
@@ -39,12 +38,6 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      * @param rpcContext actual rpc context created per device
      */
     void setRpcContext(final RpcContext rpcContext);
-
-    /**
-     * Setter for role context
-     * @param roleContext actual role context created per device
-     */
-    void setRoleContext(final RoleContext roleContext);
 
     /**
      * Setter for statistics context

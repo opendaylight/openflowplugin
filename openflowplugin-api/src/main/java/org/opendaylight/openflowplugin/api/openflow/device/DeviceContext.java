@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -21,6 +22,9 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -41,7 +45,8 @@ public interface DeviceContext extends
         AutoCloseable,
         DeviceReplyProcessor,
         TxFacade,
-        DeviceRegistry{
+        DeviceRegistry,
+        RequestContextStack{
 
     /**
      * Method close all auxiliary connections and primary connection.
@@ -132,5 +137,17 @@ public interface DeviceContext extends
     void replaceConnectionContext(ConnectionContext connectionContext);
 
     boolean isSkipTableFeatures();
+
+    /**
+     * Setter for sal role service
+     * @param salRoleService
+     */
+    void setSalRoleService(@Nonnull final SalRoleService salRoleService);
+
+    /**
+     * Make device slave
+     * @return listenable future from sal role service
+     */
+    ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 }
 
