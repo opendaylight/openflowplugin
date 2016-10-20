@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_d43b7f9a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-20T07:30:11Z",
+      "side": 1,
+      "message": "Commit message need to be updated and more detailed.\n\nGreat article for the first sentence is here.\nhttp://chris.beams.io/posts/git-commit/",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 60
+      },
+      "revId": "53d987d2123b66db0ef17cd354bafbe26e2b0151",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
