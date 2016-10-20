@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_debefdff",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-20T09:49:30Z",
+      "side": 1,
+      "message": "we can do it better way\n\nsimple turn the condition, first check if we have flowRef from input and after that if doesnt exists then decide if its an update or add\n\n            final boolean isUpdate \u003d Objects.nonNull(origFlowDescriptor);\n\n            final FlowId fLowId \u003d Objects.nonNull(input.getFlowRef())\n                        ? input.getFlowRef().getValue().firstKeyOf(Flow.class).getId()\n                        : isUpdate ? origFlowDescriptor.getFlowId() : deviceFlowRegistry.storeIfNecessary(updatedFlowRegistryKey);\n\n            final FlowDescriptor updatedFlowDescriptor \u003d FlowDescriptorFactory.create(updated.getTableId(), fLowId);\n\n            if (isUpdate) {\n                deviceFlowRegistry.removeDescriptor(origFlowRegistryKey);\n                deviceFlowRegistry.store(updatedFlowRegistryKey, updatedFlowDescriptor);\n            }",
+      "range": {
+        "startLine": 232,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 13
+      },
+      "revId": "2cdb42fae0546f4ba9b90eb7e844d26f53d816fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5e3aed98",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-20T09:49:30Z",
+      "side": 1,
+      "message": "WARNING",
+      "range": {
+        "startLine": 299,
+        "startChar": 32,
+        "endLine": 299,
+        "endChar": 37
+      },
+      "revId": "2cdb42fae0546f4ba9b90eb7e844d26f53d816fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
