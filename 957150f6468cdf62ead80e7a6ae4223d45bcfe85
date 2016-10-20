@@ -26,6 +26,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_147337b2",
+        "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-20T07:12:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_8fc9f85c",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_ef16aca6",
         "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
         "patchSetId": 3
@@ -38,6 +62,30 @@
       "side": 1,
       "message": "It is still a NotificationProviderImpl. Please explain why it is not",
       "parentUuid": "7a6b29fe_4fb080dd",
+      "range": {
+        "startLine": 65,
+        "startChar": 13,
+        "endLine": 65,
+        "endChar": 37
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_74670beb",
+        "filename": "applications/notification-supplier/src/main/java/org/opendaylight/openflowplugin/applications/notification/supplier/NotificationProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-20T07:12:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_ef16aca6",
       "range": {
         "startLine": 65,
         "startChar": 13,
@@ -85,6 +133,30 @@
       "writtenOn": "2016-10-19T07:23:53Z",
       "side": 1,
       "message": "Comments are used in the Actual Impl Class. We can discuss over if we need to put here also",
+      "parentUuid": "7a6b29fe_2fec24c7",
+      "range": {
+        "startLine": 15,
+        "startChar": 3,
+        "endLine": 23,
+        "endChar": 29
+      },
+      "revId": "957150f6468cdf62ead80e7a6ae4223d45bcfe85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b461a3d5",
+        "filename": "applications/notification-supplier/src/main/resources/org/opendaylight/blueprint/notification-supplier.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2016-10-20T07:12:37Z",
+      "side": 1,
+      "message": "Done",
       "parentUuid": "7a6b29fe_2fec24c7",
       "range": {
         "startLine": 15,
