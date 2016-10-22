@@ -79,8 +79,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @GuardedBy("txLock")
     private void createTxChain() {
-        Optional.ofNullable(txChainFactory).ifPresent(TransactionChain::close);
+        BindingTransactionChain txChainFactoryTemp = txChainFactory;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+        Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
     }
 
     public void setLifecycleService(final LifecycleService lifecycleService) {
@@ -234,7 +235,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         if (transactionChainManagerStatus.equals(TransactionChainManagerStatus.WORKING)) {
-            LOG.warn("txChain failed -> recreating due to {}", cause);
+            LOG.warn("Transaction chain failed, recreating chain due to ", cause);
             recreateTxChain();
         }
     }
