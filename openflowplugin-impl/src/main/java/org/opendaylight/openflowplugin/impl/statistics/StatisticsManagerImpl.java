@@ -144,7 +144,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node {} was not successful: ", deviceInfo.getLOGValue(), throwable.getMessage());
+                LOG.warn("Statistics gathering for single node {} was not successful: {}", deviceInfo.getLOGValue(),
+                        throwable.getMessage());
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
                 }
