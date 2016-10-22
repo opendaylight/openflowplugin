@@ -8,12 +8,17 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +26,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -30,6 +38,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosed
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -65,6 +74,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -95,9 +105,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,10 +127,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private static final float LOW_WATERMARK_FACTOR = 0.75f;
     // TODO: high water mark factor should be parametrized
     private static final float HIGH_WATERMARK_FACTOR = 0.95f;
+
+    // Timeout in seconds after what we will give up on propagating role
+    private static final int SET_ROLE_TIMEOUT = 10;
+
     private boolean initialized;
     private static final Long RETRY_DELAY = 100L;
     private static final int RETRY_COUNT = 3;
 
+    private SalRoleService salRoleService = null;
+    private final HashedWheelTimer hashedWheelTimer;
     private ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
@@ -141,6 +163,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private final DeviceManager myManager;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -149,9 +172,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final TranslatorLibrary translatorLibrary,
             @Nonnull final DeviceManager manager,
             final ConvertorExecutor convertorExecutor,
-            final boolean skipTableFeatures) {
+            final boolean skipTableFeatures,
+            final HashedWheelTimer hashedWheelTimer,
+            final DeviceManager myManager) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
+        this.hashedWheelTimer = hashedWheelTimer;
+        this.myManager = myManager;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.auxiliaryConnectionContexts = new HashMap<>();
@@ -602,9 +629,49 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> stopClusterServices(boolean deviceDisconnected) {
-        return initialized
-                ? this.transactionChainManager.deactivateTransactionManager()
-                : Futures.immediateFuture(null);
+
+        ListenableFuture<Void> deactivateTxManagerFuture =
+                initialized ? transactionChainManager.deactivateTransactionManager() : Futures.immediateFuture(null);
+
+        if (!deviceDisconnected) {
+            ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
+                @Nullable
+                @Override
+                public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                    return null;
+                }
+            });
+
+            Futures.addCallback(makeSlaveFuture, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(@Nullable Void aVoid) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
+                    }
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
+                    LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
+                    myManager.removeDeviceFromOperationalDS(deviceInfo);
+                }
+            });
+
+            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
+                @Override
+                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
+                    return makeSlaveFuture;
+                }
+            });
+        } else {
+            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
+                @Override
+                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
+                    return myManager.removeDeviceFromOperationalDS(deviceInfo);
+                }
+            });
+        }
     }
 
     @Override
@@ -638,6 +705,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public void setSalRoleService(@Nonnull SalRoleService salRoleService) {
+        this.salRoleService = salRoleService;
+    }
+
+    @Override
     public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
         this.clusterInitializationPhaseHandler = handler;
     }
@@ -663,6 +735,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
+
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
     }
 
@@ -677,6 +751,60 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
             this.initialized = true;
+        }
+    }
+
+    @Nullable
+    @Override
+    public <T> RequestContext<T> createRequestContext() {
+        return new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
+            @Override
+            public void close() {
+            }
+        };
+
+    }
+
+    ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
+        }
+        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
+        if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
+            final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
+                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier())).build();
+            setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
+            final TimerTask timerTask = timeout -> {
+                if (!setRoleOutputFuture.isDone()) {
+                    LOG.warn("New role {} was not propagated to device {} during {} sec", newRole, deviceInfo.getLOGValue(), SET_ROLE_TIMEOUT);
+                    setRoleOutputFuture.cancel(true);
+                }
+            };
+            hashedWheelTimer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
+        } else {
+            LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
+            return Futures.immediateFuture(null);
+        }
+        return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
+        return sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
+    }
+
+    private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+        @Override
+        public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
+            }
+        }
+
+        @Override
+        public void onFailure(final Throwable throwable) {
+            LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
+            shutdownConnection();
         }
     }
 }
