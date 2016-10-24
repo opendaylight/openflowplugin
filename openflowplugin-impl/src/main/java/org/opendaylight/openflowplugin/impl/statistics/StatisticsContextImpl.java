@@ -60,7 +60,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
-    private final boolean shuttingDownStatisticsPolling;
+    private final boolean isStatisticsPollingOn;
     private final SinglePurposeMultipartReplyTranslator multipartReplyTranslator;
     private final Object collectionStatTypeLock = new Object();
     @GuardedBy("collectionStatTypeLock")
@@ -81,14 +81,14 @@ class StatisticsContextImpl implements StatisticsContext {
     private ListenableFuture<Boolean> lastDataGathering;
 
     StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
-                          final boolean shuttingDownStatisticsPolling,
+                          final boolean isStatisticsPollingOn,
                           @Nonnull final LifecycleService lifecycleService,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager) {
         this.lifecycleService = lifecycleService;
         this.deviceContext = lifecycleService.getDeviceContext();
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
-        this.shuttingDownStatisticsPolling = shuttingDownStatisticsPolling;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
         emptyFuture = Futures.immediateFuture(false);
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
@@ -142,7 +142,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> gatherDynamicData(final boolean initial) {
         this.lastDataGathering = null;
-        if (shuttingDownStatisticsPolling) {
+        if (!isStatisticsPollingOn) {
             LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
         }
@@ -505,7 +505,7 @@ class StatisticsContextImpl implements StatisticsContext {
             }
         });
 
-        if (!this.shuttingDownStatisticsPolling) {
+        if (this.isStatisticsPollingOn) {
             myManager.startScheduling(deviceInfo);
         }
 
