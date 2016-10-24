@@ -21,7 +21,6 @@ import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -69,7 +68,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private boolean isStatisticsPollingOff;
+    private boolean isStatisticsPollingOn;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
     private final HashedWheelTimer hashedWheelTimer;
@@ -80,7 +79,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
-                                 final boolean isStatisticsPollingOff,
+                                 final boolean isStatisticsPollingOn,
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
@@ -88,7 +87,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
-        this.isStatisticsPollingOff = isStatisticsPollingOff;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
@@ -99,7 +98,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext =
                 new StatisticsContextImpl(
                         deviceInfo,
-                        isStatisticsPollingOff,
+                        isStatisticsPollingOn,
                         lifecycleService,
                         converterExecutor,
                         this);
@@ -172,7 +171,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (LOG.isDebugEnabled()) {
             LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
         }
-        if (!isStatisticsPollingOff) {
+        if (isStatisticsPollingOn) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
                     timeout -> pollStatistics(
                             deviceState,
@@ -231,7 +230,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             if (!workMode.equals(targetWorkMode)) {
-                isStatisticsPollingOff = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+                isStatisticsPollingOn = !(StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode));
                 // iterate through stats-ctx: propagate mode
                 for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     final DeviceInfo deviceInfo = entry.getKey();
@@ -271,7 +270,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
-        if (isStatisticsPollingOff) {
+        if (!isStatisticsPollingOn) {
             LOG.info("Statistics are shutdown for device: {}", deviceInfo.getNodeId());
             return;
         }
@@ -331,8 +330,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void setIsStatisticsPollingOff(boolean isStatisticsPollingOff){
-        this.isStatisticsPollingOff = isStatisticsPollingOff;
+    public void setIsStatisticsPollingOn(boolean isStatisticsPollingOn){
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
     }
 
 }

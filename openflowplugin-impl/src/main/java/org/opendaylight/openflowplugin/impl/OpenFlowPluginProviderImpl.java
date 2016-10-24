@@ -90,7 +90,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private DataBroker dataBroker;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private boolean switchFeaturesMandatory = false;
-    private boolean isStatisticsPollingOff = false;
+    private boolean isStatisticsPollingOn = true;
     private boolean isStatisticsRpcEnabled;
     private boolean isNotificationFlowRemovedOff = false;
     private boolean skipTableFeatures = true;
@@ -119,13 +119,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public boolean isStatisticsPollingOff() {
-        return isStatisticsPollingOff;
+    public boolean isStatisticsPollingOn() {
+        return isStatisticsPollingOn;
     }
 
     @Override
-    public void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff) {
-        this.isStatisticsPollingOff = isStatisticsPollingOff;
+    public void setIsStatisticsPollingOn(final boolean isStatisticsPollingOn) {
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
     }
 
     private void startSwitchConnections() {
@@ -242,7 +242,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOff, hashedWheelTimer, convertorManager);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer, convertorManager);
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
@@ -303,8 +303,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
             }
         }
 
-        if(statisticsManager != null && props.containsKey("is-statistics-polling-off")){
-            statisticsManager.setIsStatisticsPollingOff(Boolean.valueOf(props.get("is-statistics-polling-off").toString()));
+        if(statisticsManager != null && props.containsKey("is-statistics-polling-on")){
+            statisticsManager.setIsStatisticsPollingOn(Boolean.valueOf(props.get("is-statistics-polling-on").toString()));
         }
     }
 
