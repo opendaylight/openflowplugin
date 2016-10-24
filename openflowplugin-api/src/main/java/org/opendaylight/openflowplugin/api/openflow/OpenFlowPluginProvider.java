@@ -56,9 +56,9 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     boolean isSwitchFeaturesMandatory();
 
-    boolean isStatisticsPollingOff();
+    boolean isStatisticsPollingOn();
 
-    void setIsStatisticsPollingOff(final boolean isStatisticsPollingOff);
+    void setIsStatisticsPollingOn(final boolean isStatisticsPollingOn);
 
     /**
      * Backward compatibility feature - exposing rpc for statistics polling (result is provided in form of async notification)
