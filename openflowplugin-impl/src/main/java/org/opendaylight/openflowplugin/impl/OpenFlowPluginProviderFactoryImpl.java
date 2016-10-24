@@ -54,7 +54,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setNotificationProviderService(notificationService);
         openflowPluginProvider.setNotificationPublishService(notificationPublishService);
         openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
-        openflowPluginProvider.setIsStatisticsPollingOff(providerConfig.isIsStatisticsPollingOff());
+        openflowPluginProvider.setIsStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
         openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
         openflowPluginProvider.setBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
@@ -66,7 +66,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.initialize();
 
         LOG.info("Configured values, " +
-                "StatisticsPollingOff:{}, " +
+                "StatisticsPollingOn:{}, " +
                 "SwitchFeaturesMandatory:{}, " +
                 "BarrierCountLimit:{}, " +
                 "BarrierTimeoutLimit:{}, " +
@@ -75,7 +75,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "ThreadPoolMaxThreads:{}, " +
                 "ThreadPoolTimeout:{}, " +
                 "NotificationFlowRemovedOff:{}",
-                providerConfig.isIsStatisticsPollingOff(),
+                providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
                 providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
