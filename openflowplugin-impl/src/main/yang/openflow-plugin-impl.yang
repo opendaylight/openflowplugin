@@ -103,9 +103,9 @@ module openflow-plugin-provider-impl {
                 type uint32;
                 default 131072;
             }
-            leaf is-statistics-polling-off {
+            leaf is-statistics-polling-on {
                 type boolean;
-                default "false";
+                default "true";
             }
             leaf is-statistics-rpc-enabled {
                 status deprecated;

@@ -39,9 +39,9 @@ module openflow-provider-config {
             default 64000;
         }
 
-        leaf is-statistics-polling-off {
+        leaf is-statistics-polling-on {
             type boolean;
-            default "false";
+            default "true";
         }
 
         leaf is-statistics-rpc-enabled {
