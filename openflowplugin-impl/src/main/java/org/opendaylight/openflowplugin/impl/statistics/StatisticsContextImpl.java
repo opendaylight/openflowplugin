@@ -476,27 +476,25 @@ class StatisticsContextImpl implements StatisticsContext {
             return false;
         }
 
+        LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
+
+        this.statListForCollectingInitialization();
+        Futures.addCallback(this.initialGatherDynamicData(), new FutureCallback<Boolean>() {
+
+            @Override
+            public void onSuccess(@Nullable Boolean aBoolean) {
+                initialSubmitHandler.initialSubmitTransaction();
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
+                lifecycleService.closeConnection();
+            }
+        });
+
         if (!this.shuttingDownStatisticsPolling) {
-
-            LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
-
-            this.statListForCollectingInitialization();
-            Futures.addCallback(this.initialGatherDynamicData(), new FutureCallback<Boolean>() {
-
-                        @Override
-                        public void onSuccess(@Nullable Boolean aBoolean) {
-                            initialSubmitHandler.initialSubmitTransaction();
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
-                            lifecycleService.closeConnection();
-                        }
-                    });
-
-                    myManager.startScheduling(deviceInfo);
-
+            myManager.startScheduling(deviceInfo);
         }
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
