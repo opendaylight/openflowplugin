@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a682502_e14a7126",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/MdSalRegistrationUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5743
+      },
+      "writtenOn": "2016-10-25T09:33:13Z",
+      "side": 1,
+      "message": "I have organized the sequence of imports directed by\nodlparent\\checkstyle\\src\\main\\resources\\odl_checks.xml.\nSpecific content as follows:\n        \u003cmodule name\u003d\"CustomImportOrder\"\u003e\n            \u003cproperty name\u003d\"thirdPartyPackageRegExp\" value\u003d\".*\"/\u003e\n            \u003cproperty name\u003d\"specialImportsRegExp\" value\u003d\"^com.*\"/\u003e\n            \u003cproperty name\u003d\"sortImportsInGroupAlphabetically\" value\u003d\"true\"/\u003e\n            \u003cproperty name\u003d\"customImportOrderRules\" value\u003d\"STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS\"/\u003e\n        \u003c/module\u003e",
+      "parentUuid": "5a682502_deaf542a",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 61,
+        "endChar": 43
+      },
+      "revId": "b28fa614504e2bc6b86d9a50b6660392115471cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
