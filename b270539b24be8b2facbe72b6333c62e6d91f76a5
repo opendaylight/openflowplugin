@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_d75e1e12",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2016-10-26T08:31:08Z",
+      "side": 1,
+      "message": "Do you need to re-assign this ? I assume its already done in the constructor.",
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d7b57e32",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2016-10-26T08:31:08Z",
+      "side": 1,
+      "message": "I feel it may not be a good idea to combine the LLDP and statistics configuration in one review. My opinion would be to split it up as two separate reviews",
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
