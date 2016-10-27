@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,7 +55,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -143,7 +141,6 @@ public class DeviceInitializationUtilsTest {
 
     @Before
     public void setUp() throws Exception {
-        OpenflowPortsUtil.init();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         when(mockConnectionContext.getNodeId()).thenReturn(NODE_ID);
@@ -307,7 +304,6 @@ public class DeviceInitializationUtilsTest {
         final MultipartReplyMessage multipartReplyMessage = new MultipartReplyMessageBuilder().setMultipartReplyBody(multipartReplyPortDescCaseBuilder.build()).build();
         final Set<MultipartReply> multipartReplyMessages = Collections.<MultipartReply>singleton(multipartReplyMessage);
 
-        OpenflowPortsUtil.init();
         DeviceInitializationUtils.translateAndWriteReply(MultipartType.OFPMPPORTDESC, mockedDeviceContext, DUMMY_NODE_II, multipartReplyMessages, convertorManager);
         verify(mockedDeviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier<NodeConnector>> any(), any(NodeConnector.class));

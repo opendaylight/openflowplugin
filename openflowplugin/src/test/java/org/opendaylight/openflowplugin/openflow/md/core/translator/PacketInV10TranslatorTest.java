@@ -32,7 +32,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
@@ -70,7 +69,6 @@ public class PacketInV10TranslatorTest {
         when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF10_VERSION_ID);
         when(sc.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(new BigInteger("42"));
-        OpenflowPortsUtil.init();
 
         cookie = settingCookie();
         data = messageData();
@@ -166,7 +164,6 @@ public class PacketInV10TranslatorTest {
         sessionContextOFImpl.setFeatures(featuresOutput);
         sessionContextOFImpl.setPrimaryConductor(conductor);
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
-        OpenflowPortsUtil.init();
         List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
                 sessionContextOFImpl, message);
 

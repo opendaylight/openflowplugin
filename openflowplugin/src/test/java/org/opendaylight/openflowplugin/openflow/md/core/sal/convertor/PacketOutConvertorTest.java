@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -56,7 +55,6 @@ public class PacketOutConvertorTest {
 
     @Before
     public void setUp() {
-        OpenflowPortsUtil.init();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
@@ -166,8 +164,6 @@ public class PacketOutConvertorTest {
         }
         BigInteger datapathId = new BigInteger(1, datapathIdByte);
         Long xid = 0xfffffL;
-
-        OpenflowPortsUtil.init();
 
         PacketOutConvertorData data = new PacketOutConvertorData(version);
         data.setXid(xid);

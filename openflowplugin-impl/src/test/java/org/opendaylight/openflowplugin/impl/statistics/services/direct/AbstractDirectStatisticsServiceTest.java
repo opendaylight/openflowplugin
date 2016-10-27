@@ -31,7 +31,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -86,8 +85,6 @@ public abstract class AbstractDirectStatisticsServiceTest {
 
     @Before
     public void init() throws Exception {
-        OpenflowPortsUtil.init();
-
         nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
                 DATAPATH_ID, PORT_NO, OpenflowVersion.get(OF_VERSION));
 

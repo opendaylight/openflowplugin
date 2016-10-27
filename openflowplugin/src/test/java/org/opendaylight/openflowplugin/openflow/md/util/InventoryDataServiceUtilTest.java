@@ -66,7 +66,6 @@ public class InventoryDataServiceUtilTest {
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(nodes)));
 
-        OpenflowPortsUtil.init();
         OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
 
     }

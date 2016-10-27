@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -64,7 +63,6 @@ public class MatchConvertorV10ImplTest {
 
     @Before
     public void setup() {
-        OpenflowPortsUtil.init();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 

@@ -31,8 +31,6 @@ public class OpenflowPortsUtilTest {
      */
     @BeforeClass
     public static void setupClass() {
-        OpenflowPortsUtil.init();
-
         mapOF10Ports = new HashMap<String, Long>();
         mapOF10Ports.put(OutputPortValues.MAX.toString(), 65280L);
         mapOF10Ports.put(OutputPortValues.INPORT.toString(), 65528L);
@@ -66,7 +64,6 @@ public class OpenflowPortsUtilTest {
      */
     @AfterClass
     public static void tearDownClass() {
-        OpenflowPortsUtil.close();
         mapOF10Ports.clear();
         mapOF13Ports.clear();
         mapVersionToPorts.clear();

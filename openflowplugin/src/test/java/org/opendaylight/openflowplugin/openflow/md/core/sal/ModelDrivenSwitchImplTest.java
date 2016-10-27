@@ -38,7 +38,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
@@ -205,9 +204,6 @@ public class ModelDrivenSwitchImplTest {
             = Futures.<Optional<FlowHashIdMapping>,ReadFailedException>immediateCheckedFuture(Optional.<FlowHashIdMapping>absent());
         Mockito.when(rwTx.read(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<FlowHashIdMapping>>any())).thenReturn(dummyReadFuture);
         Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(rwTx);
-
-
-        OpenflowPortsUtil.init();
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context, convertorManager);
