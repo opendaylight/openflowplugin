@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_a96ea594",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-27T11:05:58Z",
+      "side": 1,
+      "message": "Why this? Its synchronized.",
+      "range": {
+        "startLine": 82,
+        "startChar": 8,
+        "endLine": 82,
+        "endChar": 68
+      },
+      "revId": "cc4159b735c1bc0245decf0abeea9d631b9ef694",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_8941290e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-27T11:05:58Z",
+      "side": 1,
+      "message": "You cannot enable submit here because on activation txChainManager you enable submit before the initialization submit done.",
+      "range": {
+        "startLine": 84,
+        "startChar": 8,
+        "endLine": 84,
+        "endChar": 29
+      },
+      "revId": "cc4159b735c1bc0245decf0abeea9d631b9ef694",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_c94a0127",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-27T11:05:58Z",
+      "side": 1,
+      "message": "this is not guarded by txLock, it can cause problems",
+      "range": {
+        "startLine": 239,
+        "startChar": 12,
+        "endLine": 239,
+        "endChar": 36
+      },
+      "revId": "cc4159b735c1bc0245decf0abeea9d631b9ef694",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
