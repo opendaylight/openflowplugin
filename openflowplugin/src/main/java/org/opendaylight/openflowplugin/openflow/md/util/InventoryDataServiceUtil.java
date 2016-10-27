@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -38,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class InventoryDataServiceUtil {
-    public static final  String OF_URI_PREFIX = "openflow:";
     private static final Splitter COLON_SPLITTER = Splitter.on(":");
     private static final Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
@@ -106,11 +106,11 @@ public abstract class InventoryDataServiceUtil {
     public static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = datapathId.toString();
-        return new NodeId(OF_URI_PREFIX + current);
+        return new NodeId(OFConstants.OF_URI_PREFIX + current);
     }
 
     public static BigInteger dataPathIdFromNodeId(final NodeId nodeId) {
-        String dpids = nodeId.getValue().replace(OF_URI_PREFIX, "");
+        String dpids = nodeId.getValue().replace(OFConstants.OF_URI_PREFIX, "");
         BigInteger dpid = new BigInteger(dpids);
         return dpid;
     }
@@ -127,7 +127,7 @@ public abstract class InventoryDataServiceUtil {
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final BigInteger datapathid, final Long portNo,
                                                                     final OpenflowVersion ofVersion) {
         String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
-        return new NodeConnectorId(OF_URI_PREFIX + datapathid + ":" + (logicalName == null ? portNo : logicalName));
+        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null ? portNo : logicalName));
     }
 
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {
