@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalExperimenterMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlatBatchServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowsBatchServiceImpl;
@@ -48,6 +49,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -64,7 +66,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.O
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 
 public class MdSalRegistrationUtils {
 
@@ -101,7 +102,6 @@ public class MdSalRegistrationUtils {
         // register routed service instances
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, salFlowService);
-        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
@@ -111,7 +111,7 @@ public class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
 
-        // Direct statistics gathering
+        // register direct statistics gathering services
         final OpendaylightDirectStatisticsServiceProvider statisticsProvider = new OpendaylightDirectStatisticsServiceProvider();
         statisticsProvider.register(FlowDirectStatisticsService.class, new FlowDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
         statisticsProvider.register(GroupDirectStatisticsService.class, new GroupDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
@@ -120,41 +120,18 @@ public class MdSalRegistrationUtils {
         statisticsProvider.register(QueueDirectStatisticsService.class, new QueueDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
         rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class, new OpendaylightDirectStatisticsServiceImpl(statisticsProvider));
 
-        final SalFlatBatchServiceImpl salFlatBatchService = new SalFlatBatchServiceImpl(
+        // register flat batch services
+        rpcContext.registerRpcServiceImplementation(SalFlatBatchService.class, new SalFlatBatchServiceImpl(
                 new SalFlowsBatchServiceImpl(salFlowService, flowCapableTransactionService),
                 new SalGroupsBatchServiceImpl(salGroupService, flowCapableTransactionService),
                 new SalMetersBatchServiceImpl(salMeterService, flowCapableTransactionService)
-        );
-        rpcContext.registerRpcServiceImplementation(SalFlatBatchService.class, salFlatBatchService);
+        ));
 
-        // TODO: experimenter symmetric and multipart message services
+        // register experimenter services
         rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
                 new SalExperimenterMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
-    }
-
-    /**
-     * Method unregisters all OF services.
-     *
-     * @param rpcContext - unregistration processing is implemented in {@link RpcContext}
-     */
-    public static void unregisterServices(@CheckForNull final RpcContext rpcContext) {
-        Preconditions.checkArgument(rpcContext != null);
-
-        rpcContext.unregisterRpcServiceImplementation(SalEchoService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalFlowService.class);
-        //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
-        rpcContext.unregisterRpcServiceImplementation(FlowCapableTransactionService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalMeterService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalGroupService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalTableService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalPortService.class);
-        rpcContext.unregisterRpcServiceImplementation(PacketProcessingService.class);
-        rpcContext.unregisterRpcServiceImplementation(NodeConfigService.class);
-        rpcContext.unregisterRpcServiceImplementation(OpendaylightFlowStatisticsService.class);
-        rpcContext.unregisterRpcServiceImplementation(SalFlatBatchService.class);
-        // TODO: experimenter symmetric and multipart message services
-        rpcContext.unregisterRpcServiceImplementation(SalExperimenterMessageService.class);
-        rpcContext.unregisterRpcServiceImplementation(OpendaylightDirectStatisticsService.class);
+        rpcContext.registerRpcServiceImplementation(SalExperimenterMpMessageService.class,
+                new SalExperimenterMpMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
     }
 
     /**
