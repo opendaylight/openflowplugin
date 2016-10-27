@@ -26,14 +26,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -113,6 +111,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         TimeUnit.SECONDS.toNanos(20);
 
     private final DataBroker dataBroker;
+    private int maxRetry = 3;
+    private long retryInterval = 50L;
 
     private final ForwardingRulesManager provider;
     private static final String SEPARATOR = ":";
@@ -241,7 +241,21 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         if (force || !provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
 
-            if(!provider.isNodeOwner(connectedNode)) { return; }
+            /* Retry Logic for the delay in master node selection*/
+
+            int attemptedRetry = 0;
+            while (!(provider.isNodeOwner(connectedNode)) && attemptedRetry < maxRetry){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(((retryInterval * attemptedRetry) + retryInterval));
+                    attemptedRetry ++;
+                } catch (InterruptedException e) {
+                    LOG.error("Exception occurred while waiting for Master Node Election");
+                }
+            }
+            if (attemptedRetry >= maxRetry){
+                LOG.debug("Attempted Retries exhausted waiting for Node Owner");
+                return;
+            }
 
             if (provider.getConfiguration().isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
