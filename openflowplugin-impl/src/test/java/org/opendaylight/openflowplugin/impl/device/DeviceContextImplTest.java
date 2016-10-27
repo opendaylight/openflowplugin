@@ -29,7 +29,6 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,7 +75,6 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -459,7 +457,6 @@ public class DeviceContextImplTest {
         when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
         when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
 
-        OpenflowPortsUtil.init();
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
         verify(deviceContextSpy).submitTransaction();

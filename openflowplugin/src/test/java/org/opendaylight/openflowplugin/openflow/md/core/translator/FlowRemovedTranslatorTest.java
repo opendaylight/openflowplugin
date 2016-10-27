@@ -29,7 +29,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManagerOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
@@ -546,7 +545,6 @@ public class FlowRemovedTranslatorTest {
         when(connectionConductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(sessionContext.getFeatures()).thenReturn(featuresOutput);
         when(featuresOutput.getDatapathId()).thenReturn(DATA_PATH_ID);
-        OpenflowPortsUtil.init();
         ExtensionConverterManagerImpl extensionConverterProvider = new ExtensionConverterManagerImpl();
         //extensionConverterProvider.registerMatchConvertor()
         SessionManagerOFImpl.getInstance().setExtensionConverterProvider(extensionConverterProvider);

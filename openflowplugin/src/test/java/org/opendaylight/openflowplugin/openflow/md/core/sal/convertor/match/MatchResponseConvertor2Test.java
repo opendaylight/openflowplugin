@@ -169,7 +169,6 @@ public class MatchResponseConvertor2Test {
      */
     @Before
     public void startUp() {
-        OpenflowPortsUtil.init();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
     }
 
