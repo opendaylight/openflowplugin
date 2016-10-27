@@ -26,7 +26,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -84,10 +83,6 @@ public class PacketReceivedTranslatorTest {
     static final Long PORT_NO_DS = 6l;
     static final String DATA = "Test_Data";
     static final Long PORT_NUM_VALUE = 11l;
-
-    public PacketReceivedTranslatorTest() {
-        OpenflowPortsUtil.init();
-    }
 
     @Before
     public void setUp() throws Exception {

@@ -51,7 +51,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Stati
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -172,10 +171,6 @@ public class StatisticsGatheringUtilsTest {
     private TxFacade txFacade;
 
     private SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator;
-
-    public StatisticsGatheringUtilsTest() {
-        OpenflowPortsUtil.init();
-    }
 
     @Before
     public void setUp() throws Exception {

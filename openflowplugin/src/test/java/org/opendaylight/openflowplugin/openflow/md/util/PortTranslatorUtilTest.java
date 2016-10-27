@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -38,11 +38,6 @@ public class PortTranslatorUtilTest {
     private final boolean[] portStateBools = {false, false, false, false};
     private final Long currentSpeed = Long.decode("4294967295");
     private static final Long maxSpeed = Long.decode("4294967295");
-
-    @Before
-    public void setupEnvironment(){
-        OpenflowPortsUtil.init();
-    }
 
     /**
      * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures)}

@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -52,7 +51,6 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
         pathToNodeconnector = KeyedInstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("ofp-ut:123")))
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("ofp-ut:123:1")));
-        OpenflowPortsUtil.init();
     }
 
     @Test

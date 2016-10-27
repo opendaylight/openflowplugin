@@ -23,7 +23,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
@@ -133,7 +132,6 @@ public class SinglePurposeMultipartReplyTranslatorTest {
 
         MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyPortStats(), MultipartType.OFPMPPORTSTATS);
 
-        OpenflowPortsUtil.init();
         List<DataObject> result = singlePurposeMultipartReplyTranslator.translate(
                 mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId(),
                 mockedDeviceContext.getPrimaryConnectionContext().getFeatures().getVersion(),
