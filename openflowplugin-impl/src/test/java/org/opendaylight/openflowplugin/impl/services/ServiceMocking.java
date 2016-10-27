@@ -87,6 +87,7 @@ public abstract class ServiceMocking {
     public void initialization() {
         when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
         when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
+        when(mockedRequestContext.getFuture()).thenReturn(Futures.immediateFuture(null));
 
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
