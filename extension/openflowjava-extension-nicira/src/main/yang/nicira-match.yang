@@ -144,6 +144,9 @@ module nicira-match {
     identity nxm-nx-tun-gpe-np {
         base ofoxm:match-field;
     }
+    identity nxm-of-mpls-label {
+        base ofoxm:match-field;
+    }
 
 
     grouping ofj-nxm-nx-match-reg-grouping {
@@ -153,6 +156,14 @@ module nicira-match {
             }
         }
     }
+    grouping ofj-oxm-of-mpls-label-grouping {
+        container mpls-label-values {
+             leaf mpls-label {
+                 type uint32;
+             }
+        }
+    }
+
     grouping ofj-nxm-nx-match-tun-id-grouping {
         container tun-id-values {
             leaf value {
@@ -435,6 +446,9 @@ module nicira-match {
         }
         case eth-src-case-value {
             uses ofj-nxm-of-match-eth-src-grouping;
+        }
+        case of-mpls-label-case-value {
+            uses ofj-oxm-of-mpls-label-grouping;
         }
         case eth-dst-case-value {
             uses ofj-nxm-of-match-eth-dst-grouping;

@@ -81,6 +81,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMplsLabelCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder;
@@ -116,6 +118,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshMdtypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshNpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshNpCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfMplsLabelCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunGpeNpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunGpeNpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxRegCase;
@@ -197,6 +200,9 @@ public class RegMoveConvertor implements
         }
         if (dstValue == NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstNxOfInPortCaseBuilder().setOfInPort(true).build();
+        }
+        if (dstValue == NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong()) {
+            return new DstOfMplsLabelCaseBuilder().setOfMplsLabel(true).build();
         }
         if (dstValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstOfEthDstCaseBuilder().setOfEthDst(true).build();
@@ -428,6 +434,9 @@ public class RegMoveConvertor implements
         if (dstChoice instanceof DstNxOfInPortCase) {
             return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
         }
+        if (dstChoice instanceof DstOfMplsLabelCase) {
+            return NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong();
+        }
         if (dstChoice instanceof DstNxTunIpv4DstCase) {
             return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
         }
@@ -517,6 +526,9 @@ public class RegMoveConvertor implements
         }
         if (srcChoice instanceof SrcNxOfInPortCase) {
             return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
+        }
+        if (srcChoice instanceof SrcNxOfMplsLabelCase) {
+            return NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong();
         }
         if (srcChoice instanceof SrcNxTunIpv4DstCase) {
             return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();

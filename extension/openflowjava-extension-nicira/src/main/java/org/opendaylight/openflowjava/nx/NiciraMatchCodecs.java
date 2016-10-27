@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.nx.codec.match.IcmpTypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.IpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.IpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
+import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
@@ -71,6 +72,7 @@ public class NiciraMatchCodecs {
     public static final ArpThaCodec ARP_THA_CODEC = new ArpThaCodec();
     public static final ArpTpaCodec ARP_TPA_CODEC = new ArpTpaCodec();
     public static final InPortCodec NXM_OF_IN_PORT_CODEC = new InPortCodec();
+    public static final MplsLabelCodec OXM_OF_MPLS_LABEL = new MplsLabelCodec();
     public static final EthDstCodec ETH_DST_CODEC = new EthDstCodec();
     public static final EthSrcCodec ETH_SRC_CODEC = new EthSrcCodec();
     public static final TunIpv4DstCodec TUN_IPV4_DST_CODEC = new TunIpv4DstCodec();
