@@ -26,7 +26,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDist
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -79,7 +78,6 @@ public class MultipartReplyTranslatorThirdTest {
         when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
         when(sc.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(new BigInteger("42"));
-        OpenflowPortsUtil.init();
     }
 
     /**

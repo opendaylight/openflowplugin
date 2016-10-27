@@ -10,12 +10,10 @@ package org.opendaylight.openflowplugin.impl.util;
 import com.google.common.collect.Lists;
 import java.math.BigInteger;
 import junit.framework.TestCase;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -68,12 +66,6 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
                 .setCookie(BigInteger.ZERO)
                 .setTableId(new TableId(TABLE_ID))
                 .build();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        // Initialize the OpenFlow version/port map
-        OpenflowPortsUtil.init();
     }
 
     @Test(expected = NullPointerException.class)
