@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public class StatPermCollectorImpl implements StatPermCollector {
         for loading all Nodes to Operational/DS
      */
     private static final long WAIT_BEFORE_COLLECTING_STATS = 5000;
+    private static final TransactionId FAKE_TX_ID = new TransactionId(new BigInteger("FFFFFFFFFFFFFFFF", 16));
 
     private final ExecutorService statNetCollectorServ;
     private final StatisticsManager manager;
@@ -407,7 +409,8 @@ public class StatPermCollectorImpl implements StatPermCollector {
 
     private boolean checkTransactionId(final TransactionId xid) {
         synchronized (transNotifyLock) {
-            return actualTransactionId != null && actualTransactionId.equals(xid);
+            return actualTransactionId != null
+                    && (actualTransactionId.equals(xid) || actualTransactionId.equals(FAKE_TX_ID));
         }
     }
 
@@ -415,6 +418,10 @@ public class StatPermCollectorImpl implements StatPermCollector {
         synchronized (transNotifyLock) {
             actualTransactionId = transactionId;
         }
+    }
+
+    public static TransactionId getFakeTxId() {
+        return FAKE_TX_ID;
     }
 }
 
