@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_de88f2c8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-10-28T00:00:24Z",
+      "side": 1,
+      "message": "Jozef, It\u0027s not to make it thread safe, it\u0027s to create the new transaction chain as soon as possible and close the transaction chain after that. In the following log, search for \"Attempted to close chain with outstanding transaction PingPongTransaction\".\n\nhttps://gist.githubusercontent.com/vishnoianil/5a5b6a68b93506bd27c760da866d1396/raw/b924c7fa5efed09df986c08f13febfd339b8d30b/gistfile1.txt\n\nSo looks like, it\u0027s not closing the transaction and throwing the excpetion, which skip the new transaction creation and eventually the next stats start using this stale transaction chain and that also throws the exception and that eventually lead to the situation where stats-manager stop the collection for the node. I believe calling the close again on the transaction chain won\u0027t do any good as well, but i am afraid that it\u0027s not closing the transaction properly and that may leak some garbage.",
+      "parentUuid": "3a65312a_a96ea594",
+      "range": {
+        "startLine": 82,
+        "startChar": 8,
+        "endLine": 82,
+        "endChar": 68
+      },
+      "revId": "cc4159b735c1bc0245decf0abeea9d631b9ef694",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_8941290e",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
         "patchSetId": 2
