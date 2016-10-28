@@ -399,14 +399,18 @@ public class OfEntityManager implements TransactionChainListener{
         //Node added notification need to be sent irrespective of whether
         // *this* instance is owner of the entity or not. Because yang notifications
         // are local, and we should maintain the behavior across the application.
-        LOG.info("sendNodeAddedNotification: Node Added notification is sent for ModelDrivenSwitch {}",
-                entityMetadata.getOfSwitch().getNodeId().getValue());
+        if (entityMetadata != null && entityMetadata.getOfSwitch() != null) {
+            LOG.info("sendNodeAddedNotification: Node Added notification is sent for ModelDrivenSwitch {}",
+                    entityMetadata.getOfSwitch().getNodeId().getValue());
 
-        entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(
-                entityMetadata.getWrappedNotification());
+            entityMetadata.getContext().getNotificationEnqueuer().enqueueNotification(
+                    entityMetadata.getWrappedNotification());
 
-        //Send multipart request to get other details of the switch.
-        entityMetadata.getOfSwitch().requestSwitchDetails();
+            //Send multipart request to get other details of the switch.
+            entityMetadata.getOfSwitch().requestSwitchDetails();
+        } else {
+            LOG.debug("Switch got disconnected, skip node added notification.");
+        }
     }
 
     private void setDeviceOwnershipState(Entity entity, boolean isMaster) {

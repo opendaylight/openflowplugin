@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -16,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementationNotAvailableException;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
@@ -207,7 +209,13 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
             public void onFailure(final Throwable t) {
                 LOG.warn("Response Registration for Statistics RPC call fail!", t);
                 if (resultTransId != null) {
-                    resultTransId.setException(t);
+                    if (t instanceof DOMRpcImplementationNotAvailableException) {
+                        //If encountered with RPC not availabe exception, retry till
+                        // stats manager remove the node from the stats collector pool
+                        resultTransId.set(StatPermCollectorImpl.getFakeTxId());
+                    } else {
+                        resultTransId.setException(t);
+                    }
                 }
             }
         }
