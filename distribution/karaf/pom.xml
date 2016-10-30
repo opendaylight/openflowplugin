@@ -4,19 +4,19 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>karaf-parent</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.1-Boron-SR1</version>
     <relativePath></relativePath>
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
   <artifactId>openflowplugin-karaf</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
+  <version>0.3.1-Boron-SR1</version>
   <packaging>pom</packaging>
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>
 
   <properties>
-    <openflowplugin.version>0.3.1-SNAPSHOT</openflowplugin.version>
+    <openflowplugin.version>0.3.1-Boron-SR1</openflowplugin.version>
   </properties>
 
   <dependencyManagement>

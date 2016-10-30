@@ -5,26 +5,26 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>features-parent</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.7.1-Boron-SR1</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.1-Boron-SR1</version>
 
     <properties>
-        <yangtools.version>1.0.1-SNAPSHOT</yangtools.version>
-        <config.version>0.5.1-SNAPSHOT</config.version>
-        <mdsal.version>1.4.1-SNAPSHOT</mdsal.version>
-        <openflowjava.version>0.8.1-SNAPSHOT</openflowjava.version>
-        <openflowplugin.version>0.3.1-SNAPSHOT</openflowplugin.version>
-        <dlux.version>0.4.1-SNAPSHOT</dlux.version>
-        <lldp.version>0.11.1-SNAPSHOT</lldp.version>
+        <yangtools.version>1.0.1-Boron-SR1</yangtools.version>
+        <config.version>0.5.1-Boron-SR1</config.version>
+        <mdsal.version>1.4.1-Boron-SR1</mdsal.version>
+        <openflowjava.version>0.8.1-Boron-SR1</openflowjava.version>
+        <openflowplugin.version>0.3.1-Boron-SR1</openflowplugin.version>
+        <dlux.version>0.4.1-Boron-SR1</dlux.version>
+        <lldp.version>0.11.1-Boron-SR1</lldp.version>
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
-        <restconf.version>1.4.1-SNAPSHOT</restconf.version>
-        <mdsal.model.version>0.9.1-SNAPSHOT</mdsal.model.version>
+        <restconf.version>1.4.1-Boron-SR1</restconf.version>
+        <mdsal.model.version>0.9.1-Boron-SR1</mdsal.model.version>
     </properties>
 
     <dependencyManagement>
