@@ -1,0 +1,11 @@
+ 
+The resources directory contains-
+
+1.documentation on the plugin model
+2.configuration files for testing by developers
+3.associated scripts for various scenarios and use-cases
+
+It is further subdivided into docs config and scripts directories for each of the above functions and these have individual README describing them.
+
+Each of the sub-directories might be divided into further sub-directories.
+
