@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<input xmlns="urn:opendaylight:flow:service">
+   <barrier>false</barrier>
+   <node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>
+
+   <cookie>55</cookie>
+   <flags>SEND_FLOW_REM</flags>
+   <hard-timeout>0</hard-timeout>
+   <idle-timeout>0</idle-timeout>
+   <installHw>false</installHw>
+   <match>
+    <ethernet-match>
+     <ethernet-type>
+       <type>2048</type>
+     </ethernet-type>
+    </ethernet-match>
+    <ipv4-destination>10.0.10.2/32</ipv4-destination>
+   </match>
+   <instructions>
+    <instruction>
+     <order>0</order>
+     <apply-actions>
+       <action>
+         <output-action>
+           <output-node-connector>1</output-node-connector>
+         </output-action>
+         <order>0</order>
+       </action>
+     </apply-actions>
+    </instruction>
+   </instructions>
+   <priority>0</priority>
+   <strict>false</strict>
+   <table_id>0</table_id>
+</input>

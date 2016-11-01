@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<input xmlns="urn:opendaylight:flow:service">
+  
+ <node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>
+
+ <original-flow/>
+   <hard-timeout>0</hard-timeout>
+   <idle-timeout>0</idle-timeout>
+   <priority>2</priority>
+   <match>
+     <ethernet-match>
+       <ethernet-type>
+         <type>2048</type>
+       </ethernet-type>
+     </ethernet-match>
+     <ipv4-destination>10.0.10.2/32</ipv4-destination>
+   </match>
+   <instructions/>
+   <table_id>1</table_id>
+ </original-flow>
+
+ <updated-flow>
+   <hard-timeout>0</hard-timeout>
+   <idle-timeout>0</idle-timeout>
+   <priority>2</priority>
+   <match>
+     <ethernet-match>
+       <ethernet-type>
+         <type>2048</type>
+       </ethernet-type>
+     </ethernet-match>
+     <ipv4-destination>10.0.10.2/32</ipv4-destination>
+   </match>
+   <instructions>
+     <instruction>
+       <order>0</order>
+       <apply-actions>
+         <action>
+           <output-action>
+             <output-node-connector>2</output-node-connector>
+           </output-action>
+           <order>0</order>
+         </action>
+       </apply-actions>
+     </instruction>
+   </instructions>
+   <table_id>1</table_id>
+   <barrier>true</barrier>
+ </updated-flow>
+</input>
