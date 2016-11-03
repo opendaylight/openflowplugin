@@ -28,5 +28,8 @@ public interface StatisticsManager extends OFPManager {
      */
     void stopScheduling(final DeviceInfo deviceInfo);
 
-    void setIsStatisticsPollingOff(boolean isStatisticsPollingOff);
+    @Override
+    void close();
+
+    void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
 }
