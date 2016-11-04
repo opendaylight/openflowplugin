@@ -17,7 +17,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
 
         LOG.info("Initializing new OFP southbound.");
 
-        OpenflowPortsUtil.init();
         OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
                 providerConfig.getRpcRequestsQuota(),
                 providerConfig.getGlobalNotificationQuota(),

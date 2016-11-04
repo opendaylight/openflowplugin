@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -366,8 +365,6 @@ public class GroupConvertorTest {
                         .setBucket(bucket)
                         .build())
                 .build();
-
-        OpenflowPortsUtil.init();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
         data.setDatapathId(BigInteger.valueOf(1));
