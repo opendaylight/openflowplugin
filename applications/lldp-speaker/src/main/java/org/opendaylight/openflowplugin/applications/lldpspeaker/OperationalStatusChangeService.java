@@ -13,6 +13,9 @@ import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.ChangeOperationalStatusInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.GetOperationalStatusOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.GetOperationalStatusOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpIntervalInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.GetLldpIntervalOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.GetLldpIntervalOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.LldpSpeakerService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -38,6 +41,22 @@ public class OperationalStatusChangeService implements LldpSpeakerService {
         GetOperationalStatusOutputBuilder getOperationalStatusOutputBuilder = new GetOperationalStatusOutputBuilder();
         getOperationalStatusOutputBuilder.setOperationalStatus(speakerInstance.getOperationalStatus());
         rpcResultBuilder.withResult(getOperationalStatusOutputBuilder.build());
+        return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public Future<RpcResult<Void>> setLldpInterval(final SetLldpIntervalInput input) {
+        speakerInstance.setLldpInterval(input.getSetInterval());
+        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public Future<RpcResult<GetLldpIntervalOutput>> getLldpInterval() {
+        RpcResultBuilder<GetLldpIntervalOutput> rpcResultBuilder = RpcResultBuilder.success();
+        GetLldpIntervalOutputBuilder getLldpIntervalOutputBuilder = new GetLldpIntervalOutputBuilder();
+        getLldpIntervalOutputBuilder.setGetInterval(speakerInstance.getLldpInterval());
+        rpcResultBuilder.withResult(getLldpIntervalOutputBuilder.build());
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 }
