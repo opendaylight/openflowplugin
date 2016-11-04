@@ -41,4 +41,22 @@ module statistics-manager-control {
             }
         }
     }
+
+    rpc set-statistics-polling {
+        input {
+          leaf set-interval {
+              type int64;
+              description "Set statistics manager polling interval";
+         }
+      }
+    }
+
+    rpc get-statistics-polling {
+        output {
+          leaf get-interval {
+              type int64;
+              description "Get statistics manager polling interval";
+         }
+      }
+    }
 }

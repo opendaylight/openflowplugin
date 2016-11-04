@@ -45,6 +45,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.SetStatisticsPollingInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsPollingOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsPollingOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -63,7 +66,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private static final long basicTimerDelay = 3000;
+    private static long basicTimerDelay = 3000;
     private static long currentTimerDelay = basicTimerDelay;
     private static final long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
@@ -269,6 +272,42 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
         return result;
     }
+
+     @Override
+    public Future<RpcResult<GetStatisticsPollingOutput>> getStatisticsPolling() {
+      RpcResultBuilder<GetStatisticsPollingOutput> rpcResultBuilder = RpcResultBuilder.success();
+      GetStatisticsPollingOutputBuilder getStatisticsPollingOutputBuilder = new GetStatisticsPollingOutputBuilder();
+      getStatisticsPollingOutputBuilder.setGetInterval(basicTimerDelay);
+      rpcResultBuilder.withResult(getStatisticsPollingOutputBuilder.build());
+      return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public Future<RpcResult<Void>> setStatisticsPolling(SetStatisticsPollingInput input) {
+        basicTimerDelay = input.getSetInterval();
+        final Future<RpcResult<Void>> result;
+        // iterate through stats-ctx: propagate mode
+      for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
+
+          final DeviceInfo deviceInfo = entry.getKey();
+          final StatisticsContext statisticsContext = entry.getValue();
+          final DeviceContext deviceContext = statisticsContext.gainDeviceContext();
+          final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
+          if (pollTimeout.isPresent()) {
+             pollTimeout.get().cancel();
+          }
+          for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+              lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
+          }
+          scheduleNextPolling(statisticsContext.gainDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
+          for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+              lifeCycleSource.setItemLifecycleListener(null);
+           }
+      }
+      result = RpcResultBuilder.<Void>success().buildFuture();
+      return result;
+    }
+
 
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
