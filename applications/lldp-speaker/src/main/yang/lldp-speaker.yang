@@ -38,4 +38,20 @@ module lldp-speaker {
             }
          }
     }
+    rpc set-lldp-flood-interval {
+        input {
+            leaf interval {
+               type int64;
+               description "Set LLDP_FLOOD_PERIOD";
+            }
+        }
+    }
+    rpc get-lldp-flood-interval {
+        output {
+            leaf interval {
+               type int64;
+               description "Get LLDP_FLOOD_PERIOD";
+            }
+        }
+    }
 }
