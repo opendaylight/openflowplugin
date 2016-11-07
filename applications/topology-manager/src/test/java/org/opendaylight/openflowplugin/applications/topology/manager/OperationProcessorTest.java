@@ -20,6 +20,7 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OperationProcessorTest {
@@ -37,12 +38,15 @@ public class OperationProcessorTest {
     AsyncTransaction asyncTransaction;
     @Mock
     Throwable throwable;
+    @Mock
+    TopologyManagerConfig topologyManagerConfig;
 
     @Before
     public void setUp() {
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(OperationProcessor.class)))
                 .thenReturn(transactionChain);
-        processor = new OperationProcessor(dataBroker);
+        Mockito.when(topologyManagerConfig.getTopologyId()).thenReturn("openflow:test");
+        processor = new OperationProcessor(dataBroker, topologyManagerConfig);
     }
 
     @Test
