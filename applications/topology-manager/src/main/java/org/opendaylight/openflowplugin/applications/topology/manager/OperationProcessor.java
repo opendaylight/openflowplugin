@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,15 @@ public final class OperationProcessor implements AutoCloseable, Runnable, Transa
     private BindingTransactionChain transactionChain;
     private volatile boolean finishing = false;
 
-    public OperationProcessor(final DataBroker dataBroker) {
+    public OperationProcessor(
+            final DataBroker dataBroker,
+            final TopologyManagerConfig topologyManagerConfig) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         transactionChain = this.dataBroker.createTransactionChain(this);
 
         thread = new Thread(this);
         thread.setDaemon(true);
-        thread.setName("FlowCapableTopologyExporter-" + FlowCapableTopologyProvider.TOPOLOGY_ID);
+        thread.setName("FlowCapableTopologyExporter-" + topologyManagerConfig.getTopologyId());
     }
 
     void enqueueOperation(final TopologyOperation task) {
