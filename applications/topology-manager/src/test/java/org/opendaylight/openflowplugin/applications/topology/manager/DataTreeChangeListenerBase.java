@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -39,6 +40,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class DataTreeChangeListenerBase {
 
+    public static final String OPENFLOW_TEST = "openflow:test";
     private OperationProcessor processor;
     protected InstanceIdentifier<Topology> topologyIID;
     protected TerminationPointChangeListenerImpl terminationPointListener;
@@ -48,6 +50,8 @@ public abstract class DataTreeChangeListenerBase {
     private DataBroker mockDataBroker;
     @Mock
     protected BindingTransactionChain mockTxChain;
+    @Mock
+    private TopologyManagerConfig topologyManagerConfig;
 
     @Before
     public void setUp() {
@@ -56,12 +60,14 @@ public abstract class DataTreeChangeListenerBase {
         doReturn(mockTxChain).when(mockDataBroker)
                 .createTransactionChain(any(TransactionChainListener.class));
 
-        processor = new OperationProcessor(mockDataBroker);
+        when(topologyManagerConfig.getTopologyId()).thenReturn(OPENFLOW_TEST);
+
+        processor = new OperationProcessor(mockDataBroker, topologyManagerConfig);
 
         topologyIID = InstanceIdentifier.create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
-        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor);
-        nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor);
+                .child(Topology.class, new TopologyKey(new TopologyId(OPENFLOW_TEST)));
+        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor, topologyManagerConfig);
+        nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor, topologyManagerConfig);
 
         executor.execute(processor);
     }

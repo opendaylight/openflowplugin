@@ -34,6 +34,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService.NotificationInterestListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -65,6 +66,8 @@ public class FlowCapableTopologyProviderTest {
     private ReadOnlyTransaction rTx;
     @Mock
     private ReadWriteTransaction wTx;
+    @Mock
+    private TopologyManagerConfig topologyManagerConfig;
 
     @Before
     public void setUp() throws Exception {
@@ -86,11 +89,12 @@ public class FlowCapableTopologyProviderTest {
 
         doReturn(rTx).when(dataBroker).newReadOnlyTransaction();
         doReturn(wTx).when(dataBroker).newReadWriteTransaction();
+        when(topologyManagerConfig.getTopologyId()).thenReturn("openflow:test");
 
         when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
-        OperationProcessor operationProcessor = new OperationProcessor(dataBroker);
-        provider = new FlowCapableTopologyProvider(dataBroker, notificationProviderService, operationProcessor);
+        OperationProcessor operationProcessor = new OperationProcessor(dataBroker, topologyManagerConfig);
+        provider = new FlowCapableTopologyProvider(dataBroker, notificationProviderService, operationProcessor, topologyManagerConfig);
     }
 
     @Test

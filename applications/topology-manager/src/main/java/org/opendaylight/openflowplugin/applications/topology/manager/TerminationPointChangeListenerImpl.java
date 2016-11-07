@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -35,9 +36,12 @@ import org.slf4j.LoggerFactory;
 public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNodeConnector> {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
-    public TerminationPointChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
+    public TerminationPointChangeListenerImpl(
+            final DataBroker dataBroker,
+            final OperationProcessor operationProcessor,
+            final TopologyManagerConfig topologyManagerConfig) {
         super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)
-                .child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).build());
+                .child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).build(), topologyManagerConfig);
         this.operationProcessor = operationProcessor;
     }
 
