@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -30,24 +31,28 @@ import org.slf4j.LoggerFactory;
 public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeChangeListenerImpl.class);
-    private static final long STARTUP_LOOP_TICK = 500L;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    protected final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
-    protected OperationProcessor operationProcessor;
 
-    /**
-     * instance identifier to Node in network topology model (yangtools)
-     */
-    protected static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
-            InstanceIdentifier
-            .create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
+    private final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    OperationProcessor operationProcessor;
+    final InstanceIdentifier<Topology> II_TO_TOPOLOGY;
+
 
     public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor,
                                       final DataBroker dataBroker,
-                                      final InstanceIdentifier<T> ii) {
+                                      final InstanceIdentifier<T> ii,
+                                      final TopologyManagerConfig topologyManagerConfig) {
+
+        II_TO_TOPOLOGY =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(new TopologyId(topologyManagerConfig.getTopologyId())));
+
         final DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
-        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+
+        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(
+                topologyManagerConfig.getStartupLoopTick(),
+                topologyManagerConfig.getStartupLoopMaxRetries());
+
         try {
             listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
                 @Override
@@ -67,7 +72,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
         listenerRegistration.close();
     }
 
-    protected <T extends DataObject> void sendToTransactionChain(final T node, final InstanceIdentifier<T> iiToTopologyNode) {
+    <T extends DataObject> void sendToTransactionChain(final T node, final InstanceIdentifier<T> iiToTopologyNode) {
         operationProcessor.enqueueOperation(new TopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -76,7 +81,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
         });
     }
 
-    protected InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> provideIIToTopologyNode(
+    InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> provideIIToTopologyNode(
             final NodeId nodeIdInTopology) {
         org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey nodeKeyInTopology = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey(
                 nodeIdInTopology);
@@ -86,7 +91,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
                         nodeKeyInTopology).build();
     }
 
-    protected NodeId provideTopologyNodeId(InstanceIdentifier<T> iiToNodeInInventory) {
+    NodeId provideTopologyNodeId(InstanceIdentifier<T> iiToNodeInInventory) {
         final NodeKey inventoryNodeKey = iiToNodeInInventory.firstKeyOf(Node.class, NodeKey.class);
         if (inventoryNodeKey != null) {
             return new NodeId(inventoryNodeKey.getId().getValue());
