@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -34,18 +35,22 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     protected final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
     protected OperationProcessor operationProcessor;
+    final InstanceIdentifier<Topology> II_TO_TOPOLOGY;
 
     /**
      * instance identifier to Node in network topology model (yangtools)
      */
-    protected static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
-            InstanceIdentifier
-            .create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
 
     public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor,
                                       final DataBroker dataBroker,
-                                      final InstanceIdentifier<T> ii) {
+                                      final InstanceIdentifier<T> ii,
+                                      final String topologyId) {
+
+        II_TO_TOPOLOGY =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(new TopologyId(topologyId)));
+
         final DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
