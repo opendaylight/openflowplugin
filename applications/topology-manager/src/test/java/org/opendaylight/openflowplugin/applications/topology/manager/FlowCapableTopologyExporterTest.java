@@ -15,6 +15,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeConnKey;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
@@ -43,6 +44,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -62,6 +64,8 @@ public class FlowCapableTopologyExporterTest {
     private DataBroker mockDataBroker;
     @Mock
     private BindingTransactionChain mockTxChain;
+    @Mock
+    private TopologyManagerConfig topologyManagerConfig;
 
     @Before
     public void setUp() {
@@ -70,7 +74,9 @@ public class FlowCapableTopologyExporterTest {
         doReturn(mockTxChain).when(mockDataBroker)
                 .createTransactionChain(any(TransactionChainListener.class));
 
-        processor = new OperationProcessor(mockDataBroker);
+        when(topologyManagerConfig.getTopologyId()).thenReturn("openflow:test");
+
+        processor = new OperationProcessor(mockDataBroker, topologyManagerConfig);
 
         topologyIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));

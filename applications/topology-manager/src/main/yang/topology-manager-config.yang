@@ -1,0 +1,30 @@
+module topology-manager-config {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:topology:config";
+    prefix "topology-manager-config";
+
+    description
+        "Configuration for the topology manager.";
+
+    revision "2016-11-03" {
+        description
+            "Initial revision";
+    }
+
+    container topology-manager-config {
+        leaf topology-id {
+            type string;
+            default "flow:1";
+        }
+
+        leaf startup-loop-tick {
+            type uint32;
+            default 500;
+        }
+
+        leaf startup-loop-max-retries {
+            type uint16;
+            default 8;
+        }
+    }
+}

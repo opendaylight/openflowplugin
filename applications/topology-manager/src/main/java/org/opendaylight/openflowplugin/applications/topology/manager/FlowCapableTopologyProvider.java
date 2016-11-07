@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.topology.config.rev161103.TopologyManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -28,18 +29,23 @@ import org.slf4j.LoggerFactory;
 
 public class FlowCapableTopologyProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
-    static final String TOPOLOGY_ID = "flow:1";
 
+    private final String TOPOLOGY_ID;
     private final DataBroker dataBroker;
     private final NotificationProviderService notificationService;
     private final OperationProcessor processor;
     private ListenerRegistration<NotificationListener> listenerRegistration;
 
-    public FlowCapableTopologyProvider(DataBroker dataBroker, NotificationProviderService notificationService,
-            OperationProcessor processor) {
+    public FlowCapableTopologyProvider(
+            final DataBroker dataBroker,
+            final NotificationProviderService notificationService,
+            final OperationProcessor processor,
+            final TopologyManagerConfig topologyManagerConfig) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.processor = processor;
+        TOPOLOGY_ID = topologyManagerConfig.getTopologyId();
+        LOG.info("Topology id was set as: {}", TOPOLOGY_ID);
     }
 
     /**
