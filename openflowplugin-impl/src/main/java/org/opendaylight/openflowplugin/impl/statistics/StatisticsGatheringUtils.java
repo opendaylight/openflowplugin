@@ -295,7 +295,7 @@ public final class StatisticsGatheringUtils {
                         final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
                         txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                     } else {
-                        LOG.warn("Skip write statistics. Flow hash: {} not present in DeviceFlowRegistry", flowRegistryKey.hashCode());
+                        LOG.debug("Skip write statistics. Flow hash: {} not present in DeviceFlowRegistry", flowRegistryKey.hashCode());
                     }
                 }
             }
