@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Tomas Slusny <tomas.slusny@pantheon.tech>
+Code-Review+2: Shuva Jyoti Kar <shuva.jyoti.kar@ericsson.com>
+Submitted-by: Shuva Jyoti Kar <shuva.jyoti.kar@ericsson.com>
+Submitted-at: Thu, 10 Nov 2016 07:39:26 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/48183
+Project: openflowplugin
+Branch: refs/heads/stable/boron
