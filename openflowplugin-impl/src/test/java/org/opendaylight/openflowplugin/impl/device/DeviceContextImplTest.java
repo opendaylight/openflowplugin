@@ -495,15 +495,14 @@ public class DeviceContextImplTest {
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
 
-        Mockito.when(deviceManager.getIsNotificationFlowRemovedOff()).thenReturn(true);
+        Mockito.when(deviceManager.isFlowRemovedNotificationOn()).thenReturn(true);
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
 
         Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
-        Mockito.verify(mockedNotificationPublishService, Mockito.never()).offerNotification(Matchers.any(Notification.class));
 
-        Mockito.when(deviceManager.getIsNotificationFlowRemovedOff()).thenReturn(false);
+        Mockito.when(deviceManager.isFlowRemovedNotificationOn()).thenReturn(false);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
 
         Mockito.verify(mockedNotificationPublishService).offerNotification(Matchers.any(Notification.class));

@@ -54,12 +54,12 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setNotificationProviderService(notificationService);
         openflowPluginProvider.setNotificationPublishService(notificationPublishService);
         openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
-        openflowPluginProvider.setIsStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
+        openflowPluginProvider.setFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
         openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
         openflowPluginProvider.setBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
-        openflowPluginProvider.setNotificationFlowRemovedOff(providerConfig.isNotificationFlowRemovedOff());
+        openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
         openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
 
@@ -83,7 +83,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout(),
-                providerConfig.isNotificationFlowRemovedOff());
+                providerConfig.isEnableFlowRemovedNotification());
 
         return openflowPluginProvider;
     }
