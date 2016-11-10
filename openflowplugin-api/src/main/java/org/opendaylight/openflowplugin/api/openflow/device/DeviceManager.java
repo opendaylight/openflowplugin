@@ -31,9 +31,9 @@ public interface DeviceManager extends
      */
     void initialize();
 
-    void setIsNotificationFlowRemovedOff(boolean value);
+    void setFlowRemovedNotificationOn(boolean value);
 
-    boolean getIsNotificationFlowRemovedOff();
+    boolean isFlowRemovedNotificationOn();
 
     void setSkipTableFeatures(boolean skipTableFeatures);
 

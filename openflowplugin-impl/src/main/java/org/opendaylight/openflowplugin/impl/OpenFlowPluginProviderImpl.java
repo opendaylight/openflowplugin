@@ -92,7 +92,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean switchFeaturesMandatory = false;
     private boolean isStatisticsPollingOn = true;
     private boolean isStatisticsRpcEnabled;
-    private boolean isNotificationFlowRemovedOff = false;
+    private boolean isFlowRemovedNotificationOn = true;
     private boolean skipTableFeatures = true;
 
     private final ThreadPoolExecutor threadPool;
@@ -124,7 +124,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setIsStatisticsPollingOn(final boolean isStatisticsPollingOn) {
+    public void setStatisticsPollingOn(final boolean isStatisticsPollingOn) {
         this.isStatisticsPollingOn = isStatisticsPollingOn;
     }
 
@@ -172,8 +172,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
-        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    public void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn) {
+        this.isFlowRemovedNotificationOn = this.isFlowRemovedNotificationOn;
     }
 
     @Override
@@ -232,7 +232,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 barrierInterval,
                 barrierCountLimit,
                 getMessageIntelligenceAgency(),
-                isNotificationFlowRemovedOff,
+                isFlowRemovedNotificationOn,
                 singletonServicesProvider,
                 notificationPublishService,
                 hashedWheelTimer,
@@ -270,7 +270,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         if(deviceManager != null) {
             if (props.containsKey("notification-flow-removed-off")) {
-                deviceManager.setIsNotificationFlowRemovedOff(Boolean.valueOf(props.get("notification-flow-removed-off").toString()));
+                deviceManager.setFlowRemovedNotificationOn(Boolean.valueOf(props.get("enable-flow-removed-notification").toString()));
             }
             if (props.containsKey("skip-table-features")) {
                 deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
