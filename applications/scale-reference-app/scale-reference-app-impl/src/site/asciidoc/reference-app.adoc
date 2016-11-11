@@ -1,0 +1,243 @@
+= REFERENCE APPLICATION
+
+Reference application is a mock application that allows to configure subscribers and each 
+subscriber entry will be converted to one or more OF flows. It will add/remove OF flows in 
+all the connected switchs. It populate local cache for subscriber data to be used later to
+avoid expensive read calls to config data store. It uses SouthBoundManager module for flow
+programming and PriorityTaskManager module for reconciliation. Reference application also 
+supports counters for number of flows added, removed or failed.
+
+= Steps to use reference-app
+
+---------------------------------------------------------
+
+1. start controller
+
+2. install following features:
+
+opendaylight-user@root>feature:install odl-restconf-all
+opendaylight-user@root>feature:install odl-mdsal-all
+opendaylight-user@root>feature:install odl-reference-app
+
+3. connect the switchs
+
+example: connecting two switchs with controller using mininet
+sudo mn --controller=remote,ip=10.183.181.43 --topo=linear,2 --switch ovsk,protocols=OpenFlow13
+
+4. add subscribers using reference app 
+
+Example: adding 10 subscribers from starting index 1 and starting ip "10.10.10.11" with optional 
+parameter batch-size 5 subscriber/transaction.
+
+Operation: POST
+
+URL: http://localhost:8181/restconf/operations/ref-app-model:add-subscribers
+
+input data:
+
+{
+
+"input" :
+
+  {
+
+   "ref-app-model:starting-index" : "1",
+
+   "ref-app-model:starting-ip" : "10.10.10.11",
+
+   "ref-app-model:subscriber-count" : "10",
+
+   "ref-app-model:batch-size" : "5"
+
+  }
+
+}
+
+---------------------------------------------------------
+
+== Input parameter description: 
+
+
+
+i)  starting-index is unique identifier that will be used to add/delete subscriber entry starting from this index.
+
+
+
+ii) starting-ip is used to start allocation ip for subscriber entry in order for example..
+
+   ip for subscriber1 is 10.10.10.11, ip for subscriber2 is 10.10.10.12
+
+   
+
+iii) subscriber-count is used to add/remove number of suscribers.
+
+
+
+iv) batch-size is used to specify how many subscriber to be added/deleted in per transaction.
+
+
+
+---------------------------------------------------------
+
+5. remove subscribers using reference app 
+
+Example: removing 4 subscribers from starting index 2 with optional parameter batch-size 5 subscriber/transaction.
+
+Operation: POST
+
+URL: http://localhost:8181/restconf/operations/ref-app-model:remove-subscribers
+
+input data:
+
+{
+
+"input" :
+
+  {
+
+   "ref-app-model:starting-index" : "2",
+
+   "ref-app-model:subscriber-count" : "4",
+
+   "ref-app-model:batch-size" : "5"
+
+
+
+  }
+
+}
+
+---------------------------------------------------------
+
+[Note]
+
+
+
+**Please refer step-4 for parameter description**.
+
+---------------------------------------------------------
+
+
+
+6. get subscriber count using reference app 
+
+Example: getting number of subscriber data available in system. We added 10 subscriber in step-4 and removed 4 subscriber in step-5, 
+
+         so we should get subscriber count as 6.
+
+Operation: POST
+
+URL: http://localhost:8181/restconf/operations/ref-app-model:get-subscriber-count
+
+
+
+output data:
+
+{
+
+  "output": {
+
+    "operational-status": "SUCCESS",
+
+    "subscriber-count": 6
+
+  }
+
+}
+
+
+
+7. get subscribers entry from config data store 
+
+Example: getting subscriber data from config data store, total 6 subscriber entries should be shown.
+
+Operation: GET
+
+URL: http://localhost:8181/restconf/config/ref-app-model:subscriber-list-entries/
+
+
+
+output data:
+
+<subscriber-list-entries xmlns="urn:opendaylight:params:xml:ns:yang:ref-app">
+
+    <subscriber-list-entry>
+
+        <index>9</index>
+
+        <subscriber-ip>10.10.10.19</subscriber-ip>
+
+    </subscriber-list-entry>
+
+    <subscriber-list-entry>
+
+        <index>10</index>
+
+        <subscriber-ip>10.10.10.20</subscriber-ip>
+
+    </subscriber-list-entry>
+
+    <subscriber-list-entry>
+
+        <index>1</index>
+
+        <subscriber-ip>10.10.10.11</subscriber-ip>
+
+    </subscriber-list-entry>
+
+    <subscriber-list-entry>
+
+        <index>6</index>
+
+        <subscriber-ip>10.10.10.16</subscriber-ip>
+
+    </subscriber-list-entry>
+
+    <subscriber-list-entry>
+
+        <index>8</index>
+
+        <subscriber-ip>10.10.10.18</subscriber-ip>
+
+    </subscriber-list-entry>
+
+    <subscriber-list-entry>
+
+        <index>7</index>
+
+        <subscriber-ip>10.10.10.17</subscriber-ip>
+
+    </subscriber-list-entry>
+
+</subscriber-list-entries>
+
+
+
+8. check whether flow for subscriber entry is installed/uninstall in switchs using command 
+   "dpctl dump-flows -O OpenFlow13". One subscriber entry may result in multiple flows depending 
+   on flow clone count parameter.Default value of flow clone count is 1, that can be changed by 
+   updating value of parameter "reference.app.flow.clone.count" in file $ControllerDir\etc\system.properties
+
+9. disconnect switchs and connect again to check if flows are installed after reconciliation. 
+   Before checking for reconciliation, make sure to add parameter "sbm.resync.trigger.eos=true" 
+   in file $ControllerDir\etc\system.properties to trigger resync via EOS.
+   
+---------------------------------------------------------
+
+
+== Reference-app counters exposed via JMX interface:
+
+
+
+1. reference-app exposes counter for flow add, flow remove and failed flows using JMX interface:
+
+ flow-add counter: http://localhost:8181/jolokia/read/org.opendaylight.reference.app.impl:type=ReferenceAppCounter/FlowAddCounter
+
+ flow-remove counter: http://localhost:8181/jolokia/read/org.opendaylight.reference.app.impl:type=ReferenceAppCounter/FlowRemoveCounter
+
+ flow-failed counter: http://localhost:8181/jolokia/read/org.opendaylight.reference.app.impl:type=ReferenceAppCounter/FlowFailedCounter
+
+2. reference-app also has operation "resetCounters" to reset all the above counters to zero. 
+
+3. reference-app counters updation can be disable by adding parameter "disable.reference.app.counter=true" 
+   in file $ControllerDir\etc\system.properties

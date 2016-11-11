@@ -1,0 +1,81 @@
+module southboundmanager-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:southboundmanager:impl";
+    prefix "southboundmanager-impl";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+    import opendaylight-entity-ownership-service { prefix entity-ownership-service; }
+    import southboundmanager-api { prefix sbmgr-api; revision-date 2016-02-10;}
+    import jobcoordinator-api {prefix jc-api; revision-date 2016-02-25;}
+    import prioritytaskmgr-api {prefix priotaskmgr-api; revision-date 2016-02-10;}
+
+    description
+        "Service definition for Southbound Manager project";
+
+    revision "2016-02-10" {
+        description
+            "Initial revision";
+    }
+
+    identity southboundmanager-impl {
+        base config:module-type;
+        config:provided-service sbmgr-api:southboundmanager-api;
+        config:java-name-prefix OpenflowFacadeImpl;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case southboundmanager-impl {
+            when "/config:modules/config:module/config:type = 'southboundmanager-impl'";
+            container osgi-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-broker-osgi-registry;
+                    }
+                }
+            }
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+            container ownership-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity entity-ownership-service:entity-ownership-service;
+                    }
+                }
+            }
+            container job-coordinator {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity jc-api:jobcoordinator-api;
+                    }
+                }
+            }
+
+            container prioritytaskmgr {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity priotaskmgr-api:prioritytaskmgr-api;
+                    }
+                }
+            }
+        }
+    }
+}

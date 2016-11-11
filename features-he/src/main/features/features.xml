@@ -110,4 +110,64 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/bulk-o-matic/{{VERSION}}</bundle>
     </feature>
 
+    <feature name='odl-prioritytaskmgr' version='${project.version}' description='Opendaylight :: PriorityBased :: TaskMgr'>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/prioritytaskmgr-api/${openflowplugin.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/prioritytaskmgr-impl/${openflowplugin.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/prioritytaskmgr-config.xml">mvn:org.opendaylight.openflowplugin.applications/prioritytaskmgr-impl/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name='odl-jobcoordinator' version='${project.version}' description='Opendaylight :: Job :: Coordinator'>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/jobcoordinator-api/${openflowplugin.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/jobcoordinator-impl/${openflowplugin.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/jobcoordinator-config.xml">mvn:org.opendaylight.openflowplugin.applications/jobcoordinator-impl/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name='odl-southboundmanager' description='Opendaylight :: Openflowplugin :: southbound manager' version='${project.version}'>
+        <feature version='${project.version}'>odl-jobcoordinator</feature>
+        <feature version='${project.version}'>odl-prioritytaskmgr</feature>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+        <feature version='${project.version}'>odl-openflowplugin-southbound-he</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/southboundmanager-api/${openflowplugin.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/southboundmanager-impl/${openflowplugin.version}</bundle>
+        <configfile finalname="southboundmanager-config.xml">mvn:org.opendaylight.openflowplugin.applications/southboundmanager-impl/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="cassandra-driver" description="java driver for cassandra database" version="3.1.0">
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-handler/4.0.37.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-transport-native-epoll/4.0.37.Final</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.0.7</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.27</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jffi/1.2.13</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-constants/0.9.4</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2</bundle>
+        <bundle dependency="true">mvn:net.jpountz.lz4/lz4/1.3.0</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-buffer/4.0.37.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-common/4.0.37.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-transport/4.0.37.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec/4.0.37.Final</bundle>
+        <bundle>mvn:org.ow2.asm/asm/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-analysis/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-commons/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-tree/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-util/5.0.3</bundle>
+        <bundle>mvn:org.hdrhistogram/HdrHistogram/2.1.9</bundle>
+        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/3.1.0</bundle>
+    </feature>
+
+    <feature name="odl-scale-reference-app" description="sample app for cassandra usage" version='${project.version}' >
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+        <feature version="${project.version}">odl-jobcoordinator</feature>
+        <feature version="${project.version}">odl-prioritytaskmgr</feature>
+        <feature version="${project.version}">odl-southboundmanager</feature>
+        <feature version="3.1.0">cassandra-driver</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/scale-reference-app-impl/${openflowplugin.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/scale-reference-app-impl-config.xml">mvn:org.opendaylight.openflowplugin.applications/scale-reference-app-impl/{{VERSION}}/xml/config</configfile>
+    </feature>
+
 </features>
