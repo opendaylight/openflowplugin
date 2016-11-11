@@ -6,6 +6,8 @@ module opendaylight-flow-types {
     import opendaylight-match-types {prefix match; revision-date "2013-10-26";}
     import opendaylight-action-types {prefix action;}
     import opendaylight-meter-types {prefix meter; revision-date "2013-09-18";}
+    import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
+    import openflow-types { prefix oft; revision-date "2013-07-31"; }
 
     revision "2013-10-26" {
         description "Initial revision of flow service";
@@ -266,6 +268,15 @@ module opendaylight-flow-types {
 		
         container match {
             uses match:match;
+        }
+    }
+
+    container flow-message {
+        uses flow;
+        uses ofproto:ofHeader;
+
+        leaf command {
+            type oft:flow-mod-command;
         }
     }
 }

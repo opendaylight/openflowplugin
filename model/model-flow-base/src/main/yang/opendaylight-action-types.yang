@@ -310,6 +310,11 @@ module opendaylight-action-types {
                  leaf port {
                      type inet:port-number;
                  }
+                 leaf ip-protocol {
+                     description "IP protocol.";
+                     type uint8;
+                     default 0;
+                 }
              }
 
             }
@@ -317,6 +322,11 @@ module opendaylight-action-types {
                 container set-tp-src-action {
                  leaf port {
                      type inet:port-number;
+                 }
+                 leaf ip-protocol {
+                     description "IP protocol.";
+                     type uint8;
+                     default 0;
                  }
              }
 
