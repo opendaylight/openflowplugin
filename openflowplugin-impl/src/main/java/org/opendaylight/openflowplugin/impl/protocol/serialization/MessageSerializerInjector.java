@@ -14,6 +14,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.PortMessageSerializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
@@ -29,6 +31,8 @@ class MessageSerializerInjector {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+
+        injector.apply(PortMessage.class).accept(new PortMessageSerializer());
     }
 
     /**
