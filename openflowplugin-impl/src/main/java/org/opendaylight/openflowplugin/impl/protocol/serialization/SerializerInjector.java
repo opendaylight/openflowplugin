@@ -9,6 +9,10 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
+import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.PortMessageSerializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 
 /**
  * Util class for injecting new serializers into OpenflowJava
@@ -21,5 +25,10 @@ public class SerializerInjector {
      */
     public static void injectSerializers(final SerializerExtensionProvider provider) {
         // Register new serializers here
+
+        // Port mod serializer
+        provider.registerSerializer(
+                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PortMessage.class),
+                new PortMessageSerializer());
     }
 }
