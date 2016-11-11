@@ -63,9 +63,10 @@
         description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
         <!-- general models -->
         <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
-	<bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
-	<bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-inventory/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-topology/{{VERSION}}</bundle>
         <!-- openflow specific models -->
+        <feature version ="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-base/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-statistics/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-service/{{VERSION}}</bundle>
