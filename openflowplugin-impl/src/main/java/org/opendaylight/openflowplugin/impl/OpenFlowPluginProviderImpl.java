@@ -12,16 +12,15 @@ package org.opendaylight.openflowplugin.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -47,6 +46,8 @@ import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegi
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -129,19 +130,18 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     private void startSwitchConnections() {
-        final List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
-        for (final SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
-            switchConnectionPrv.setSwitchConnectionHandler(connectionManager);
-            final ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
-            starterChain.add(isOnlineFuture);
-        }
+        Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
+            // Inject OpenflowPlugin custom serializers and deserializers into OpenflowJava
+            SerializerInjector.injectSerializers(switchConnectionProvider);
+            DeserializerInjector.injectDeserializers(switchConnectionProvider);
 
-        final ListenableFuture<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
-        Futures.addCallback(srvStarted, new FutureCallback<List<Boolean>>() {
+            // Set handler of incoming connections and start switch connection provider
+            switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
+            return switchConnectionProvider.startup();
+        }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
             @Override
             public void onSuccess(final List<Boolean> result) {
-                LOG.info("All switchConnectionProviders are up and running ({}).",
-                        result.size());
+                LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
             }
 
             @Override
