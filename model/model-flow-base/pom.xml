@@ -20,6 +20,11 @@
       <groupId>org.opendaylight.mdsal.model</groupId>
       <artifactId>opendaylight-l2-types</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowjava</groupId>
+      <artifactId>openflow-protocol-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <scm>
