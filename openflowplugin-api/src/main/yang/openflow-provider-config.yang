@@ -11,6 +11,22 @@ module openflow-provider-config {
             "Initial revision";
     }
 
+    typedef context-chain-state {
+        description "Context chain state";
+        type enumeration {
+            enum SLEEPING {
+                description "Context chain is sleeping,is without a connection";
+            }
+            enum WORKING_MASTER {
+                description "Context chain is working as MASTER";
+            }
+            enum WORKING_SLAVE {
+                description "Context chain is working as SLAVE";
+            }
+        }
+    }
+
+
     typedef non-zero-uint32-type {
         type uint32 {
             range "1..max";
@@ -108,5 +124,27 @@ module openflow-provider-config {
             type non-zero-uint32-type;
             default 900000;
         }
+        container context-chain-config {
+
+            leaf ttl-before-drop {
+                description "TTL in miliseconds without connection before the context chain shall be dropped";
+                type uint32;
+                default 5000;
+            }
+
+            leaf never-drop-contexts-on {
+                description "if true then context chain will not be droped, otherwise use ttl-before-drop";
+                type boolean;
+                default true;
+            }
+
+            leaf context-chain-startup-state {
+                description "this will set the default state of context chain after creation";
+                type context-chain-state;
+                default WORKING_SLAVE;
+            }
+
+        }
+
     }
 }
