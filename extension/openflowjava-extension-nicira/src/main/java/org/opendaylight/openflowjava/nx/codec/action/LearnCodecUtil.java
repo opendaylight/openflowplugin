@@ -261,7 +261,7 @@ public class LearnCodecUtil {
 
     private static FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
         FlowModAddMatchFromValueBuilder builder = new FlowModAddMatchFromValueBuilder();
-        builder.setValue((int) message.readShort());
+        builder.setValue((int) message.readUnsignedShort());
         builder.setSrcField((long) message.readInt());
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
@@ -292,7 +292,7 @@ public class LearnCodecUtil {
 
     private static FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
         FlowModCopyValueIntoFieldBuilder builder = new FlowModCopyValueIntoFieldBuilder();
-        builder.setValue((int) message.readShort());
+        builder.setValue((int) message.readUnsignedShort());
         builder.setDstField((long) message.readInt());
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
