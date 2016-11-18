@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_31675027",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-18T07:23:07Z",
+      "side": 1,
+      "message": "\"interval\" not set-interval to avoid getSetInterval methods",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 13
+      },
+      "revId": "6fd36de5623ab486b97c71ef1872eeca99006a15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_51648c21",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-18T07:23:07Z",
+      "side": 1,
+      "message": "make typedef in yang file and name it as \"interval\" and  use it in both rpc\u0027s. If you name it as only interval not as get-interval or set-interval it will be more readable and you don\u0027t get methosts like \"getSetInterval\" which is not nice name :)",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 13
+      },
+      "revId": "6fd36de5623ab486b97c71ef1872eeca99006a15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
