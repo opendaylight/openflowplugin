@@ -7,7 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.base.Verify;
+import com.google.common.util.concurrent.Futures;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -31,30 +34,46 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public <T extends OFPManager> void addManager(final T manager) {
+        managers.add(manager);
     }
 
     @Override
     public Future<Void> createContextChain(final DeviceInfo deviceInfo) {
-        return null;
-    }
-
-    @Override
-    public Future<Void> pairConnection(final DeviceInfo deviceInfo) {
+        Verify.verify(this.checkAllManagers(),"Not all manager were set.");
         return null;
     }
 
     @Override
     public Future<Void> connectionLost(final DeviceInfo deviceInfo) {
+        if (!this.checkChainContext(deviceInfo)) {
+            return Futures.immediateFuture(null);
+        }
         return null;
     }
 
     @Override
     public void destroyContextChain(final DeviceInfo deviceInfo) {
+        ContextChain chain = contextChainMap.get(deviceInfo);
+        if (Objects.nonNull(chain)) {
+            chain.close();
+        }
     }
 
     @Override
-    public void addConnection(final ConnectionContext connectionContext) {
+    public void pairConnection(final ConnectionContext connectionContext) {
+        DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        latestConnections.put(deviceInfo, connectionContext);
+        if (checkChainContext(deviceInfo)) {
+            contextChainMap.get(deviceInfo).changePrimaryConnection(connectionContext);
+        }
+    }
 
+    private boolean checkAllManagers() {
+        return config.getNumberOfNeededManagers().equals(managers.size());
+    }
+
+    private boolean checkChainContext(final DeviceInfo deviceInfo) {
+        return contextChainMap.containsKey(deviceInfo);
     }
 
 }
