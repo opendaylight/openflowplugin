@@ -19,10 +19,15 @@ public interface ContextChainHolder {
 
     <T extends OFPManager> void addManager(final T manager);
     Future<Void> createContextChain(final DeviceInfo deviceInfo);
-    Future<Void> pairConnection(final DeviceInfo deviceInfo);
     Future<Void> connectionLost(final DeviceInfo deviceInfo);
     void destroyContextChain(final DeviceInfo deviceInfo);
 
-    void addConnection(final ConnectionContext connectionContext);
+    /**
+     * This method will pair up connection with existing context chain
+     * If context chain doesn't exist will create context chain a set this connection as primary to the new created context chain
+     * If context chain cannot be created close connection and destroy context chain
+     * @param connectionContext new connection
+     */
+    void pairConnection(final ConnectionContext connectionContext);
 
 }
