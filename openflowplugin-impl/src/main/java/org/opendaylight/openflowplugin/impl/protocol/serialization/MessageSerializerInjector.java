@@ -18,6 +18,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.FlowMessageSerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.MeterMessageSerializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
 
 /**
  * Util class for injecting new message serializers into OpenflowJava
@@ -32,8 +34,9 @@ class MessageSerializerInjector {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
-
+        
         injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
+        injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
     }
 
     /**
