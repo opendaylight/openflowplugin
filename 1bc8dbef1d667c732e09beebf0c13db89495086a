@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_e844c9b8",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ConvertorMeterBandTypeFromOFJava.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "please remove this",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_6810b9a8",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ConvertorMeterBandTypeToOFJava.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "remove this",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_a82131fe",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ExperimenterIdMeterBandKey.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "don`t",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 3
+      },
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_e81b29c8",
+        "filename": "extension/openflowplugin-extension-api/src/test/java/org/opendaylight/openflowplugin/extension/api/ExperimenterIdMeterBandKeyTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "remove this",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 3
+      },
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_c86d8d34",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/MeterConfigStatsResponseConvertor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "remove empty line",
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_a8681122",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/MeterConvertor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T09:24:00Z",
+      "side": 1,
+      "message": "remove empty line",
+      "revId": "1bc8dbef1d667c732e09beebf0c13db89495086a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
