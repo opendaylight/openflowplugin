@@ -17,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
 
 public abstract class AbstractSetFieldActionSerializer extends AbstractActionSerializer implements SerializerRegistryInjector {
 
@@ -26,7 +25,7 @@ public abstract class AbstractSetFieldActionSerializer extends AbstractActionSer
      @Override
      public void serialize(Action input, ByteBuf outBuffer) {
           final OFSerializer<Action> serializer = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, SetFieldAction.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, SetFieldCase.class));
 
           serializer.serialize(buildAction(input), outBuffer);
      }
