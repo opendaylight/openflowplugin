@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
@@ -30,6 +31,10 @@ public interface OFPManager extends
         DeviceTerminationPhaseHandler,
         DeviceRemovedHandler,
         AutoCloseable {
+
+    default void createContext(final DeviceInfo deviceInfo) {
+        //TODO: remove default after implementation in all managers !!!
+    }
 
     @Override
     void close();
