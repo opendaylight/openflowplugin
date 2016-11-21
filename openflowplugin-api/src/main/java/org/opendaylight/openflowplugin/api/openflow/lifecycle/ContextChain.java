@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 
 /**
  * Chain of contexts, hold references to the contexts
@@ -41,5 +42,11 @@ public interface ContextChain extends AutoCloseable {
 
     @Override
     void close();
+
+    /**
+     * Change connection if connection were drop and rebuild
+     * @param connectionContext
+     */
+    void changePrimaryConnection(final ConnectionContext connectionContext);
 
 }

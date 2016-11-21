@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
@@ -18,6 +19,7 @@ public class ContextChainImpl implements ContextChain {
 
     private Set<OFPContext> contexts = new HashSet<>();
     private final ContextChainState contextChainState;
+    private ConnectionContext primaryConnectionContext;
 
     public ContextChainImpl(final ContextChainState contextChainState) {
         this.contextChainState = contextChainState;
@@ -46,5 +48,10 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void close() {
 
+    }
+
+    @Override
+    public void changePrimaryConnection(final ConnectionContext connectionContext) {
+        this.primaryConnectionContext = connectionContext;
     }
 }
