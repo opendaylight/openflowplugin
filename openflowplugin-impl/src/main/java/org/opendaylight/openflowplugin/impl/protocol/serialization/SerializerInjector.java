@@ -31,5 +31,8 @@ public class SerializerInjector {
                         provider.registerSerializer(
                                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, type),
                                 serializer);
+
+        // Action serializers
+        ActionSerializerInjector.injectSerializers(provider);
     }
 }
