@@ -14,6 +14,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSeriali
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.MeterMessageSerializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
 
 /**
  * Util class for injecting new serializers into OpenflowJava
@@ -31,5 +33,8 @@ public class SerializerInjector {
                         provider.registerSerializer(
                                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, type),
                                 serializer);
+
+        // Meter mod serializer
+        registrator.apply(MeterMessage.class).accept(new MeterMessageSerializer());
     }
 }
