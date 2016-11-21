@@ -10,29 +10,32 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
-import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.actions.AbstractActionSerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.actions.CopyTtlInActionSerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.keys.ActionSerializerKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
 
 /**
- * Util class for injecting new serializers into OpenflowJava
+ * Util class for injecting new action serializers into OpenflowJava
  */
-public class SerializerInjector {
+class ActionSerializerInjector {
 
     /**
      * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    public static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider) {
         // Helper serialization function
-        final Function<Class<?>, Consumer<OFGeneralSerializer>> registrator =
+        final Function<Class<? extends Action>, Consumer<AbstractActionSerializer>> registrator =
                 type -> serializer ->
                         provider.registerSerializer(
-                                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, type),
+                                new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, type, null),
                                 serializer);
 
         // Action serializers
-        ActionSerializerInjector.injectSerializers(provider);
+        registrator.apply(CopyTtlInCase.class).accept(new CopyTtlInActionSerializer());
     }
 }
