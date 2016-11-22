@@ -21,5 +21,6 @@ public class SerializerInjector {
      */
     public static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new serializers here
+        MessageSerializerInjector.injectSerializers(provider);
     }
 }
