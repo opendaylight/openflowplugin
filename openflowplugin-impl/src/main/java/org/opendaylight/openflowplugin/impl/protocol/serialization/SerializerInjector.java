@@ -16,10 +16,11 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtens
 public class SerializerInjector {
 
     /**
-     * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects all serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
     public static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new serializers here
+        MessageSerializerInjector.injectSerializers(provider);
     }
 }
