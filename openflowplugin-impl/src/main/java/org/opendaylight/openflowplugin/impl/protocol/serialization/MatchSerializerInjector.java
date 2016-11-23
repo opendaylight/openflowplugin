@@ -14,7 +14,34 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtens
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.AbstractMatchEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.EthernetDestinationEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.EthernetSourceEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.EthernetTypeEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Icmpv4CodeEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Icmpv4TypeEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Icmpv6CodeEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Icmpv6TypeEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.InPhyPortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.InPortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.IpDscpEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.IpEcnEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.IpProtoEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Ipv4ArbitraryBitMaskDestinationEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Ipv4ArbitraryBitMaskSourceEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Ipv4DestinationEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Ipv4SourceEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.MatchSerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.MetadataEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.SctpDestinationPortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.SctpSourcePortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.TcpDestinationPortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.TcpSourcePortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.TunnelIpv4DestinationEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.TunnelIpv4SourceEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.UdpDestinationPortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.UdpSourcePortEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.VlanPcpEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.VlanVidEntrySerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 /**
@@ -29,6 +56,33 @@ public class MatchSerializerInjector {
     public static void injectSerializers(final SerializerExtensionProvider provider) {
         // Add new match entry serializers to this list (order matters!)
         final List<AbstractMatchEntrySerializer> entrySerializers = new ArrayList<>();
+        entrySerializers.add(new InPortEntrySerializer());
+        entrySerializers.add(new InPhyPortEntrySerializer());
+        entrySerializers.add(new MetadataEntrySerializer());
+        entrySerializers.add(new EthernetDestinationEntrySerializer());
+        entrySerializers.add(new EthernetSourceEntrySerializer());
+        entrySerializers.add(new EthernetTypeEntrySerializer());
+        entrySerializers.add(new VlanVidEntrySerializer());
+        entrySerializers.add(new VlanPcpEntrySerializer());
+        entrySerializers.add(new IpDscpEntrySerializer());
+        entrySerializers.add(new IpEcnEntrySerializer());
+        entrySerializers.add(new IpProtoEntrySerializer());
+        entrySerializers.add(new TcpSourcePortEntrySerializer());
+        entrySerializers.add(new TcpDestinationPortEntrySerializer());
+        entrySerializers.add(new UdpSourcePortEntrySerializer());
+        entrySerializers.add(new UdpDestinationPortEntrySerializer());
+        entrySerializers.add(new SctpSourcePortEntrySerializer());
+        entrySerializers.add(new SctpDestinationPortEntrySerializer());
+        entrySerializers.add(new Icmpv4TypeEntrySerializer());
+        entrySerializers.add(new Icmpv4CodeEntrySerializer());
+        entrySerializers.add(new Icmpv6TypeEntrySerializer());
+        entrySerializers.add(new Icmpv6CodeEntrySerializer());
+        entrySerializers.add(new Ipv4ArbitraryBitMaskSourceEntrySerializer());
+        entrySerializers.add(new Ipv4ArbitraryBitMaskDestinationEntrySerializer());
+        entrySerializers.add(new Ipv4SourceEntrySerializer());
+        entrySerializers.add(new Ipv4DestinationEntrySerializer());
+        entrySerializers.add(new TunnelIpv4SourceEntrySerializer());
+        entrySerializers.add(new TunnelIpv4DestinationEntrySerializer());
 
         // Register all match entries to MatchSerializer and then inject it to provider
         provider.registerSerializer(
