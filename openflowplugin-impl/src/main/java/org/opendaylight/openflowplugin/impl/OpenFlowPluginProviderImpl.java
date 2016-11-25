@@ -126,6 +126,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setIsStatisticsPollingOn(final boolean isStatisticsPollingOn) {
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+        if(statisticsManager != null)
+            statisticsManager.setIsStatisticsPollingOn(this.isStatisticsPollingOn);
     }
 
     private void startSwitchConnections() {
@@ -159,21 +161,29 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setBarrierCountLimit(final int barrierCountLimit) {
         this.barrierCountLimit = barrierCountLimit;
+        if(deviceManager != null)
+            deviceManager.setBarrierCountLimit(this.barrierCountLimit);
     }
 
     @Override
     public void setBarrierInterval(final long barrierTimeoutLimit) {
         this.barrierInterval = barrierTimeoutLimit;
+        if(deviceManager != null)
+            deviceManager.setBarrierInterval(this.barrierInterval);
     }
 
     @Override
     public void setEchoReplyTimeout(final long echoReplyTimeout) {
         this.echoReplyTimeout = echoReplyTimeout;
+        if(connectionManager != null)
+            connectionManager.setEchoReplyTimeout(this.echoReplyTimeout);
     }
 
     @Override
     public void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
         this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+        if(deviceManager != null)
+            deviceManager.setIsNotificationFlowRemovedOff(this.isNotificationFlowRemovedOff);
     }
 
     @Override
@@ -184,6 +194,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setSkipTableFeatures(final boolean skipTableFeatures){
         this.skipTableFeatures = skipTableFeatures;
+        if(deviceManager != null)
+            deviceManager.setSkipTableFeatures(this.skipTableFeatures);
     }
 
     @Override
@@ -342,6 +354,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void setIsStatisticsRpcEnabled(final boolean isStatisticsRpcEnabled) {
         this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
+        if(rpcManager != null)
+            rpcManager.setStatisticsRpcEnabled(this.isStatisticsRpcEnabled);
     }
 
     @Override

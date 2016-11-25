@@ -25,6 +25,8 @@
   <reference id="openflowPluginProviderFactory"
           interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
+  <cm:property-placeholder persistent-id="org.opendaylight.openflowplugin"/>
+
   <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
     <argument ref="openflowProviderConfig"/>
     <argument ref="dataBroker"/>
@@ -42,6 +44,13 @@
                            update-strategy="component-managed"
                            update-method="update"/>
     <argument ref="clusterSingletonServiceProvider"/>
+    <property name="notificationFlowRemovedOff" value="${notification-flow-removed-off}"/>
+    <property name="skipTableFeatures" value="${skip-table-features}"/>
+    <property name="isStatisticsRpcEnabled" value="${is-statistics-rpc-enabled}"/>
+    <property name="barrierInterval" value="${barrier-interval-timeout-limit}"/>
+    <property name="barrierCountLimit" value="${barrier-count-limit}"/>
+    <property name="echoReplyTimeout" value="${echo-reply-timeout}"/>
+    <property name="isStatisticsPollingOn" value="${is-statistics-polling-on}"/>
   </bean>
 
   <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
