@@ -1,0 +1,134 @@
+module onf-approved-extension {
+    namespace "urn:opendaylight:openflowplugin:onf:approved:extensions";
+    prefix onf-ext;
+
+    import openflow-types {prefix oft;}
+    import sal-experimenter-message {prefix exp-msg;}
+
+    description "ONF approved extensions";
+
+    revision "2016-11-28" {
+        description "Initial revision.";
+    }
+
+    // Extension 230 - Bundle Extension (experimenterID 0x4F4E4600)
+    typedef bundle-id {
+        description "Identify the bundle.";
+        type uint32;
+    }
+
+    typedef bundle-control-type {
+        description "Bundle control message type.";
+        type enumeration {
+            enum ONF_BCT_OPEN_REQUEST {
+                value 0;
+            }
+            enum ONF_BCT_OPEN_REPLY {
+                value 1;
+            }
+            enum ONF_BCT_CLOSE_REQUEST {
+                value 2;
+            }
+            enum ONF_BCT_CLOSE_REPLY {
+                value 3;
+            }
+            enum ONF_BCT_COMMIT_REQUEST {
+                value 4;
+            }
+            enum ONF_BCT_COMMIT_REPLY {
+                value 5;
+            }
+            enum ONF_BCT_DISCARD_REQUEST {
+                value 6;
+            }
+            enum ONF_BCT_DISCARD_REPLY {
+                value 7;
+            }
+        }
+    }
+
+    typedef bundle-flags {
+        description "Bundle configuration flags.";
+        type bits {
+            bit atomic {
+                description "Execute atomically.";
+                position 0;
+            }
+            bit ordered {
+                description "Execute in specified order.";
+                position 1;
+            }
+        }
+    }
+
+    typedef bundle-property-type {
+        description "Bundle property types.";
+        type enumeration {
+            enum ONF_ET_BPT_EXPERIMENTER {
+                description "Experimenter property.";
+                value 65535; //0xFFFF
+            }
+        }
+    }
+
+    grouping bundle-properties {
+        list bundle-property {
+            description "Bundle properties list.";
+            leaf type {
+                type bundle-property-type;
+            }
+            choice bundle-property-entry {
+                case bundle-experimenter-property {
+                    leaf experimenter {
+                         type oft:experimenter-id;
+                    }
+                    leaf exp-type {
+                         type uint32;
+                    }
+                    choice bundle-experimenter-property-data {
+                        // to be augmented by vendors
+                    }
+                }
+            }
+        }
+    }
+
+    augment "/exp-msg:send-experimenter/exp-msg:input/exp-msg:experimenter-message-of-choice" {
+        case bundle-control {
+            description "ONF_ET_BUNDLE_CONTROL message in OpenFlow Switch Extension 230.";
+            leaf bundle-id {
+                type bundle-id;
+            }
+            leaf type {
+                type bundle-control-type;
+            }
+            leaf flags {
+                type bundle-flags;
+            }
+            uses bundle-properties;
+        }
+        case bundle-add-message {
+            description "ONF_ET_BUNDLE_ADD_MESSAGE in OpenFlow Switch Extension 230.";
+            leaf bundle-id {
+                type bundle-id;
+            }
+            leaf flags {
+                type bundle-flags;
+            }
+            // Inner message
+            choice message {
+                description "Message added to the bundle.";
+               // case flow-mod-case {
+              //      uses ofproto:flow-mod;
+              //  }
+              //  case group-mod-case {
+              //      uses ofproto:group-mod;
+              //  }
+              //  case port-mod-case {
+              //      uses ofproto:port-mod;
+              //  }
+            }
+            uses bundle-properties;
+        }
+    }
+}
