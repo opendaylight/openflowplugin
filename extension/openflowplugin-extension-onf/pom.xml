@@ -57,4 +57,11 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
