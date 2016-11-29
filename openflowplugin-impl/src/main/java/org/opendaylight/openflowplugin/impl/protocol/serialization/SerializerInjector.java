@@ -23,6 +23,7 @@ public class SerializerInjector {
         // Inject new serializers here
         MatchSerializerInjector.injectSerializers(provider);
         ActionSerializerInjector.injectSerializers(provider);
+        InstructionSerializerInjector.injectSerializers(provider);
         MessageSerializerInjector.injectSerializers(provider);
     }
 }
