@@ -17,12 +17,15 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.onf.converter.BundleAddMessageConverter;
 import org.opendaylight.openflowplugin.extension.onf.converter.BundleControlConverter;
 import org.opendaylight.openflowplugin.extension.onf.deserializer.OnfExperimenterErrorFactory;
 import org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory;
 import org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev161130.experimenter.input.experimenter.data.of.choice.BundleAddMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev161130.experimenter.input.experimenter.data.of.choice.BundleControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,7 @@ public class OnfExtensionProvider {
     private ExtensionConverterRegistrator converterRegistrator;
 
     private static final BundleControlConverter bundleControlConverter = new BundleControlConverter();
+    private static final BundleAddMessageConverter bundleAddMessageConverter = new BundleAddMessageConverter();
 
     public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
                                 final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
@@ -89,6 +93,7 @@ public class OnfExtensionProvider {
     private void registerConverters() {
         converterRegistrator.registerMessageConvertor(new TypeVersionKey<>(BundleControl.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
         converterRegistrator.registerMessageConvertor(new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControl.class), bundleControlConverter);
+        converterRegistrator.registerMessageConvertor(new TypeVersionKey<>(BundleAddMessage.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
     }
 
 }
