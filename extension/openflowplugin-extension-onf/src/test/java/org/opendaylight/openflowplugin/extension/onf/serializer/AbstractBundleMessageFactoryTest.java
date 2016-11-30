@@ -59,7 +59,7 @@ public class AbstractBundleMessageFactoryTest {
         return () -> null;
     }
 
-    public static BundlePortModCase createPortModCase() {
+    public static BundlePortModCase createBundlePortModCase() {
         BundlePortModCaseBuilder caseBuilder = new BundlePortModCaseBuilder();
         caseBuilder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         caseBuilder.setXid(3L);
