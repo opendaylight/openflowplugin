@@ -9,13 +9,17 @@
 package org.opendaylight.openflowplugin.extension.onf;
 
 import com.google.common.base.Preconditions;
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
+import org.opendaylight.openflowplugin.extension.onf.deserializer.OnfExperimenterErrorFactory;
 import org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory;
 import org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +60,6 @@ public class OnfExtensionProvider {
                                                       OnfConstants.ONF_ET_BUNDLE_CONTROL,
                                                       ExperimenterDataOfChoice.class),
                 new BundleControlFactory());
-
         switchConnectionProvider.registerExperimenterMessageSerializer(
                 new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
                                                       OnfConstants.ONF_EXPERIMENTER_ID,
@@ -67,7 +70,17 @@ public class OnfExtensionProvider {
 
 
     private void registerDeserializers() {
-        // TODO
+        switchConnectionProvider.registerExperimenterMessageDeserializer(
+                new ExperimenterIdTypeDeserializerKey(OFConstants.OFP_VERSION_1_3,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                                                      ExperimenterDataOfChoice.class),
+                new org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory());
+        switchConnectionProvider.registerErrorDeserializer(
+                new ExperimenterIdDeserializerKey(OFConstants.OFP_VERSION_1_3,
+                                                  OnfConstants.ONF_EXPERIMENTER_ID,
+                                                  ErrorMessage.class),
+                new OnfExperimenterErrorFactory());
     }
 
     private void registerConverters() {
