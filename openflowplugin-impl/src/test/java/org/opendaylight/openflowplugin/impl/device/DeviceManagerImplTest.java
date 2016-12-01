@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -182,44 +183,6 @@ public class DeviceManagerImplTest {
         } else {
             verify(mockedDeviceContext).onPublished();
         }
-    }
-
-    @Test
-    public void deviceConnectedTest() throws Exception{
-        final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        injectMockTranslatorLibrary(deviceManager);
-        final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
-
-        deviceManager.deviceConnected(mockConnectionContext);
-
-        final InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
-        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
-                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any(), Mockito.<LifecycleService>any());
-    }
-
-    @Test
-    public void deviceConnectedV10Test() throws Exception{
-        final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        injectMockTranslatorLibrary(deviceManager);
-        final ConnectionContext mockConnectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_0);
-
-        final PhyPortBuilder phyPort = new PhyPortBuilder()
-                .setPortNo(41L);
-        when(mockFeatures.getPhyPort()).thenReturn(Collections.singletonList(phyPort.build()));
-        final MessageTranslator<Object, Object> mockedTranslator = mock(MessageTranslator.class);
-        when(mockedTranslator.translate(Matchers.<Object>any(), Matchers.<DeviceInfo>any(), Matchers.any()))
-                .thenReturn(null);
-        when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(mockedTranslator);
-
-        deviceManager.deviceConnected(mockConnectionContext);
-
-        final InOrder order = inOrder(mockConnectionContext);
-        order.verify(mockConnectionContext).setOutboundQueueProvider(any(OutboundQueueProvider.class));
-        order.verify(mockConnectionContext).setOutboundQueueHandleRegistration(
-                Mockito.<OutboundQueueHandlerRegistration<OutboundQueueProvider>>any());
-        verify(deviceInitPhaseHandler).onDeviceContextLevelUp(Matchers.<DeviceInfo>any(), Mockito.<LifecycleService>any());
     }
 
     @Test
