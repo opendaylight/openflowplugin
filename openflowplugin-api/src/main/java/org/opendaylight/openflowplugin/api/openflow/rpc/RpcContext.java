@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yangtools.yang.binding.RpcService;
@@ -24,4 +25,6 @@ public interface RpcContext extends RequestContextStack, OFPContext {
     <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
 
     void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
+
+    ListenableFuture<Void> stopClusterServices();
 }

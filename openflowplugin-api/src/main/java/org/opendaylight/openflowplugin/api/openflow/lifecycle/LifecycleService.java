@@ -8,63 +8,41 @@
 
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.CheckForNull;
-
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 
 /**
  * Service for starting or stopping all services in plugin in cluster
  */
-public interface LifecycleService extends ClusterSingletonService, OFPContext {
+public interface LifecycleService extends ClusterSingletonService, AutoCloseable {
 
     /**
      * This method registers lifecycle service to the given provider
-     * @param singletonServiceProvider from md-sal binding
+     * @param singletonServiceProvider      from md-sal binding
+     * @param initializationPhaseHandler    MASTER services initialization handler
+     * @param serviceGroupIdentifier        Cluster services identifier
+     * @param deviceInfo                    device
      */
-    void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
+    void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
+                         @Nonnull final ClusterInitializationPhaseHandler initializationPhaseHandler,
+                         @Nonnull final ServiceGroupIdentifier serviceGroupIdentifier,
+                         @Nonnull final DeviceInfo deviceInfo);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed
      * from managers,
      * @param deviceRemovedHandler device removed handler
      */
-    void registerDeviceRemovedHandler(final @CheckForNull DeviceRemovedHandler deviceRemovedHandler);
+    void registerDeviceRemovedHandler(@Nonnull final DeviceRemovedHandler deviceRemovedHandler);
 
-    /**
-     * Setter for device context
-     * @param deviceContext actual device context created per device
-     */
-    void setDeviceContext(final DeviceContext deviceContext);
+    void makeDeviceSlave(DeviceContext deviceContext);
 
-    /**
-     * Setter for rpc context
-     * @param rpcContext actual rpc context created per device
-     */
-    void setRpcContext(final RpcContext rpcContext);
-
-    /**
-     * Setter for statistics context
-     * @param statContext actual statistics context created per device
-     */
-    void setStatContext(final StatisticsContext statContext);
-
-    /**
-     * Some services, contexts etc. still need to have access to device context,
-     * instead to push into them, here is the getter
-     * @return device context for this device
-     */
-    DeviceContext getDeviceContext();
-
-    /**
-     * if some services not started properly need to close connection
-     */
-    void closeConnection();
+    @Override
+    void close();
 }

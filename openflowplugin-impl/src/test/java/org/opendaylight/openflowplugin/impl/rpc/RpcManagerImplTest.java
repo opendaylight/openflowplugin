@@ -127,14 +127,7 @@ public class RpcManagerImplTest {
                 Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
-        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
-    }
-
-    @Test
-    public void onDeviceContextLevelUpTwice() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        expectedException.expect(VerifyException.class);
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
+//        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
     }
 
     @Test

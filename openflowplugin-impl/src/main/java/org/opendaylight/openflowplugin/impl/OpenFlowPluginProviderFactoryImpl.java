@@ -58,8 +58,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 rpcRegistry,
                 notificationService,
                 notificationPublishService,
-                singletonServiceProvider,
-                entityOwnershipService);
+                singletonServiceProvider);
 
         LOG.info("Loading configuration from YANG file");
         openflowPluginProvider.updateProperty(PropertyType.RPC_REQUESTS_QUOTA, providerConfig.getRpcRequestsQuota().getValue());
