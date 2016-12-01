@@ -27,14 +27,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -53,15 +51,12 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
-import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +88,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
-    private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -138,7 +132,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
-        this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
@@ -157,86 +150,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-        lifecycleService.registerService(this.singletonServiceProvider);
     }
 
     @Override
     public ConnectionStatus deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
-        Preconditions.checkArgument(connectionContext != null);
-        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-
-        /*
-         * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
-         * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
-         * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
-         */
-         if (deviceContexts.containsKey(deviceInfo)) {
-             DeviceContext deviceContext = deviceContexts.get(deviceInfo);
-             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
-             if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-                 LOG.warn("Node {} context state not in TERMINATION state.",
-                         connectionContext.getDeviceInfo().getLOGValue());
-                 return ConnectionStatus.ALREADY_CONNECTED;
-             } else {
-                 return ConnectionStatus.CLOSING;
-             }
-         }
-
-        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), deviceInfo.getNodeId());
-
-        // Add Disconnect handler
-        connectionContext.setDeviceDisconnectedHandler(this);
-
-        // Cache this for clarity
-        final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
-
-        // FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
-        connectionAdapter.setPacketInFiltering(true);
-
-        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(deviceInfo.getVersion());
-
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
-        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
-        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
-
-        final LifecycleService lifecycleService = new LifecycleServiceImpl();
-        final DeviceContext deviceContext = new DeviceContextImpl(
-                connectionContext,
-                dataBroker,
-                messageSpy,
-                translatorLibrary,
-                this,
-                convertorExecutor,
-                skipTableFeatures,
-                hashedWheelTimer,
-                this,
-                useSingleLayerSerialization,
-                deviceInitializerProvider);
-
-        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
-        deviceContexts.put(deviceInfo, deviceContext);
-
-        lifecycleService.setDeviceContext(deviceContext);
-        deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
-
-        lifecycleServices.put(deviceInfo, lifecycleService);
-
-        addCallbackToDeviceInitializeToSlave(deviceInfo, deviceContext, lifecycleService);
-
-        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-
-        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setNotificationPublishService(notificationPublishService);
-
-        updatePacketInRateLimiters();
-
-        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-                connectionAdapter, deviceContext);
-
-        connectionAdapter.setMessageListener(messageListener);
-        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleService);
         return ConnectionStatus.MAY_CONTINUE;
     }
 
@@ -267,7 +184,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         updatePacketInRateLimiters();
-        Optional.ofNullable(lifecycleServices.get(deviceInfo)).ifPresent(OFPContext::close);
+        Optional.ofNullable(lifecycleServices.get(deviceInfo)).ifPresent(LifecycleService::close);
     }
 
     @Override
@@ -404,23 +321,52 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
+    public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
 
-    private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
-        Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
-            @Override
-            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                }
-                deviceContext.sendNodeAddedNotification();
-            }
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                connectionContext.getDeviceInfo().getNodeId());
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
-            }
-        });
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+
+        final OutboundQueueProvider outboundQueueProvider
+                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                        outboundQueueProvider,
+                        barrierCountLimit,
+                        barrierIntervalNanos);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
+
+        final DeviceContext deviceContext = new DeviceContextImpl(
+                connectionContext,
+                dataBroker,
+                messageSpy,
+                translatorLibrary,
+                this,
+                convertorExecutor,
+                skipTableFeatures,
+                hashedWheelTimer,
+                useSingleLayerSerialization,
+                deviceInitializerProvider);
+
+        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
+        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
+        deviceContext.setNotificationPublishService(notificationPublishService);
+
+        deviceContexts.put(connectionContext.getDeviceInfo(), deviceContext);
+        updatePacketInRateLimiters();
+
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), deviceContext);
+
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+
+        return deviceContext;
     }
 
     private void updatePacketInRateLimiters() {
@@ -447,5 +393,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         lifecycleServices.remove(deviceInfo);
         LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
+    }
+
+    @Override
+    public long getBarrierIntervalNanos() {
+        return barrierIntervalNanos;
+    }
+
+    @Override
+    public int getBarrierCountLimit() {
+        return barrierCountLimit;
     }
 }

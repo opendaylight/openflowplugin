@@ -202,7 +202,7 @@ public class StatisticsManagerImplTest {
         }).when(outboundQueue)
                 .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
-        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
@@ -258,7 +258,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
@@ -299,7 +299,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -339,7 +339,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
