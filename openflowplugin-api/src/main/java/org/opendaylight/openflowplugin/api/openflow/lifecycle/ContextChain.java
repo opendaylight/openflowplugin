@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
 /**
  * Chain of contexts, hold references to the contexts
@@ -48,5 +51,9 @@ public interface ContextChain extends AutoCloseable {
      * @param connectionContext
      */
     void changePrimaryConnection(final ConnectionContext connectionContext);
+
+    ListenableFuture<Void> connectionDropped() throws ExecutionException, InterruptedException;
+
+    ContextChainState getContextChainState();
 
 }

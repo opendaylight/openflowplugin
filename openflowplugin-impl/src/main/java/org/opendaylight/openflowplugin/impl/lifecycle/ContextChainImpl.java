@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
@@ -18,11 +19,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 public class ContextChainImpl implements ContextChain {
 
     private Set<OFPContext> contexts = new HashSet<>();
-    private final ContextChainState contextChainState;
+    private ContextChainState contextChainState;
     private ConnectionContext primaryConnectionContext;
 
-    public ContextChainImpl(final ContextChainState contextChainState) {
-        this.contextChainState = contextChainState;
+    public ContextChainImpl() {
+        this.contextChainState = ContextChainState.WORKINGSLAVE;
     }
 
     @Override
@@ -36,13 +37,15 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public Future<Void> stopChain() {
-        return null;
+    public ListenableFuture<Void> stopChain() {
+        this.contextChainState = ContextChainState.WORKINGSLAVE;
+        return Futures.immediateFuture(null);
     }
 
     @Override
-    public Future<Void> startChain() {
-        return null;
+    public ListenableFuture<Void> startChain() {
+        this.contextChainState = ContextChainState.WORKINGMASTER;
+        return Futures.immediateFuture(null);
     }
 
     @Override
@@ -52,6 +55,22 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void changePrimaryConnection(final ConnectionContext connectionContext) {
+        //TODO: recreate stuff in device context !!!
         this.primaryConnectionContext = connectionContext;
+    }
+
+    @Override
+    public ContextChainState getContextChainState() {
+        return contextChainState;
+    }
+
+    @Override
+    public ListenableFuture<Void> connectionDropped() {
+        ContextChainState oldState = this.contextChainState;
+        this.contextChainState = ContextChainState.SLEEPING;
+        if (oldState.equals(ContextChainState.WORKINGMASTER)) {
+            return this.stopChain();
+        }
+        return Futures.immediateFuture(null);
     }
 }

@@ -389,6 +389,48 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return delFuture;
     }
 
+    @Override
+    public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
+
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getDeviceInfo().getNodeId());
+
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+
+        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
+
+        final DeviceContext deviceContext = new DeviceContextImpl(
+                connectionContext,
+                dataBroker,
+                messageSpy,
+                translatorLibrary,
+                this,
+                convertorExecutor,
+                skipTableFeatures,
+                hashedWheelTimer,
+                this);
+
+        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
+        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
+        deviceContext.setNotificationPublishService(notificationPublishService);
+
+        deviceContexts.put(connectionContext.getDeviceInfo(), deviceContext);
+        updatePacketInRateLimiters();
+
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), deviceContext);
+
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+
+        return deviceContext;
+    }
 
     private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
         Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {

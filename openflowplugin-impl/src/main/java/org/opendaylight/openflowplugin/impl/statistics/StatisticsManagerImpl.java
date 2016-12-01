@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -337,6 +338,17 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void setIsStatisticsPollingOn(boolean isStatisticsPollingOn){
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+    }
+
+    @Override
+    public StatisticsContext createContext(@CheckForNull DeviceInfo deviceInfo, @CheckForNull LifecycleService lifecycleService) {
+
+        return new StatisticsContextImpl(
+                deviceInfo,
+                isStatisticsPollingOn,
+                lifecycleService,
+                converterExecutor,
+                this);
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {

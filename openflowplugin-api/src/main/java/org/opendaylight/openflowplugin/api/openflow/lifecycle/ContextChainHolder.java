@@ -7,19 +7,20 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 
 /**
  * Generic interface for context chain holder, hold all created context chains
  */
-public interface ContextChainHolder {
+public interface ContextChainHolder extends DeviceConnectedHandler {
 
     <T extends OFPManager> void addManager(final T manager);
-    Future<Void> createContextChain(final DeviceInfo deviceInfo);
-    Future<Void> connectionLost(final DeviceInfo deviceInfo);
+    ContextChain createContextChain(final ConnectionContext connectionContext);
+    ListenableFuture<Void> connectionLost(final DeviceInfo deviceInfo);
     void destroyContextChain(final DeviceInfo deviceInfo);
 
     /**

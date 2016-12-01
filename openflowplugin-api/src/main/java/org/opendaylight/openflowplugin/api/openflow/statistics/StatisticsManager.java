@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 
 /**
  * Manager to start or stop scheduling statistics
@@ -32,4 +34,7 @@ public interface StatisticsManager extends OFPManager {
     void close();
 
     void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
+
+    StatisticsContext createContext(final @CheckForNull DeviceInfo deviceInfo, final @CheckForNull LifecycleService lifecycleService);
+
 }
