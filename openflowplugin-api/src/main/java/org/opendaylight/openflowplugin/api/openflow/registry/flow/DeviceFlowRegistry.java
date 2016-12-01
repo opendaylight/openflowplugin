@@ -9,10 +9,10 @@
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
