@@ -64,7 +64,6 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
     @Test
     public void gatherDynamicDataTest() {
 
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();

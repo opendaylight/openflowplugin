@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -48,6 +49,8 @@ public class LifecycleServiceImplTest {
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    @Mock
+    private MastershipChangeListener mastershipChangeListener;
 
     private LifecycleService lifecycleService;
 
@@ -67,39 +70,13 @@ public class LifecycleServiceImplTest {
         Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
         Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
 
-        lifecycleService = new LifecycleServiceImpl();
-        lifecycleService.setDeviceContext(deviceContext);
-        lifecycleService.setRpcContext(rpcContext);
-        lifecycleService.setStatContext(statContext);
-        lifecycleService.registerService(clusterSingletonServiceProvider);
-    }
-
-    @Test
-    public void instantiateServiceInstance() throws Exception {
-        lifecycleService.instantiateServiceInstance();
-        Mockito.verify(deviceContext).setLifecycleInitializationPhaseHandler(Mockito.any());
-        Mockito.verify(statContext).setLifecycleInitializationPhaseHandler(Mockito.any());
-        Mockito.verify(statContext).setInitialSubmitHandler(Mockito.any());
-        Mockito.verify(rpcContext).setLifecycleInitializationPhaseHandler(Mockito.any());
-    }
-
-    @Test
-    public void closeServiceInstance() throws Exception {
-        lifecycleService.closeServiceInstance().get();
-        Mockito.verify(statContext).stopClusterServices(false);
-        Mockito.verify(deviceContext).stopClusterServices(false);
-        Mockito.verify(rpcContext).stopClusterServices(false);
+        lifecycleService = new LifecycleServiceImpl(mastershipChangeListener);
+        lifecycleService.registerService(clusterSingletonServiceProvider, deviceContext, SERVICE_GROUP_IDENTIFIER, deviceInfo);
     }
 
     @Test
     public void getIdentifier() throws Exception {
         Assert.assertEquals(lifecycleService.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
-    }
-
-    @Test
-    public void closeConnection() throws Exception {
-        lifecycleService.closeConnection();
-        Mockito.verify(deviceContext).shutdownConnection();
     }
 
 }

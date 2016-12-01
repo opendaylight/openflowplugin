@@ -51,7 +51,6 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void setUp() throws Exception {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
-        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         initStatisticsContext();
     }
