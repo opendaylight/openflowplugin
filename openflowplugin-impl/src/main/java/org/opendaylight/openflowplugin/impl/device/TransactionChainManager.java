@@ -193,7 +193,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
                     if (initCommit) {
                         wTx = null;
-                        Optional.ofNullable(lifecycleService).ifPresent(LifecycleService::closeConnection);
+//                        Optional.ofNullable(lifecycleService).ifPresent(LifecycleService::closeConnection);
                     }
                 }
             });
