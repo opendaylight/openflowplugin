@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
@@ -25,8 +26,7 @@ public interface DeviceManager extends
         OFPManager,
         DeviceConnectedHandler,
         DeviceDisconnectedHandler,
-        TranslatorLibrarian,
-        EntityOwnershipListener {
+        TranslatorLibrarian {
 
     /**
      * invoked after all services injected
@@ -48,5 +48,7 @@ public interface DeviceManager extends
     void setGlobalNotificationQuota(long globalNotificationQuota);
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
+    DeviceContext createContext(ConnectionContext connectionContext);
 }
 

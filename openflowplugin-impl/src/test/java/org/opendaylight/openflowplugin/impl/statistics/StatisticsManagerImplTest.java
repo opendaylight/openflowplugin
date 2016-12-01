@@ -221,7 +221,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
@@ -262,7 +262,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -302,7 +302,7 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()

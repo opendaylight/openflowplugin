@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -63,25 +64,25 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
 
-        final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
-
-        final RpcContext rpcContext = new RpcContextImpl(
-                deviceInfo,
-                rpcProviderRegistry,
-                deviceContext.getMessageSpy(),
-                maxRequestsQuota,
-                deviceInfo.getNodeInstanceIdentifier(),
-                deviceContext,
-                extensionConverterProvider,
-                convertorExecutor,
-                notificationPublishService);
-
-        Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
-        lifecycleService.setRpcContext(rpcContext);
-        lifecycleService.registerDeviceRemovedHandler(this);
-        rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
-
-        // finish device initialization cycle back to DeviceManager
+//        final DeviceContext deviceContext = Preconditions.checkNotNull(lifecycleService.getDeviceContext());
+//
+//        final RpcContext rpcContext = new RpcContextImpl(
+//                deviceInfo,
+//                rpcProviderRegistry,
+//                deviceContext.getMessageSpy(),
+//                maxRequestsQuota,
+//                deviceInfo.getNodeInstanceIdentifier(),
+//                deviceContext,
+//                extensionConverterProvider,
+//                convertorExecutor,
+//                notificationPublishService);
+//
+//        Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
+//        lifecycleService.setRpcContext(rpcContext);
+//        lifecycleService.registerDeviceRemovedHandler(this);
+//        rpcContext.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
+//
+//        // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
@@ -124,6 +125,20 @@ public class RpcManagerImpl implements RpcManager {
     public void setRpcRequestQuota(final int rpcRequestQuota) {
         this.maxRequestsQuota = rpcRequestQuota;
     }
+
+    public RpcContext createContext(final @CheckForNull DeviceInfo deviceInfo, final @CheckForNull DeviceContext deviceContext) {
+        return new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                deviceContext.getMessageSpy(),
+                maxRequestsQuota,
+                deviceInfo.getNodeInstanceIdentifier(),
+                deviceContext,
+                extensionConverterProvider,
+                convertorExecutor,
+                notificationPublishService);
+    }
+
 
     @Override
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
