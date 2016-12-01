@@ -236,6 +236,6 @@ class RpcContextImpl implements RpcContext {
                     convertorExecutor);
         }
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+        return true;
     }
 }
