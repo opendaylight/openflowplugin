@@ -96,21 +96,20 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo,
                                        final LifecycleService lifecycleService) throws Exception {
 
-        final StatisticsContext statisticsContext =
-                new StatisticsContextImpl(
-                        deviceInfo,
-                        isStatisticsPollingOn,
-                        lifecycleService,
-                        converterExecutor,
-                        this);
-
-        Verify.verify(
-                contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
-                "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
-        );
-
-        lifecycleService.setStatContext(statisticsContext);
-        lifecycleService.registerDeviceRemovedHandler(this);
+//        final StatisticsContext statisticsContext =
+//                new StatisticsContextImpl(
+//                        isStatisticsPollingOn,
+//                        lifecycleService,
+//                        converterExecutor,
+//                        this);
+//
+//        Verify.verify(
+//                contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
+//                "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
+//        );
+//
+//        lifecycleService.setStatContext(statisticsContext);
+//        lifecycleService.registerDeviceRemovedHandler(this);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
@@ -337,6 +336,16 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void setIsStatisticsPollingOn(boolean isStatisticsPollingOn){
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+    }
+
+    @Override
+    public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
+
+        return new StatisticsContextImpl(
+                isStatisticsPollingOn,
+                deviceContext,
+                converterExecutor,
+                this);
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
