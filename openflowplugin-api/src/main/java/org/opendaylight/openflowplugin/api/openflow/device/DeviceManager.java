@@ -9,8 +9,10 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
@@ -44,5 +46,10 @@ public interface DeviceManager extends
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
 
     void setUseSingleLayerSerialization(Boolean useSingleLayerSerilization);
+    DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext);
+
+    long getBarrierIntervalNanos();
+
+    int getBarrierCountLimit();
 }
 
