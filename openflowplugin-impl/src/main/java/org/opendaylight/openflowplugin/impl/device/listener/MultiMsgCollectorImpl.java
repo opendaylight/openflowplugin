@@ -54,7 +54,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void addMultipartMsg(@Nonnull final MultipartReply reply, @Nonnull final EventIdentifier eventIdentifier) {
+    public void addMultipartMsg(@Nonnull final MultipartReply reply, final EventIdentifier eventIdentifier) {
         Preconditions.checkNotNull(reply);
         Preconditions.checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
         LOG.trace("Try to add Multipart reply msg with XID {}", reply.getXid());
