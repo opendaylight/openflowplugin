@@ -8,9 +8,14 @@
 
 package org.opendaylight.openflowplugin.extension.onf;
 
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
+import org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory;
+import org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +47,19 @@ public class OnfExtensionProvider {
     }
 
     private void registerSerializers() {
-        // TODO
+        switchConnectionProvider.registerExperimenterMessageSerializer(
+                new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                                                      ExperimenterDataOfChoice.class),
+                new BundleControlFactory());
+
+        switchConnectionProvider.registerExperimenterMessageSerializer(
+                new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE,
+                                                      ExperimenterDataOfChoice.class),
+                new BundleAddMessageFactory());
     }
 
 
