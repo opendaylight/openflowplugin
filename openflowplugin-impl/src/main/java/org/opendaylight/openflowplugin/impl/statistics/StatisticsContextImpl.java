@@ -37,7 +37,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -75,7 +74,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private Timeout pollTimeout;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
-    private final LifecycleService lifecycleService;
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
@@ -84,14 +82,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private ListenableFuture<Boolean> lastDataGathering;
 
-    StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
-                          final boolean isStatisticsPollingOn,
-                          @Nonnull final LifecycleService lifecycleService,
+    StatisticsContextImpl(final boolean isStatisticsPollingOn,
+                          @Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider) {
-        this.lifecycleService = lifecycleService;
-        this.deviceContext = lifecycleService.getDeviceContext();
+        this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
@@ -102,7 +98,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.state = CONTEXT_STATE.INITIALIZATION;
-        this.deviceInfo = deviceInfo;
+        this.deviceInfo = deviceContext.getDeviceInfo();
         this.myManager = myManager;
         this.lastDataGathering = null;
         this.statisticsWriterProvider = statisticsWriterProvider;
@@ -484,7 +480,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public DeviceContext gainDeviceContext() {
-        return this.lifecycleService.getDeviceContext();
+        return this.deviceContext;
     }
 
     @Override
@@ -523,7 +519,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
                 LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
             }
         });
 

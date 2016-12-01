@@ -191,9 +191,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                             LOG.error("Exception during transaction submitting. ", t);
                         }
                     }
-                    if (initCommit) {
-                        Optional.ofNullable(lifecycleService).ifPresent(LifecycleService::closeConnection);
-                    }
                 }
             });
         }

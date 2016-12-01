@@ -134,8 +134,6 @@ public interface DeviceContext extends
 
     void putLifecycleServiceIntoTxChainManager(LifecycleService lifecycleService);
 
-    void replaceConnectionContext(ConnectionContext connectionContext);
-
     boolean isSkipTableFeatures();
 
     /**
