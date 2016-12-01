@@ -36,6 +36,7 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -47,6 +48,7 @@ import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
+import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -57,6 +59,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.util.HashedWheelTimer;
@@ -71,12 +74,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private static final Integer DEFAULT_BARRIER_COUNT = 25600;
     private static final Long DEFAULT_ECHO_TIMEOUT = 2000L;
     private static final Long DEFAULT_BARRIER_TIMEOUT = 500L;
+    private static final String POOL_NAME = "ofppool";
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
     private final int rpcRequestsQuota;
     private final long globalNotificationQuota;
     private final ConvertorManager convertorManager;
+    private final ContextChainHolder contextChainHolder;
     private long barrierInterval;
     private int barrierCountLimit;
     private long echoReplyTimeout;
@@ -117,8 +122,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolMinThreads),
                 Preconditions.checkNotNull(threadPoolMaxThreads),
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
-                new SynchronousQueue<>(), "ofppool");
+                new SynchronousQueue<>(), POOL_NAME);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
+        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build());
     }
 
     @Override
@@ -238,6 +244,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
+        contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
+
         deviceManager = new DeviceManagerImpl(dataBroker,
                 globalNotificationQuota,
                 switchFeaturesMandatory,
@@ -259,7 +267,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
-        connectionManager.setDeviceConnectedHandler(deviceManager);
+        // Device connection handler moved from device manager to context holder
+        connectionManager.setDeviceConnectedHandler(contextChainHolder);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
@@ -273,6 +282,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
         deviceManager.initialize();
+
+        contextChainHolder.addManager(deviceManager);
+        contextChainHolder.addManager(statisticsManager);
+        contextChainHolder.addManager(rpcManager);
 
         startSwitchConnections();
     }
