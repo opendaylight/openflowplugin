@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
@@ -32,4 +34,7 @@ public interface StatisticsManager extends OFPManager {
     void close();
 
     void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
+
+    StatisticsContext createContext(@Nonnull final DeviceContext deviceContext);
+
 }
