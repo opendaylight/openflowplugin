@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -20,9 +21,11 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +37,11 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -66,12 +71,16 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
+import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
+import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -151,7 +160,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
-    private final DeviceManager deviceManager;
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
     private final DeviceInfo deviceInfo;
@@ -165,20 +173,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             @Nonnull final DataBroker dataBroker,
             @Nonnull final MessageSpy messageSpy,
             @Nonnull final TranslatorLibrary translatorLibrary,
-            @Nonnull final DeviceManager manager,
+            @Nonnull final DeviceManager contextManager,
             final ConvertorExecutor convertorExecutor,
             final boolean skipTableFeatures,
-            final HashedWheelTimer hashedWheelTimer,
-            final DeviceManager myManager) {
+            final HashedWheelTimer hashedWheelTimer) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
-        this.myManager = myManager;
+        this.myManager = contextManager;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.auxiliaryConnectionContexts = new HashMap<>();
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
-        this.deviceManager = manager;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ 1000, /*initial*/2000, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -312,11 +318,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
 
-        if(deviceManager.isFlowRemovedNotificationOn()) {
+        if(!myManager.isFlowRemovedNotificationOn()) {
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
         } else if(LOG.isDebugEnabled()) {
-            LOG.debug("For nodeId={} isFlowRemovedNotificationOn={}", getDeviceInfo().getLOGValue(), deviceManager.isFlowRemovedNotificationOn());
+            LOG.debug("For nodeId={} isNotificationFlowRemovedOn={}", getDeviceInfo().getLOGValue(), myManager.isFlowRemovedNotificationOn());
         }
 
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
@@ -556,6 +562,35 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public void replaceConnection(final ConnectionContext connectionContext) {
+
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+
+        final OutboundQueueProvider outboundQueueProvider
+                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                        outboundQueueProvider,
+                        this.myManager.getBarrierCountLimit(),
+                        this.myManager.getBarrierIntervalNanos());
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
+        this.salRoleService = new SalRoleServiceImpl(this, this);
+
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), this);
+
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+
+        LOG.info("ConnectionEvent: Connection on device:{}, NodeId:{} switched.",
+                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                connectionContext.getDeviceInfo().getNodeId());
+
+    }
+
+    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -567,7 +602,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 : Futures.immediateFuture(null);
 
         if (!connectionInterrupted) {
-            final ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
+            final ListenableFuture<Void> makeSlaveFuture
+                    = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
@@ -590,21 +626,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             });
 
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
-                @Override
-                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
-                    // Add fallback to remove device from operational DS if setting slave fails
-                    return Futures.withFallback(makeSlaveFuture, t ->
-                            myManager.removeDeviceFromOperationalDS(deviceInfo));
-                }
+            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid -> {
+                // Add fallback to remove device from operational DS if setting slave fails
+                return Futures.withFallback(makeSlaveFuture, t ->
+                        myManager.removeDeviceFromOperationalDS(deviceInfo));
             });
         } else {
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
-                @Override
-                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
-                    return myManager.removeDeviceFromOperationalDS(deviceInfo);
-                }
-            });
+            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid ->
+                    myManager.removeDeviceFromOperationalDS(deviceInfo));
         }
     }
 
@@ -637,14 +666,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void replaceConnectionContext(final ConnectionContext connectionContext){
-        // Act like we are initializing the context
-        this.state = CONTEXT_STATE.INITIALIZATION;
-        this.primaryConnectionContext = connectionContext;
-        this.onPublished();
-    }
-
-    @Override
     public boolean isSkipTableFeatures() {
         return this.skipTableFeatures;
     }
@@ -663,7 +684,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
 
         if (getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
+            LOG.warn("Connection on device {} was interrupted, will stop starting master services.",
+                    deviceInfo.getLOGValue());
             return false;
         }
 
@@ -674,13 +696,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.transactionChainManager.activateTransactionManager();
 
         try {
-            DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
+            DeviceInitializationUtils.initializeNodeInformation(
+                    this,
+                    switchFeaturesMandatory,
+                    this.convertorExecutor);
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
             return false;
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
+
+        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
+        Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
     }
@@ -758,4 +786,47 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             shutdownConnection();
         }
     }
+
+    private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
+        private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
+
+        DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
+            this.deviceFlowRegistryFill = deviceFlowRegistryFill;
+        }
+
+        @Override
+        public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
+            if (LOG.isDebugEnabled()) {
+                // Count all flows we read from datastore for debugging purposes.
+                // This number do not always represent how many flows were actually added
+                // to DeviceFlowRegistry, because of possible duplicates.
+                long flowCount = Optional.fromNullable(result).asSet().stream()
+                        .flatMap(Collection::stream)
+                        .filter(Objects::nonNull)
+                        .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                        .filter(Objects::nonNull)
+                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                        .filter(Objects::nonNull)
+                        .filter(table -> Objects.nonNull(table.getFlow()))
+                        .flatMap(table -> table.getFlow().stream())
+                        .filter(Objects::nonNull)
+                        .count();
+
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getLOGValue());
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            if (deviceFlowRegistryFill.isCancelled()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
+                }
+            } else {
+                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getLOGValue(), t);
+            }
+        }
+    }
+
 }
