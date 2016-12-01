@@ -21,7 +21,9 @@ public interface ClusterLifecycleSupervisor {
      * handler's chain for Device mastership phase.
      * @param handler handler
      */
-    void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler);
+    default void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
+        //Need to be set only in lifecycle service, device context and statistics context;
+    }
 
     default void setInitialSubmitHandler(final ClusterInitializationPhaseHandler initialSubmitHandler) {
         //Need to be only set in statistics context where after successful initial gather tx need to be submitted
