@@ -91,7 +91,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
-    private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -132,7 +131,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
-        this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
     }
@@ -150,7 +148,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-        lifecycleService.registerService(this.singletonServiceProvider);
     }
 
     @Override
@@ -204,8 +201,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 this,
                 convertorExecutor,
                 skipTableFeatures,
-                hashedWheelTimer,
-                this);
+                hashedWheelTimer);
 
         deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContexts.put(deviceInfo, deviceContext);
@@ -389,6 +385,52 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return delFuture;
     }
 
+    @Override
+    public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
+
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                connectionContext.getDeviceInfo().getNodeId());
+
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+
+        final OutboundQueueProvider outboundQueueProvider
+                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                        outboundQueueProvider,
+                        barrierCountLimit,
+                        barrierIntervalNanos);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
+
+        final DeviceContext deviceContext = new DeviceContextImpl(
+                connectionContext,
+                dataBroker,
+                messageSpy,
+                translatorLibrary,
+                this,
+                convertorExecutor,
+                skipTableFeatures,
+                hashedWheelTimer);
+
+        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
+        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
+        deviceContext.setNotificationPublishService(notificationPublishService);
+
+        deviceContexts.put(connectionContext.getDeviceInfo(), deviceContext);
+        updatePacketInRateLimiters();
+
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), deviceContext);
+
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+
+        return deviceContext;
+    }
 
     private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
         Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
@@ -431,5 +473,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         lifecycleServices.remove(deviceInfo);
         LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
+    }
+
+    @Override
+    public long getBarrierIntervalNanos() {
+        return barrierIntervalNanos;
+    }
+
+    @Override
+    public int getBarrierCountLimit() {
+        return barrierCountLimit;
     }
 }

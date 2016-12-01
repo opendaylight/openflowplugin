@@ -11,8 +11,11 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import javax.annotation.CheckForNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -20,13 +23,17 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 /**
  * Service for starting or stopping all services in plugin in cluster
  */
-public interface LifecycleService extends ClusterSingletonService, OFPContext {
+public interface LifecycleService extends ClusterSingletonService, AutoCloseable {
 
     /**
      * This method registers lifecycle service to the given provider
      * @param singletonServiceProvider from md-sal binding
+     * @param initializationPhaseHandler MASTER services initialization handler
      */
-    void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
+    void registerService(@CheckForNull final ClusterSingletonServiceProvider singletonServiceProvider,
+                         @CheckForNull final ClusterInitializationPhaseHandler initializationPhaseHandler,
+                         @CheckForNull final ServiceGroupIdentifier serviceGroupIdentifier,
+                         @CheckForNull final DeviceInfo deviceInfo);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed
@@ -35,33 +42,6 @@ public interface LifecycleService extends ClusterSingletonService, OFPContext {
      */
     void registerDeviceRemovedHandler(final @CheckForNull DeviceRemovedHandler deviceRemovedHandler);
 
-    /**
-     * Setter for device context
-     * @param deviceContext actual device context created per device
-     */
-    void setDeviceContext(final DeviceContext deviceContext);
-
-    /**
-     * Setter for rpc context
-     * @param rpcContext actual rpc context created per device
-     */
-    void setRpcContext(final RpcContext rpcContext);
-
-    /**
-     * Setter for statistics context
-     * @param statContext actual statistics context created per device
-     */
-    void setStatContext(final StatisticsContext statContext);
-
-    /**
-     * Some services, contexts etc. still need to have access to device context,
-     * instead to push into them, here is the getter
-     * @return device context for this device
-     */
-    DeviceContext getDeviceContext();
-
-    /**
-     * if some services not started properly need to close connection
-     */
-    void closeConnection();
+    @Override
+    void close();
 }
