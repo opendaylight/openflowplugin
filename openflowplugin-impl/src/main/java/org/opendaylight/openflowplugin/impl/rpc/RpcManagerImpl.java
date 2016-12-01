@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -121,6 +122,21 @@ public class RpcManagerImpl implements RpcManager {
     public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
         isStatisticsRpcEnabled = statisticsRpcEnabled;
     }
+
+    @Override
+    public RpcContext createContext(final @CheckForNull DeviceInfo deviceInfo, final @CheckForNull DeviceContext deviceContext) {
+        return new RpcContextImpl(
+                deviceInfo,
+                rpcProviderRegistry,
+                deviceContext.getMessageSpy(),
+                maxRequestsQuota,
+                deviceInfo.getNodeInstanceIdentifier(),
+                deviceContext,
+                extensionConverterProvider,
+                convertorExecutor,
+                notificationPublishService);
+    }
+
 
     @Override
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
