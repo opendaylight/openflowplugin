@@ -15,16 +15,16 @@ module openflow-provider-config {
         description "Context chain state";
         type enumeration {
             enum SLEEPING {
-                description "Context chain is sleeping,is without a connection";
+                description "Context chain is sleeping without a connection.";
             }
             enum WORKING_MASTER {
-                description "Context chain is working as MASTER";
+                description "Context chain is working as MASTER.";
             }
             enum WORKING_SLAVE {
-                description "Context chain is working as SLAVE";
+                description "Context chain is working as SLAVE, initial gathering already done.";
             }
-            enum ON_HOLD {
-                description "Context chain is on hold, after connection lost";
+            enum INITIALIZED {
+                description "Context chain is created is working as SLAVE initial gathering need to be done.";
             }
         }
     }

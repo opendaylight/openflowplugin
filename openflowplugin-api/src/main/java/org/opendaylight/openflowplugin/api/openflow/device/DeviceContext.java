@@ -150,6 +150,8 @@ public interface DeviceContext extends
 
     void sendNodeRemovedNotification();
 
+    ListenableFuture<Void> stopClusterServices();
+
     void cleanupDeviceData();
 }
 

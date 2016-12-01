@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
@@ -26,8 +27,7 @@ public interface DeviceManager extends
         OFPManager,
         DeviceConnectedHandler,
         DeviceDisconnectedHandler,
-        TranslatorLibrarian,
-        EntityOwnershipListener {
+        TranslatorLibrarian {
 
     /**
      * invoked after all services injected
@@ -45,5 +45,11 @@ public interface DeviceManager extends
     void setBarrierInterval(long barrierTimeoutLimit);
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+
+    long getBarrierIntervalNanos();
+
+    int getBarrierCountLimit();
+
+    DeviceContext createContext(ConnectionContext connectionContext);
 }
 

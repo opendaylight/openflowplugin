@@ -32,10 +32,6 @@ public interface OFPManager extends
         DeviceRemovedHandler,
         AutoCloseable {
 
-    default void createContext(final DeviceInfo deviceInfo) {
-        //TODO: remove default after implementation in all managers !!!
-    }
-
     @Override
     void close();
 }

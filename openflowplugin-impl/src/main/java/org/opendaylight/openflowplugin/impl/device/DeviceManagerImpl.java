@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -28,17 +27,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -56,20 +51,14 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderK
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
-import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +68,9 @@ import org.slf4j.LoggerFactory;
 public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
-    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
-    private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
@@ -103,8 +90,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
-    private final ClusterSingletonServiceProvider singletonServiceProvider;
-    private final EntityOwnershipService entityOwnershipService;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -117,7 +102,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final MessageSpy messageSpy,
                              final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
-                             final EntityOwnershipService entityOwnershipService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
                              final boolean skipTableFeatures,
@@ -125,7 +109,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
 
         this.dataBroker = dataBroker;
-        this.entityOwnershipService = entityOwnershipService;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
@@ -135,12 +118,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
-        this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
-
-        this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                (SERVICE_ENTITY_TYPE, this));
 
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -168,85 +147,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-        lifecycleService.registerService(this.singletonServiceProvider);
     }
 
     @Override
     public ConnectionStatus deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
-        Preconditions.checkArgument(connectionContext != null);
-        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-
-        /*
-         * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
-         * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
-         * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
-         */
-         if (deviceContexts.containsKey(deviceInfo)) {
-             DeviceContext deviceContext = deviceContexts.get(deviceInfo);
-             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
-             if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-                 LOG.warn("Node {} context state not in TERMINATION state.",
-                         connectionContext.getDeviceInfo().getLOGValue());
-                 return ConnectionStatus.ALREADY_CONNECTED;
-             } else {
-                 return ConnectionStatus.CLOSING;
-             }
-         }
-
-        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(), deviceInfo.getNodeId());
-
-        // Add Disconnect handler
-        connectionContext.setDeviceDisconnectedHandler(this);
-
-        // Cache this for clarity
-        final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
-
-        // FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
-        connectionAdapter.setPacketInFiltering(true);
-
-        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(deviceInfo.getVersion());
-
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
-        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
-        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
-
-        final LifecycleService lifecycleService = new LifecycleServiceImpl();
-
-        final DeviceContext deviceContext = new DeviceContextImpl(
-                connectionContext,
-                dataBroker,
-                messageSpy,
-                translatorLibrary,
-                this,
-                convertorExecutor,
-                skipTableFeatures,
-                hashedWheelTimer,
-                this);
-
-        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
-        deviceContexts.put(deviceInfo, deviceContext);
-
-        lifecycleService.setDeviceContext(deviceContext);
-        deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
-
-        lifecycleServices.put(deviceInfo, lifecycleService);
-
-        addCallbackToDeviceInitializeToSlave(deviceInfo, deviceContext, lifecycleService);
-
-        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-
-        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-        deviceContext.setNotificationPublishService(notificationPublishService);
-
-        updatePacketInRateLimiters();
-
-        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-                connectionAdapter, deviceContext);
-
-        connectionAdapter.setMessageListener(messageListener);
-        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleService);
         return ConnectionStatus.MAY_CONTINUE;
     }
 
@@ -272,21 +176,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Optional.ofNullable(spyPool).ifPresent(ScheduledThreadPoolExecutor::shutdownNow);
         spyPool = null;
 
-        if (Objects.nonNull(eosListenerRegistration)) {
-            try {
-                LOG.debug("Closing entity ownership listener");
-                eosListenerRegistration.close();
-            } catch (Exception e) {
-                LOG.debug("Failed to close entity ownership listener registration with exception",e);
-            }
-        }
-
     }
 
     @Override
     public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
         updatePacketInRateLimiters();
-        Optional.ofNullable(lifecycleServices.get(deviceInfo)).ifPresent(OFPContext::close);
+        Optional.ofNullable(lifecycleServices.get(deviceInfo)).ifPresent(LifecycleService::close);
     }
 
     @Override
@@ -425,22 +320,50 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return delFuture;
     }
 
-    private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
-        Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
-            @Override
-            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                }
-                deviceContext.sendNodeAddedNotification();
-            }
+    public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
-            }
-        });
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                connectionContext.getDeviceInfo().getNodeId());
+
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+
+        final OutboundQueueProvider outboundQueueProvider
+                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                        outboundQueueProvider,
+                        barrierCountLimit,
+                        barrierIntervalNanos);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
+
+        final DeviceContext deviceContext = new DeviceContextImpl(
+                connectionContext,
+                dataBroker,
+                messageSpy,
+                translatorLibrary,
+                this,
+                convertorExecutor,
+                skipTableFeatures,
+                hashedWheelTimer);
+
+        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
+        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
+        deviceContext.setNotificationPublishService(notificationPublishService);
+
+        deviceContexts.put(connectionContext.getDeviceInfo(), deviceContext);
+        updatePacketInRateLimiters();
+
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), deviceContext);
+
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+
+        return deviceContext;
     }
 
     private void updatePacketInRateLimiters() {
@@ -471,29 +394,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (!entityOwnershipChange.hasOwner()) {
-            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
-            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
-                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
-            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
-            LOG.info("Entity ownership changed for device : {} : {}", entityName, entityOwnershipChange);
+    public long getBarrierIntervalNanos() {
+        return barrierIntervalNanos;
+    }
 
-            if (entityName != null ){
-                if (!removeddeviceContexts.isEmpty()) {
-                    for (DeviceInfo device : removeddeviceContexts.keySet()) {
-                        if (device.getNodeId().getValue().equals(entityName)) {
-                            LOG.info("Cleaning up operational data of the node : {}", entityName);
-                            // No owner present for the entity, clean up the data and remove it from
-                            // removed context.
-                            removeddeviceContexts.remove(device).cleanupDeviceData();
-                            return;
-                        }
-                    }
-                }
-                removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName)),
-                        entityName);
-            }
-        }
+    @Override
+    public int getBarrierCountLimit() {
+        return barrierCountLimit;
     }
 }
