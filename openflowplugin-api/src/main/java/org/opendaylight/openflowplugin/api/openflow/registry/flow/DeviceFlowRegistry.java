@@ -30,7 +30,11 @@ public interface DeviceFlowRegistry extends AutoCloseable {
 
     FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey);
 
-    void removeDescriptor(FlowRegistryKey flowRegistryKey);
+    void markToBeRemoved(FlowRegistryKey flowRegistryKey);
+
+    boolean isMarkedToBeRemoved(FlowRegistryKey flowRegistryKey);
+
+    void removeDescriptors();
 
     void update(FlowRegistryKey newFlowRegistryKey,FlowDescriptor flowDescriptor);
 

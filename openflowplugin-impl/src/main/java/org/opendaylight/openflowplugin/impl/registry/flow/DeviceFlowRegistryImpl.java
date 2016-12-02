@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final ConcurrentSet<FlowRegistryKey> markToBeRemovedSet = new ConcurrentSet<>();
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -206,9 +208,27 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
-        LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-        flowRegistry.remove(flowRegistryKey);
+    public void markToBeRemoved(final FlowRegistryKey flowRegistryKey) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Mark to be removed flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+        }
+        markToBeRemovedSet.add(flowRegistryKey);
+    }
+
+    @Override
+    public boolean isMarkedToBeRemoved(final FlowRegistryKey flowRegistryKey) {
+        return markToBeRemovedSet.contains(flowRegistryKey);
+    }
+
+    @Override
+    public void removeDescriptors() {
+        for (FlowRegistryKey flowRegistryKey : markToBeRemovedSet) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Removing marked flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+            }
+            flowRegistry.remove(flowRegistryKey);
+        }
+        markToBeRemovedSet.clear();
     }
 
     @Override
