@@ -16,15 +16,21 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.romix.scala.collection.concurrent.TrieMap;
+import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -47,7 +53,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final ConcurrentMap<FlowRegistryKey, FlowDescriptor> flowRegistry = new TrieMap<>();
+    @GuardedBy("markToBeRemoved")
+    private final Collection<FlowRegistryKey> markToBeRemoved = new HashSet<>();
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -161,26 +169,34 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         return flowDescriptor;
     }
 
+    /**
+     * We cannot store two flows with the same ID
+     * TODO: If really needed we need to change general behavior maybe change yang model ??
+     * @param flowRegistryKey   key
+     * @param flowDescriptor    descriptor
+     */
     @Override
     public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
-        try {
-          LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-          flowRegistry.put(flowRegistryKey, flowDescriptor);
-        } catch (IllegalArgumentException ex) {
-          LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
-                    flowDescriptor.getTableKey().getId());
-          final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
-          final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
-            create(flowDescriptor.getTableKey().getId(), newFlowId);
-          flowRegistry.put(flowRegistryKey, newFlowDescriptor);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                    flowDescriptor.getTableKey().getId(),
+                    flowDescriptor.getFlowId().getValue(),
+                    flowRegistryKey.hashCode());
+        }
+        FlowDescriptor descriptor = flowRegistry.put(flowRegistryKey, flowDescriptor);
+        if (Objects.nonNull(descriptor)) {
+            LOG.warn("Flow registry key {} already existed in flow registry " +
+                            "associated with flowDescriptor with table ID : {} and flow ID : {}",
+                    flowRegistryKey.hashCode(),
+                    flowDescriptor.getTableKey().getId(),
+                    flowDescriptor.getFlowId().getValue());
         }
     }
 
     @Override
     public void update(final FlowRegistryKey newFlowRegistryKey, final FlowDescriptor flowDescriptor) {
         LOG.trace("Updating the entry with hash: {}", newFlowRegistryKey.hashCode());
-        flowRegistry.forcePut(newFlowRegistryKey, flowDescriptor);
+        flowRegistry.put(newFlowRegistryKey, flowDescriptor);
     }
 
     @Override
@@ -206,9 +222,26 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
-        LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-        flowRegistry.remove(flowRegistryKey);
+    public void markToBeRemoved(final FlowRegistryKey flowRegistryKey) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Mark to be removed flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+        }
+        synchronized (markToBeRemoved) {
+            markToBeRemoved.add(flowRegistryKey);
+        }
+    }
+
+    @Override
+    public void removeMarkedFlowRegistryKeys() {
+        synchronized (markToBeRemoved) {
+            for (FlowRegistryKey flowRegistryKey : markToBeRemoved) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Removing marked flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+                }
+                flowRegistry.remove(flowRegistryKey);
+            }
+            markToBeRemoved.clear();
+        }
     }
 
     @Override
@@ -226,7 +259,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             LOG.trace("Cancelling filling flow registry with flows job {} with result: {}", next, success);
             iterator.remove();
         }
-
+        synchronized (markToBeRemoved) {
+            markToBeRemoved.clear();
+        }
         flowRegistry.clear();
     }
 

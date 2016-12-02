@@ -112,7 +112,7 @@ public class DeviceFlowRegistryImplTest {
         order.verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
         assertTrue(allFlowDescriptors.containsKey(key));
 
-        deviceFlowRegistry.removeDescriptor(key);
+        deviceFlowRegistry.removeMarkedFlowRegistryKeys();
     }
 
     @Test
@@ -203,12 +203,6 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertTrue(newFlowId.getValue().startsWith(alienPrefix));
         Assert.assertTrue(deviceFlowRegistry.retrieveIdForFlow(key2).getFlowId().getValue().startsWith(alienPrefix));
         Assert.assertEquals(2, deviceFlowRegistry.getAllFlowDescriptors().size());
-    }
-
-    @Test
-    public void testRemoveDescriptor() throws Exception {
-        deviceFlowRegistry.removeDescriptor(key);
-        Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
