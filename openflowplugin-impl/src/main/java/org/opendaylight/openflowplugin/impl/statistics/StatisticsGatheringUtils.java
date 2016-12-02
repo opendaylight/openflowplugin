@@ -13,7 +13,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -140,11 +139,11 @@ public final class StatisticsGatheringUtils {
             wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
             EventsTimeCounter.markStart(wholeProcessEventIdentifier);
         }
-        final EventIdentifier ofpQueuToRequestContextEventIdentifier
+        final EventIdentifier ofpQueueToRequestContextEventIdentifier
                 = new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString());
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
-                        ofpQueuToRequestContextEventIdentifier, type));
+                        ofpQueueToRequestContextEventIdentifier, type));
         return transformAndStoreStatisticsData(
                 statisticsDataInFuture,
                 deviceInfo,
@@ -352,7 +351,7 @@ public final class StatisticsGatheringUtils {
     /**
      * Method extracts flow statistics out of flowAndStatistics model.
      *
-     * @param flowAndStats
+     * @param flowAndStats flow statistics map list
      */
     private static FlowStatisticsDataBuilder refineFlowStatisticsAugmentation(
             final FlowAndStatisticsMapList flowAndStats) {
@@ -372,22 +371,16 @@ public final class StatisticsGatheringUtils {
                 LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
 
         /* we wish to close readTx for fallBack */
-        Futures.withFallback(flowCapableNodeFuture, new FutureFallback<Optional<FlowCapableNode>>() {
-
-            @Override
-            public ListenableFuture<Optional<FlowCapableNode>> create(final Throwable t) throws Exception {
-                readTx.close();
-                return Futures.immediateFailedFuture(t);
-            }
+        Futures.withFallback(flowCapableNodeFuture, t -> {
+            readTx.close();
+            return Futures.immediateFailedFuture(t);
         });
         /*
          * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
          * not applicable for lists
          */
-        return Futures.transform(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
-
-            @Override
-            public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
+        return Futures.transform(
+                flowCapableNodeFuture, (AsyncFunction<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
                 if (flowCapNodeOpt.isPresent()) {
                     for (final Table tableData : flowCapNodeOpt.get().getTable()) {
                         final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
@@ -398,9 +391,7 @@ public final class StatisticsGatheringUtils {
                 }
                 readTx.close();
                 return Futures.immediateFuture(null);
-            }
-
-        });
+            });
     }
 
     private static void processQueueStatistics(
@@ -459,11 +450,11 @@ public final class StatisticsGatheringUtils {
             final TxFacade txFacade) throws Exception {
         final InstanceIdentifier<Node> nodeIdent = deviceInfo.getNodeInstanceIdentifier();
         for (final NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate : data) {
-            for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort :
+            for (final NodeConnectorStatisticsAndPortNumberMap nodeConnectPort :
                     nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
                 final FlowCapableNodeConnectorStatistics stats
-                        = new FlowCapableNodeConnectorStatisticsBuilder(nConnectPort).build();
-                final NodeConnectorKey key = new NodeConnectorKey(nConnectPort.getNodeConnectorId());
+                        = new FlowCapableNodeConnectorStatisticsBuilder(nodeConnectPort).build();
+                final NodeConnectorKey key = new NodeConnectorKey(nodeConnectPort.getNodeConnectorId());
                 final InstanceIdentifier<NodeConnector> nodeConnectorIdent = nodeIdent.child(NodeConnector.class, key);
                 final InstanceIdentifier<FlowCapableNodeConnectorStatisticsData> nodeConnStatIdent = nodeConnectorIdent
                         .augmentation(FlowCapableNodeConnectorStatisticsData.class);
@@ -480,9 +471,9 @@ public final class StatisticsGatheringUtils {
                                                 final TxFacade txFacade) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         for (final MeterStatisticsUpdated meterStatisticsUpdated : data) {
-            for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
-                final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
-                final MeterId meterId = mStat.getMeterId();
+            for (final MeterStats meterStats : meterStatisticsUpdated.getMeterStats()) {
+                final MeterStatistics stats = new MeterStatisticsBuilder(meterStats).build();
+                final MeterId meterId = meterStats.getMeterId();
                 final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
                 final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
                         .augmentation(NodeMeterStatistics.class);
@@ -495,10 +486,10 @@ public final class StatisticsGatheringUtils {
 
     private static void deleteAllKnownMeters(
             final DeviceMeterRegistry meterRegistry,
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent,
+            final InstanceIdentifier<FlowCapableNode> flowNodeIdent,
             final TxFacade txFacade) throws Exception {
         for (final MeterId meterId : meterRegistry.getAllMeterIds()) {
-            final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
+            final InstanceIdentifier<Meter> meterIdent = flowNodeIdent.child(Meter.class, new MeterKey(meterId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
         }
         meterRegistry.removeMarked();
@@ -531,10 +522,10 @@ public final class StatisticsGatheringUtils {
 
     private static void deleteAllKnownGroups(
             final TxFacade txFacade,
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent,
+            final InstanceIdentifier<FlowCapableNode> flowNodeIdent,
             final DeviceGroupRegistry groupRegistry) throws Exception {
         for (final GroupId groupId : groupRegistry.getAllGroupIds()) {
-            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
+            final InstanceIdentifier<Group> groupIdent = flowNodeIdent.child(Group.class, new GroupKey(groupId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
         }
         groupRegistry.removeMarked();
