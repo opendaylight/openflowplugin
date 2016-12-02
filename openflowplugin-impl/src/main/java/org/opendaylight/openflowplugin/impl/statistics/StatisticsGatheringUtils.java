@@ -127,33 +127,44 @@ public final class StatisticsGatheringUtils {
     }
 
     //TODO: Flow-,Group- and Meter- registry should be not in device context, consider move it in separate class
-    static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer statisticsGatheringService,
-                                                      final DeviceInfo deviceInfo,
-                                                      final MultipartType type,
-                                                      final TxFacade txFacade,
-                                                      final DeviceRegistry registry,
-                                                      final Boolean initial,
-                                                      final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
+    static ListenableFuture<Boolean> gatherStatistics(
+                        final StatisticsGatherer statisticsGatheringService,
+                        final DeviceInfo deviceInfo,
+                        final MultipartType type,
+                        final TxFacade txFacade,
+                        final DeviceRegistry registry,
+                        final Boolean initial,
+                        final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
         EventIdentifier wholeProcessEventIdentifier = null;
         if (MultipartType.OFPMPFLOW.equals(type)) {
             wholeProcessEventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
             EventsTimeCounter.markStart(wholeProcessEventIdentifier);
         }
-        final EventIdentifier ofpQueuToRequestContextEventIdentifier = new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString());
+        final EventIdentifier ofpQueuToRequestContextEventIdentifier
+                = new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString());
         final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(
                         ofpQueuToRequestContextEventIdentifier, type));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceInfo, wholeProcessEventIdentifier, type, txFacade, registry, initial, multipartReplyTranslator);
+        return transformAndStoreStatisticsData(
+                statisticsDataInFuture,
+                deviceInfo,
+                wholeProcessEventIdentifier,
+                type,
+                txFacade,
+                registry,
+                initial,
+                multipartReplyTranslator);
     }
 
-    private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
-                                                                             final DeviceInfo deviceInfo,
-                                                                             final EventIdentifier eventIdentifier,
-                                                                             final MultipartType type,
-                                                                             final TxFacade txFacade,
-                                                                             final DeviceRegistry registry,
-                                                                             final boolean initial,
-                                                                             final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
+    private static ListenableFuture<Boolean> transformAndStoreStatisticsData(
+                        final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
+                        final DeviceInfo deviceInfo,
+                        final EventIdentifier eventIdentifier,
+                        final MultipartType type,
+                        final TxFacade txFacade,
+                        final DeviceRegistry registry,
+                        final boolean initial,
+                        final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
         return Futures.transform(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -186,24 +197,54 @@ public final class StatisticsGatheringUtils {
 
                         try {
                             if (multipartData instanceof GroupStatisticsUpdated) {
-                                processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceInfo, txFacade);
+                                processGroupStatistics(
+                                        (Iterable<GroupStatisticsUpdated>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade);
                             } else if (multipartData instanceof MeterStatisticsUpdated) {
-                                processMetersStatistics((Iterable<MeterStatisticsUpdated>) allMultipartData, deviceInfo, txFacade);
+                                processMetersStatistics(
+                                        (Iterable<MeterStatisticsUpdated>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade);
                             } else if (multipartData instanceof NodeConnectorStatisticsUpdate) {
-                                processNodeConnectorStatistics((Iterable<NodeConnectorStatisticsUpdate>) allMultipartData, deviceInfo, txFacade);
+                                processNodeConnectorStatistics(
+                                        (Iterable<NodeConnectorStatisticsUpdate>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade);
                             } else if (multipartData instanceof FlowTableStatisticsUpdate) {
-                                processFlowTableStatistics((Iterable<FlowTableStatisticsUpdate>) allMultipartData, deviceInfo, txFacade);
+                                processFlowTableStatistics(
+                                        (Iterable<FlowTableStatisticsUpdate>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade);
                             } else if (multipartData instanceof QueueStatisticsUpdate) {
-                                processQueueStatistics((Iterable<QueueStatisticsUpdate>) allMultipartData, deviceInfo, txFacade);
+                                processQueueStatistics(
+                                        (Iterable<QueueStatisticsUpdate>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade);
                             } else if (multipartData instanceof FlowsStatisticsUpdate) {
-                                /* FlowStat Processing is realized by NettyThread only by initPhase, otherwise it is realized
+                                /* FlowStat Processing is realized by NettyThread only by initPhase,
+                                 * otherwise it is realized
                                  * by MD-SAL thread */
-                                return processFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData, deviceInfo, txFacade, registry.getDeviceFlowRegistry(), initial, eventIdentifier);
+                                return processFlowStatistics(
+                                        (Iterable<FlowsStatisticsUpdate>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade,
+                                        registry.getDeviceFlowRegistry(),
+                                        initial,
+                                        eventIdentifier);
 
                             } else if (multipartData instanceof GroupDescStatsUpdated) {
-                                processGroupDescStats((Iterable<GroupDescStatsUpdated>) allMultipartData, deviceInfo, txFacade, registry.getDeviceGroupRegistry());
+                                processGroupDescStats(
+                                        (Iterable<GroupDescStatsUpdated>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade,
+                                        registry.getDeviceGroupRegistry());
                             } else if (multipartData instanceof MeterConfigStatsUpdated) {
-                                processMeterConfigStatsUpdated((Iterable<MeterConfigStatsUpdated>) allMultipartData, deviceInfo, txFacade, registry.getDeviceMeterRegistry());
+                                processMeterConfigStatsUpdated(
+                                        (Iterable<MeterConfigStatsUpdated>) allMultipartData,
+                                        deviceInfo,
+                                        txFacade,
+                                        registry.getDeviceMeterRegistry());
                             } else {
                                 isMultipartProcessed = Boolean.FALSE;
                             }
@@ -213,15 +254,18 @@ public final class StatisticsGatheringUtils {
                             return Futures.immediateFailedFuture(e);
                         }
 
-                        LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+                        LOG.debug("Stats reply added to transaction for node {} of type {}",
+                                deviceInfo.getNodeId(), type);
 
                         //TODO : implement experimenter
                     } else {
-                        LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                        LOG.debug("Stats reply was empty for node {} of type {}",
+                                deviceInfo.getNodeId(), type);
                     }
 
                 } else {
-                    LOG.debug("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type, rpcResult.getErrors());
+                    LOG.debug("Stats reply FAILED for node {} of type {}: {}",
+                            deviceInfo.getNodeId(), type, rpcResult.getErrors());
                     isMultipartProcessed = Boolean.FALSE;
                 }
                 return Futures.immediateFuture(isMultipartProcessed);
@@ -238,13 +282,17 @@ public final class StatisticsGatheringUtils {
         for (final MeterConfigStatsUpdated meterConfigStatsUpdated : data) {
             for (final MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
                 final MeterId meterId = meterConfigStats.getMeterId();
-                final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
+                final InstanceIdentifier<Meter> meterInstanceIdentifier
+                        = fNodeIdent.child(Meter.class, new MeterKey(meterId));
 
                 final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
                 meterBuilder.setKey(new MeterKey(meterId));
                 meterBuilder.addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build());
                 meterRegistry.store(meterId);
-                txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
+                txFacade.writeToTransaction(
+                        LogicalDatastoreType.OPERATIONAL,
+                        meterInstanceIdentifier,
+                        meterBuilder.build());
             }
         }
         txFacade.submitTransaction();
@@ -256,7 +304,8 @@ public final class StatisticsGatheringUtils {
                                                                    final DeviceFlowRegistry flowRegistry,
                                                                    final boolean initial,
                                                                    final EventIdentifier eventIdentifier) {
-        final ListenableFuture<Void> deleteFuture = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo,
+        final ListenableFuture<Void> deleteFuture
+                = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo,
                 flowRegistry, txFacade);
         return Futures.transform(deleteFuture, new Function<Void, Boolean>() {
 
@@ -279,7 +328,9 @@ public final class StatisticsGatheringUtils {
             for (final FlowsStatisticsUpdate flowsStatistics : data) {
                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                    flowBuilder.addAugmentation(FlowStatisticsData.class, refineFlowStatisticsAugmentation(flowStat).build());
+                    flowBuilder.addAugmentation(
+                            FlowStatisticsData.class,
+                            refineFlowStatisticsAugmentation(flowStat).build());
 
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
@@ -288,7 +339,8 @@ public final class StatisticsGatheringUtils {
                     final FlowKey flowKey = new FlowKey(flowId);
                     flowBuilder.setKey(flowKey);
                     final TableKey tableKey = new TableKey(tableId);
-                    final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
+                    final InstanceIdentifier<Flow> flowIdent
+                            = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
                     txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                 }
             }
@@ -302,7 +354,8 @@ public final class StatisticsGatheringUtils {
      *
      * @param flowAndStats
      */
-    private static FlowStatisticsDataBuilder refineFlowStatisticsAugmentation(final FlowAndStatisticsMapList flowAndStats) {
+    private static FlowStatisticsDataBuilder refineFlowStatisticsAugmentation(
+            final FlowAndStatisticsMapList flowAndStats) {
         final FlowStatisticsBuilder flowStatisticsBuilder = new FlowStatisticsBuilder(flowAndStats);
         final FlowStatisticsDataBuilder flowStatisticsDataBld = new FlowStatisticsDataBuilder();
         flowStatisticsDataBld.setFlowStatistics(flowStatisticsBuilder.build());
@@ -312,7 +365,8 @@ public final class StatisticsGatheringUtils {
     public static ListenableFuture<Void> deleteAllKnownFlows(final DeviceInfo deviceInfo,
                                                              final DeviceFlowRegistry registry,
                                                              final TxFacade txFacade) {
-        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath
+                = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
                 LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
@@ -337,7 +391,8 @@ public final class StatisticsGatheringUtils {
                 if (flowCapNodeOpt.isPresent()) {
                     for (final Table tableData : flowCapNodeOpt.get().getTable()) {
                         final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
-                        final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
+                        final InstanceIdentifier<Table> iiToTable
+                                = flowCapableNodePath.child(Table.class, tableData.getKey());
                         txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
                 }
@@ -348,7 +403,10 @@ public final class StatisticsGatheringUtils {
         });
     }
 
-    private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {
+    private static void processQueueStatistics(
+            final Iterable<QueueStatisticsUpdate> data,
+            final DeviceInfo deviceInfo,
+            final TxFacade txFacade) throws Exception {
         // TODO: clean all queues of all node-connectors before writing up-to-date stats
         final InstanceIdentifier<Node> nodeIdent = deviceInfo.getNodeInstanceIdentifier();
         for (final QueueStatisticsUpdate queueStatisticsUpdate : data) {
@@ -367,7 +425,8 @@ public final class StatisticsGatheringUtils {
                     final QueueBuilder queueBuilder = new QueueBuilder()
                             .setKey(qKey)
                             .setQueueId(queueStat.getQueueId())
-                            // node-connector-id is already contained in parent node and the port-id here is of incompatible format
+                            // node-connector-id is already contained in parent node
+                            // and the port-id here is of incompatible format
                             .addAugmentation(FlowCapableNodeConnectorQueueStatisticsData.class, statBuild.build());
                     txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueIdent, queueBuilder.build());
                 }
@@ -376,12 +435,16 @@ public final class StatisticsGatheringUtils {
         txFacade.submitTransaction();
     }
 
-    private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {
+    private static void processFlowTableStatistics(
+            final Iterable<FlowTableStatisticsUpdate> data,
+            final DeviceInfo deviceInfo,
+            final TxFacade txFacade) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         for (final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
 
             for (final FlowTableAndStatisticsMap tableStat : flowTableStatisticsUpdate.getFlowTableAndStatisticsMap()) {
-                final InstanceIdentifier<FlowTableStatistics> tStatIdent = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
+                final InstanceIdentifier<FlowTableStatistics> tStatIdent
+                        = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
                         .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
                 final FlowTableStatistics stats = new FlowTableStatisticsBuilder(tableStat).build();
                 txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
@@ -390,11 +453,16 @@ public final class StatisticsGatheringUtils {
         txFacade.submitTransaction();
     }
 
-    private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {
+    private static void processNodeConnectorStatistics(
+            final Iterable<NodeConnectorStatisticsUpdate> data,
+            final DeviceInfo deviceInfo,
+            final TxFacade txFacade) throws Exception {
         final InstanceIdentifier<Node> nodeIdent = deviceInfo.getNodeInstanceIdentifier();
         for (final NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate : data) {
-            for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort : nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
-                final FlowCapableNodeConnectorStatistics stats = new FlowCapableNodeConnectorStatisticsBuilder(nConnectPort).build();
+            for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort :
+                    nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
+                final FlowCapableNodeConnectorStatistics stats
+                        = new FlowCapableNodeConnectorStatisticsBuilder(nConnectPort).build();
                 final NodeConnectorKey key = new NodeConnectorKey(nConnectPort.getNodeConnectorId());
                 final InstanceIdentifier<NodeConnector> nodeConnectorIdent = nodeIdent.child(NodeConnector.class, key);
                 final InstanceIdentifier<FlowCapableNodeConnectorStatisticsData> nodeConnStatIdent = nodeConnectorIdent
@@ -425,7 +493,10 @@ public final class StatisticsGatheringUtils {
         txFacade.submitTransaction();
     }
 
-    private static void deleteAllKnownMeters(final DeviceMeterRegistry meterRegistry, final InstanceIdentifier<FlowCapableNode> fNodeIdent, final TxFacade txFacade) throws Exception {
+    private static void deleteAllKnownMeters(
+            final DeviceMeterRegistry meterRegistry,
+            final InstanceIdentifier<FlowCapableNode> fNodeIdent,
+            final TxFacade txFacade) throws Exception {
         for (final MeterId meterId : meterRegistry.getAllMeterIds()) {
             final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
@@ -433,7 +504,11 @@ public final class StatisticsGatheringUtils {
         meterRegistry.removeMarked();
     }
 
-    private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceInfo deviceInfo, final TxFacade txFacade, final DeviceGroupRegistry groupRegistry) throws Exception {
+    private static void processGroupDescStats(
+            final Iterable<GroupDescStatsUpdated> data,
+            final DeviceInfo deviceInfo,
+            final TxFacade txFacade,
+            final DeviceGroupRegistry groupRegistry) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         deleteAllKnownGroups(txFacade, fNodeIdent, groupRegistry);
 
@@ -454,7 +529,10 @@ public final class StatisticsGatheringUtils {
         txFacade.submitTransaction();
     }
 
-    private static void deleteAllKnownGroups(final TxFacade txFacade, final InstanceIdentifier<FlowCapableNode> fNodeIdent, final DeviceGroupRegistry groupRegistry) throws Exception {
+    private static void deleteAllKnownGroups(
+            final TxFacade txFacade,
+            final InstanceIdentifier<FlowCapableNode> fNodeIdent,
+            final DeviceGroupRegistry groupRegistry) throws Exception {
         for (final GroupId groupId : groupRegistry.getAllGroupIds()) {
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
@@ -462,12 +540,16 @@ public final class StatisticsGatheringUtils {
         groupRegistry.removeMarked();
     }
 
-    private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {
+    private static void processGroupStatistics(
+            final Iterable<GroupStatisticsUpdated> data,
+            final DeviceInfo deviceInfo,
+            final TxFacade txFacade) throws Exception {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
         for (final GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
 
-                final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
+                final InstanceIdentifier<Group> groupIdent
+                        = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
                 final InstanceIdentifier<NodeGroupStatistics> nGroupStatIdent = groupIdent
                         .augmentation(NodeGroupStatistics.class);
 
@@ -479,7 +561,8 @@ public final class StatisticsGatheringUtils {
         txFacade.submitTransaction();
     }
 
-    private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(final DeviceInfo deviceInfo) {
+    private static InstanceIdentifier<FlowCapableNode> assembleFlowCapableNodeInstanceIdentifier(
+            final DeviceInfo deviceInfo) {
         return deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
     }
 
