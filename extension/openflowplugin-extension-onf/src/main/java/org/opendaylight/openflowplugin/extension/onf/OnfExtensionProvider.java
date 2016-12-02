@@ -31,8 +31,8 @@ public class OnfExtensionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OnfExtensionProvider.class);
 
-    private SwitchConnectionProvider switchConnectionProvider;
-    private ExtensionConverterRegistrator converterRegistrator;
+    private final SwitchConnectionProvider switchConnectionProvider;
+    private final ExtensionConverterRegistrator converterRegistrator;
 
     public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
                                 final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
