@@ -17,11 +17,21 @@
     <reference id="ExtensionRegistratorProvider"
                interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"/>
 
+    <odl:rpc-service id="ExperimenterService"
+                     interface="org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService"/>
+
     <bean id="OnfExtensionProvider"
           class="org.opendaylight.openflowplugin.extension.onf.OnfExtensionProvider"
           init-method="init">
         <argument ref="SwitchConnectionProvider"/>
         <argument ref="ExtensionRegistratorProvider"/>
     </bean>
+
+    <bean id="BundleService"
+          class="org.opendaylight.openflowplugin.extension.onf.service.SalBundleServiceImpl">
+        <argument ref="ExperimenterService" />
+    </bean>
+
+    <odl:rpc-implementation ref="BundleService"/>
 
 </blueprint>
