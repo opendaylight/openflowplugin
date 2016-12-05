@@ -18,7 +18,9 @@ module sal-experimenter-mp-message  {
             uses exp-type:experimenter-core-message;
         }
         output {
-            uses exp-type:experimenter-core-message;
+            list experimenter-core-message-item {
+                uses exp-type:experimenter-core-message;
+            }
         }
     }
 }
