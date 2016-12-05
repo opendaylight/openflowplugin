@@ -58,7 +58,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     boolean isStatisticsPollingOn();
 
-    void setIsStatisticsPollingOn(final boolean isStatisticsPollingOn);
+    void setStatisticsPollingOn(final boolean isStatisticsPollingOn);
 
     /**
      * Backward compatibility feature - exposing rpc for statistics polling (result is provided in form of async notification)
@@ -73,7 +73,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setEchoReplyTimeout(long echoReplyTimeout);
 
-    void setNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff);
+    void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn);
 
     void update(Map<String,Object> props);
 

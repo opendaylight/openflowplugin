@@ -73,7 +73,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
-    private boolean isNotificationFlowRemovedOff;
+    private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
 
@@ -102,7 +102,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final long barrierInterval,
                              final int barrierCountLimit,
                              final MessageSpy messageSpy,
-                             final boolean isNotificationFlowRemovedOff,
+                             final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
@@ -125,7 +125,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
-        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
         this.skipTableFeatures = skipTableFeatures;
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
@@ -341,13 +341,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setIsNotificationFlowRemovedOff(boolean isNotificationFlowRemovedOff) {
-        this.isNotificationFlowRemovedOff = isNotificationFlowRemovedOff;
+    public void setFlowRemovedNotificationOn(boolean isNotificationFlowRemovedOff) {
+        this.isFlowRemovedNotificationOn = isNotificationFlowRemovedOff;
     }
 
     @Override
-    public boolean getIsNotificationFlowRemovedOff() {
-        return this.isNotificationFlowRemovedOff;
+    public boolean isFlowRemovedNotificationOn() {
+        return this.isFlowRemovedNotificationOn;
     }
 
 
