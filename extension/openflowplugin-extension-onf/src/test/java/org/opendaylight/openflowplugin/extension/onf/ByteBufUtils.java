@@ -24,7 +24,7 @@ public abstract class ByteBufUtils {
 
     private static final Splitter HEXSTRING_SPLITTER =  Splitter.onPattern("\\s+").omitEmptyStrings();
     private static final byte[] XID = new byte[] { 0x01, 0x02, 0x03, 0x04 };
-    public static final Long DEFAULT_XID = 0x01020304L;
+    private static final Long DEFAULT_XID = 0x01020304L;
 
     public static ByteBuf hexStringToByteBuf(final String hexSrc) {
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
