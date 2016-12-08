@@ -455,11 +455,9 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceFlowRegistry).retrieveIdForFlow(FlowRegistryKeyFactory.create(flowBld.build()));
 
         final InOrder inOrder = Mockito.inOrder(txFacade);
         inOrder.verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(tablePath), Matchers.any(Table.class));
-        inOrder.verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(flowPath), Matchers.any(Flow.class));
     }
 
     @Test
