@@ -192,7 +192,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param queueType enqueue type
      */
     private void enqueueMessage(OfHeader message, QueueType queueType) {
-        queue.push(message, this, queueType);
+        if (queue != null) {
+            queue.push(message, this, queueType);
+        } else {
+            LOG.debug("Queue is null");
+        }
     }
 
     @Override
@@ -507,6 +511,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             } catch (Exception e) {
                 LOG.warn("Closing handshake context failed: {}", e.getMessage());
                 LOG.debug("Detail in hanshake context close:", e);
+            }
+        } else {
+            //This condition will occure when Old Helium openflowplugin implementation will be used.
+            try{
+                queue.close();
+                queue = null;
+            }catch (Exception ex){
+                LOG.warn("Closing queue failed: {}", ex.getMessage());
             }
         }
     }
