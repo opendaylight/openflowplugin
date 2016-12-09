@@ -202,7 +202,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param queueType enqueue type
      */
     private void enqueueMessage(OfHeader message, QueueType queueType) {
-        queue.push(message, this, queueType);
+        if (queue != null) {
+            queue.push(message, this, queueType);
+        } else {
+            LOG.debug("Queue is null");
+        }
     }
 
     @Override
@@ -519,6 +523,12 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         } else {
             //This condition will occure when Old Helium openflowplugin implementation will be used.
             shutdownPoolPolitely();
+            try{
+                queue.close();
+                queue = null;
+            }catch (Exception ex){
+                LOG.warn("Closing queue failed: {}", ex.getMessage());
+            }
         }
     }
 
