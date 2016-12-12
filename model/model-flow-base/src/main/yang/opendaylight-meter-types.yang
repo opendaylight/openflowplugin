@@ -103,6 +103,11 @@ module opendaylight-meter-types {
             }
             
             case experimenter {
+                leaf experimenter-type {
+                    description "Meter band type";
+                    type meter-band-type;
+                }
+
                 leaf experimenter-rate {
                     description "Rate for remarking packets";
                     type uint32;
