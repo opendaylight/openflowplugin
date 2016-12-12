@@ -346,11 +346,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
 
-        return new StatisticsContextImpl(
+        StatisticsContext statisticsContext = new StatisticsContextImpl(
                 isStatisticsPollingOn,
                 deviceContext,
                 converterExecutor,
                 this);
+
+        contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
+
+        return statisticsContext;
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
