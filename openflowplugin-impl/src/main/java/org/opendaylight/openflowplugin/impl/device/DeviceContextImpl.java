@@ -55,6 +55,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -79,7 +80,6 @@ import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDevice
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
-import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
@@ -706,7 +706,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         if (getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
             LOG.warn("Connection on device {} was interrupted, will stop starting master services.",
@@ -735,12 +735,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+                new RpcResultFutureCallback(mastershipChangeListener));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
     @VisibleForTesting
@@ -803,6 +804,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+
+        private final MastershipChangeListener mastershipChangeListener;
+
+        RpcResultFutureCallback(final MastershipChangeListener mastershipChangeListener) {
+            this.mastershipChangeListener = mastershipChangeListener;
+        }
+
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
             if (LOG.isDebugEnabled()) {
@@ -813,7 +821,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         @Override
         public void onFailure(final Throwable throwable) {
             LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
-            shutdownConnection();
+            mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
         }
     }
 
