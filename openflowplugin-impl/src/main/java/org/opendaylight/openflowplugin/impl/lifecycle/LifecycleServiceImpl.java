@@ -50,19 +50,21 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void makeDeviceSlave(final DeviceContext deviceContext) {
 
+        final DeviceInfo deviceInf = Objects.isNull(deviceInfo) ? deviceContext.getDeviceInfo() : deviceInfo;
+
         Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceContext.getDeviceInfo().getLOGValue());
                 }
-                mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
+                mastershipChangeListener.onSlaveRoleAcquired(deviceInf);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceContext.getDeviceInfo().getLOGValue());
-                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
+                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInf);
             }
         });
 
@@ -74,6 +76,8 @@ public class LifecycleServiceImpl implements LifecycleService {
         LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
         if (!clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
             mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
+        } else {
+            mastershipChangeListener.onMasterRoleAcquired(deviceInfo);
         }
 
     }

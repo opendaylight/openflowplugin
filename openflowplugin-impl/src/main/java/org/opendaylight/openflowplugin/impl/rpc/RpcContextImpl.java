@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -220,11 +221,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
-            return false;
-        }
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
