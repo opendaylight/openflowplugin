@@ -20,6 +20,8 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.GroupMessageDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.MeterMessageDeserializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public class MessageDeserializerInjector {
@@ -35,6 +37,7 @@ public class MessageDeserializerInjector {
 
         injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer());
         injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
+        injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer());
     }
 
     /**
