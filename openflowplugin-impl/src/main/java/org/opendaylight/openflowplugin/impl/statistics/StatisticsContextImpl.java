@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -500,11 +501,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
-            return false;
-        }
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
 
@@ -519,6 +516,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
                 LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
+                mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
             }
         });
 
@@ -526,7 +524,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             myManager.startScheduling(deviceInfo);
         }
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
     @Override

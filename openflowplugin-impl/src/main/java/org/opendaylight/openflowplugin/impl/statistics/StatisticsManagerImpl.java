@@ -347,7 +347,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
             .createDefaultProvider(deviceContext);
 
-        return deviceContext.canUseSingleLayerSerialization() ?
+        final StatisticsContext statisticsContext =
+            deviceContext.canUseSingleLayerSerialization() ?
             new StatisticsContextImpl<MultipartReply>(
                 isStatisticsPollingOn,
                 deviceContext,
@@ -361,6 +362,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 converterExecutor,
                     this,
                 statisticsWriterProvider);
+        contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
+
+        return statisticsContext;
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
