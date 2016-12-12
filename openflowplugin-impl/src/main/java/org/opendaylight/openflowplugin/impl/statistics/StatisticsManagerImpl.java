@@ -363,6 +363,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     converterExecutor,
                     this,
                     statisticsWriterProvider);
+        contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
+
+        return statisticsContext;
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
