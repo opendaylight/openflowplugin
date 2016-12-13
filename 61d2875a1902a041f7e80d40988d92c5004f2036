@@ -47,6 +47,30 @@
       "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_285d3c22",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-meter-types.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 5743
+      },
+      "writtenOn": "2016-12-13T09:06:55Z",
+      "side": 1,
+      "message": "1.Things you think about, exactly what I was thinking of. But this function involves both openflowplugin and openflowjava, and they need to maintain consistency, so the sub-type can only be defined using a unified base type to add constraint so that no error occure.",
+      "parentUuid": "1a622d24_55a01143",
+      "range": {
+        "startLine": 119,
+        "startChar": 16,
+        "endLine": 123,
+        "endChar": 17
+      },
+      "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
