@@ -11,15 +11,6 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -66,6 +57,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * statistics-manager
@@ -244,6 +245,27 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
 
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
 
+        //cleanup the hashmap ID for the flows deleted between two stats cycle, also cleanup the
+        // data change cache as well.
+        ArrayList<Flow> deletedFlows = removedDataBetweenStatsCycle.remove(nodeIdent);
+        if ( deletedFlows != null) {
+            for (Flow flow : deletedFlows) {
+                FlowHashIdMapKey flowHashId = new FlowHashIdMapKey(buildFlowIdOperKey(flow));
+                final InstanceIdentifier<FlowHashIdMap> flHashIdent =
+                        fNodeIdent.child(Table.class, new TableKey(flow.getTableId())).augmentation(FlowHashIdMapping
+                                .class).child(FlowHashIdMap.class, flowHashId);
+
+                final InstanceIdentifier<Flow> flowIdent =
+                        fNodeIdent.child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey());
+
+                LOG.trace("Clean up hashmap id {} and operational data for flow {}", flowHashId, flow.getId());
+
+                tx.delete(LogicalDatastoreType.OPERATIONAL, flHashIdent);
+                tx.delete(LogicalDatastoreType.OPERATIONAL, flowIdent);
+            }
+        }
+
+
         final Optional<FlowCapableNode> fNode;
         try {
             fNode = tx.read(LogicalDatastoreType.OPERATIONAL, fNodeIdent).checkedGet();
@@ -294,6 +316,12 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
     static String buildFlowIdOperKey(final FlowAndStatisticsMapList deviceFlow) {
         return new StringBuilder().append(deviceFlow.getMatch())
                 .append(deviceFlow.getPriority()).append(deviceFlow.getCookie().getValue()).toString();
+    }
+
+    static String buildFlowIdOperKey(final Flow configFlow) {
+        return new StringBuilder().append(configFlow.getMatch())
+                .append(configFlow.getPriority()).append(configFlow.getCookie()!=null?configFlow.getCookie().getValue
+                        ():0).toString();
     }
 
     private class NodeUpdateState {

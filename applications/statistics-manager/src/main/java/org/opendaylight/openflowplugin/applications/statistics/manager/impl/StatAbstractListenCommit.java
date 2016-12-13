@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -24,6 +25,8 @@ import org.opendaylight.openflowplugin.applications.statistics.manager.StatListe
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -53,6 +56,8 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
 
     protected final Map<InstanceIdentifier<Node>, Map<InstanceIdentifier<T>, Integer>> mapNodesForDelete = new ConcurrentHashMap<>();
     protected final Map<InstanceIdentifier<Node>, Integer> mapNodeFeautureRepeater = new ConcurrentHashMap<>();
+    protected final Map<InstanceIdentifier<Node>, ArrayList<T>> removedDataBetweenStatsCycle = new ConcurrentHashMap<>();
+
 
     private final Class<T> clazz;
 
@@ -100,6 +105,23 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
      */
     protected abstract InstanceIdentifier<T> getWildCardedRegistrationPath();
 
+    private void processDataChange(Collection<DataTreeModification<T>> changes) {
+        if (!changes.isEmpty()) {
+            for (DataTreeModification<T> dataChange : changes) {
+                if (dataChange.getRootNode().getModificationType() == DataObjectModification.ModificationType.DELETE) {
+                    final InstanceIdentifier<Node> nodeIdent = dataChange.getRootPath().getRootIdentifier()
+                            .firstIdentifierOf(Node.class);
+                    if (!removedDataBetweenStatsCycle.containsKey(nodeIdent)) {
+                        removedDataBetweenStatsCycle.put(nodeIdent, new ArrayList<T>());
+                    }
+                    T data = dataChange.getRootNode().getDataBefore();
+                    removedDataBetweenStatsCycle.get(nodeIdent).add(data);
+                    LOG.trace("Node : {} :: Data  removed {}",nodeIdent.firstKeyOf(Node.class).getId(), data);
+                }
+            }
+        }
+    }
+
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes must not be null!");
@@ -109,6 +131,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
          * Latest read transaction will be allocated on another read using readLatestConfiguration
          */
         currentReadTxStale = true;
+        processDataChange(changes);
     }
 
     @SuppressWarnings("unchecked")
@@ -130,6 +153,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     @Override
     public void cleanForDisconnect(final InstanceIdentifier<Node> nodeIdent) {
         mapNodesForDelete.remove(nodeIdent);
+        removedDataBetweenStatsCycle.remove(nodeIdent);
     }
 
     @Override
