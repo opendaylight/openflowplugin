@@ -11,17 +11,11 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -66,6 +60,19 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * statistics-manager
@@ -172,6 +179,23 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
         tx.merge(LogicalDatastoreType.OPERATIONAL, tableRef, tableNew);
     }
 
+    protected void processDataChange(Collection<DataTreeModification<Flow>> changes) {
+        if (!changes.isEmpty()) {
+            for (DataTreeModification<Flow> dataChange : changes) {
+                if (dataChange.getRootNode().getModificationType() == DataObjectModification.ModificationType.DELETE) {
+                    final InstanceIdentifier<Node> nodeIdent = dataChange.getRootPath().getRootIdentifier()
+                            .firstIdentifierOf(Node.class);
+                    if (!removedDataBetweenStatsCycle.containsKey(nodeIdent)) {
+                        removedDataBetweenStatsCycle.put(nodeIdent, new ArrayList<Flow>());
+                    }
+                    Flow data = dataChange.getRootNode().getDataBefore();
+                    removedDataBetweenStatsCycle.get(nodeIdent).add(data);
+                    LOG.info("Node : {} :: Flow  removed {}",nodeIdent.firstKeyOf(Node.class).getId(), data);
+                }
+            }
+        }
+    }
+
     @Override
     public void onFlowsStatisticsUpdate(final FlowsStatisticsUpdate notification) {
         final TransactionId transId = notification.getTransactionId();
@@ -241,6 +265,12 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
 
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
 
+        //cleanup the hashmap ID for the flows deleted between two stats cycle, also cleanup the
+        // data change cache as well.
+        ArrayList<Flow> deletedFlows = removedDataBetweenStatsCycle.remove(nodeIdent);
+
+        LOG.info("Number of flows deleted from node {} between two stats cycles are {}", nodeIdent, deletedFlows.size());
+
         final Optional<FlowCapableNode> fNode;
         try {
             fNode = tx.read(LogicalDatastoreType.OPERATIONAL, fNodeIdent).checkedGet();
@@ -259,14 +289,27 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
         for (final FlowAndStatisticsMapList flowStat : list) {
             final TableKey tableKey = new TableKey(flowStat.getTableId());
             final TableFlowUpdateState tableState = nodeState.getTable(tableKey, tx);
-            tableState.reportFlow(flowStat,tx);
+            if (!skipFlowReporting (flowStat, deletedFlows)) {
+                tableState.reportFlow(flowStat,tx);
+            }
         }
 
+        deletedFlows.clear();
         for (final TableFlowUpdateState table : nodeState.getTables()) {
             table.removeUnreportedFlows(tx);
         }
     }
 
+    private boolean skipFlowReporting(FlowAndStatisticsMapList flowStat, ArrayList<Flow> deletedFlows) {
+        for (Flow flow : deletedFlows) {
+            if ( buildFlowIdOperKey(flowStat).equals(buildFlowIdOperKey(flow))) {
+                deletedFlows.remove(flow);
+                LOG.info("Flow statistics {} for flow {} is skipped as it's deleted from data store.", flowStat, flow);
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Method adds statistics to Flow
      *
@@ -291,6 +334,12 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
     static String buildFlowIdOperKey(final FlowAndStatisticsMapList deviceFlow) {
         return new StringBuilder().append(deviceFlow.getMatch())
                 .append(deviceFlow.getPriority()).append(deviceFlow.getCookie().getValue()).toString();
+    }
+
+    static String buildFlowIdOperKey(final Flow configFlow) {
+        return new StringBuilder().append(configFlow.getMatch())
+                .append(configFlow.getPriority()).append(configFlow.getCookie()!=null?configFlow.getCookie().getValue
+                        ():0).toString();
     }
 
     private class NodeUpdateState {
@@ -422,7 +471,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
             return flowIdByHash;
         }
 
-        void reportFlow(final FlowAndStatisticsMapList flowStat, final ReadWriteTransaction trans) {
+        void reportFlow(final FlowAndStatisticsMapList flowStat,
+                        final ReadWriteTransaction trans) {
             ensureTableFowHashIdMapping(trans);
             final FlowHashIdMapKey hashingKey = new FlowHashIdMapKey(buildFlowIdOperKey(flowStat));
             FlowKey flowKey = getFlowKeyAndRemoveHash(hashingKey);
