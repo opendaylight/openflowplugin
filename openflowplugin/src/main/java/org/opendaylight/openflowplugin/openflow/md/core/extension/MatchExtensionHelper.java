@@ -10,6 +10,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
@@ -17,6 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -50,6 +54,72 @@ public final class MatchExtensionHelper {
         throw new IllegalAccessError("singleton enforcement");
     }
 
+
+    /**
+     * @param matchEntry match entry
+     * @param ofVersion openflow version
+     * @param matchPath match path
+     */
+    public static <T> void injectExtension(
+            final short ofVersion,
+            final MatchEntry matchEntry,
+            final T matchBuilder,
+            final MatchPath matchPath) {
+
+        final ExtensionListBuilder extBuilder = processExtension(matchEntry, ofVersion, matchPath);
+
+        if (Objects.isNull(extBuilder)) {
+            LOG.warn("Convertor for {} for version {} with match path {} not found.",
+                    matchEntry.toString(),
+                    ofVersion,
+                    matchPath.name());
+        }
+
+
+        switch (matchPath) {
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH: {
+                final MatchBuilder augMatchBuilder = MatchBuilder.class.cast(matchBuilder);
+
+                final GeneralAugMatchNotifUpdateFlowStatsBuilder builder = Optional
+                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifUpdateFlowStats.class))
+                    .map(aug -> new GeneralAugMatchNotifUpdateFlowStatsBuilder(aug))
+                    .orElse(new GeneralAugMatchNotifUpdateFlowStatsBuilder().setExtensionList(new ArrayList<>()));
+
+                builder.getExtensionList().add(extBuilder.build());
+                break;
+            }
+            case PACKETRECEIVED_MATCH: {
+                final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
+                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
+                            .MatchBuilder.class.cast(matchBuilder);
+
+                final GeneralAugMatchNotifPacketInBuilder builder = Optional
+                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifPacketIn.class))
+                    .map(aug -> new GeneralAugMatchNotifPacketInBuilder(aug))
+                    .orElse(new GeneralAugMatchNotifPacketInBuilder().setExtensionList(new ArrayList<>()));
+
+                builder.getExtensionList().add(extBuilder.build());
+                break;
+            }
+            case SWITCHFLOWREMOVED_MATCH: {
+                final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
+                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
+                        .MatchBuilder.class.cast(matchBuilder);
+
+
+                final GeneralAugMatchNotifSwitchFlowRemovedBuilder builder = Optional
+                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifSwitchFlowRemoved.class))
+                    .map(aug -> new GeneralAugMatchNotifSwitchFlowRemovedBuilder(aug))
+                    .orElse(new GeneralAugMatchNotifSwitchFlowRemovedBuilder().setExtensionList(new ArrayList<>()));
+
+                builder.getExtensionList().add(extBuilder.build());
+                break;
+            }
+            default:
+                LOG.warn("Match path {} not supported.", matchPath.name());
+        }
+    }
+
     /**
      * @param matchEntries match entries
      * @param ofVersion openflow version
@@ -64,7 +134,7 @@ public final class MatchExtensionHelper {
         List<ExtensionList> extensionsList = new ArrayList<>();
 
         for (MatchEntry matchEntry : matchEntries) {
-            ExtensionListBuilder extensionListBld = processExtension(matchEntry, ofVersion, matchPath);
+            ExtensionListBuilder extensionListBld = processExtension(matchEntry, ofVersion.getVersion(), matchPath);
             if (extensionListBld == null) {
                 continue;
             }
@@ -116,12 +186,12 @@ public final class MatchExtensionHelper {
      * @param matchEntry
      * @return
      */
-    private static ExtensionListBuilder processExtension(MatchEntry matchEntry, OpenflowVersion ofVersion, MatchPath matchPath) {
+    private static ExtensionListBuilder processExtension(MatchEntry matchEntry, short ofVersion, MatchPath matchPath) {
         ExtensionListBuilder extListBld = null;
 
         /** TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL) */
         MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key = new MatchEntrySerializerKey<>(
-                ofVersion.getVersion(), matchEntry.getOxmClass(), matchEntry.getOxmMatchField());
+                ofVersion, matchEntry.getOxmClass(), matchEntry.getOxmMatchField());
         if (null != OFSessionUtil.getExtensionConvertorProvider()) {
             ConvertorFromOFJava<MatchEntry, MatchPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
             if (convertor != null) {
