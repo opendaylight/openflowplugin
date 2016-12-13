@@ -37,6 +37,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**
@@ -75,6 +76,11 @@ public class StatAbstractListenCommitTest {
             @Override
             protected InstanceIdentifier getWildCardedRegistrationPath() {
                 return InstanceIdentifier.create(DataObject.class);
+            }
+
+            @Override
+            protected void processDataChange(Collection changes) {
+
             }
 
             @Override

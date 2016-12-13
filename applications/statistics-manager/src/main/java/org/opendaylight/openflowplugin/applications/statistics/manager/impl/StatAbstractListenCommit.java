@@ -10,10 +10,6 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -32,6 +28,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * statistics-manager
@@ -52,10 +54,12 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
 
     protected final Map<InstanceIdentifier<Node>, Map<InstanceIdentifier<T>, Integer>> mapNodesForDelete = new ConcurrentHashMap<>();
     protected final Map<InstanceIdentifier<Node>, Integer> mapNodeFeautureRepeater = new ConcurrentHashMap<>();
+    protected final Map<InstanceIdentifier<Node>, ArrayList<T>> removedDataBetweenStatsCycle = new
+            ConcurrentHashMap<>();
 
     private final Class<T> clazz;
 
-    private final DataBroker dataBroker;
+    protected final DataBroker dataBroker;
 
     protected final StatNodeRegistration nodeRegistrationManager;
 
@@ -98,6 +102,8 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
      */
     protected abstract InstanceIdentifier<T> getWildCardedRegistrationPath();
 
+    protected abstract void processDataChange(Collection<DataTreeModification<T>> changes);
+
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes must not be null!");
@@ -107,6 +113,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
          * Latest read transaction will be allocated on another read using readLatestConfiguration
          */
         currentReadTxStale = true;
+        processDataChange(changes);
     }
 
     @SuppressWarnings("unchecked")
@@ -128,6 +135,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     @Override
     public void cleanForDisconnect(final InstanceIdentifier<Node> nodeIdent) {
         mapNodesForDelete.remove(nodeIdent);
+        removedDataBetweenStatsCycle.remove(nodeIdent);
     }
 
     @Override

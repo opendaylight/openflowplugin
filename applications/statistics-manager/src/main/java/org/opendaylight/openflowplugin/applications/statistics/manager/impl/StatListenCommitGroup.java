@@ -9,11 +9,14 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -25,6 +28,7 @@ import org.opendaylight.openflowplugin.applications.statistics.manager.Statistic
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation.StatsManagerOperationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
@@ -88,6 +92,11 @@ public class StatListenCommitGroup extends StatAbstractListenCommit<Group, Opend
     protected InstanceIdentifier<Group> getWildCardedRegistrationPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class).child(Group.class);
+    }
+
+    @Override
+    protected void processDataChange(Collection<DataTreeModification<Group>> changes) {
+        //NO-OP
     }
 
     @Override

@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map.Entry;
 
 import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -82,6 +85,11 @@ public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, Opend
     protected InstanceIdentifier<Queue> getWildCardedRegistrationPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class).child(NodeConnector.class)
             .augmentation(FlowCapableNodeConnector.class).child(Queue.class);
+    }
+
+    @Override
+    protected void processDataChange(Collection<DataTreeModification<Queue>> changes) {
+        //NO-OP
     }
 
     @Override
