@@ -11,10 +11,12 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -81,6 +83,11 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
     protected InstanceIdentifier<Meter> getWildCardedRegistrationPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class).child(Meter.class);
+    }
+
+    @Override
+    protected void processDataChange(Collection<DataTreeModification<Meter>> changes) {
+        //NO-OP
     }
 
     @Override
