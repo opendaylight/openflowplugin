@@ -29,7 +29,6 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -9,11 +9,10 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
 /**
@@ -38,14 +37,15 @@ public interface ContextChain extends AutoCloseable {
     /**
      * Stop the working contexts, but not release them
      * @return Future
+     * @param connectionDropped
      */
-    Future<Void> stopChain();
+    ListenableFuture<Void> stopChain(boolean connectionDropped);
 
     /**
      * Start the contexts, if some context is missing or cant be started returns failed future
      * @return Future
      */
-    Future<Void> startChain();
+    ListenableFuture<Void> startChain();
 
     @Override
     void close();
@@ -56,7 +56,7 @@ public interface ContextChain extends AutoCloseable {
      */
     void changePrimaryConnection(final ConnectionContext connectionContext);
 
-    ListenableFuture<Void> connectionDropped() throws ExecutionException, InterruptedException;
+    ListenableFuture<Void> connectionDropped();
 
     ContextChainState getContextChainState();
 
@@ -67,4 +67,8 @@ public interface ContextChain extends AutoCloseable {
     void registerServices(@Nonnull final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     void makeDeviceSlave();
+
+    void closePrimaryConnection();
+
+    DeviceContext provideDeviceContext();
 }

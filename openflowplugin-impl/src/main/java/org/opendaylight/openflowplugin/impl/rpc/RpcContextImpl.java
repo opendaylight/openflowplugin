@@ -87,12 +87,15 @@ class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
-        LOG.trace("Try to register service {} for device {}.", serviceClass, nodeInstanceIdentifier);
         if (! rpcRegistrations.containsKey(serviceClass)) {
             final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
-            LOG.debug("Registration of service {} for device {}.", serviceClass.getSimpleName(), nodeInstanceIdentifier.getKey().getId().getValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Registration of service {} for device {}.",
+                        serviceClass.getSimpleName(),
+                        nodeInstanceIdentifier.getKey().getId().getValue());
+            }
         }
     }
 
@@ -190,7 +193,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 

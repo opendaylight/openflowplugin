@@ -438,7 +438,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 
