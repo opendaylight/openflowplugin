@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  */
 public interface DeviceManager extends
         OFPManager,
-        DeviceConnectedHandler,
         DeviceDisconnectedHandler,
         TranslatorLibrarian {
 
