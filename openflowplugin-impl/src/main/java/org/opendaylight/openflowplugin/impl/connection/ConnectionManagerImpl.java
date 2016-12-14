@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -40,6 +41,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private DeviceConnectedHandler deviceConnectedHandler;
     private long echoReplyTimeout;
     private final ThreadPoolExecutor threadPool;
+    private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
     public ConnectionManagerImpl(long echoReplyTimeout, final ThreadPoolExecutor threadPool) {
         this.echoReplyTimeout = echoReplyTimeout;
@@ -50,6 +52,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
         LOG.trace("prepare connection context");
         final ConnectionContext connectionContext = new ConnectionContextImpl(connectionAdapter);
+        connectionContext.setDeviceDisconnectedHandler(this.deviceDisconnectedHandler);
 
         HandshakeListener handshakeListener = new HandshakeListenerImpl(connectionContext, deviceConnectedHandler);
         final HandshakeManager handshakeManager = createHandshakeManager(connectionAdapter, handshakeListener);
@@ -100,6 +103,11 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void setDeviceConnectedHandler(final DeviceConnectedHandler deviceConnectedHandler) {
         this.deviceConnectedHandler = deviceConnectedHandler;
+    }
+
+    @Override
+    public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
+        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 
     public void setEchoReplyTimeout(long echoReplyTimeout){
