@@ -438,8 +438,8 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+    public ListenableFuture<Void> stopClusterServices() {
+        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 
