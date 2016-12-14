@@ -103,7 +103,11 @@ public class DeviceInitializationUtils {
      * @param switchFeaturesMandatory
      * @param convertorExecutor
      */
-    public static void initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory, final ConvertorExecutor convertorExecutor) throws ExecutionException, InterruptedException {
+    public static void initializeNodeInformation(
+            final DeviceContext deviceContext,
+            final boolean switchFeaturesMandatory,
+            final ConvertorExecutor convertorExecutor,
+            final boolean wasOnceMaster) throws ExecutionException, InterruptedException {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
@@ -149,10 +153,12 @@ public class DeviceInitializationUtils {
 
             }
         } else if (OFConstants.OFP_VERSION_1_3 == version) {
-            final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
-            LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
-            DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get();
+            if (!wasOnceMaster) {
+                final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
+                LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
+                DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
+                createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get();
+            }
         } else {
             throw new ExecutionException(new ConnectionException("Unsupported version " + version));
         }

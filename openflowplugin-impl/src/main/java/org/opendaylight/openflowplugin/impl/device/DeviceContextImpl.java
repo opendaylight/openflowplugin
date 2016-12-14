@@ -80,7 +80,6 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -162,11 +161,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
-    private final DeviceInfo deviceInfo;
+    private DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
+    private final OutboundQueueProvider outboundQueueProvider;
+    private boolean wasOnceMaster;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -178,6 +179,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final boolean skipTableFeatures,
             final HashedWheelTimer hashedWheelTimer) {
         this.primaryConnectionContext = primaryConnectionContext;
+        this.outboundQueueProvider = (OutboundQueueProvider) primaryConnectionContext.getOutboundQueueProvider();
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.myManager = contextManager;
@@ -204,6 +206,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.initialized = false;
+        this.wasOnceMaster = false;
     }
 
     @Override
@@ -564,29 +567,27 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void replaceConnection(final ConnectionContext connectionContext) {
 
-        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+        connectionContext.setOutboundQueueProvider(this.outboundQueueProvider);
 
-        final OutboundQueueProvider outboundQueueProvider
-                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
-
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
         final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
                 connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
-                        outboundQueueProvider,
+                        this.outboundQueueProvider,
                         this.myManager.getBarrierCountLimit(),
                         this.myManager.getBarrierIntervalNanos());
-        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
-        this.salRoleService = new SalRoleServiceImpl(this, this);
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), this);
 
         connectionContext.getConnectionAdapter().setMessageListener(messageListener);
 
+        this.primaryConnectionContext = connectionContext;
+        this.deviceInfo = connectionContext.getDeviceInfo();
+
         LOG.info("ConnectionEvent: Connection on device:{}, NodeId:{} switched.",
-                connectionContext.getConnectionAdapter().getRemoteAddress(),
-                connectionContext.getDeviceInfo().getNodeId());
+                this.primaryConnectionContext.getConnectionAdapter().getRemoteAddress(),
+                this.primaryConnectionContext.getDeviceInfo().getNodeId());
 
     }
 
@@ -626,15 +627,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             });
 
-            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid -> {
-                // Add fallback to remove device from operational DS if setting slave fails
-                return Futures.withFallback(makeSlaveFuture, t ->
-                        myManager.removeDeviceFromOperationalDS(deviceInfo));
-            });
-        } else {
-            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid ->
-                    myManager.removeDeviceFromOperationalDS(deviceInfo));
+
+//            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid -> {
+//                // Add fallback to remove device from operational DS if setting slave fails
+//                return Futures.withFallback(makeSlaveFuture, t ->
+//                        myManager.removeDeviceFromOperationalDS(deviceInfo));
+//            });
+//        } else {
+//            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid ->
+//                    myManager.removeDeviceFromOperationalDS(deviceInfo));
         }
+
+        return deactivateTxManagerFuture;
     }
 
     @Override
@@ -681,13 +685,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public void masterSuccessful(){
+        this.wasOnceMaster = true;
+    }
 
-        if (getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.",
-                    deviceInfo.getLOGValue());
-            return false;
-        }
+    @Override
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
 
@@ -699,7 +702,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             DeviceInitializationUtils.initializeNodeInformation(
                     this,
                     switchFeaturesMandatory,
-                    this.convertorExecutor);
+                    this.convertorExecutor,
+                    false);
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
             return false;
