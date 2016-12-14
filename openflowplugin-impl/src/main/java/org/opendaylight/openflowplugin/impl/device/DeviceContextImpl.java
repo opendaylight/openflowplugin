@@ -141,11 +141,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     // Timeout in seconds after what we will give up on propagating role
     private static final int SET_ROLE_TIMEOUT = 10;
 
+    private static final int LOW_WATERMARK = 1000;
+    private static final int HIGH_WATERMARK = 2000;
+
     private boolean initialized;
 
     private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
-    private ConnectionContext primaryConnectionContext;
+    private volatile ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
@@ -153,7 +156,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceFlowRegistry deviceFlowRegistry;
     private DeviceGroupRegistry deviceGroupRegistry;
     private DeviceMeterRegistry deviceMeterRegistry;
-    private final PacketInRateLimiter packetInLimiter;
+    private PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private NotificationPublishService notificationPublishService;
@@ -166,7 +169,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
-    private final DeviceInfo deviceInfo;
+    private DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
@@ -174,6 +177,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private Boolean isAddNotificationSent = false;
+    private OutboundQueueProvider outboundQueueProvider;
+    private boolean wasOnceMaster;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -188,6 +193,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.primaryConnectionContext = primaryConnectionContext;
+        this.outboundQueueProvider = (OutboundQueueProvider) primaryConnectionContext.getOutboundQueueProvider();
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -198,7 +204,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.messageSpy = Preconditions.checkNotNull(messageSpy);
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
-                /*initial*/ 1000, /*initial*/2000, this.messageSpy, REJECTED_DRAIN_FACTOR);
+                /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
         this.portStatusTranslator = translatorLibrary.lookupTranslator(
@@ -216,6 +222,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         this.initialized = false;
+        this.wasOnceMaster = false;
     }
 
     @Override
@@ -515,7 +522,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void onPublished() {
         Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
         this.state = CONTEXT_STATE.WORKING;
-        primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
+        synchronized (primaryConnectionContext) {
+            primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
+        }
         for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         }
@@ -596,31 +605,36 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void replaceConnection(final ConnectionContext connectionContext) {
+    public synchronized void replaceConnection(final ConnectionContext connectionContext) {
 
-        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+        primaryConnectionContext = null;
+        deviceInfo = null;
+        packetInLimiter = null;
 
-        final OutboundQueueProvider outboundQueueProvider
-                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+        primaryConnectionContext = connectionContext;
+        deviceInfo = primaryConnectionContext.getDeviceInfo();
 
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
+                /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, messageSpy, REJECTED_DRAIN_FACTOR);
+
+        primaryConnectionContext.setOutboundQueueProvider(outboundQueueProvider);
+
         final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                primaryConnectionContext.getConnectionAdapter().registerOutboundQueueHandler(
                         outboundQueueProvider,
-                        this.myManager.getBarrierCountLimit(),
-                        this.myManager.getBarrierIntervalNanos());
-        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+                        myManager.getBarrierCountLimit(),
+                        myManager.getBarrierIntervalNanos());
 
-        this.salRoleService = new SalRoleServiceImpl(this, this);
+        primaryConnectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-                connectionContext.getConnectionAdapter(), this);
+                primaryConnectionContext.getConnectionAdapter(), this);
 
-        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+        primaryConnectionContext.getConnectionAdapter().setMessageListener(messageListener);
 
         LOG.info("ConnectionEvent: Connection on device:{}, NodeId:{} switched.",
-                connectionContext.getConnectionAdapter().getRemoteAddress(),
-                connectionContext.getDeviceInfo().getNodeId());
+                primaryConnectionContext.getConnectionAdapter().getRemoteAddress(),
+                primaryConnectionContext.getDeviceInfo().getNodeId());
 
     }
 
@@ -661,15 +675,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             });
 
-            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid -> {
-                // Add fallback to remove device from operational DS if setting slave fails
-                return Futures.withFallback(makeSlaveFuture, t ->
-                        myManager.removeDeviceFromOperationalDS(deviceInfo));
-            });
-        } else {
-            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid ->
-                    myManager.removeDeviceFromOperationalDS(deviceInfo));
         }
+
+        return deactivateTxManagerFuture;
     }
 
     @Override
@@ -722,13 +730,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public void masterSuccessful(){
+        this.wasOnceMaster = true;
+    }
 
-        if (getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.",
-                    deviceInfo.getLOGValue());
-            return false;
-        }
+    @Override
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
 
