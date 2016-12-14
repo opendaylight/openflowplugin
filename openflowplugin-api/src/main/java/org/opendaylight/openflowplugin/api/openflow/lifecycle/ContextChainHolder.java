@@ -13,11 +13,15 @@ import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 
 /**
  * Generic interface for context chain holder, hold all created context chains.
  */
-public interface ContextChainHolder extends DeviceConnectedHandler, MastershipChangeListener {
+public interface ContextChainHolder extends
+        DeviceConnectedHandler,
+        MastershipChangeListener,
+        DeviceDisconnectedHandler {
 
     <T extends OFPManager> void addManager(final T manager);
     ContextChain createContextChain(final ConnectionContext connectionContext);
