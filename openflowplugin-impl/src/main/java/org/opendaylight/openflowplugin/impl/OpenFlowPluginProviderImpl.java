@@ -179,7 +179,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn) {
-        this.isFlowRemovedNotificationOn = this.isFlowRemovedNotificationOn;
+        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
     }
 
     @Override
@@ -252,18 +252,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer, convertorManager);
 
-        /* Initialization Phase ordering - OFP Device Context suite */
-        // CM -> DM -> SM -> RPC -> Role -> DM
         // Device connection handler moved from device manager to context holder
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
-        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
-        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         /* Termination Phase ordering - OFP Device Context suite */
-        deviceManager.setDeviceTerminationPhaseHandler(rpcManager);
-        rpcManager.setDeviceTerminationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceTerminationPhaseHandler(deviceManager);
+        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 

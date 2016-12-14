@@ -80,7 +80,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final DataBroker dataBroker;
     private final ConvertorExecutor convertorExecutor;
     private TranslatorLibrary translatorLibrary;
-    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
@@ -138,7 +137,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-        this.deviceInitPhaseHandler = handler;
     }
 
     @Override
@@ -148,84 +146,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-    }
-
-    @Override
-    public ConnectionStatus deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
-//        Preconditions.checkArgument(connectionContext != null);
-//        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-//
-//        /*
-//         * This part prevent destroy another device context. Throwing here an exception result to propagate close connection
-//         * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
-//         * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
-//         */
-//         if (deviceContexts.containsKey(deviceInfo)) {
-//             DeviceContext deviceContext = deviceContexts.get(deviceInfo);
-//             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
-//             if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-//                 LOG.warn("Node {} context state not in TERMINATION state.",
-//                         connectionContext.getDeviceInfo().getLOGValue());
-//                 return ConnectionStatus.ALREADY_CONNECTED;
-//             } else {
-//                 return ConnectionStatus.CLOSING;
-//             }
-//         }
-//
-//        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-//                connectionContext.getConnectionAdapter().getRemoteAddress(), deviceInfo.getNodeId());
-//
-//        // Add Disconnect handler
-//        connectionContext.setDeviceDisconnectedHandler(this);
-//
-//        // Cache this for clarity
-//        final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
-//
-//        // FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
-//        connectionAdapter.setPacketInFiltering(true);
-//
-//        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(deviceInfo.getVersion());
-//
-//        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
-//        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-//                connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, barrierCountLimit, barrierIntervalNanos);
-//        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
-//
-//        final LifecycleService lifecycleService = new LifecycleServiceImpl(null);
-//
-//        final DeviceContext deviceContext = new DeviceContextImpl(
-//                connectionContext,
-//                dataBroker,
-//                messageSpy,
-//                translatorLibrary,
-//                this,
-//                convertorExecutor,
-//                skipTableFeatures,
-//                hashedWheelTimer);
-//
-//        deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
-//        deviceContexts.put(deviceInfo, deviceContext);
-//
-//        lifecycleService.setDeviceContext(deviceContext);
-//        deviceContext.putLifecycleServiceIntoTxChainManager(lifecycleService);
-//
-//        lifecycleServices.put(deviceInfo, lifecycleService);
-//
-//        addCallbackToDeviceInitializeToSlave(deviceInfo, deviceContext, lifecycleService);
-//
-//        deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-//
-//        ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
-//        deviceContext.setNotificationPublishService(notificationPublishService);
-//
-//        updatePacketInRateLimiters();
-//
-//        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-//                connectionAdapter, deviceContext);
-//
-//        connectionAdapter.setMessageListener(messageListener);
-//        deviceInitPhaseHandler.onDeviceContextLevelUp(connectionContext.getDeviceInfo(), lifecycleService);
-        return ConnectionStatus.MAY_CONTINUE;
     }
 
     @Override
