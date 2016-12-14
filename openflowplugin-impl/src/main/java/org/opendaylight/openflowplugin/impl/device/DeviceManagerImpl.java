@@ -77,7 +77,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorExecutor convertorExecutor;
     private TranslatorLibrary translatorLibrary;
-    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
@@ -140,7 +139,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-        this.deviceInitPhaseHandler = handler;
     }
 
     @Override
@@ -150,11 +148,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-    }
-
-    @Override
-    public ConnectionStatus deviceConnected(@CheckForNull final ConnectionContext connectionContext) throws Exception {
-        return ConnectionStatus.MAY_CONTINUE;
     }
 
     @Override
