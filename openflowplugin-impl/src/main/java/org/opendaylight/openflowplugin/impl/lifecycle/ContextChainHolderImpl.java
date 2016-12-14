@@ -13,8 +13,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -31,8 +33,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,15 +134,21 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         ContextChain chain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(chain)) {
             chain.close();
+            try {
+                deviceManager.removeDeviceFromOperationalDS(deviceInfo).checkedGet(5L, TimeUnit.SECONDS);
+            } catch (TimeoutException | TransactionCommitFailedException e) {
+                LOG.warn("Not able to remove device {} from DS", deviceInfo.getLOGValue());
+            }
         }
     }
 
     @Override
     public void pairConnection(final ConnectionContext connectionContext) {
         DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-        latestConnections.put(deviceInfo, connectionContext);
-        if (checkChainContext(deviceInfo)) {
-            contextChainMap.get(deviceInfo).changePrimaryConnection(connectionContext);
+        ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (Objects.nonNull(contextChain)) {
+            contextChain.changePrimaryConnection(connectionContext);
+            contextChain.makeDeviceSlave();
         }
     }
 
@@ -175,7 +181,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (Objects.nonNull(contextChain)) {
             LOG.warn("Not able to set MASTER role on device {}", deviceInfo.getLOGValue());
             if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
-                contextChain.getPrimaryConnectionContext().closeConnection(false);
+                contextChain.closePrimaryConnection();
             } else {
                 contextChain.sleepTheChainAndDropConnection();
             }
@@ -196,7 +202,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                     LOG.info("Device {} has not finish initial gathering yet.",
                             deviceInfo.getLOGValue());
                 }
-                contextChain.startChain();
+                Futures.addCallback(contextChain.startChain(),
+                        new StartStopChainCallback(contextChain.provideDeviceContext(), false));
             }
         }
     }
@@ -205,11 +212,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
-            if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
-                contextChain.registerServices(this.singletonServicesProvider);
-            } else {
-                contextChain.stopChain();
-            }
+//            if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
+//                contextChain.registerServices(this.singletonServicesProvider);
+//            } else {
+//                Futures.addCallback(contextChain.stopChain(false),
+//                        new StartStopChainCallback(contextChain.provideDeviceContext(), true));
+//            }
+            contextChain.registerServices(this.singletonServicesProvider);
         }
     }
 
@@ -221,12 +230,63 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
     }
 
+    @Override
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+
+        if (Objects.isNull(connectionContext.getDeviceInfo())) {
+            LOG.info("Non existing device info. Cannot close context chain.");
+        } else {
+            LOG.info("Device {} disconnected.", connectionContext.getDeviceInfo().getLOGValue());
+            ContextChain chain = contextChainMap.get(connectionContext.getDeviceInfo());
+            if (Objects.isNull(chain)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("There was no context chain created yet for the disconnected device {}",
+                            connectionContext.getDeviceInfo().getLOGValue());
+                }
+            } else {
+                Futures.addCallback(chain.connectionDropped(),
+                        new StartStopChainCallback(null, true));
+            }
+        }
+    }
+
     private boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
     }
 
     private boolean checkChainContext(final DeviceInfo deviceInfo) {
         return contextChainMap.containsKey(deviceInfo);
+    }
+
+    private class StartStopChainCallback implements FutureCallback<Void> {
+
+        private final String deviceInfo;
+        private final String stop;
+        private final String stopped;
+        private final boolean start;
+        private final DeviceContext deviceContext;
+
+        StartStopChainCallback(final DeviceContext deviceContext, final boolean stop) {
+
+            this.deviceInfo = Objects.nonNull(deviceContext) ? deviceContext.getDeviceInfo().getLOGValue() : "null";
+            this.stop = stop ? "stop" : "start";
+            this.stopped = stop ? "stopped" : "started";
+            this.start = !stop;
+            this.deviceContext = deviceContext;
+        }
+
+        @Override
+        public void onSuccess(@Nullable Void aVoid) {
+            LOG.info("Context chain for device {} successfully {}", deviceInfo, stopped);
+//            if (start && Objects.nonNull(deviceContext)) {
+//                deviceContext.masterSuccessful();
+//            }
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.warn("Not able to {} the context chain for device {}", stop, deviceInfo);
+        }
     }
 
 }

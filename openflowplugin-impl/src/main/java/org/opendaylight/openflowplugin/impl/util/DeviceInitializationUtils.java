@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -103,7 +104,10 @@ public class DeviceInitializationUtils {
      * @param switchFeaturesMandatory
      * @param convertorExecutor
      */
-    public static void initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory, final ConvertorExecutor convertorExecutor) throws ExecutionException, InterruptedException {
+    public static void initializeNodeInformation(
+            final DeviceContext deviceContext,
+            final boolean switchFeaturesMandatory,
+            final ConvertorExecutor convertorExecutor) throws ExecutionException, InterruptedException {
         Preconditions.checkArgument(deviceContext != null);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
@@ -150,9 +154,22 @@ public class DeviceInitializationUtils {
             }
         } else if (OFConstants.OFP_VERSION_1_3 == version) {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
-            LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
+            }
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get();
+            Futures.addCallback(createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor), new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
+
+                @Override
+                public void onSuccess(@Nullable List<RpcResult<List<MultipartReply>>> rpcResults) {
+                    LOG.info("Capabilities for device {} set successful" , deviceInfo.getLOGValue());
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    LOG.warn("Not able to set capabilities for device {}", deviceInfo.getLOGValue());
+                }
+            });
         } else {
             throw new ExecutionException(new ConnectionException("Unsupported version " + version));
         }
@@ -503,7 +520,9 @@ public class DeviceInitializationUtils {
             return Futures.immediateCancelledFuture();
         }
 
-        LOG.trace("Hooking xid {} to device context - precaution.", reserved);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Hooking xid {} to device context - precaution.", reserved);
+        }
 
         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector(requestContext);
         queue.commitEntry(xid.getValue(),
