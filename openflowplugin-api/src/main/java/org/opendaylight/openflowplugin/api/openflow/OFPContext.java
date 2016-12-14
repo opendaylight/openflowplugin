@@ -61,6 +61,14 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     }
 
     /**
+     * About to stop services in cluster not master anymore or going down.
+     * @return Future most of services need time to be closed.
+     */
+    default ListenableFuture<Void> stopClusterServices() {
+        return stopClusterServices(false);
+    }
+
+    /**
      * Get cluster singleton service identifier.
      * @return cluster singleton service identifier.
      */
