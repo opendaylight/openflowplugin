@@ -71,12 +71,12 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public ListenableFuture<Void> stopChain() {
+    public ListenableFuture<Void> stopChain(boolean connectionDropped) {
         //TODO: stopClusterServices change parameter
         final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(statisticsContext.stopClusterServices(true));
-        futureList.add(rpcContext.stopClusterServices(false));
-        futureList.add(deviceContext.stopClusterServices(false));
+        futureList.add(statisticsContext.stopClusterServices());
+        futureList.add(rpcContext.stopClusterServices());
+        futureList.add(deviceContext.stopClusterServices(connectionDropped));
 
         return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
             @Nullable
@@ -113,10 +113,11 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void changePrimaryConnection(final ConnectionContext connectionContext) {
+        this.primaryConnectionContext = connectionContext;
+        this.contextChainState = ContextChainState.INITIALIZED;
         for (OFPContext context : contexts) {
             context.replaceConnection(connectionContext);
         }
-        this.primaryConnectionContext = connectionContext;
     }
 
     @Override
@@ -129,7 +130,7 @@ public class ContextChainImpl implements ContextChain {
         ContextChainState oldState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
         if (oldState.equals(ContextChainState.WORKINGMASTER)) {
-            return this.stopChain();
+            return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
     }
@@ -142,7 +143,7 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void sleepTheChainAndDropConnection() {
         this.contextChainState = ContextChainState.SLEEPING;
-        this.primaryConnectionContext.closeConnection(false);
+        this.primaryConnectionContext.closeConnection(true);
     }
 
     @Override
@@ -160,4 +161,13 @@ public class ContextChainImpl implements ContextChain {
         this.lifecycleService.makeDeviceSlave(this.deviceContext);
     }
 
+    @Override
+    public void closePrimaryConnection() {
+        this.primaryConnectionContext.closeConnection(true);
+    }
+
+    @Override
+    public DeviceContext provideDeviceContext() {
+        return this.deviceContext;
+    }
 }
