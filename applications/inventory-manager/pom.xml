@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.2-Boron-SR2</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>inventory-manager</artifactId>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.3.2-Boron-SR2</version>
   <packaging>bundle</packaging>
 
   <dependencyManagement>
