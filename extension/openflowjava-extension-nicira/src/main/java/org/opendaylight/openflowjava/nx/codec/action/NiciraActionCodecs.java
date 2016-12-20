@@ -13,7 +13,8 @@ package org.opendaylight.openflowjava.nx.codec.action;
  */
 public class NiciraActionCodecs {
 
-    private NiciraActionCodecs() { }
+    private NiciraActionCodecs() {
+    }
 
     public static final RegMoveCodec REG_MOVE_CODEC = new RegMoveCodec();
     public static final RegLoadCodec REG_LOAD_CODEC = new RegLoadCodec();
@@ -24,4 +25,5 @@ public class NiciraActionCodecs {
     public static final PopNshCodec POP_NSH_CODEC = new PopNshCodec();
     public static final ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
     public static final LearnCodec LEARN_CODEC = new LearnCodec();
+    public static final FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
 }
