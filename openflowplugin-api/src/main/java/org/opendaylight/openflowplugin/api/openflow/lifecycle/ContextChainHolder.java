@@ -7,13 +7,15 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 
 /**
  * Generic interface for context chain holder, hold all created context chains.
@@ -23,9 +25,27 @@ public interface ContextChainHolder extends
         MastershipChangeListener,
         DeviceDisconnectedHandler {
 
+    /**
+     * Managers need to be added before.
+     * {@link DeviceManager}
+     * {@link RpcManager}
+     * {@link StatisticsManager}
+     * @param manager a child class of {@link OFPManager}
+     * @param <T> {@link OFPManager}
+     */
     <T extends OFPManager> void addManager(final T manager);
+
+    /**
+     * Create a new context chain.
+     * @param connectionContext new connection
+     * @return {@link ContextChain}
+     */
     ContextChain createContextChain(final ConnectionContext connectionContext);
-    ListenableFuture<Void> connectionLost(final DeviceInfo deviceInfo);
+
+    /**
+     * Called if connection needs to be destroyed.
+     * @param deviceInfo {@link DeviceInfo}
+     */
     void destroyContextChain(final DeviceInfo deviceInfo);
 
     /**
@@ -37,5 +57,9 @@ public interface ContextChainHolder extends
      */
     void pairConnection(final ConnectionContext connectionContext);
 
+    /**
+     * Provider is needed to register cluster singleton service.
+     * @param singletonServicesProvider provider
+     */
     void addSingletonServicesProvider(final ClusterSingletonServiceProvider singletonServicesProvider);
 }

@@ -70,12 +70,19 @@ public class LifecycleServiceImplTest {
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
-        Mockito.when(deviceContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statContext.stopClusterServices(true)).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(rpcContext.stopClusterServices(true)).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean()))
+                .thenReturn(Futures.immediateFuture(null));
+        Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean()))
+                .thenReturn(Futures.immediateFuture(null));
+        Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean()))
+                .thenReturn(Futures.immediateFuture(null));
 
         lifecycleService = new LifecycleServiceImpl(mastershipChangeListener);
-        lifecycleService.registerService(clusterSingletonServiceProvider, deviceContext, SERVICE_GROUP_IDENTIFIER, deviceInfo);
+        lifecycleService.registerService(
+                clusterSingletonServiceProvider,
+                deviceContext,
+                SERVICE_GROUP_IDENTIFIER,
+                deviceInfo);
     }
 
     @Test

@@ -56,14 +56,16 @@ public class LifecycleServiceImpl implements LifecycleService {
             @Override
             public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceContext.getDeviceInfo().getLOGValue());
+                    LOG.debug("Role SLAVE was successfully propagated on device, node {}",
+                            deviceContext.getDeviceInfo().getLOGValue());
                 }
                 mastershipChangeListener.onSlaveRoleAcquired(deviceInf);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Was not able to set role SLAVE to device on node {} ",deviceContext.getDeviceInfo().getLOGValue());
+                LOG.warn("Was not able to set role SLAVE to device on node {} ",
+                        deviceContext.getDeviceInfo().getLOGValue());
                 mastershipChangeListener.onSlaveRoleNotAcquired(deviceInf);
             }
         });
@@ -84,26 +86,6 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-//        final boolean connectionInterrupted =
-//                this.deviceContext
-//                        .getPrimaryConnectionContext()
-//                        .getConnectionState()
-//                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
-//
-//        // Chain all jobs that will stop our services
-//        final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-//        futureList.add(statContext.stopClusterServices(connectionInterrupted));
-//        futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
-//        futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
-//
-//        return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
-//            @Nullable
-//            @Override
-//            public Void apply(@Nullable List<Void> input) {
-//                LOG.debug("Closed clustering MASTER services for node {}", deviceInfo.getLOGValue());
-//                return null;
-//            }
-//        });
         return Futures.immediateFuture(null);
     }
 
@@ -114,7 +96,7 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void close() {
-        if (terminationState){
+        if (terminationState) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("LifecycleService is already in TERMINATION state.");
             }
@@ -131,7 +113,7 @@ public class LifecycleServiceImpl implements LifecycleService {
                         LOG.debug("Closing clustering services for node {}", deviceInfo.getLOGValue());
                     }
                     registration.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.debug("Failed to close clustering services for node {} with exception: ",
                             deviceInfo.getLOGValue(), e);
                 }
