@@ -168,7 +168,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                     flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
           flowRegistry.put(flowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
-          LOG.error("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
+          LOG.warn("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
                     flowDescriptor.getTableKey().getId());
           final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
           final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
