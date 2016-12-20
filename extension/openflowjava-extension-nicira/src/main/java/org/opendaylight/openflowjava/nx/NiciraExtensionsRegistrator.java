@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx;
 
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
+import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
 import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.NiciraActionCodecs;
@@ -66,7 +67,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;
 
     /**
-     * @param registrator cannot be null
+     * @param registrator
+     *            cannot be null
      */
     public NiciraExtensionsRegistrator(NiciraExtensionCodecRegistrator registrator) {
         this.registrator = Preconditions.checkNotNull(registrator);
@@ -82,6 +84,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionSerializer(ResubmitCodec.SERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
         registrator.registerActionDeserializer(ResubmitCodec.DESERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
         registrator.registerActionDeserializer(ResubmitCodec.TABLE_DESERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
+        registrator.registerActionSerializer(FinTimeoutCodec.SERIALIZER_KEY, NiciraActionCodecs.FIN_TIMEOUT_CODEC);
+        registrator.registerActionDeserializer(FinTimeoutCodec.DESERIALIZER_KEY, NiciraActionCodecs.FIN_TIMEOUT_CODEC);
         registrator.registerActionSerializer(MultipathCodec.SERIALIZER_KEY, NiciraActionCodecs.MULTIPATH_CODEC);
         registrator.registerActionDeserializer(MultipathCodec.DESERIALIZER_KEY, NiciraActionCodecs.MULTIPATH_CODEC);
         registrator.registerActionDeserializer(PushNshCodec.DESERIALIZER_KEY, NiciraActionCodecs.PUSH_NSH_CODEC);
@@ -93,8 +97,7 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionDeserializer(ConntrackCodec.DESERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
         registrator.registerActionSerializer(LearnCodec.SERIALIZER_KEY, NiciraActionCodecs.LEARN_CODEC);
         registrator.registerActionDeserializer(LearnCodec.DESERIALIZER_KEY, NiciraActionCodecs.LEARN_CODEC);
-        //Continue
-
+        // Continue
 
         registrator.registerMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY, NiciraMatchCodecs.REG0_CODEC);
         registrator.registerMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY, NiciraMatchCodecs.REG0_CODEC);
@@ -125,9 +128,11 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntrySerializer(ArpTpaCodec.SERIALIZER_KEY, NiciraMatchCodecs.ARP_TPA_CODEC);
         registrator.registerMatchEntryDeserializer(ArpTpaCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ARP_TPA_CODEC);
         registrator.registerMatchEntrySerializer(InPortCodec.SERIALIZER_KEY, NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC);
-        registrator.registerMatchEntryDeserializer(InPortCodec.DESERIALIZER_KEY, NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC);
+        registrator.registerMatchEntryDeserializer(InPortCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC);
         registrator.registerMatchEntrySerializer(MplsLabelCodec.SERIALIZER_KEY, NiciraMatchCodecs.OXM_OF_MPLS_LABEL);
-        registrator.registerMatchEntryDeserializer(MplsLabelCodec.DESERIALIZER_KEY, NiciraMatchCodecs.OXM_OF_MPLS_LABEL);
+        registrator.registerMatchEntryDeserializer(MplsLabelCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.OXM_OF_MPLS_LABEL);
         registrator.registerMatchEntrySerializer(EthDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_DST_CODEC);
         registrator.registerMatchEntryDeserializer(EthDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ETH_DST_CODEC);
         registrator.registerMatchEntrySerializer(EthSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_SRC_CODEC);
@@ -147,15 +152,23 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntrySerializer(NsiCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSI_CODEC);
         registrator.registerMatchEntryDeserializer(NsiCodec.DESERIALIZER_KEY, NiciraMatchCodecs.NSI_CODEC);
         registrator.registerMatchEntrySerializer(TunIpv4DstCodec.SERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
-        registrator.registerMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
         registrator.registerMatchEntrySerializer(TunIpv4SrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
-        registrator.registerMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
-        registrator.registerMatchEntrySerializer(EncapEthTypeCodec.SERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_TYPE_CODEC);
-        registrator.registerMatchEntryDeserializer(EncapEthTypeCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_TYPE_CODEC);
-        registrator.registerMatchEntrySerializer(EncapEthSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_SRC_CODEC);
-        registrator.registerMatchEntryDeserializer(EncapEthSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_SRC_CODEC);
-        registrator.registerMatchEntrySerializer(EncapEthDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
-        registrator.registerMatchEntryDeserializer(EncapEthDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(EncapEthTypeCodec.SERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_TYPE_CODEC);
+        registrator.registerMatchEntryDeserializer(EncapEthTypeCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_TYPE_CODEC);
+        registrator.registerMatchEntrySerializer(EncapEthSrcCodec.SERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_SRC_CODEC);
+        registrator.registerMatchEntryDeserializer(EncapEthSrcCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(EncapEthDstCodec.SERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(EncapEthDstCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
         registrator.registerMatchEntrySerializer(NshMdtypeCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSH_MDTYPE_CODEC);
         registrator.registerMatchEntryDeserializer(NshMdtypeCodec.DESERIALIZER_KEY, NiciraMatchCodecs.NSH_MDTYPE_CODEC);
         registrator.registerMatchEntrySerializer(NshNpCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSH_NP_CODEC);
@@ -186,6 +199,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionSerializer(ResubmitCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ResubmitCodec.TABLE_DESERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ResubmitCodec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(FinTimeoutCodec.SERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(FinTimeoutCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(MultipathCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(MultipathCodec.DESERIALIZER_KEY);
         registrator.unregisterActionDeserializer(PushNshCodec.DESERIALIZER_KEY);
@@ -196,7 +211,7 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionDeserializer(ConntrackCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(LearnCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(LearnCodec.DESERIALIZER_KEY);
-        //CONTINUE
+        // CONTINUE
         registrator.unregisterMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(Reg1Codec.SERIALIZER_KEY);
