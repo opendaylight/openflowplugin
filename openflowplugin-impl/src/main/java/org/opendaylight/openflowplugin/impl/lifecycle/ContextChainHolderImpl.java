@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -49,7 +49,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<DeviceInfo, ConnectionContext> latestConnections = new ConcurrentHashMap<>();
     private final ContextChainConfig config;
     private ClusterSingletonServiceProvider singletonServicesProvider;
 
@@ -81,8 +80,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.debug("Creating a new chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
         }
 
-        ContextChain contextChain = new ContextChainImpl();
-        LifecycleService lifecycleService = new LifecycleServiceImpl(this);
+        final ContextChain contextChain = new ContextChainImpl();
+        final LifecycleService lifecycleService = new LifecycleServiceImpl(this);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Lifecycle services" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
@@ -119,14 +118,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         return contextChain;
 
-    }
-
-    @Override
-    public ListenableFuture<Void> connectionLost(final DeviceInfo deviceInfo) {
-        if (!this.checkChainContext(deviceInfo)) {
-            return Futures.immediateFuture(null);
-        }
-        return null;
     }
 
     @Override
@@ -212,12 +203,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
-//            if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
-//                contextChain.registerServices(this.singletonServicesProvider);
-//            } else {
-//                Futures.addCallback(contextChain.stopChain(false),
-//                        new StartStopChainCallback(contextChain.provideDeviceContext(), true));
-//            }
             contextChain.registerServices(this.singletonServicesProvider);
         }
     }
@@ -254,37 +239,26 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
     }
 
-    private boolean checkChainContext(final DeviceInfo deviceInfo) {
-        return contextChainMap.containsKey(deviceInfo);
-    }
-
     private class StartStopChainCallback implements FutureCallback<Void> {
 
         private final String deviceInfo;
         private final String stop;
         private final String stopped;
-        private final boolean start;
-        private final DeviceContext deviceContext;
 
         StartStopChainCallback(final DeviceContext deviceContext, final boolean stop) {
 
             this.deviceInfo = Objects.nonNull(deviceContext) ? deviceContext.getDeviceInfo().getLOGValue() : "null";
             this.stop = stop ? "stop" : "start";
             this.stopped = stop ? "stopped" : "started";
-            this.start = !stop;
-            this.deviceContext = deviceContext;
         }
 
         @Override
-        public void onSuccess(@Nullable Void aVoid) {
+        public void onSuccess(@Nullable Void nothing) {
             LOG.info("Context chain for device {} successfully {}", deviceInfo, stopped);
-//            if (start && Objects.nonNull(deviceContext)) {
-//                deviceContext.masterSuccessful();
-//            }
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(@Nonnull final Throwable throwable) {
             LOG.warn("Not able to {} the context chain for device {}", stop, deviceInfo);
         }
     }
