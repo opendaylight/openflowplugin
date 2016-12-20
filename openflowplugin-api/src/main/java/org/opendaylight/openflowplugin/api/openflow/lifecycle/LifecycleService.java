@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemove
 public interface LifecycleService extends ClusterSingletonService, AutoCloseable {
 
     /**
-     * This method registers lifecycle service to the given provider
+     * This method registers lifecycle service to the given provider.
      * @param singletonServiceProvider      from md-sal binding
      * @param initializationPhaseHandler    MASTER services initialization handler
      * @param serviceGroupIdentifier        Cluster services identifier
@@ -35,12 +35,16 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
                          @Nonnull final DeviceInfo deviceInfo);
 
     /**
-     * This method registers device removed handler what will be executed when device should be removed from managers.
+     * This method registers device removed handler what will be executed when device should be removed.
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull final DeviceRemovedHandler deviceRemovedHandler);
 
-    void makeDeviceSlave(DeviceContext deviceContext);
+    /**
+     * Make device SLAVE.
+     * @param deviceContext provide device context which can't be stored in lifecycle service.
+     */
+    void makeDeviceSlave(final DeviceContext deviceContext);
 
     @Override
     void close();

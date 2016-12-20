@@ -45,11 +45,6 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isReady() {
-        return false;
-    }
-
-    @Override
     public <T extends OFPContext> void addContext(final T context) {
         if (context instanceof StatisticsContext) {
             this.statisticsContext = (StatisticsContext) context;
@@ -133,11 +128,6 @@ public class ContextChainImpl implements ContextChain {
             return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
-    }
-
-    @Override
-    public ConnectionContext getPrimaryConnectionContext() {
-        return primaryConnectionContext;
     }
 
     @Override
