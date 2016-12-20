@@ -16,18 +16,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
 /**
- * Chain of contexts, hold references to the contexts
+ * Chain of contexts, hold references to the contexts.
  */
 public interface ContextChain extends AutoCloseable {
 
     /**
-     * Check if all context are referenced and not null
-     * @return false if reference for some context is missing
-     */
-    boolean isReady();
-
-    /**
-     * Add context to the chain, if reference already exist ignore it
+     * Add context to the chain, if reference already exist ignore it.
      * @param context child of OFPContext
      */
     <T extends OFPContext> void addContext(final T context);
@@ -35,14 +29,14 @@ public interface ContextChain extends AutoCloseable {
     void addLifecycleService(final LifecycleService lifecycleService);
 
     /**
-     * Stop the working contexts, but not release them
+     * Stop the working contexts, but not release them.
+     * @param connectionDropped true if stop the chain due to connection drop
      * @return Future
-     * @param connectionDropped
      */
     ListenableFuture<Void> stopChain(boolean connectionDropped);
 
     /**
-     * Start the contexts, if some context is missing or cant be started returns failed future
+     * Start the contexts, if some context is missing or cant be started returns failed future.
      * @return Future
      */
     ListenableFuture<Void> startChain();
@@ -51,24 +45,47 @@ public interface ContextChain extends AutoCloseable {
     void close();
 
     /**
-     * Change connection if connection were drop and rebuild
-     * @param connectionContext
+     * Change connection if connection were drop and rebuild.
+     * @param connectionContext new connection
      */
     void changePrimaryConnection(final ConnectionContext connectionContext);
 
+    /**
+     * Method need to be called if connection is dropped to stop the chain.
+     * @return future
+     */
     ListenableFuture<Void> connectionDropped();
 
+    /**
+     * Returns context chain state.
+     * @return state
+     */
     ContextChainState getContextChainState();
 
-    ConnectionContext getPrimaryConnectionContext();
-
+    /**
+     * Sleep the chain and drop connection.
+     */
     void sleepTheChainAndDropConnection();
 
+    /**
+     * Registers context chain into cluster singleton service.
+     * @param clusterSingletonServiceProvider provider
+     */
     void registerServices(@NonNull final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
+    /**
+     * After connect of device make this device SLAVE.
+     */
     void makeDeviceSlave();
 
+    /**
+     * if something goes wrong close the connection.
+     */
     void closePrimaryConnection();
 
+    /**
+     * Device context needs to be provided for other contexts.
+     * @return device context
+     */
     DeviceContext provideDeviceContext();
 }
