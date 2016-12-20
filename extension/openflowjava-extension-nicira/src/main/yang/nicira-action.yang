@@ -27,6 +27,9 @@ module nicira-action {
     identity nxm-nx-resubmit {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-fin-timeout {
+        base ofaction:experimenter-action-sub-type;
+    }
     identity nxm-nx-multipath {
         base ofaction:experimenter-action-sub-type;
     }
@@ -109,6 +112,20 @@ module nicira-action {
                     range "0 .. 255";
                 }
                 default 255; // Current Table
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
+    grouping ofj-nx-action-fin-timeout-grouping {
+        container nx-action-fin-timeout {
+            leaf fin-idle-timeout {
+                type uint16;
+            }
+            leaf fin-hard-timeout  {
+                type uint16;
             }
             leaf experimenter-id {
                 type oft:experimenter-id;
@@ -386,6 +403,9 @@ module nicira-action {
         }
         case action-resubmit {
             uses ofj-nx-action-resubmit-grouping;
+        }
+        case action-fin-timeout {
+            uses ofj-nx-action-fin-timeout-grouping;
         }
         case action-multipath {
             uses ofj-nx-action-multipath-grouping;
