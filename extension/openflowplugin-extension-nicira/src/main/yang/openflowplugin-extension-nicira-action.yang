@@ -417,6 +417,17 @@ bits specified from the register.";
             }
         }
     }
+    
+    grouping nx-action-fin-timeout-grouping {
+        container nx-action-fin-timeout {
+            leaf fin-idle-timeout {
+                type uint16;
+            }
+            leaf fin-hard-timeout  {
+                type uint16;
+            }
+        }
+    }
 
     grouping nx-action-multipath-grouping {
         container nx-multipath {
@@ -637,6 +648,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-fin-timeout-rpc-add-flow-write-actions-case {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case nx-action-multipath-rpc-add-flow-write-actions-case {
             uses nx-action-multipath-grouping;
         }
@@ -680,6 +696,11 @@ bits specified from the register.";
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-resubmit-rpc-add-flow-apply-actions-case {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-fin-timeout-rpc-add-flow-apply-actions-case {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -730,6 +751,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-fin-timeout-rpc-remove-flow-write-actions-case {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case nx-action-multipath-rpc-remove-flow-write-actions-case {
             uses nx-action-multipath-grouping;
         }
@@ -773,6 +799,11 @@ bits specified from the register.";
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-resubmit-rpc-remove-flow-apply-actions-case {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-fin-timeout-rpc-remove-flow-apply-actions-case {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -822,6 +853,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-fin-timeout-rpc-update-flow-original-write-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-multipath-rpc-update-flow-original-write-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -865,6 +901,11 @@ bits specified from the register.";
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-resubmit-rpc-update-flow-original-apply-actions-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-fin-timeout-rpc-update-flow-original-apply-actions-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -914,6 +955,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-fin-timeout-rpc-update-flow-updated-write-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-multipath-rpc-update-flow-updated-write-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -957,6 +1003,11 @@ bits specified from the register.";
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-resubmit-rpc-update-flow-updated-apply-actions-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-fin-timeout-rpc-update-flow-updated-apply-actions-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -1006,6 +1057,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-fin-timeout-rpc-add-group-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-multipath-rpc-add-group-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1049,6 +1105,11 @@ bits specified from the register.";
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-resubmit-rpc-remove-group-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-fin-timeout-rpc-remove-group-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
@@ -1098,6 +1159,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-fin-timeout-rpc-update-group-original-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-multipath-rpc-update-group-original-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1144,6 +1210,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-fin-timeout-rpc-update-group-updated-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-multipath-rpc-update-group-updated-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1187,6 +1258,11 @@ bits specified from the register.";
     augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
         case "nx-action-resubmit-rpc-transmit-packet-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "nx-action-fin-timeout-rpc-transmit-packet-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
@@ -1237,6 +1313,11 @@ bits specified from the register.";
         }
     }
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "nx-action-fin-timeout-nodes-node-table-flow-write-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
         case "nx-action-multipath-nodes-node-table-flow-write-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1283,6 +1364,11 @@ bits specified from the register.";
         }
     }
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "nx-action-fin-timeout-nodes-node-table-flow-apply-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
         case "nx-action-multipath-nodes-node-table-flow-apply-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1326,6 +1412,11 @@ bits specified from the register.";
     augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
         case "nx-action-resubmit-nodes-node-group-buckets-bucket-actions-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
+        case "nx-action-fin-timeout-nodes-node-group-buckets-bucket-actions-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
@@ -1376,6 +1467,11 @@ bits specified from the register.";
         }
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-fin-timeout-notif-flows-statistics-update-write-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-multipath-notif-flows-statistics-update-write-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1422,6 +1518,11 @@ bits specified from the register.";
         }
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-fin-timeout-notif-flows-statistics-update-apply-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-multipath-notif-flows-statistics-update-apply-actions-case" {
             uses nx-action-multipath-grouping;
         }
@@ -1465,6 +1566,11 @@ bits specified from the register.";
     augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
         case "nx-action-resubmit-notif-group-desc-stats-updated-case" {
             uses nx-action-resubmit-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "nx-action-fin-timeout-notif-group-desc-stats-updated-case" {
+            uses nx-action-fin-timeout-grouping;
         }
     }
     augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
