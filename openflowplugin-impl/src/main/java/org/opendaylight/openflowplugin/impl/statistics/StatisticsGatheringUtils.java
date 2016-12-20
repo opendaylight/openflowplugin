@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -32,7 +31,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -115,7 +113,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utils for gatherig statistics
+ * Utils for gathering statistics.
  */
 public final class StatisticsGatheringUtils {
 
@@ -300,7 +298,7 @@ public final class StatisticsGatheringUtils {
     }
 
     /**
-     * Method extracts flow statistics out of flowAndStatistics model
+     * Method extracts flow statistics out of flowAndStatistics model.
      *
      * @param flowAndStats
      */
@@ -486,7 +484,7 @@ public final class StatisticsGatheringUtils {
     }
 
     /**
-     * Writes snapshot gathering start timestamp + cleans end mark
+     * Writes snapshot gathering start timestamp + cleans end mark.
      *
      * @param deviceContext txManager + node path keeper
      */
@@ -512,7 +510,7 @@ public final class StatisticsGatheringUtils {
     }
 
     /**
-     * Writes snapshot gathering end timestamp + outcome
+     * Writes snapshot gathering end timestamp + outcome.
      *
      * @param deviceContext txManager + node path keeper
      * @param succeeded     outcome of currently finished gathering
