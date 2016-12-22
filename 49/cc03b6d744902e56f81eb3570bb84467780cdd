@@ -1,0 +1,8 @@
+Code-Review+1: Luis Gomez <ecelgp@gmail.com>
+Code-Review+2: Shuva Jyoti Kar <shuva.jyoti.kar@ericsson.com>
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Submitted-by: Shuva Jyoti Kar <shuva.jyoti.kar@ericsson.com>
+Submitted-at: Thu, 22 Dec 2016 10:39:01 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/49281
+Project: openflowplugin
+Branch: refs/heads/stable/beryllium
