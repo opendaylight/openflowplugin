@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_b373547f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 670
+      },
+      "writtenOn": "2016-12-22T14:07:56Z",
+      "side": 1,
+      "message": "cosmetic: \"Bug 7071: \" instead of \"BUG-7071\", fix typo \"suuport\" and add some info - something like\n\n\"Bug 7071: Add support for deserialization of learn fin-timeout\"\n\nCan also add info to the body of the commit.",
+      "revId": "425aaf6cb3d48c589e82902449615cc39385a2dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
