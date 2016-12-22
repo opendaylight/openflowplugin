@@ -22,6 +22,7 @@ public class DeserializerInjector {
     public static void injectDeserializers(final DeserializerExtensionProvider provider) {
         // Inject new deserializers here
         MatchDeserializerInjector.injectDeserializers(provider);
+        ActionDeserializerInjector.injectDeserializers(provider);
         MessageDeserializerInjector.injectDeserializers(provider);
     }
 }
