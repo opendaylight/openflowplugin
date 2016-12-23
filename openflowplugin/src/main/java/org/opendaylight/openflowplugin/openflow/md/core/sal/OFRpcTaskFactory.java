@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Matc
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowHashIdMapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.nodes.node.table.FlowHashIdMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -405,6 +406,12 @@ public abstract class OFRpcTaskFactory {
                           if (flowHashIdMapKeyToDelete != null) {
                               final KeyedInstanceIdentifier<FlowHashIdMap, FlowHashIdMapKey> iiToFlowHashIdToDelete = iiToTable
                                     .augmentation(FlowHashIdMapping.class).child(FlowHashIdMap.class, flowHashIdMapKeyToDelete);
+                              final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.
+                                      flow.inventory.rev130819.tables.table.Flow> flowRef = iiToTable.child(
+                                      org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.
+                                              Flow.class, new FlowKey(new FlowId(flowId)));
+                              //Clean-up the respective flow as well.
+                              rwTx.delete(LogicalDatastoreType.OPERATIONAL, flowRef);
                               rwTx.delete(LogicalDatastoreType.OPERATIONAL, iiToFlowHashIdToDelete);
                               rwTx.submit();
                           }
