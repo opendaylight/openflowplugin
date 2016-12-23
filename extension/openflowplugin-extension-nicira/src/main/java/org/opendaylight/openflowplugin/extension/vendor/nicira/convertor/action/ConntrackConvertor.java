@@ -9,6 +9,10 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.base.Preconditions;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -18,6 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrackBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrackBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionConntrackGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCaseBuilder;
@@ -25,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.NxConntrack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.NxConntrackBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.OfpactActions;
 
 /**
  * @author Aswin Suryanarayanan.
@@ -42,7 +51,44 @@ public class ConntrackConvertor implements
         builder.setZoneSrc(action.getZoneSrc());
         builder.setRecircTable(action.getRecircTable());
         builder.setConntrackZone(action.getConntrackZone());
+        builder.setCtActions(getCtAction(action));
         return resolveAction(builder.build(), path);
+    }
+
+
+    private List<CtActions> getCtAction(NxActionConntrack action) {
+        if(action.getCtActions() == null){
+            return null;
+        }
+        List<CtActions> ctActions = new ArrayList<CtActions>();
+        for( org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions ctAction : action.getCtActions()){
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.OfpactActions natAction = ctAction.getOfpactActions();
+            if(natAction instanceof NxActionNatCase) {
+                NxActionNat nxActionNat = ((NxActionNatCase) natAction).getNxActionNat();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.
+                actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight
+                .yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.
+                actions.nx.action.nat._case.NxActionNatBuilder();
+                nxActionNatBuilder.setFlags(nxActionNat.getFlags());
+                nxActionNatBuilder.setRangePresent(nxActionNat.getRangePresent());
+                nxActionNatBuilder.setIpAddressMin(nxActionNat.getIpAddressMin());
+                nxActionNatBuilder.setIpAddressMax(nxActionNat.getIpAddressMax());
+                nxActionNatBuilder.setPortMin(nxActionNat.getPortMin());
+                nxActionNatBuilder.setPortMax(nxActionNat.getPortMax());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.
+                actions.ofpact.actions.NxActionNatCaseBuilder caseBuilder = new org.opendaylight.yang.gen.v1.urn.
+                opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.
+                NxActionNatCaseBuilder();
+                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx
+                .action.conntrack.grouping.nx.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight
+                .yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack
+                .grouping.nx.conntrack.CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            }
+        }
+        return ctActions;
     }
 
     private static int resolveStart(final int ofsNBints) {
@@ -86,9 +132,35 @@ public class ConntrackConvertor implements
         nxActionConntrackBuilder.setZoneSrc(nxAction.getNxConntrack().getZoneSrc());
         nxActionConntrackBuilder.setRecircTable(nxAction.getNxConntrack().getRecircTable());
         nxActionConntrackBuilder.setConntrackZone(nxAction.getNxConntrack().getConntrackZone());
+        nxActionConntrackBuilder.setCtActions(getCtAction(nxAction.getNxConntrack()));
         ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
         actionConntrackBuilder.setNxActionConntrack(nxActionConntrackBuilder.build());
         return ActionUtil.createAction(actionConntrackBuilder.build());
     }
 
+    private List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions> getCtAction(NxConntrack action) {
+        if(action.getCtActions() == null){
+            return null;
+        }
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions> ctActions = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions>();
+        for( CtActions ctAction : action.getCtActions()){
+            OfpactActions natAction = ctAction.getOfpactActions();
+            if(natAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat nxActionNat = ((org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase) natAction).getNxActionNat();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder();
+                nxActionNatBuilder.setFlags(nxActionNat.getFlags());
+                nxActionNatBuilder.setRangePresent(nxActionNat.getRangePresent());
+                nxActionNatBuilder.setIpAddressMin(nxActionNat.getIpAddressMin());
+                nxActionNatBuilder.setIpAddressMax(nxActionNat.getIpAddressMax());
+                nxActionNatBuilder.setPortMin(nxActionNat.getPortMin());
+                nxActionNatBuilder.setPortMax(nxActionNat.getPortMax());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder caseBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder();
+                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            }
+        }
+        return ctActions;
+    }
 }
