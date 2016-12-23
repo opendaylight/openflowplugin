@@ -17,6 +17,7 @@ module openflowplugin-extension-nicira-action {
     import openflow-action {prefix ofaction;revision-date "2015-02-03";}
     import nicira-action {prefix nicira-action;revision-date "2014-04-21";}
     import opendaylight-direct-statistics {prefix directstat;revision-date "2016-05-11";}
+    import ietf-inet-types { prefix "inet"; revision-date "2013-07-15"; }
 
     description
         "Nicira openflow action extensions.";
@@ -482,6 +483,38 @@ bits specified from the register.";
             }
             leaf recirc-table {
                 type uint8;
+            }
+            list ct-actions{
+                uses ofpact-actions;
+            }
+        }
+    }
+
+    grouping ofpact-actions {
+        description
+           "Actions to be performed with conntrack.";
+        choice ofpact-actions {
+            case nx-action-nat-case {
+                container nx-action-nat {
+                    leaf flags {
+                        type uint16;
+                    }
+                    leaf range_present {
+                        type uint16;
+                    }
+                    leaf ip-address-min {
+                        type inet:ip-address;
+                    }
+                    leaf ip-address-max {
+                        type inet:ip-address;
+                    }
+                    leaf port-min {
+                        type uint16;
+                    }
+                    leaf port-max {
+                        type uint16;
+                    }
+                }
             }
         }
     }
