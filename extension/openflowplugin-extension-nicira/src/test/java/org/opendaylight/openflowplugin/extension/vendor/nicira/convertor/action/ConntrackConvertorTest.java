@@ -8,10 +8,14 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrack;
@@ -23,6 +27,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.NxConntrackBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +53,23 @@ public class ConntrackConvertorTest {
     @Test
     public void testConvertToOFJava() throws Exception {
 
+        final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
+                .setFlags(1)
+                .setNatType(2L)
+                .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
+                .setIpAddressMin(new IpAddress("192.168.10.0".toCharArray()))
+                .setPortMin(3000)
+                .setPortMax(4000);
+        final CtActionsBuilder ctActionsBuilder = new CtActionsBuilder().setOfpactActions(new NxActionNatCaseBuilder()
+                .setNxActionNat(nxActionNatBuilder.build()).build());
+        List<CtActions> ctAction = new ArrayList<>();
+        ctAction.add(ctActionsBuilder.build());
         final NxConntrackBuilder nxConntrackBuilder = new NxConntrackBuilder()
                 .setConntrackZone(1)
                 .setFlags(1)
                 .setRecircTable((short) 1)
-                .setZoneSrc(1L);
+                .setZoneSrc(1L)
+                .setCtActions(ctAction);
 
         final NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder nxActionConntrackBuilder =
                 new NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder()
@@ -60,15 +82,50 @@ public class ConntrackConvertorTest {
         Assert.assertEquals(actionsCase.getNxConntrack().getFlags(), actionConntrack.getNxActionConntrack().getFlags());
         Assert.assertEquals(actionsCase.getNxConntrack().getRecircTable(), actionConntrack.getNxActionConntrack().getRecircTable());
         Assert.assertEquals(actionsCase.getNxConntrack().getZoneSrc(), actionConntrack.getNxActionConntrack().getZoneSrc());
+
+        NxActionNat natactionCase = ((NxActionNatCase) actionsCase.getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+        .nx.action.nat._case.NxActionNat nataction = ( (org.opendaylight
+        .yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+        .NxActionNatCase) actionConntrack.getNxActionConntrack().getCtActions().get(0).getOfpactActions())
+        .getNxActionNat();
+        Assert.assertEquals(natactionCase.getFlags(), nataction.getFlags());
+        Assert.assertEquals(natactionCase.getNatType(), nataction.getNatType());
+        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4Address().getValue(), nataction.getIpAddressMin()
+            .getIpv4Address().getValue());
+        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4Address().getValue(), nataction.getIpAddressMin()
+            .getIpv4Address().getValue());
+        Assert.assertEquals(natactionCase.getPortMin(), nataction.getPortMin());
+        Assert.assertEquals(natactionCase.getPortMax(), nataction.getPortMax());
+
     }
 
     @Test
     public void testConvertFromOFJava() throws Exception {
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+        .nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
+        .openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder()
+        .setFlags(1)
+        .setNatType(2L)
+        .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
+        .setIpAddressMax(new IpAddress("192.168.10.0".toCharArray()))
+        .setPortMin(3000)
+        .setPortMax(4000);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping
+        .nx.action.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
+        .openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder()
+        .setOfpactActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact
+        .actions.ofpact.actions.NxActionNatCaseBuilder().setNxActionNat(nxActionNatBuilder.build()).build());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
+        .grouping.nx.action.conntrack.CtActions> ctActions = new ArrayList<>();
+        ctActions.add(ctActionsBuilder.build());
         final NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder()
                 .setConntrackZone(1)
                 .setFlags(1)
                 .setRecircTable((short) 1)
-                .setZoneSrc(1L);
+                .setZoneSrc(1L)
+                .setCtActions(ctActions);
 
         final ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder()
                 .setNxActionConntrack(nxActionConntrackBuilder.build());
@@ -92,20 +149,56 @@ public class ConntrackConvertorTest {
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getFlags().intValue());
 
+       NxActionNat natActionCase = ((NxActionNatCase)((NxActionConntrackNodesNodeTableFlowWriteActionsCase)action)
+               .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
+        Assert.assertEquals(1, natActionCase.getFlags().shortValue());
+        Assert.assertEquals(2, natActionCase.getNatType().intValue());
+        Assert.assertEquals("192.168.0.0", natActionCase.getIpAddressMin().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals(3000, natActionCase.getPortMin().shortValue());
+        Assert.assertEquals(4000, natActionCase.getPortMax().shortValue());
+
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getZoneSrc().longValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase) action1).getNxConntrack().getFlags().intValue());
+
+        NxActionNat natActionCase1 = ((NxActionNatCase)((NxActionConntrackNodesNodeTableFlowWriteActionsCase)action)
+                .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
+        Assert.assertEquals(1, natActionCase1.getFlags().shortValue());
+        Assert.assertEquals(2, natActionCase1.getNatType().intValue());
+        Assert.assertEquals("192.168.0.0", natActionCase1.getIpAddressMin().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase1.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals(3000, natActionCase1.getPortMin().shortValue());
+        Assert.assertEquals(4000, natActionCase1.getPortMax().shortValue());
 
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getZoneSrc().longValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase) action2).getNxConntrack().getFlags().intValue());
 
+        NxActionNat natActionCase2 = ((NxActionNatCase)((NxActionConntrackNodesNodeTableFlowWriteActionsCase)action)
+                .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
+        Assert.assertEquals(1, natActionCase2.getFlags().shortValue());
+        Assert.assertEquals(2, natActionCase2.getNatType().intValue());
+        Assert.assertEquals("192.168.0.0", natActionCase2.getIpAddressMin().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase2.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals(3000, natActionCase2.getPortMin().shortValue());
+        Assert.assertEquals(4000, natActionCase2.getPortMax().shortValue());
+
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getZoneSrc().longValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getFlags().intValue());
+
+        NxActionNat natActionCase3 = ((NxActionNatCase)((NxActionConntrackNodesNodeTableFlowWriteActionsCase)action)
+                .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
+        Assert.assertEquals(1, natActionCase3.getFlags().shortValue());
+        Assert.assertEquals(2, natActionCase3.getNatType().intValue());
+        Assert.assertEquals("192.168.0.0", natActionCase3.getIpAddressMin().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase3.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals(3000, natActionCase3.getPortMin().shortValue());
+        Assert.assertEquals(4000, natActionCase3.getPortMax().shortValue());
 
     }
 
