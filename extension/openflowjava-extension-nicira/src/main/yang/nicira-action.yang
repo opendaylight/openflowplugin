@@ -7,6 +7,7 @@ module nicira-action {
     import openflow-action {prefix ofaction; revision-date "2015-02-03";}
     import openflow-types {prefix oft;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import ietf-inet-types { prefix "inet"; revision-date 2013-07-15; }
 
     description
         "Nicira openflow extensions of action.";
@@ -146,6 +147,60 @@ module nicira-action {
         }
     }
 
+    typedef nx-action-nat-range-present {
+        type enumeration {
+            enum NX_NAT_RANGE_IPV4_MIN {
+                value 1;
+                description "IPV4 minimum value is present";
+            }
+            enum NX_NAT_RANGE_IPV4_MAX {
+                value 2;
+                description "IPV4 maximum value is present";
+            }
+            enum NX_NAT_RANGE_IPV6_MIN {
+                value 4;
+                description "IPV6 minimum value is present in range";
+            }
+            enum NX_NAT_RANGE_IPV6_MAX {
+                value 8;
+                description "IPV6 maximum value is present in range";
+            }
+            enum NX_NAT_RANGE_PROTO_MIN {
+                value 16;
+                description "Port minimum value is present in range";
+            }
+            enum NX_NAT_RANGE_PROTO_MAX {
+                value 32;
+                description "Port maximum value is present in range";
+            }
+        }
+    }
+
+    typedef nx-action-nat-flags {
+        type enumeration {
+            enum NX_NAT_F_SRC {
+                value 1;
+                description "Source nat is selected ,Mutually exclusive with NX_NAT_F_DST";
+            }
+            enum NX_NAT_F_DST {
+                value 2;
+                description "Destination nat is selected";
+            }
+            enum NX_NAT_F_PERSISTENT {
+                value 4;
+                description "Persistant flag is selected";
+            }
+            enum NX_NAT_F_PROTO_HASH {
+                value 8;
+                description "Hash mode is selected for port mapping, Mutually exclusive with PROTO_RANDOM ";
+            }
+            enum NX_NAT_F_PROTO_RANDOM {
+                value 16;
+                description "Port mapping will be randomized";
+            }
+        }
+    }
+
     grouping ofj-nx-action-multipath-grouping {
         container nx-action-multipath {
             leaf fields {
@@ -208,6 +263,39 @@ module nicira-action {
             leaf experimenter-id {
                 type oft:experimenter-id;
             }
+            list ct-actions{
+                uses ofpact-actions;
+            }
+        }
+    }
+
+    grouping ofpact-actions {
+        description
+           "Actions to be performed with conntrack.";
+        choice ofpact-actions {
+            case nx-action-nat-case {
+                container nx-action-nat {
+                    leaf flags {
+                        type uint16;
+                    }
+                    leaf range_present {
+                        type uint16;
+                    }
+                    leaf ip-address-min {
+                        type inet:ip-address;
+                    }
+                    leaf ip-address-max {
+                        type inet:ip-address;
+                    }
+                    leaf port-min {
+                        type uint16;
+                    }
+                    leaf port-max {
+                        type uint16;
+                    }
+                }
+            }
+
         }
     }
 
