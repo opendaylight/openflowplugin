@@ -14,7 +14,14 @@ import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.CopyTtlInActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.CopyTtlOutActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.DecMplsTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.DecNwTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.GroupActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.OutputActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -29,6 +36,13 @@ public class ActionDeserializerInjector {
         // Inject new message deserializers here using injector created by createInjector method
         final Function<Byte, Consumer<OFDeserializer<Action>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+
+        injector.apply(ActionConstants.COPY_TTL_IN_CODE).accept(new CopyTtlInActionDeserializer());
+        injector.apply(ActionConstants.COPY_TTL_OUT_CODE).accept(new CopyTtlOutActionDeserializer());
+        injector.apply(ActionConstants.OUTPUT_CODE).accept(new OutputActionDeserializer());
+        injector.apply(ActionConstants.DEC_MPLS_TTL_CODE).accept(new DecMplsTtlActionDeserializer());
+        injector.apply(ActionConstants.DEC_NW_TTL_CODE).accept(new DecNwTtlActionDeserializer());
+        injector.apply(ActionConstants.GROUP_CODE).accept(new GroupActionDeserializer());
     }
 
     /**
