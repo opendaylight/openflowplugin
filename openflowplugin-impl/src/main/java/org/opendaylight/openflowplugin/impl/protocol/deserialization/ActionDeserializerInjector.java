@@ -14,7 +14,24 @@ import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.CopyTtlInActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.CopyTtlOutActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.DecMplsTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.DecNwTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.GroupActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.OutputActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PopMplsActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PopPbbActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PopVlanActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PushMplsActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PushPbbActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.PushVlanActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetFieldActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetMplsTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetNwTtlActionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetQueueActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -29,6 +46,23 @@ public class ActionDeserializerInjector {
         // Inject new message deserializers here using injector created by createInjector method
         final Function<Byte, Consumer<OFDeserializer<Action>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+
+        injector.apply(ActionConstants.COPY_TTL_IN_CODE).accept(new CopyTtlInActionDeserializer());
+        injector.apply(ActionConstants.COPY_TTL_OUT_CODE).accept(new CopyTtlOutActionDeserializer());
+        injector.apply(ActionConstants.OUTPUT_CODE).accept(new OutputActionDeserializer());
+        injector.apply(ActionConstants.DEC_MPLS_TTL_CODE).accept(new DecMplsTtlActionDeserializer());
+        injector.apply(ActionConstants.DEC_NW_TTL_CODE).accept(new DecNwTtlActionDeserializer());
+        injector.apply(ActionConstants.GROUP_CODE).accept(new GroupActionDeserializer());
+        injector.apply(ActionConstants.POP_MPLS_CODE).accept(new PopMplsActionDeserializer());
+        injector.apply(ActionConstants.POP_PBB_CODE).accept(new PopPbbActionDeserializer());
+        injector.apply(ActionConstants.POP_VLAN_CODE).accept(new PopVlanActionDeserializer());
+        injector.apply(ActionConstants.PUSH_MPLS_CODE).accept(new PushMplsActionDeserializer());
+        injector.apply(ActionConstants.PUSH_PBB_CODE).accept(new PushPbbActionDeserializer());
+        injector.apply(ActionConstants.PUSH_VLAN_CODE).accept(new PushVlanActionDeserializer());
+        injector.apply(ActionConstants.SET_MPLS_TTL_CODE).accept(new SetMplsTtlActionDeserializer());
+        injector.apply(ActionConstants.SET_NW_TTL_CODE).accept(new SetNwTtlActionDeserializer());
+        injector.apply(ActionConstants.SET_QUEUE_CODE).accept(new SetQueueActionDeserializer());
+        injector.apply((byte) ActionConstants.SET_FIELD_CODE).accept(new SetFieldActionDeserializer());
     }
 
     /**
