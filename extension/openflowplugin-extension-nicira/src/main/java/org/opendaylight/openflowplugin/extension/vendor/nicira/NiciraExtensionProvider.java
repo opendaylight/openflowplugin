@@ -175,6 +175,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPushNshNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPopNshNodesNodeTableFlowWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadRpcRemoveFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveRpcRemoveFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitRpcRemoveFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionConntrackRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionLearnRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionMultipathRpcRemoveGroupCase;
@@ -182,8 +185,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionRegLoadRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionRegMoveRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionResubmitRpcRemoveGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.transmit.packet.input.action.action.NxActionRegLoadRpcTransmitPacketCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.transmit.packet.input.action.action.NxActionResubmitRpcTransmitPacketCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionPushNshRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionPopNshRpcRemoveGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.flow.input.original.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadRpcUpdateFlowOriginalApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.flow.input.updated.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadRpcUpdateFlowUpdatedApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.flow.input.updated.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveRpcUpdateFlowUpdatedApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.flow.input.updated.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitRpcUpdateFlowUpdatedApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionConntrackRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionLearnRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionMultipathRpcUpdateGroupOriginalCase;
@@ -410,6 +419,15 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionLearnRpcUpdateGroupOriginalCase.class, LEARN_CONVERTOR);
         registerAction13(NxActionLearnRpcUpdateGroupUpdatedCase.class, LEARN_CONVERTOR);
 
+        registerAction13(NxActionRegLoadRpcTransmitPacketCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionResubmitRpcTransmitPacketCase.class, RESUBMIT_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcUpdateFlowOriginalApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcUpdateFlowUpdatedApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionResubmitRpcUpdateFlowUpdatedApplyActionsCase.class, RESUBMIT_CONVERTOR);
+        registerAction13(NxActionRegMoveRpcUpdateFlowUpdatedApplyActionsCase.class, REG_MOVE_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcRemoveFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegMoveRpcRemoveFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
+        registerAction13(NxActionResubmitRpcRemoveFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
 
         registerAction13(ActionRegLoad.class, REG_LOAD_CONVERTOR);
         registerAction13(ActionRegMove.class, REG_MOVE_CONVERTOR);
