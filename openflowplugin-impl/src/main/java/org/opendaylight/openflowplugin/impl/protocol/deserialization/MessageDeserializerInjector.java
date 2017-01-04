@@ -16,6 +16,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.GroupMessageDeserializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public class MessageDeserializerInjector {
@@ -28,6 +30,8 @@ public class MessageDeserializerInjector {
         // Inject new message deserializers here using injector created by createInjector method
         final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+
+        injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
     }
 
     /**
