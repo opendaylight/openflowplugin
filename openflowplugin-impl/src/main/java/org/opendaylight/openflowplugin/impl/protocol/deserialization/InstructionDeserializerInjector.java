@@ -15,9 +15,16 @@ import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.ApplyActionsInstructionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.ClearActionsInstructionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.GoToTableInstructionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.MeterInstructionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.WriteActionsInstructionDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.WriteMetadataInstructionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -32,6 +39,16 @@ public class InstructionDeserializerInjector {
         // Inject new instruction deserializers here using injector created by createInjector method
         final Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+
+        injector.apply(InstructionConstants.GOTO_TABLE_TYPE).apply(null).accept(new GoToTableInstructionDeserializer());
+        injector.apply(InstructionConstants.WRITE_METADATA_TYPE).apply(null).accept(new WriteMetadataInstructionDeserializer());
+        injector.apply(InstructionConstants.CLEAR_ACTIONS_TYPE).apply(null).accept(new ClearActionsInstructionDeserializer());
+        injector.apply(InstructionConstants.METER_TYPE).apply(null).accept(new MeterInstructionDeserializer());
+
+        for (ActionPath path : ActionPath.values()) {
+            injector.apply(InstructionConstants.WRITE_ACTIONS_TYPE).apply(path).accept(new WriteActionsInstructionDeserializer(path));
+            injector.apply(InstructionConstants.APPLY_ACTIONS_TYPE).apply(path).accept(new ApplyActionsInstructionDeserializer(path));
+        }
     }
 
     /**
