@@ -23,6 +23,7 @@ public class DeserializerInjector {
         // Inject new deserializers here
         MatchDeserializerInjector.injectDeserializers(provider);
         ActionDeserializerInjector.injectDeserializers(provider);
+        InstructionDeserializerInjector.injectDeserializers(provider);
         MessageDeserializerInjector.injectDeserializers(provider);
     }
 }
