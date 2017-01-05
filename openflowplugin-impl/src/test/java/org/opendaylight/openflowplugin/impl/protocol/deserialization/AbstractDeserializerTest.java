@@ -134,3 +134,4 @@ public abstract class AbstractDeserializerTest {
     }
 
 }
+
