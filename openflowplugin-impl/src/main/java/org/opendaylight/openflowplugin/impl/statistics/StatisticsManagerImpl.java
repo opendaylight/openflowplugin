@@ -15,9 +15,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +47,9 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 
 public class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
 
@@ -63,9 +63,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private static final long basicTimerDelay = 3000;
-    private static long currentTimerDelay = basicTimerDelay;
-    private static final long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
+    private static long basicTimerDelay;
+    private static long currentTimerDelay;
+    private static long maximumTimerDelay;
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
@@ -82,13 +82,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean isStatisticsPollingOn,
                                  final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor) {
+                                 final ConvertorExecutor convertorExecutor,
+                                 final long basicTimerDelay,
+                                 final long currentTimerDelay,
+                                 final long maximumTimerDelay) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
 	    this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+        this.basicTimerDelay = basicTimerDelay;
+        this.currentTimerDelay = currentTimerDelay;
+        this.maximumTimerDelay = maximumTimerDelay;
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
