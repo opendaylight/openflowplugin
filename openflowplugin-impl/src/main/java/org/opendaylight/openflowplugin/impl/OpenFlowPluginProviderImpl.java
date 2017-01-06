@@ -12,7 +12,6 @@ package org.opendaylight.openflowplugin.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
@@ -60,6 +59,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.netty.util.HashedWheelTimer;
 
 public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
@@ -95,6 +95,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsRpcEnabled;
     private boolean isFlowRemovedNotificationOn = true;
     private boolean skipTableFeatures = true;
+    private long basicTimerDelay;
+    private long currentTimerDelay;
+    private long maximumTimerDelay;
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
@@ -187,6 +190,21 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setBasicTimerDelay(long basicTimerDelay) {
+        this.basicTimerDelay = basicTimerDelay;
+    }
+
+    @Override
+    public void setCurrentTimerDelay(long currentTimerDelay) {
+        this.currentTimerDelay = currentTimerDelay;
+    }
+
+    @Override
+    public void setMaximumTimerDelay(long maximumTimerDelay) {
+        this.maximumTimerDelay = maximumTimerDelay;
+    }
+
+    @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
@@ -242,7 +260,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer, convertorManager);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer,
+                convertorManager,basicTimerDelay,currentTimerDelay,maximumTimerDelay);
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM

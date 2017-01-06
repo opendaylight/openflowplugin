@@ -95,5 +95,23 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf basic-timer-delay {
+            description "initial delay used in polling the statistics, value is in milliseconds";
+            type non-zero-uint32-type;
+            default 3000;
+        }
+
+        leaf current-timer-delay {
+            description "current timer delay used in polling the statistics, value is in milliseconds";
+            type non-zero-uint32-type;
+            default 3000;
+        }
+
+        leaf maximum-timer-delay {
+            description "maximum timer delay used in polling the statistics, value is in milliseconds";
+            type non-zero-uint32-type;
+            default 900000;
+        }
     }
 }
