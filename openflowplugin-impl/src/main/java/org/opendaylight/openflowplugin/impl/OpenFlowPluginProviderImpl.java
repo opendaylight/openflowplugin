@@ -12,7 +12,6 @@ package org.opendaylight.openflowplugin.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
@@ -60,6 +59,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.netty.util.HashedWheelTimer;
 
 public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
@@ -95,6 +95,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean isStatisticsRpcEnabled;
     private boolean isFlowRemovedNotificationOn = true;
     private boolean skipTableFeatures = true;
+    private long basicTimerDelay;
+    private long maximumTimerDelay;
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
@@ -187,6 +189,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setBasicTimerDelay(long basicTimerDelay) {
+        this.basicTimerDelay = basicTimerDelay;
+    }
+
+    @Override
+    public void setMaximumTimerDelay(long maximumTimerDelay) {
+        this.maximumTimerDelay = maximumTimerDelay;
+    }
+
+    @Override
     public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
@@ -242,7 +254,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer, convertorManager);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer,
+                convertorManager,basicTimerDelay,maximumTimerDelay);
 
         /* Initialization Phase ordering - OFP Device Context suite */
         // CM -> DM -> SM -> RPC -> Role -> DM
@@ -298,13 +311,25 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
             try {
                 connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
+                LOG.info("Setting echo-reply-timeout = {}",props.get("echo-reply-timeout").toString());
             }catch (NumberFormatException ex){
                 connectionManager.setEchoReplyTimeout(DEFAULT_ECHO_TIMEOUT);
             }
         }
 
         if(statisticsManager != null && props.containsKey("is-statistics-polling-on")){
+            LOG.info("Setting is-statistics-polling-on = {}",props.get("is-statistics-polling-on").toString());
             statisticsManager.setIsStatisticsPollingOn(Boolean.valueOf(props.get("is-statistics-polling-on").toString()));
+        }
+
+        if(statisticsManager != null && props.containsKey("basic-timer-delay")){
+            LOG.info("Setting basic-timer-delay = {}",props.get("basic-timer-delay").toString());
+            statisticsManager.setBasicTimerDelay(Long.valueOf(props.get("basic-timer-delay").toString()));
+        }
+
+        if(statisticsManager != null && props.containsKey("maximum-timer-delay")){
+            LOG.info("Setting maximum-timer-delay = {}", props.get("maximum-timer-delay").toString());
+            statisticsManager.setMaximumTimerDelay(Long.valueOf(props.get("maximum-timer-delay").toString()));
         }
     }
 
