@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -77,6 +73,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -182,7 +180,10 @@ public class StatisticsManagerImplTest {
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(), convertorManager);
+        final long basicTimerDelay = 3000;
+        final long maximumTimerDelay = 900000;
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(),
+                convertorManager, basicTimerDelay, maximumTimerDelay);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
     }
 
