@@ -129,7 +129,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 new SynchronousQueue<>(), POOL_NAME);
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build());
+        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
     }
 
     @Override
