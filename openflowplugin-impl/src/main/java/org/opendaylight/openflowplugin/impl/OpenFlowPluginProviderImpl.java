@@ -122,7 +122,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), POOL_NAME);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build());
+        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
     }
 
     @Override
