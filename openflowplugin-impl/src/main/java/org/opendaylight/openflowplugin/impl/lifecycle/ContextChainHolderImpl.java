@@ -10,6 +10,11 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -49,11 +54,17 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
     private final ContextChainConfig config;
     private ClusterSingletonServiceProvider singletonServicesProvider;
+    private boolean timerIsRunning;
+    private final HashedWheelTimer timer;
 
-    public ContextChainHolderImpl(final ContextChainConfig config) {
+    public ContextChainHolderImpl(final ContextChainConfig config, final HashedWheelTimer timer) {
         this.config = config;
+        this.timerIsRunning = false;
+        this.timer = timer;
     }
 
     @Override
@@ -122,6 +133,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void destroyContextChain(final DeviceInfo deviceInfo) {
+        removeFromSleepingChainsMap(deviceInfo);
         ContextChain chain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(chain)) {
             chain.close();
@@ -175,6 +187,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 contextChain.closePrimaryConnection();
             } else {
                 contextChain.sleepTheChainAndDropConnection();
+                addToSleepingChainsMap(deviceInfo, contextChain);
             }
         }
     }
@@ -212,6 +225,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             contextChain.sleepTheChainAndDropConnection();
+            addToSleepingChainsMap(deviceInfo, contextChain);
         }
     }
 
@@ -230,7 +244,77 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 }
             } else {
                 Futures.addCallback(chain.connectionDropped(),
-                        new StartStopChainCallback(null, true));
+                        new StartStopChainCallback(chain.provideDeviceContext(), true));
+                addToSleepingChainsMap(connectionContext.getDeviceInfo(), chain);
+            }
+        }
+    }
+
+    private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
+        sleepingChains.putIfAbsent(deviceInfo, contextChain);
+        timeToLive.putIfAbsent(deviceInfo, config.getTtlBeforeDrop());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
+        }
+        if (!this.timerIsRunning) {
+            startTimer();
+        }
+    }
+
+    private void removeFromSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo) {
+        sleepingChains.remove(deviceInfo);
+        timeToLive.remove(deviceInfo);
+        if (sleepingChains.isEmpty() && this.timerIsRunning) {
+            stopTimer();
+        }
+    }
+
+    private void startTimer() {
+        this.timerIsRunning = true;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("There is at least one context chains sleeping, starting timer.");
+        }
+        timer.newTimeout(new SleepingChainsTimerTask(), 1000, TimeUnit.MILLISECONDS);
+    }
+
+    private void stopTimer() {
+        this.timerIsRunning = false;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("There are no context chains sleeping, stopping timer.");
+        }
+    }
+
+    private void timerTick() {
+        if (sleepingChains.isEmpty()) {
+            this.stopTimer();
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Context chain holder timer tick. There are {} context chains sleeping.",
+                        sleepingChains.size());
+            }
+            for (Map.Entry<DeviceInfo, Long> deviceInfoLongEntry : timeToLive.entrySet()) {
+                Long newValue = deviceInfoLongEntry.getValue() - 1000;
+                DeviceInfo deviceInfo = deviceInfoLongEntry.getKey();
+                ContextChain chain = sleepingChains.get(deviceInfo);
+                if (Objects.isNull(chain)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("There is no sleeping context chain for device {}", deviceInfo.getLOGValue());
+                    }
+                    timeToLive.remove(deviceInfo);
+                    continue;
+                }
+                if ((newValue <= 0) && (chain.getContextChainState().equals(ContextChainState.SLEEPING))) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Dear device: {} your time to wake up is up. Its time to destroy you.",
+                                deviceInfo.getLOGValue());
+                    }
+                    destroyContextChain(deviceInfo);
+                    continue;
+                }
+                deviceInfoLongEntry.setValue(newValue);
+            }
+            if (!timeToLive.isEmpty()) {
+                timer.newTimeout(new SleepingChainsTimerTask(), 1000, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -261,6 +345,15 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         public void onFailure(@Nonnull final Throwable throwable) {
             LOG.warn("Not able to {} the context chain for device {}", stop, deviceInfo);
         }
+    }
+
+    private class SleepingChainsTimerTask implements TimerTask {
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            timerTick();
+        }
+
     }
 
 }

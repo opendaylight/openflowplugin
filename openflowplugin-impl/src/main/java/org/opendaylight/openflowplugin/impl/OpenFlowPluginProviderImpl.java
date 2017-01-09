@@ -175,7 +175,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build());
+        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
         contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
         deviceManager = new DeviceManagerImpl(dataBroker,

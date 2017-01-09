@@ -48,9 +48,6 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public Long reserveEntry() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Reserve entry with queue: {} in this {} implementation", outboundQueue, this);
-        }
         for (;;) {
             OutboundQueue queue = outboundQueue;
             if (queue == null) {
