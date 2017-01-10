@@ -86,4 +86,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization);
 
+    void updateTtlBeforeDropInContextChainHolder(Long ttlBeforeDrop);
+
+    void updateTtlStepInContextChainHolder(Long ttlStep);
 }
