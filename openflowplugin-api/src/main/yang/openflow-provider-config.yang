@@ -135,32 +135,28 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
-        container context-chain-config {
+        leaf ttl-before-drop {
+            description "TTL in milliseconds without connection before the context chain shall be dropped";
+            type uint32;
+            default 10000;
+        }
 
-            leaf ttl-before-drop {
-                description "TTL in miliseconds without connection before the context chain shall be dropped";
-                type uint32;
-                default 5000;
-            }
+        leaf ttl-step {
+            description "TTL step in milliseconds";
+            type uint32;
+            default 1000;
+        }
 
-            leaf never-drop-contexts-on {
-                description "if true then context chain will not be droped, otherwise use ttl-before-drop";
-                type boolean;
-                default true;
-            }
+        leaf never-drop-contexts-on {
+            description "if true then context chain will not be dropped, otherwise use ttl-before-drop";
+            type boolean;
+            default false;
+        }
 
-            leaf context-chain-startup-state {
-                description "this will set the default state of context chain after creation";
-                type context-chain-state;
-                default WORKING_SLAVE;
-            }
-
-            leaf number-of-needed-managers {
-                description "chceck number for needed managers";
-                type uint16;
-                default 3;
-            }
-
+        leaf context-chain-startup-state {
+            description "this will set the default state of context chain after creation";
+            type context-chain-state;
+            default WORKING_SLAVE;
         }
 
     }
