@@ -160,4 +160,9 @@ public class ContextChainImpl implements ContextChain {
     public DeviceContext provideDeviceContext() {
         return this.deviceContext;
     }
+
+    @Override
+    public void sleepTheChain() {
+        this.contextChainState = ContextChainState.SLEEPING;
+    }
 }
