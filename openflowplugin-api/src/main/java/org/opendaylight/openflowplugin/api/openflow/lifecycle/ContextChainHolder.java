@@ -62,4 +62,8 @@ public interface ContextChainHolder extends
      * @param singletonServicesProvider provider
      */
     void addSingletonServicesProvider(final ClusterSingletonServiceProvider singletonServicesProvider);
+
+    void setTtlBeforeDrop(Long ttlBeforeDrop);
+
+    void setTtlStep(Long ttlStep);
 }

@@ -146,32 +146,36 @@ module openflow-provider-config {
             type non-zero-uint32-type;
             default 900000;
         }
-        container context-chain-config {
 
-            leaf ttl-before-drop {
-                description "TTL in miliseconds without connection before the context chain shall be dropped";
-                type uint32;
-                default 5000;
-            }
+        leaf use-single-layer-serialization {
+            description "When true, Yang models are serialized and deserialized directly to and from format supported
+            by device, so serialization and deserialization is faster. Otherwise, models are first serialized to
+            Openflow specification models and then to format supported by device, and reversed when deserializing.";
+            type boolean;
+            default "true";
+        }
+        leaf ttl-before-drop {
+            description "TTL in milliseconds without connection before the context chain shall be dropped";
+            type uint32;
+            default 10000;
+        }
 
-            leaf never-drop-contexts-on {
-                description "if true then context chain will not be droped, otherwise use ttl-before-drop";
-                type boolean;
-                default true;
-            }
+        leaf ttl-step {
+            description "TTL step in milliseconds";
+            type uint32;
+            default 1000;
+        }
 
-            leaf context-chain-startup-state {
-                description "this will set the default state of context chain after creation";
-                type context-chain-state;
-                default WORKING_SLAVE;
-            }
+        leaf never-drop-contexts-on {
+            description "if true then context chain will not be dropped, otherwise use ttl-before-drop";
+            type boolean;
+            default false;
+        }
 
-            leaf number-of-needed-managers {
-                description "chceck number for needed managers";
-                type uint16;
-                default 3;
-            }
-
+        leaf context-chain-startup-state {
+            description "this will set the default state of context chain after creation";
+            type context-chain-state;
+            default WORKING_SLAVE;
         }
 
     }

@@ -60,7 +60,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +174,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
         contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
         deviceManager = new DeviceManagerImpl(dataBroker,
