@@ -88,4 +88,9 @@ public interface ContextChain extends AutoCloseable {
      * @return device context
      */
     DeviceContext provideDeviceContext();
+
+    /**
+     * Just make the chain state SLEEP
+     */
+    void sleepTheChain();
 }
