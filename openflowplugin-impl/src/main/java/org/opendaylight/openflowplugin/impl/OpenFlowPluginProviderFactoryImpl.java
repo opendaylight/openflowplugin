@@ -62,6 +62,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
         openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
+        openflowPluginProvider.updateTtlBeforeDropInContextChainHolder(providerConfig.getTtlBeforeDrop());
+        openflowPluginProvider.updateTtlStepInContextChainHolder(providerConfig.getTtlStep());
 
         openflowPluginProvider.initialize();
 
@@ -74,7 +76,10 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "ThreadPoolMinThreads:{}, " +
                 "ThreadPoolMaxThreads:{}, " +
                 "ThreadPoolTimeout:{}, " +
-                "NotificationFlowRemovedOff:{}",
+                "NotificationFlowRemovedOff:{}" +
+                "TTL before drop:{}" +
+                "Never drop connection:{}" +
+                "TTL step:{}",
                 providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
@@ -83,7 +88,10 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout(),
-                providerConfig.isEnableFlowRemovedNotification());
+                providerConfig.isEnableFlowRemovedNotification(),
+                providerConfig.getTtlBeforeDrop(),
+                providerConfig.isNeverDropContextsOn(),
+                providerConfig.getTtlStep());
 
         return openflowPluginProvider;
     }

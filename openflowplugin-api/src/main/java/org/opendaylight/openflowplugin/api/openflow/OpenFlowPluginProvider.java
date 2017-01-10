@@ -80,4 +80,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
 
     void setSkipTableFeatures(boolean skipTableFeatures);
+
+    void updateTtlBeforeDropInContextChainHolder(Long ttlBeforeDrop);
+
+    void updateTtlStepInContextChainHolder(Long ttlStep);
 }

@@ -60,7 +60,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +121,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), POOL_NAME);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
     }
 
     @Override
@@ -312,6 +311,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(statisticsManager != null && props.containsKey("is-statistics-polling-on")){
             statisticsManager.setIsStatisticsPollingOn(Boolean.valueOf(props.get("is-statistics-polling-on").toString()));
         }
+
+        if (props.containsKey("ttl-before-drop")) {
+            contextChainHolder.setTtlBeforeDrop(Long.valueOf(props.get("ttl-before-drop").toString()));
+        }
+
+        if (props.containsKey("ttl-step")) {
+            contextChainHolder.setTtlStep(Long.valueOf(props.get("ttl-step").toString()));
+        }
+
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -360,4 +368,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // Manually shutdown all remaining running threads in pool
         threadPool.shutdown();
     }
+
+    @Override
+    public void updateTtlBeforeDropInContextChainHolder(final Long ttlBeforeDrop) {
+        this.contextChainHolder.setTtlBeforeDrop(ttlBeforeDrop);
+    }
+
+    @Override
+    public void updateTtlStepInContextChainHolder(final Long ttlStep) {
+        this.contextChainHolder.setTtlStep(ttlStep);
+    }
+
 }
