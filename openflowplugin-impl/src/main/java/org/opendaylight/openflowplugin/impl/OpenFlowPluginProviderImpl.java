@@ -61,7 +61,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.util.HashedWheelTimer;
@@ -129,7 +128,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 new SynchronousQueue<>(), POOL_NAME);
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(new ContextChainConfigBuilder().build(), hashedWheelTimer);
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
     }
 
     @Override
@@ -365,6 +364,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(statisticsManager != null && props.containsKey("maximum-timer-delay")){
             statisticsManager.setMaximumTimerDelay(Long.valueOf(props.get("maximum-timer-delay").toString()));
         }
+        if (props.containsKey("ttl-before-drop")) {
+            contextChainHolder.setTtlBeforeDrop(Long.valueOf(props.get("ttl-before-drop").toString()));
+        }
+
+        if (props.containsKey("ttl-step")) {
+            contextChainHolder.setTtlStep(Long.valueOf(props.get("ttl-step").toString()));
+        }
+
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -418,4 +425,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization) {
         this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
+
+    @Override
+    public void updateTtlBeforeDropInContextChainHolder(final Long ttlBeforeDrop) {
+        this.contextChainHolder.setTtlBeforeDrop(ttlBeforeDrop);
+    }
+
+    @Override
+    public void updateTtlStepInContextChainHolder(final Long ttlStep) {
+        this.contextChainHolder.setTtlStep(ttlStep);
+    }
+
 }
