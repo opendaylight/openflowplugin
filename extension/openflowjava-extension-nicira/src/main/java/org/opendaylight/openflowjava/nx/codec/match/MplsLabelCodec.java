@@ -61,7 +61,7 @@ public class MplsLabelCodec extends AbstractMatchCodec {
 
   @Override
   public int getOxmClassCode() {
-    return OxmMatchConstants.NXM_0_CLASS;
+    return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
   }
 
   @Override
