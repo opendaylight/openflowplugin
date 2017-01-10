@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +36,6 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.ContextChainConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +47,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final String SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET
             = "Singleton service provider was not set yet.";
+    private static final long DEFAULT_TTL_STEP = 1000L;
+    private static final long DEFAULT_TTL_BEFORE_DROP = 5000L;
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
@@ -56,15 +56,17 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
     private ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
-    private final ContextChainConfig config;
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunning;
     private final HashedWheelTimer timer;
+    private Long ttlBeforeDrop;
+    private Long ttlStep;
 
-    public ContextChainHolderImpl(final ContextChainConfig config, final HashedWheelTimer timer) {
-        this.config = config;
+    public ContextChainHolderImpl(final HashedWheelTimer timer) {
         this.timerIsRunning = false;
         this.timer = timer;
+        this.ttlBeforeDrop = DEFAULT_TTL_BEFORE_DROP;
+        this.ttlStep = DEFAULT_TTL_STEP;
     }
 
     @Override
@@ -138,6 +140,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (Objects.nonNull(chain)) {
             chain.close();
             try {
+                LOG.info("Removing device: {} from DS", deviceInfo);
                 deviceManager.removeDeviceFromOperationalDS(deviceInfo).checkedGet(5L, TimeUnit.SECONDS);
             } catch (TimeoutException | TransactionCommitFailedException e) {
                 LOG.warn("Not able to remove device {} from DS", deviceInfo.getLOGValue());
@@ -245,14 +248,25 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             } else {
                 Futures.addCallback(chain.connectionDropped(),
                         new StartStopChainCallback(chain.provideDeviceContext(), true));
+                chain.sleepTheChain();
                 addToSleepingChainsMap(connectionContext.getDeviceInfo(), chain);
             }
         }
     }
 
+    @Override
+    public void setTtlBeforeDrop(final Long ttlBeforeDrop) {
+        this.ttlBeforeDrop = ttlBeforeDrop;
+    }
+
+    @Override
+    public void setTtlStep(final Long ttlStep) {
+        this.ttlStep = ttlStep;
+    }
+
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        sleepingChains.putIfAbsent(deviceInfo, contextChain);
-        timeToLive.putIfAbsent(deviceInfo, config.getTtlBeforeDrop());
+        sleepingChains.put(deviceInfo, contextChain);
+        timeToLive.put(deviceInfo, this.ttlBeforeDrop);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
         }
@@ -274,7 +288,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (LOG.isDebugEnabled()) {
             LOG.debug("There is at least one context chains sleeping, starting timer.");
         }
-        timer.newTimeout(new SleepingChainsTimerTask(), 1000, TimeUnit.MILLISECONDS);
+        timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
     }
 
     private void stopTimer() {
@@ -292,8 +306,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 LOG.debug("Context chain holder timer tick. There are {} context chains sleeping.",
                         sleepingChains.size());
             }
+            if (timeToLive.isEmpty()) {
+                LOG.warn("TTL map is empty but not sleeping chains map. Providing clean up.");
+                sleepingChains.clear();
+            }
             for (Map.Entry<DeviceInfo, Long> deviceInfoLongEntry : timeToLive.entrySet()) {
-                Long newValue = deviceInfoLongEntry.getValue() - 1000;
+                Long newValue = deviceInfoLongEntry.getValue() - this.ttlStep;
+                deviceInfoLongEntry.setValue(newValue);
                 DeviceInfo deviceInfo = deviceInfoLongEntry.getKey();
                 ContextChain chain = sleepingChains.get(deviceInfo);
                 if (Objects.isNull(chain)) {
@@ -303,18 +322,25 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                     timeToLive.remove(deviceInfo);
                     continue;
                 }
-                if ((newValue <= 0) && (chain.getContextChainState().equals(ContextChainState.SLEEPING))) {
+                if (!ContextChainState.SLEEPING.equals(chain.getContextChainState())) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("There is timer registered for device: {} " +
+                                        "but device is in state: {} Removing from timer.",
+                                deviceInfo.getLOGValue(),
+                                chain.getContextChainState().getName());
+                    }
+                    timeToLive.remove(deviceInfo);
+                }
+                if (newValue <= 0) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Dear device: {} your time to wake up is up. Its time to destroy you.",
                                 deviceInfo.getLOGValue());
                     }
                     destroyContextChain(deviceInfo);
-                    continue;
                 }
-                deviceInfoLongEntry.setValue(newValue);
             }
             if (!timeToLive.isEmpty()) {
-                timer.newTimeout(new SleepingChainsTimerTask(), 1000, TimeUnit.MILLISECONDS);
+                timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -357,3 +383,4 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
 }
+
