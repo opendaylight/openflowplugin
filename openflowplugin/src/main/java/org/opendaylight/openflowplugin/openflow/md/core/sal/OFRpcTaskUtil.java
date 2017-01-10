@@ -147,7 +147,7 @@ public abstract class OFRpcTaskUtil {
         ListenableFuture<RpcResult<T>> chainResult = originalResult;
         if (MoreObjects.firstNonNull(task.isBarrier(), Boolean.FALSE)) {
 
-            chainResult = Futures.transform(originalResult, new AsyncFunction<RpcResult<T>, RpcResult<T>>() {
+            chainResult = Futures.transformAsync(originalResult, new AsyncFunction<RpcResult<T>, RpcResult<T>>() {
 
                 @Override
                 public ListenableFuture<RpcResult<T>> apply(final RpcResult<T> input) throws Exception {

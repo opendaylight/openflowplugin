@@ -88,7 +88,7 @@ public final class StatisticsGatheringUtils {
             eventIdentifier = null;
         }
 
-        return Futures.transform(
+        return Futures.transformAsync(
             statisticsGatheringService.getStatisticsOfType(
                 new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
                 type),
@@ -217,8 +217,8 @@ public final class StatisticsGatheringUtils {
         }
 
         final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
-        return Futures.transform(Futures
-            .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+        return Futures.transform(Futures.catchingAsync(
+            readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
                 // we wish to close readTx for fallBack
                 readTx.close();
                 return Futures.immediateFailedFuture(t);
