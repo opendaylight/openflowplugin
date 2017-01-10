@@ -65,6 +65,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
         openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
+        openflowPluginProvider.updateTtlBeforeDropInContextChainHolder(providerConfig.getTtlBeforeDrop());
+        openflowPluginProvider.updateTtlStepInContextChainHolder(providerConfig.getTtlStep());
 
         openflowPluginProvider.initialize();
 
@@ -79,7 +81,11 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "ThreadPoolTimeout:{}, " +
                 "NotificationFlowRemovedOff:{}, " +
                 "BasicTimerDelay:{}, "+
-                "MaximumTimerDelay:{} ",
+                "MaximumTimerDelay:{} " +
+                "NotificationFlowRemovedOff:{}" +
+                "TTL before drop:{}" +
+                "Never drop connection:{}" +
+                "TTL step:{}",
                 providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
@@ -90,7 +96,10 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolTimeout(),
                 providerConfig.isEnableFlowRemovedNotification(),
                 providerConfig.getBasicTimerDelay().getValue(),
-                providerConfig.getMaximumTimerDelay().getValue());
+                providerConfig.getMaximumTimerDelay().getValue(),
+                providerConfig.getTtlBeforeDrop(),
+                providerConfig.isNeverDropContextsOn(),
+                providerConfig.getTtlStep());
 
         return openflowPluginProvider;
     }
