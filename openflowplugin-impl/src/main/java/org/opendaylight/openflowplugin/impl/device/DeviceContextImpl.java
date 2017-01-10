@@ -629,16 +629,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             });
 
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
+            return Futures.transformAsync(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
                 @Override
                 public ListenableFuture<Void> apply(Void aVoid) throws Exception {
                     // Add fallback to remove device from operational DS if setting slave fails
-                    return Futures.withFallback(makeSlaveFuture, t ->
+                    return Futures.catchingAsync(makeSlaveFuture, Throwable.class, t ->
                             myManager.removeDeviceFromOperationalDS(deviceInfo));
                 }
             });
         } else {
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
+            return Futures.transformAsync(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
                 @Override
                 public ListenableFuture<Void> apply(Void aVoid) throws Exception {
                     return myManager.removeDeviceFromOperationalDS(deviceInfo);

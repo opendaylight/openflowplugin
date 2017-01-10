@@ -88,6 +88,7 @@ public final class StatisticsGatheringUtils {
             eventIdentifier = null;
         }
 
+<<<<<<< 3cfeb72ceab5ff49efcc5446191b0e37280e8f38
         return Futures.transform(
             statisticsGatheringService.getStatisticsOfType(
                 new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
@@ -119,6 +120,38 @@ public final class StatisticsGatheringUtils {
                                 LOG.warn("Stats processing of type {} for node {} failed during transformation step",
                                     type, deviceInfo.getLOGValue(), e);
                                 return Futures.immediateFailedFuture(e);
+=======
+    private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
+                                                                             final DeviceInfo deviceInfo,
+                                                                             final EventIdentifier eventIdentifier,
+                                                                             final MultipartType type,
+                                                                             final TxFacade txFacade,
+                                                                             final DeviceRegistry registry,
+                                                                             final boolean initial,
+                                                                             final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
+        return Futures.transformAsync(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
+            @Nullable
+            @Override
+            public ListenableFuture<Boolean> apply(final RpcResult<List<MultipartReply>> rpcResult) {
+                boolean isMultipartProcessed = Boolean.TRUE;
+                if (rpcResult.isSuccessful()) {
+                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+
+                    // TODO: in case the result value is null then multipart data probably got processed on the fly -
+                    // TODO: this contract should by clearly stated and enforced - now simple true value is returned
+                    if (null != rpcResult.getResult()) {
+                        Iterable<? extends DataObject> allMultipartData = Collections.emptyList();
+                        DataObject multipartData = null;
+
+
+                        try {
+                            for (final MultipartReply singleReply : rpcResult.getResult()) {
+                                final List<? extends DataObject> multipartDataList = multipartReplyTranslator.translate(
+                                        deviceInfo.getDatapathId(),
+                                        deviceInfo.getVersion(), singleReply);
+                                multipartData = multipartDataList.get(0);
+                                allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
+>>>>>>> BUG-7446: adjust to Guava 21 API changes
                             }
 
                             try {
@@ -217,8 +250,8 @@ public final class StatisticsGatheringUtils {
         }
 
         final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
-        return Futures.transform(Futures
-            .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+        return Futures.transform(Futures.catchingAsync(
+            readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
                 // we wish to close readTx for fallBack
                 readTx.close();
                 return Futures.immediateFailedFuture(t);
