@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -376,28 +377,32 @@ public final class StatisticsGatheringUtils {
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
                 LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
 
-        /* we wish to close readTx for fallBack */
-        Futures.withFallback(flowCapableNodeFuture, t -> {
-            readTx.close();
-            return Futures.immediateFailedFuture(t);
-        });
-        /*
-         * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
-         * not applicable for lists
-         */
-        return Futures.transform(
-                flowCapableNodeFuture, (AsyncFunction<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
-                if (flowCapNodeOpt.isPresent()) {
-                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                        final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
-                        final InstanceIdentifier<Table> iiToTable
-                                = flowCapableNodePath.child(Table.class, tableData.getKey());
-                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
-                    }
+        // Clean current flows from all known operational tables.
+        // This method is being called just before writing all the flows statistics coming from the switch. Then,
+        // it cannot be executed as future and it must be executed synchronously. Previous code was deleting the flows in
+        // background with futures and therefore there was not guarantee that the "writing flows" method is executed after
+        // cleaning the flows. Consequently, there were scenario which operational flow information was not available because
+        // "deleteAllKnownFlows" was executed after "writeFlowStatistics".
+        // Also, notice this method is being called from two places. It seems there are two implementations that tries to updates the flows stats.
+        // Anyway, in both cases (processFlowStatistics method in this class and MultipartRequestOnTheFlyCallback executes the same logic:
+        // 	first: deleteAllKnownFlows
+        //  second: writeFlowStatistics
+
+        try {
+            if (flowCapableNodeFuture.get() != null && flowCapableNodeFuture.get().isPresent()){
+                for (final Table tableData : flowCapableNodeFuture.get().get().getTable()) {
+                    final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                    final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
+                    txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                 }
-                readTx.close();
-                return Futures.immediateFuture(null);
-            });
+            }
+        } catch (InterruptedException|ExecutionException e) {
+            LOG.error("cannot obtain current openflow table information");
+            return Futures.immediateFailedFuture(e);
+        }
+
+        return Futures.immediateCheckedFuture(null);
+
     }
 
     private static void processQueueStatistics(

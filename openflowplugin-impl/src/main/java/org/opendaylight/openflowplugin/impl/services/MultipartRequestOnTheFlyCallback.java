@@ -12,6 +12,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -42,6 +45,8 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
+    private final AtomicInteger numberOfFutures = new AtomicInteger(0);
+    private final Object lock = new Object();
 
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
@@ -70,6 +75,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
     @Override
     public void onSuccess(final OfHeader result) {
+
         if (result == null) {
             LOG.info("Ofheader was null.");
             if (!finished) {
@@ -98,25 +104,63 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
             //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
             ListenableFuture<Void> future;
-            if (virgin) {
-                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade);
-                virgin = false;
-            } else {
-                future = Futures.immediateFuture(null);
+
+            // there is no guarantee that this code will be executed sequentially when a switch returns multiple
+            // part messages. Therefore, it is necessary to synchronize and ensure that we first delete
+            // all know flows before adding the new flows stats to the table and only once.
+            synchronized (lock) {
+	            if (virgin) {
+	                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade);
+	                virgin = false;
+	            } else {
+	                future = Futures.immediateFuture(null);
+	            }
+	            numberOfFutures.incrementAndGet();
             }
+
+
 
             Futures.transform(future, new Function<Void, Void>() {
 
                 @Override
                 public Void apply(final Void input) {
-                    StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,
-                            deviceInfo, registry, txFacade);
+                    try {
+                        StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,
+	                            deviceInfo, registry, txFacade);
+                    }finally{
+
+	                    // this code method will process each message in parallel and therefore it is neccessary to track
+	                    // how many we are processing in order to call submit once all are finished
+	                    synchronized (lock) {
+	                        numberOfFutures.decrementAndGet();
+	                        lock.notifyAll();
+	                    }
+                    }
 
                     if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
+
+                        // when we are receiving the last message we need to submit the transaction
+                        // calling "endCollecting" method. The submit of the transaction should be only
+                        // done once all multipart message has been processed to ensure all changes are
+                        // committed together.
+                        do {
+                            synchronized (lock) {
+                                if (numberOfFutures.get()> 0){
+                                    try {
+                                        lock.wait();
+                                    } catch (InterruptedException e) {
+                                    }
+                                }else {
+                                    break;
+                                }
+                            }
+                        }while (true);
+
                         endCollecting();
                     }
                     return input;
                 }
+
             });
         }
     }
