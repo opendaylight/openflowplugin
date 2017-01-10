@@ -101,7 +101,7 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
         ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, resultTransformFunction);
 
         if (Boolean.TRUE.equals(input.isStoreStats())) {
-            rpcResult = Futures.transform(rpcResult, resultStoreFunction);
+            rpcResult = Futures.transformAsync(rpcResult, resultStoreFunction);
         }
 
         return rpcResult;
