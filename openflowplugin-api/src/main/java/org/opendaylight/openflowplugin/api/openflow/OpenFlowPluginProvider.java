@@ -84,4 +84,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setMaximumTimerDelay(long maximumTimerDelay);
 
+    void updateTtlBeforeDropInContextChainHolder(Long ttlBeforeDrop);
+
+    void updateTtlStepInContextChainHolder(Long ttlStep);
 }
