@@ -187,7 +187,7 @@ public class DeviceInitializationUtils {
                 deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
         //first process description reply, write data to DS and write consequent data if successful
-        return Futures.transform(replyDesc,
+        return Futures.transformAsync(replyDesc,
                 new AsyncFunction<RpcResult<List<MultipartReply>>, List<RpcResult<List<MultipartReply>>>>() {
                     @Override
                     public ListenableFuture<List<RpcResult<List<MultipartReply>>>> apply(
