@@ -118,7 +118,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         // TODO enable table-update when ready
         //resultVehicle = updateTableFeatures(nodeIdent, configTree);
 
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 final List<Batch> batchBag = new ArrayList<>();

@@ -13,7 +13,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -156,7 +155,7 @@ public final class StatisticsGatheringUtils {
                                                                              final DeviceRegistry registry,
                                                                              final boolean initial,
                                                                              final SinglePurposeMultipartReplyTranslator multipartReplyTranslator) {
-        return Futures.transform(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
+        return Futures.transformAsync(statisticsDataInFuture, new AsyncFunction<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
             public ListenableFuture<Boolean> apply(final RpcResult<List<MultipartReply>> rpcResult) {
@@ -320,19 +319,15 @@ public final class StatisticsGatheringUtils {
                 LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
 
         /* we wish to close readTx for fallBack */
-        Futures.withFallback(flowCapableNodeFuture, new FutureFallback<Optional<FlowCapableNode>>() {
-
-            @Override
-            public ListenableFuture<Optional<FlowCapableNode>> create(final Throwable t) throws Exception {
-                readTx.close();
-                return Futures.immediateFailedFuture(t);
-            }
+        Futures.catchingAsync(flowCapableNodeFuture, Throwable.class, t -> {
+            readTx.close();
+            return Futures.immediateFailedFuture(t);
         });
         /*
          * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
          * not applicable for lists
          */
-        return Futures.transform(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
+        return Futures.transformAsync(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
 
             @Override
             public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
