@@ -236,11 +236,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
         } else {
-            try {
-                stopClusterServices(true).get();
-            } catch (Exception e) {
-                LOG.debug("Failed to close StatisticsContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
-            }
 
             this.state = CONTEXT_STATE.TERMINATION;
 
