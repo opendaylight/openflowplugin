@@ -380,12 +380,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
-    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+    @Override
+    public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         deviceContexts.remove(deviceInfo);
-        LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
-
-        lifecycleServices.remove(deviceInfo);
-        LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
+        }
+        this.updatePacketInRateLimiters();
     }
 
     @Override
