@@ -78,7 +78,6 @@ public class ContextChainImpl implements ContextChain {
             @Override
             public Void apply(@Nullable List<Void> input) {
                 LOG.debug("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
-                contextChainState = ContextChainState.WORKINGSLAVE;
                 return null;
             }
         });
@@ -103,7 +102,10 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void close() {
-
+        deviceContext.close();
+        rpcContext.close();
+        statisticsContext.close();
+        lifecycleService.close();
     }
 
     @Override
@@ -164,5 +166,6 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void sleepTheChain() {
         this.contextChainState = ContextChainState.SLEEPING;
+        this.stopChain(true);
     }
 }

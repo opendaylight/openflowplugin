@@ -750,14 +750,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())){
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            this.state = CONTEXT_STATE.TERMINATION;
-        }
-        sendNodeRemovedNotification();
+        this.state = CONTEXT_STATE.TERMINATION;
     }
 
     @Override
