@@ -352,8 +352,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         return statisticsContext;
     }
 
-    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+    @Override
+    public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
-        LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+        }
     }
 }
