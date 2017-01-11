@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -113,17 +114,12 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())){
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
+        if (!CONTEXT_STATE.TERMINATION.equals(this.state)){
             try {
                 stopClusterServices().get();
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException e) {
                 LOG.debug("Failed to close RpcContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
             }
-
             this.state = CONTEXT_STATE.TERMINATION;
         }
     }
