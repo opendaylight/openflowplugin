@@ -4,7 +4,7 @@ module sal-flow {
 
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
-    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}    
+    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
     import opendaylight-group-types {prefix group-type;revision-date "2013-10-18";}
     import opendaylight-meter-types {prefix meter-type;revision-date "2013-09-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
@@ -156,6 +156,9 @@ module sal-flow {
         uses tr:transaction-metadata;
         leaf flow-ref {
             type types:flow-ref;
+        }
+        leaf reason {
+            type types:removed-flow-reason;
         }
         uses node-flow;
         uses tr:transaction-aware;
