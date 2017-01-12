@@ -124,15 +124,27 @@ module opendaylight-flow-types {
             bit SEND_FLOW_REM;
         }
     }
+     typedef removed-flow-reason {
+            type enumeration {
+                enum OFPRR_IDLE_TIMEOUT{
+                    value 0;
+                    description "Flow idle time exceeded idle_timeout.";
+                }
+                enum OFPRR_HARD_TIMEOUT {
+                    value 1;
+                    description "Time exceeded hard_timeout.";
+                }
+                enum OFPRR_DELETE {
+                    value 2;
+                    description "Evicted by a DELETE flow mod.";
+                }
+                enum OFPRR_GROUP_DELETE {
+                    value 3;
+                    description "Group was removed.";
+                }
 
-    typedef removed_reason_flags {
-        type bits {
-            bit IDLE_TIMEOUT;
-            bit HARD_TIMEOUT;
-            bit DELETE;
-            bit GROUP_DELETE;
-        }
-    }
+            }
+     }
     
     grouping generic_flow_attributes {
         leaf priority {
@@ -247,7 +259,7 @@ module opendaylight-flow-types {
         uses generic_flow_attributes;
         
         leaf removed_reason {
-            type removed_reason_flags;
+            type removed-flow-reason;
         }
 
         leaf duration_nsec {
