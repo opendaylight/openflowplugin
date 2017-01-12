@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -14,9 +15,12 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRemovedReason.*;
 
 /**
  * translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions)
@@ -39,6 +43,7 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
                 .setCookie(new FlowCookie(input.getCookie()))
                 .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                 .setPriority(input.getPriority())
+                .setReason(translateReason(input))
                 .setTableId(translateTableId(input));
 
         return flowRemovedBld.build();
@@ -63,5 +68,21 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
      */
     protected Short translateTableId(FlowRemoved flowRemoved) {
         return flowRemoved.getTableId().getValue().shortValue();
+    }
+
+
+    protected FlowRemovedReason translateReason(FlowRemoved removedFlow){
+        if(Objects.nonNull(removedFlow.getReason())){
+             switch(removedFlow.getReason().getIntValue()){
+                 case 0 : return OFPRRIDLETIMEOUT;
+
+                 case 1 : return OFPRRHARDTIMEOUT;
+
+                 case 2 : return OFPRRDELETE;
+
+                 case 3 : return OFPRRGROUPDELETE;
+             }
+         }
+         return OFPRRIDLETIMEOUT;
     }
 }
