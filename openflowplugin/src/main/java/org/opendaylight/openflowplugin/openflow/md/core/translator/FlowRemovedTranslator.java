@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.RemovedReasonFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -63,7 +63,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSha;
@@ -147,6 +146,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst;
@@ -154,6 +154,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRemovedReason.*;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRemovedReason.OFPRRIDLETIMEOUT;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -190,14 +193,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             salFlowRemoved.setHardTimeout(ofFlow.getHardTimeout());
             salFlowRemoved.setPacketCount(ofFlow.getPacketCount());
             salFlowRemoved.setByteCount(ofFlow.getByteCount());
-            RemovedReasonFlags removeReasonFlag = new RemovedReasonFlags(
-                    FlowRemovedReason.OFPRRDELETE.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRGROUPDELETE.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRHARDTIMEOUT.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRIDLETIMEOUT.equals(ofFlow.getReason())
-            );
-
-            salFlowRemoved.setRemovedReason(removeReasonFlag);
+            salFlowRemoved.setRemovedReason(translateReason(ofFlow));
 
             OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch = ofFlow
@@ -221,6 +217,24 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         }
     }
 
+    protected FlowRemovedReason translateReason(FlowRemoved removedFlow){
+        LOG.debug("--Entering translateReason within FlowRemovedTranslator--");
+        if(removedFlow.getReason()!=null){
+            LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason--> "+removedFlow.getReason());
+            switch(removedFlow.getReason().getIntValue()){
+                case 0 : return OFPRRIDLETIMEOUT;
+
+                case 1 : return OFPRRHARDTIMEOUT;
+
+                case 2 : return OFPRRDELETE;
+
+                case 3 : return OFPRRGROUPDELETE;
+
+                default : return OFPRRIDLETIMEOUT;
+            }
+        }
+        return OFPRRIDLETIMEOUT;
+    }
 
     public Match fromMatch(final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch,
                            final BigInteger datapathid, final OpenflowVersion ofVersion) {
