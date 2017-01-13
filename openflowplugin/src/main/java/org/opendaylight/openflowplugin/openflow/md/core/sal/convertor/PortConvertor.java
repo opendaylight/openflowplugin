@@ -155,7 +155,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     }
 
     @Override
-    public PortModInput convert(Port source, VersionConvertorData data) {
+    public PortModInput convert(Port source, VersionConvertorData data, boolean isRPCStats) {
         PortConfig config = maskPortConfigFields(source.getConfiguration());
         PortConfigV10 configV10 = maskPortConfigV10Fields(source.getConfiguration());
 

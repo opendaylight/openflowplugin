@@ -53,7 +53,8 @@ public abstract class Convertor<FROM, TO, DATA extends ConvertorData> {
      *
      * @param source source
      * @param data   convertor data
+     * @param isRPCStats RPC Stats call
      * @return converted source
      */
-    public abstract TO convert(FROM source, DATA data);
+    public abstract TO convert(FROM source, DATA data, boolean isRPCStats);
 }

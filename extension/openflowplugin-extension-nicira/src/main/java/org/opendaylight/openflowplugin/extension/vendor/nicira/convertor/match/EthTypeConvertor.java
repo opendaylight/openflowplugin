@@ -58,6 +58,9 @@ public class EthTypeConvertor implements ConvertorToOFJava<MatchEntry>, Converto
             case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
                         new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfEthType(value).build(), key);
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
+                        new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfEthType(value).build(), key);
             case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfEthType(value).build(), key);

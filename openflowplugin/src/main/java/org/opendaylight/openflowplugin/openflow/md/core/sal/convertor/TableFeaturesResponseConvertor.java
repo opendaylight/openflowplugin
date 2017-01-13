@@ -492,7 +492,7 @@ public class TableFeaturesResponseConvertor extends Convertor<MultipartReplyTabl
     }
 
     @Override
-    public List<TableFeatures> convert(MultipartReplyTableFeatures source, VersionConvertorData data) {
+    public List<TableFeatures> convert(MultipartReplyTableFeatures source, VersionConvertorData data, boolean isRPCStats) {
         if (source == null || source.getTableFeatures() == null) {
             return Collections.emptyList();
         }

@@ -37,4 +37,6 @@ public interface ConvertorExecutor {
      * @return the result (can be empty, if no convertor was found)
      */
     <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data);
+
+    <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data, final boolean isRPCStats);
 }

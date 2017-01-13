@@ -55,7 +55,7 @@ public class MeterStatsResponseConvertor extends Convertor<
     }
 
     @Override
-    public List<MeterStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats> source, VersionConvertorData data) {
+    public List<MeterStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats> source, VersionConvertorData data, boolean isRPCStats) {
         List<MeterStats> convertedSALMeters = new ArrayList<>();
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.

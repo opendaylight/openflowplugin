@@ -91,12 +91,18 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         }
 
          return findConvertor(data.getVersion(), type)
-                .map(convertor -> (TO)convertor.convert(source, data));
+                .map(convertor -> (TO)convertor.convert(source, data, false));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data) {
+        return convert(source, data, false);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data, final boolean rpcStats) {
         Optional<TO> result = Optional.empty();
 
         if (Objects.isNull(source)) {
@@ -119,7 +125,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         }
 
         return findConvertor(data.getVersion(), type)
-                .map(convertor -> (TO)convertor.convert(source, data));
+                .map(convertor -> (TO)convertor.convert(source, data, rpcStats));
     }
 
     /**

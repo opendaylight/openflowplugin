@@ -605,7 +605,7 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     @Override
-    public List<TableFeatures> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source, VersionConvertorData data) {
+    public List<TableFeatures> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source, VersionConvertorData data, boolean isRPCStats) {
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder ofTableFeatures = new TableFeaturesBuilder();
 

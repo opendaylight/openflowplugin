@@ -50,6 +50,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class FlowDirectStatisticsService extends AbstractDirectStatisticsService<GetFlowStatisticsInput, GetFlowStatisticsOutput> {
     private final VersionDatapathIdConvertorData data;
+    private final boolean IS_RPC_STATS = true;
 
     /**
      * Instantiates a new Flow direct statistics service.
@@ -113,7 +114,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
                 final MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
                 final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorExecutor().convert(
-                        replyBody.getFlowStats(), data);
+                        replyBody.getFlowStats(), data, IS_RPC_STATS);
 
                 if (statsListPart.isPresent()) {
                     for (final FlowAndStatisticsMapList part : statsListPart.get()) {

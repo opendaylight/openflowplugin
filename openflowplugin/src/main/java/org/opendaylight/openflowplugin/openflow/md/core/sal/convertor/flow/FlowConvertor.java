@@ -519,7 +519,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     }
 
     @Override
-    public List<FlowModInputBuilder> convert(Flow source, VersionDatapathIdConvertorData data) {
+    public List<FlowModInputBuilder> convert(Flow source, VersionDatapathIdConvertorData data, boolean isRPCStats) {
         if (data.getVersion() >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(source)) {
             return handleSetVlanIdForOF13(source, data.getVersion(), data.getDatapathId());
         } else {

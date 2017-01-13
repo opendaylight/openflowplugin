@@ -140,7 +140,7 @@ public final class ActionConvertor extends Convertor<
     }
 
     @Override
-    public List<Action> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> source, ActionConvertorData data) {
+    public List<Action> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> source, ActionConvertorData data, boolean isRPCStats) {
         // Prepare list of converted actions
         final List<Action> result = new ArrayList<>();
 

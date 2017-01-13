@@ -44,7 +44,7 @@ public class ConvertorManagerTest {
                     }
 
                     @Override
-                    public String convert(Action source, VersionConvertorData data) {
+                    public String convert(Action source, VersionConvertorData data, boolean isRPCStats) {
                         return null;
                     }
                 });
@@ -67,7 +67,7 @@ public class ConvertorManagerTest {
                     }
 
                     @Override
-                    public String convert(Action source, VersionConvertorData data) {
+                    public String convert(Action source, VersionConvertorData data, boolean isRPCStats) {
                         return String.valueOf(source) + String.valueOf(data);
                     }
                 });
@@ -95,7 +95,7 @@ public class ConvertorManagerTest {
                     }
 
                     @Override
-                    public String convert(List<Action> source, VersionConvertorData data) {
+                    public String convert(List<Action> source, VersionConvertorData data, boolean isRPCStats) {
                         return String.valueOf(source) + String.valueOf(data);
                     }
                 });

@@ -89,7 +89,7 @@ public final class ActionResponseConvertor extends Convertor<
     }
 
     @Override
-    public List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convert(List<Action> source, ActionResponseConvertorData data) {
+    public List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convert(List<Action> source, ActionResponseConvertorData data, boolean isRPCStats) {
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> result = new ArrayList<>();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
 

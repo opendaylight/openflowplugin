@@ -96,7 +96,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
     }
 
     @Override
-    public List<FlowAndStatisticsMapList> convert(List<FlowStats> source, VersionDatapathIdConvertorData data) {
+    public List<FlowAndStatisticsMapList> convert(List<FlowStats> source, VersionDatapathIdConvertorData data, boolean rpcStats) {
         final List<FlowAndStatisticsMapList> result = new ArrayList<>();
 
         for (FlowStats flowStats : source) {
@@ -141,7 +141,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                             MatchExtensionHelper.processAllExtensions(
                                     flowStats.getMatch().getMatchEntry(),
                                     OpenflowVersion.get(data.getVersion()),
-                                    MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+                                    getMatchPath(rpcStats));
 
                     if (matchExtensionWrap != null) {
                         matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
@@ -172,5 +172,10 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
         }
 
         return result;
+    }
+
+    private MatchPath getMatchPath(boolean rpcStats) {
+        return rpcStats ? MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH :
+                MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH;
     }
 }

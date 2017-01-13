@@ -141,7 +141,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     }
 
     @Override
-    public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data) {
+    public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data, boolean isRPCStats) {
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof AddGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
