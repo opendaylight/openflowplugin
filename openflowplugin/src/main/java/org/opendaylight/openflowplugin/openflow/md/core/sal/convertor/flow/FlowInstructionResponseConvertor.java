@@ -68,7 +68,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
     }
 
     @Override
-    public Instructions convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> source, VersionConvertorData data) {
+    public Instructions convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> source, VersionConvertorData data, boolean isRPCStats) {
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
 
         List<Instruction> salInstructionList = new ArrayList<>();
