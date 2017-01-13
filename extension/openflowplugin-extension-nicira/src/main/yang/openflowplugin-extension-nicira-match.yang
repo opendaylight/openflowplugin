@@ -11,6 +11,7 @@ module openflowplugin-extension-nicira-match {
     import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
     import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import opendaylight-direct-statistics {prefix odl-direct-stats;revision-date "2016-05-11";}
     import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
@@ -468,6 +469,10 @@ module openflowplugin-extension-nicira-match {
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
         ext:augment-identifier "nx-aug-match-notif-update-flow-stats";
+        uses all-matches-grouping;
+    }
+    augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-get-flow-stats";
         uses all-matches-grouping;
     }
 
