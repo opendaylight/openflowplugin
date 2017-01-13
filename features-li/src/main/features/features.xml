@@ -82,7 +82,6 @@
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest-li</feature>
         <feature version="${dlux.version}">odl-dlux-core</feature>
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
-        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
     <!-- CBENCH TESTING -->
