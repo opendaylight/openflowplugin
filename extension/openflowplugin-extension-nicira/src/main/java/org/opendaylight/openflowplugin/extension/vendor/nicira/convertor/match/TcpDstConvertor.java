@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.tcp.dst.grouping.NxmOfTcpDst;
@@ -93,6 +95,9 @@ public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
                         new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfTcpDst(value).build(), key);
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmOfTcpDst(value).build(), key);
             case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfTcpDst(value).build(), key);

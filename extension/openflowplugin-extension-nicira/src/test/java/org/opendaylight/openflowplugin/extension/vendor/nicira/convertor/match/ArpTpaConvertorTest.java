@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpTpaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.tpa.grouping.NxmOfArpTpaBuilder;
@@ -90,6 +91,10 @@ public class ArpTpaConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpTpaConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfArpTpa().getIpv4Address());
+        Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpTpaConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfArpTpa().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
     }
 

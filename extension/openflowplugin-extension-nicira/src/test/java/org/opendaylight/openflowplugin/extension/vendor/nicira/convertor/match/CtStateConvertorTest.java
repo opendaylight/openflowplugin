@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.state.grouping.NxmNxCtStateBuilder;
@@ -87,11 +88,17 @@ public class CtStateConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ctStateConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxCtState().getCtState().longValue());
-        Assert.assertEquals(4L, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxCtState().getMask().longValue());Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+        Assert.assertEquals(4L, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxCtState().getMask().longValue());
+        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctStateConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmNxCtState().getMask().longValue());
+        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ctStateConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(3L, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxCtState().getCtState().longValue());
+        Assert.assertEquals(4L, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxCtState().getMask().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
 
     }

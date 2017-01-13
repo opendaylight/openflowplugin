@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.dst.grouping.NxmOfEthDstBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -91,5 +92,12 @@ public class EthDstConvertorTest {
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethDstConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfEthDst().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethDstConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfEthDst().getMacAddress());
+        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+
+
+
     }
 }

@@ -46,7 +46,18 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null);
+    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null),
+    /**
+     * openflowplugin-extension-general.yang
+     * <pre>
+     * module: opendaylight-direct-statistics
+     * rpc:
+     *    +---n get-flow-statistics
+     *    |  +--ro flow-and-statistics-map-list* [flow-id]
+     *    |  |  +--ro match
+     * </pre>
+     */
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH(null);
 
     private final InstanceIdentifier<Extension> iid;
 

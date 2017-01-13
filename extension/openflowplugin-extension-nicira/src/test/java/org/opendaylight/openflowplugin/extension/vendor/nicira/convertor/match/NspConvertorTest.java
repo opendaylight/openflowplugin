@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -84,6 +85,10 @@ public class NspConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nspConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(2, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
+        Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nspConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
     }
 }

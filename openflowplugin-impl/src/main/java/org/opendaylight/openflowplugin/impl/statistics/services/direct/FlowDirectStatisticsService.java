@@ -16,8 +16,10 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
@@ -49,7 +51,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * The Flow direct statistics service.
  */
 public class FlowDirectStatisticsService extends AbstractDirectStatisticsService<GetFlowStatisticsInput, GetFlowStatisticsOutput> {
-    private final VersionDatapathIdConvertorData data;
+    private final FlowStatsResponseConvertorData data;
 
     /**
      * Instantiates a new Flow direct statistics service.
@@ -59,8 +61,9 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
      */
     public FlowDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
         super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, convertorExecutor);
-        data = new VersionDatapathIdConvertorData(getVersion());
+        data = new FlowStatsResponseConvertorData(getVersion());
         data.setDatapathId(getDatapathId());
+        data.setMatchPath(MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
     }
 
     @Override

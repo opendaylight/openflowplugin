@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.arp.sha.grouping.NxmNxArpShaBuilder;
@@ -91,6 +92,10 @@ public class ArpShaConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpShaConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(), ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmNxArpSha().getMacAddress());
+        Assert.assertEquals(extensionAugment.getKey(), NxmNxArpShaKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpShaConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxArpSha().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxArpShaKey.class);
     }
 

@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.udp.src.grouping.NxmOfUdpSrcBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -93,6 +94,11 @@ public class UdpSrcConvertorTest {
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpSrcConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getMask());
         Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getPort());
+        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpSrcConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
     }
 
