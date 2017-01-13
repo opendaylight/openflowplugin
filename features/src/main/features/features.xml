@@ -22,7 +22,6 @@
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-ui</feature>
     </feature>
 
     <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: SouthBound" version='${project.version}'>
@@ -83,7 +82,6 @@
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
         <feature version="${dlux.version}">odl-dlux-core</feature>
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
-        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
 
     <!-- CBENCH TESTING -->
