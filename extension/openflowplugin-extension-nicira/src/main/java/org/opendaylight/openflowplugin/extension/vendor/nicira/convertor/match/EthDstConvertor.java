@@ -27,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.dst.grouping.NxmOfEthDst;
@@ -59,6 +61,9 @@ public class EthDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
                         new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfEthDst(value).build(), key);
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmOfEthDst(value).build(), key);
             case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfEthDst(value).build(), key);

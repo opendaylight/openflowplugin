@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.ipv4.dst.grouping.NxmNxTunIpv4Dst;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.tun.ipv4.dst.grouping.TunIpv4DstValuesBuilder;
@@ -42,6 +44,9 @@ public class TunIPv4DstConvertor implements ConvertorToOFJava<MatchEntry>, Conve
                 case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                         return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
                                 new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+                case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                    return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                            new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxTunIpv4Dst(value).build(), key);
                 case PACKETRECEIVED_MATCH:
                         return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
                                 new NxAugMatchNotifPacketInBuilder().setNxmNxTunIpv4Dst(value).build(), key);

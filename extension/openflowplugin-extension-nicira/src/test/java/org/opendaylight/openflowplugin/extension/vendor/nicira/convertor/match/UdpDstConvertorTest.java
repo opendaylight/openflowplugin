@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.udp.dst.grouping.NxmOfUdpDstBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -93,6 +94,11 @@ public class UdpDstConvertorTest {
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpDstConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getMask());
         Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getPort());
+        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpDstConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
     }
 

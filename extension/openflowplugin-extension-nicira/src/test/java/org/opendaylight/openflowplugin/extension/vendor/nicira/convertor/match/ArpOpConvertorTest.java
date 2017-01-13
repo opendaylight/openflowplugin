@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpOpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOpBuilder;
@@ -90,5 +91,10 @@ public class ArpOpConvertorTest {
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpOpConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
         Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment2.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(extensionAugment2.getKey(), NxmOfArpOpKey.class);
+
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpOpConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfArpOp().getValue());
+        Assert.assertEquals(extensionAugment3.getKey(), NxmOfArpOpKey.class);
+
     }
 }
