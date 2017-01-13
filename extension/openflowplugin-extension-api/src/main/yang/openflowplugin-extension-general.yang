@@ -12,6 +12,7 @@ module openflowplugin-extension-general {
     import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
     import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
     import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
+    import opendaylight-direct-statistics {prefix odl-direct-stats;revision-date "2016-05-11";}
 
 
     description 
@@ -85,9 +86,10 @@ module openflowplugin-extension-general {
         uses general-extension-list-grouping;
     }
 
-    
-    
-    
+    augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match" {
+        ext:augment-identifier "general-aug-match-rpc-output-flow-stats";
+        uses general-extension-list-grouping;
+    }
     
     // VENDOR EXAMPLE -- testing purposes -> remove later!
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/extension-list/extension" {

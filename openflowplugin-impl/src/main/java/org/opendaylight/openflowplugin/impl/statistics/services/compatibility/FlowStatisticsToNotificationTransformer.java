@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -47,8 +48,9 @@ public class FlowStatisticsToNotificationTransformer {
                                                                 final OpenflowVersion ofVersion,
                                                                 final TransactionId emulatedTxId,
                                                                 final ConvertorExecutor convertorExecutor) {
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(ofVersion.getVersion());
+        final FlowStatsResponseConvertorData data = new FlowStatsResponseConvertorData(ofVersion.getVersion());
         data.setDatapathId(deviceInfo.getDatapathId());
+        data.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
         notification.setId(deviceInfo.getNodeId());

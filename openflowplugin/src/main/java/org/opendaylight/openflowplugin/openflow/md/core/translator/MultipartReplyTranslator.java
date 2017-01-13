@@ -18,7 +18,9 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -134,6 +136,9 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             switch (mpReply.getType()){
             case OFPMPFLOW: {
                 logger.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                FlowStatsResponseConvertorData flowData = new FlowStatsResponseConvertorData(data.getVersion());
+                flowData.setDatapathId(data.getDatapathId());
+                flowData.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
                 FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -141,7 +146,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
                 MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
 
-                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = convertorExecutor.convert(replyBody.getFlowStats(), data);
+                final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = convertorExecutor.convert(replyBody.getFlowStats(), flowData);
 
                 message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
                 logger.debug("Converted flow statistics : {}",message.build().toString());

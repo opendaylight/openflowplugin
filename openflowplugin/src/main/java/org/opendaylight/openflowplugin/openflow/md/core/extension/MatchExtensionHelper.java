@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcOutputFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcOutputFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
@@ -92,6 +94,13 @@ public final class MatchExtensionHelper {
                     augmentTuple = (AugmentTuple<EXT_POINT>)
                             new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match>(
                                     GeneralAugMatchNotifSwitchFlowRemoved.class, generalExtMatchAugBld3.build());
+                    break;
+                case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                    GeneralAugMatchRpcOutputFlowStatsBuilder generalExtMatchAugBld4 = new GeneralAugMatchRpcOutputFlowStatsBuilder();
+                    generalExtMatchAugBld4.setExtensionList(extensionsList);
+                    augmentTuple = (AugmentTuple<EXT_POINT>)
+                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match>(
+                                    GeneralAugMatchRpcOutputFlowStats.class, generalExtMatchAugBld4.build());
                     break;
                 default:
                     LOG.warn("matchPath not supported: {}", matchPath);
