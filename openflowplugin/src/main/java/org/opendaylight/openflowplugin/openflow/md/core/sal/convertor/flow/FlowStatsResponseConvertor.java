@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -54,7 +55,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, VersionDatapathIdConvertorData> {
+public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, FlowStatsResponseConvertorData> {
 
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(FlowStats.class);
 
@@ -96,7 +97,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
     }
 
     @Override
-    public List<FlowAndStatisticsMapList> convert(List<FlowStats> source, VersionDatapathIdConvertorData data) {
+    public List<FlowAndStatisticsMapList> convert(List<FlowStats> source, FlowStatsResponseConvertorData data) {
         final List<FlowAndStatisticsMapList> result = new ArrayList<>();
 
         for (FlowStats flowStats : source) {
@@ -141,7 +142,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                             MatchExtensionHelper.processAllExtensions(
                                     flowStats.getMatch().getMatchEntry(),
                                     OpenflowVersion.get(data.getVersion()),
-                                    MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+                                    data.getMatchPath());
 
                     if (matchExtensionWrap != null) {
                         matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
