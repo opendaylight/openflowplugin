@@ -48,6 +48,9 @@ public class Nshc1Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
             case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
                         new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmNxNshc1(value).build(), key);
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
+                        new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmNxNshc1(value).build(), key);
             case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmNxNshc1(value).build(), key);

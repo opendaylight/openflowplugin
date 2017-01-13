@@ -46,7 +46,9 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null);
+    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null),
+
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH(null);
 
     private final InstanceIdentifier<Extension> iid;
 
