@@ -152,7 +152,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     }
 
     @Override
-    public MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
+    public MeterModInputBuilder convert(Meter source, VersionConvertorData data, boolean isRPCStats) {
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
         List<Bands> bands = new ArrayList<>();
 

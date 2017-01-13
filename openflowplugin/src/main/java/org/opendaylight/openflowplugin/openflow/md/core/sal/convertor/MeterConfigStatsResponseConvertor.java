@@ -61,7 +61,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
     }
 
     @Override
-    public List<MeterConfigStats> convert(List<MeterConfig> source, VersionConvertorData data) {
+    public List<MeterConfigStats> convert(List<MeterConfig> source, VersionConvertorData data, boolean isRPCStats) {
         List<MeterConfigStats> listMeterConfigStats = new ArrayList<>();
 
         for (MeterConfig meterConfig : source) {

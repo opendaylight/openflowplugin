@@ -104,7 +104,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
     }
 
     @Override
-    public List<GroupDescStats> convert(List<GroupDesc> source, VersionConvertorData data) {
+    public List<GroupDescStats> convert(List<GroupDesc> source, VersionConvertorData data, boolean isRPCStats) {
         List<GroupDescStats> convertedSALGroupsDesc = new ArrayList<>();
 
         for (GroupDesc groupDesc : source) {

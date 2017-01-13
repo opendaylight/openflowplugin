@@ -61,7 +61,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
     }
 
     @Override
-    public MatchBuilder convert(MatchV10 source, VersionDatapathIdConvertorData datapathIdConvertorData) {
+    public MatchBuilder convert(MatchV10 source, VersionDatapathIdConvertorData datapathIdConvertorData, boolean isRPCStats) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();

@@ -151,7 +151,7 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
     }
 
     @Override
-    public MatchBuilder convert(MatchEntriesGrouping source, VersionDatapathIdConvertorData datapathIdConvertorData) {
+    public MatchBuilder convert(MatchEntriesGrouping source, VersionDatapathIdConvertorData datapathIdConvertorData, boolean isRPCStats) {
         final MatchBuilder matchBuilder = new MatchBuilder();
 
         final MatchResponseConvertorData data = new MatchResponseConvertorData(datapathIdConvertorData.getVersion());

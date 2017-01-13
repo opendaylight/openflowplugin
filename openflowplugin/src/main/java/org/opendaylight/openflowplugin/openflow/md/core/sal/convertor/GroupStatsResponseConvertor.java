@@ -76,7 +76,7 @@ public class GroupStatsResponseConvertor extends Convertor<
     }
 
     @Override
-    public List<GroupStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats> source, VersionConvertorData data) {
+    public List<GroupStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats> source, VersionConvertorData data, boolean isRPCStats) {
         List<GroupStats> convertedSALGroups = new ArrayList<>();
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply

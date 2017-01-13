@@ -84,7 +84,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     @Override
-    public PacketOutInput convert(TransmitPacketInput source, PacketOutConvertorData data) {
+    public PacketOutInput convert(TransmitPacketInput source, PacketOutConvertorData data, boolean isRPCStats) {
         LOG.trace("toPacketOutInput for datapathId:{}, xid:{}", data.getDatapathId(), data.getXid());
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr;

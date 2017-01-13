@@ -91,7 +91,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         }
 
          return findConvertor(data.getVersion(), type)
-                .map(convertor -> (TO)convertor.convert(source, data));
+                .map(convertor -> (TO)convertor.convert(source, data, false));
     }
 
     @Override
