@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_061f236d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ConvertorExecutor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-01-13T13:03:10Z",
+      "side": 1,
+      "message": "I have added FlowStatsResponseConvertorData java file which extends VersionDatapathIdConvertorData.\n\nThis class contains variable to differentiate if it is rpc call or notification call.\n\nI hope this want you expected.",
+      "parentUuid": "1a622d24_e6aae76f",
+      "range": {
+        "startLine": 41,
+        "startChar": 134,
+        "endLine": 41,
+        "endChar": 158
+      },
+      "revId": "0ccf6d37521dfdc019000a7fd4b48b5568f093ed",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
