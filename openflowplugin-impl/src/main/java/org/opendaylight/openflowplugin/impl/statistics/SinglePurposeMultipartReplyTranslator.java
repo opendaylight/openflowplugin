@@ -13,8 +13,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
@@ -150,6 +152,9 @@ public class SinglePurposeMultipartReplyTranslator {
             return;
         }
 
+        FlowStatsResponseConvertorData flowData = new FlowStatsResponseConvertorData(data.getVersion());
+        flowData.setDatapathId(data.getDatapathId());
+        flowData.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
         message.setId(node);
         message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -157,7 +162,7 @@ public class SinglePurposeMultipartReplyTranslator {
         MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
         MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
         final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists =
-                convertorExecutor.convert(replyBody.getFlowStats(), data);
+                convertorExecutor.convert(replyBody.getFlowStats(), flowData);
 
         message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
 

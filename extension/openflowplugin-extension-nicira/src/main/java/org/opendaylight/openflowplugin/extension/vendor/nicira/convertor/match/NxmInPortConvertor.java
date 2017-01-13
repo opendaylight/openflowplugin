@@ -25,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.in.port.grouping.OfInPortBuilder;
@@ -59,20 +61,16 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
         switch (path) {
         case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
             return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
-                    new NxAugMatchNotifUpdateFlowStatsBuilder()
-                            .setOfInPort(value).build(),
-                    key);
+                    new NxAugMatchNotifUpdateFlowStatsBuilder().setOfInPort(value).build(), key);
+        case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+            return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                     new NxAugMatchRpcGetFlowStatsBuilder().setOfInPort(value).build(), key);
         case PACKETRECEIVED_MATCH:
             return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
-                    new NxAugMatchNotifPacketInBuilder().setOfInPort(value)
-                            .build(),
-                    key);
+                    new NxAugMatchNotifPacketInBuilder().setOfInPort(value).build(), key);
         case SWITCHFLOWREMOVED_MATCH:
-            return new ExtensionAugment<>(
-                    NxAugMatchNotifSwitchFlowRemoved.class,
-                    new NxAugMatchNotifSwitchFlowRemovedBuilder()
-                            .setOfInPort(value).build(),
-                    key);
+            return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                    new NxAugMatchNotifSwitchFlowRemovedBuilder().setOfInPort(value).build(), key);
         default:
             throw new CodecPreconditionException(path);
         }
