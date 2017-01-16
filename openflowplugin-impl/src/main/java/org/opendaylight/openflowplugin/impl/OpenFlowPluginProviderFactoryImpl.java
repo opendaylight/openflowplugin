@@ -64,6 +64,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
         openflowPluginProvider.updateTtlBeforeDropInContextChainHolder(providerConfig.getTtlBeforeDrop());
         openflowPluginProvider.updateTtlStepInContextChainHolder(providerConfig.getTtlStep());
+        openflowPluginProvider.updateNeverDropContextChains(providerConfig.isNeverDropContextsOn());
 
         openflowPluginProvider.initialize();
 

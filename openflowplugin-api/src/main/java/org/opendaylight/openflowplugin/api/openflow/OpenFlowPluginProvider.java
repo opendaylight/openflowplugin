@@ -84,4 +84,6 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void updateTtlBeforeDropInContextChainHolder(Long ttlBeforeDrop);
 
     void updateTtlStepInContextChainHolder(Long ttlStep);
+
+    void updateNeverDropContextChains(Boolean neverDropChain);
 }
