@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.fin.timeout.grouping.NxActionFinTimeout;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionFinTimeoutNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNotifFlowsStatisticsUpdateWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionFinTimeoutNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNodesNodeTableFlowWriteActionsCase;
 
@@ -81,6 +83,12 @@ public class FinTimeoutConvertorTest {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3 =
                 finTimeoutConvertor.convert(action,
                         ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4 =
+                finTimeoutConvertor.convert(action,
+                        ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5 =
+                finTimeoutConvertor.convert(action,
+                        ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(3, ((NxActionFinTimeoutNotifFlowsStatisticsUpdateApplyActionsCase) actionResult)
                 .getNxActionFinTimeout().getFinIdleTimeout().intValue());
@@ -101,6 +109,15 @@ public class FinTimeoutConvertorTest {
                 .getNxActionFinTimeout().getFinIdleTimeout().intValue());
         Assert.assertEquals(4, ((NxActionFinTimeoutNodesNodeTableFlowWriteActionsCase) actionResult3)
                 .getNxActionFinTimeout().getFinHardTimeout().intValue());
-    }
 
+        Assert.assertEquals(3, ((NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCase) actionResult4)
+                .getNxActionFinTimeout().getFinIdleTimeout().intValue());
+        Assert.assertEquals(4, ((NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCase) actionResult4)
+                .getNxActionFinTimeout().getFinHardTimeout().intValue());
+
+        Assert.assertEquals(3, ((NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCase) actionResult5)
+                .getNxActionFinTimeout().getFinIdleTimeout().intValue());
+        Assert.assertEquals(4, ((NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCase) actionResult5)
+                .getNxActionFinTimeout().getFinHardTimeout().intValue());
+    }
 }

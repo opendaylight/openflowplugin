@@ -16,6 +16,7 @@ module openflowplugin-extension-nicira-action {
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
     import openflow-action {prefix ofaction;revision-date "2015-02-03";}
     import nicira-action {prefix nicira-action;revision-date "2014-04-21";}
+    import opendaylight-direct-statistics {prefix directstat;revision-date "2016-05-11";}
 
     description
         "Nicira openflow action extensions.";
@@ -1595,6 +1596,71 @@ bits specified from the register.";
     }
     augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
         case "nx-action-learn-notif-group-desc-stats-updated-case" {
+            uses nx-action-learn-grouping;
+        }
+    }
+    augment "/directstat:get-flow-statistics/directstat:output/directstat:flow-and-statistics-map-list/directstat:instructions/directstat:instruction/directstat:instruction/directstat:apply-actions-case/directstat:apply-actions/directstat:action/directstat:action" {
+        case "nx-action-reg-load-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
+        case "nx-action-reg-move-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+        case "nx-action-output-reg-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+        case "nx-action-resubmit-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-resubmit-grouping;
+        }
+        case "nx-action-fin-timeout-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+        case "nx-action-multipath-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-multipath-grouping;
+        }
+        case "nx-action-push-nsh-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-push-nsh-grouping;
+        }
+        case "nx-action-pop-nsh-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-pop-nsh-grouping;
+        }
+        case "nx-action-conntrack-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-conntrack-grouping;
+        }
+        case "nx-action-learn-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-learn-grouping;
+        }
+    }
+
+    augment "/directstat:get-flow-statistics/directstat:output/directstat:flow-and-statistics-map-list/directstat:instructions/directstat:instruction/directstat:instruction/directstat:write-actions-case/directstat:write-actions/directstat:action/directstat:action" {
+        case "nx-action-reg-load-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
+        case "nx-action-reg-move-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+        case "nx-action-output-reg-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+        case "nx-action-resubmit-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-resubmit-grouping;
+        }
+        case "nx-action-fin-timeout-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-fin-timeout-grouping;
+        }
+        case "nx-action-multipath-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-multipath-grouping;
+        }
+        case "nx-action-push-nsh-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-push-nsh-grouping;
+        }
+        case "nx-action-pop-nsh-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-pop-nsh-grouping;
+        }
+        case "nx-action-conntrack-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-conntrack-grouping;
+        }
+        case "nx-action-learn-notif-direct-statistics-update-write-actions-case" {
             uses nx-action-learn-grouping;
         }
     }
