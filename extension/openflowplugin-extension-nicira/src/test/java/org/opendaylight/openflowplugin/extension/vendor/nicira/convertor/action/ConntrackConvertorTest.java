@@ -19,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrackBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionConntrackNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder;
@@ -86,6 +88,10 @@ public class ConntrackConvertorTest {
                 = conntrackConvertor.convert(groupingAction, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action3
                 = conntrackConvertor.convert(groupingAction, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action4
+                = conntrackConvertor.convert(groupingAction, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action5
+                = conntrackConvertor.convert(groupingAction, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getConntrackZone().longValue());
         Assert.assertEquals(1L, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack().getZoneSrc().longValue());
@@ -107,6 +113,14 @@ public class ConntrackConvertorTest {
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getRecircTable().intValue());
         Assert.assertEquals(1, ((NxActionConntrackNotifGroupDescStatsUpdatedCase) action3).getNxConntrack().getFlags().intValue());
 
-    }
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCase) action4).getNxConntrack().getConntrackZone().longValue());
+        Assert.assertEquals(1L, ((NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCase) action4).getNxConntrack().getZoneSrc().longValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCase) action4).getNxConntrack().getRecircTable().intValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCase) action4).getNxConntrack().getFlags().intValue());
 
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCase) action5).getNxConntrack().getConntrackZone().longValue());
+        Assert.assertEquals(1L, ((NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCase) action5).getNxConntrack().getZoneSrc().longValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCase) action5).getNxConntrack().getRecircTable().intValue());
+        Assert.assertEquals(1, ((NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCase) action5).getNxConntrack().getFlags().intValue());
+    }
 }
