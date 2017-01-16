@@ -66,6 +66,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
         openflowPluginProvider.updateTtlBeforeDropInContextChainHolder(providerConfig.getTtlBeforeDrop());
         openflowPluginProvider.updateTtlStepInContextChainHolder(providerConfig.getTtlStep());
+        openflowPluginProvider.updateNeverDropContextChains(providerConfig.isNeverDropContextsOn());
 
         openflowPluginProvider.initialize();
 
