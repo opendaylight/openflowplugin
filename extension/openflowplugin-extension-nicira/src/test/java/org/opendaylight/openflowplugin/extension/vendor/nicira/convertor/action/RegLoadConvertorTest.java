@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionRegLoadNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegLoadNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
@@ -90,6 +92,10 @@ public class RegLoadConvertorTest {
                 = regLoadConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
                 = regLoadConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
+                = regLoadConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
+                = regLoadConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(Integer.valueOf(0), ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getStart());
         Assert.assertEquals(Integer.valueOf(4), ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getEnd());
@@ -106,6 +112,14 @@ public class RegLoadConvertorTest {
         Assert.assertEquals(Integer.valueOf(0), ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getStart());
         Assert.assertEquals(Integer.valueOf(4), ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getEnd());
         Assert.assertEquals(BigInteger.ONE, ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getValue());
+
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(4), ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getDst().getEnd());
+        Assert.assertEquals(BigInteger.ONE, ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getValue());
+
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(4), ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getDst().getEnd());
+        Assert.assertEquals(BigInteger.ONE, ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getValue());
 
     }
 

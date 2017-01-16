@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionResubmitNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmit;
@@ -79,6 +81,10 @@ public class ResubmitConvertorTest {
                 = resubmitConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
                 = resubmitConvertor.convert(action, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
+                = resubmitConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
+                = resubmitConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(3, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxResubmit().getInPort().intValue());
         Assert.assertEquals(4, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxResubmit().getTable().intValue());
@@ -91,6 +97,11 @@ public class ResubmitConvertorTest {
 
         Assert.assertEquals(3, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit().getInPort().intValue());
         Assert.assertEquals(4, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit().getTable().intValue());
-    }
 
+        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxResubmit().getTable().intValue());
+
+        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxResubmit().getTable().intValue());
+    }
 }

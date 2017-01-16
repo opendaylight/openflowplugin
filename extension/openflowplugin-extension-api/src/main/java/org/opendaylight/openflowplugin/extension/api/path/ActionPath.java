@@ -100,8 +100,42 @@ public enum ActionPath implements AugmentationPath {
      *    |  |           +--ro (action)?
      * </pre>
      */
-    GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION(null);
-    
+    GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION(null),
+    /**
+     * openflowplugin-extension-general.yang
+     * <pre>
+     * module: opendaylight-direct-statistics
+     * notifications:
+     *    +---n get-flow-statistics
+     *    |  +--ro flow-and-statistics-map-list* [flow-id]
+     *    |  |  +--ro instructions
+     *    |  |  |  +--ro instruction* [order]
+     *    |  |  |     +--ro (instruction)?
+     *    |  |  |        +--:(write-actions-case)
+     *    |  |  |        |  +--ro write-actions
+     *    |  |  |        |     +--ro action* [order]
+     *    |  |  |        |        +--ro (action)?
+     * </pre>
+     */
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION(null),
+    /**
+     * openflowplugin-extension-general.yang
+     * <pre>
+     * module: opendaylight-direct-statistics
+     * notifications:
+     *    +---n get-flow-statistics
+     *    |  +--ro flow-and-statistics-map-list* [flow-id]
+     *    |  |  +--ro instructions
+     *    |  |  |  +--ro instruction* [order]
+     *    |  |  |     +--ro (instruction)?
+     *    |  |  |        +--:(apply-actions-case)
+     *    |  |  |        |  +--ro apply-actions
+     *    |  |  |        |     +--ro action* [order]
+     *    |  |  |        |        +--ro (action)?
+     * </pre>
+     */
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION(null);
+
     private final InstanceIdentifier<Extension> iid;
 
     private ActionPath(InstanceIdentifier<Extension> iid) {

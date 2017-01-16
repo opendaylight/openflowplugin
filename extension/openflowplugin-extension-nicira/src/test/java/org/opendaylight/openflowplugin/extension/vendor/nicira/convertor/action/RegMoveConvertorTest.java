@@ -43,6 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionRegMoveNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMove;
@@ -135,6 +137,10 @@ public class RegMoveConvertorTest {
                 = regMoveConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
                 = regMoveConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
+                = regMoveConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
+                = regMoveConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst().getStart());
         Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst().getEnd());
@@ -144,6 +150,11 @@ public class RegMoveConvertorTest {
         Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst().getEnd());
         Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getStart());
         Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst().getEnd());
+
     }
 
     @Test
