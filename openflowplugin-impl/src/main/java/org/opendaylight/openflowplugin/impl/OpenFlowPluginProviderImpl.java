@@ -372,6 +372,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
             contextChainHolder.setTtlStep(Long.valueOf(props.get("ttl-step").toString()));
         }
 
+        if (props.containsKey("never-drop-contexts-on")) {
+            contextChainHolder.setNeverDropContextChain(Boolean.valueOf(props.get("never-drop-contexts-on").toString()));
+        }
+
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -434,6 +438,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     @Override
     public void updateTtlStepInContextChainHolder(final Long ttlStep) {
         this.contextChainHolder.setTtlStep(ttlStep);
+    }
+
+    @Override
+    public void updateNeverDropContextChains(final Boolean neverDropChain) {
+        this.contextChainHolder.setNeverDropContextChain(neverDropChain);
     }
 
 }
