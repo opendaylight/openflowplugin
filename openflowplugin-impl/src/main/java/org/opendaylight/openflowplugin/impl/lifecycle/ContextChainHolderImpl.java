@@ -62,6 +62,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private final HashedWheelTimer timer;
     private Long ttlBeforeDrop;
     private Long ttlStep;
+    private Boolean neverDropChain;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
         this.timerIsRunning = false;
@@ -278,22 +279,31 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.ttlStep = ttlStep;
     }
 
+    @Override
+    public void setNeverDropContextChain(final Boolean neverDropChain) {
+        this.neverDropChain = neverDropChain;
+    }
+
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
         sleepingChains.put(deviceInfo, contextChain);
-        timeToLive.put(deviceInfo, this.ttlBeforeDrop);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
         }
-        if (!this.timerIsRunning) {
-            startTimer();
+        if (!this.neverDropChain) {
+            timeToLive.put(deviceInfo, this.ttlBeforeDrop);
+            if (!this.timerIsRunning) {
+                startTimer();
+            }
         }
     }
 
     private void removeFromSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo) {
         sleepingChains.remove(deviceInfo);
-        timeToLive.remove(deviceInfo);
-        if (sleepingChains.isEmpty() && this.timerIsRunning) {
-            stopTimer();
+        if (!this.neverDropChain) {
+            timeToLive.remove(deviceInfo);
+            if (sleepingChains.isEmpty() && this.timerIsRunning) {
+                stopTimer();
+            }
         }
     }
 
