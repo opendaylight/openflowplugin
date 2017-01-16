@@ -67,6 +67,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
         openflowPluginProvider.updateTtlBeforeDropInContextChainHolder(providerConfig.getTtlBeforeDrop());
         openflowPluginProvider.updateTtlStepInContextChainHolder(providerConfig.getTtlStep());
+        openflowPluginProvider.updateNeverDropContextChains(providerConfig.isNeverDropContextsOn());
 
         openflowPluginProvider.initialize();
 
