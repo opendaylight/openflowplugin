@@ -4,7 +4,7 @@ module sal-flow {
 
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
-    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}    
+    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
     import opendaylight-group-types {prefix group-type;revision-date "2013-10-18";}
     import opendaylight-meter-types {prefix meter-type;revision-date "2013-09-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
@@ -20,7 +20,7 @@ module sal-flow {
         description "Openflow table identifier";
         type instance-identifier;
     }
-    
+
     grouping node-flow-removed {
         description "Flow removed message structure.";
         leaf node {
@@ -33,7 +33,7 @@ module sal-flow {
         }
         uses types:flow-mod-removed;
     }
-    
+
     grouping node-flow {
         description "Top openflow flow structure suitable for rpc input (contains node-context).";
         uses "inv:node-context-ref";
@@ -93,7 +93,7 @@ module sal-flow {
             leaf flow-ref {
                 type types:flow-ref;
             }
-            uses node-flow;            
+            uses node-flow;
         }
         output {
             uses tr:transaction-aware;
@@ -107,7 +107,7 @@ module sal-flow {
             leaf flow-ref {
                 type types:flow-ref;
             }
-            uses node-flow;            
+            uses node-flow;
         }
         output {
             uses tr:transaction-aware;
@@ -121,7 +121,7 @@ module sal-flow {
             leaf flow-ref {
                 type types:flow-ref;
             }
-            uses flow-update;           
+            uses flow-update;
         }
         output {
             uses tr:transaction-aware;
@@ -147,7 +147,7 @@ module sal-flow {
             type types:flow-ref;
         }
         uses node-flow;
-        uses tr:transaction-aware;        
+        uses tr:transaction-aware;
     }
 
     notification flow-removed {
@@ -160,13 +160,13 @@ module sal-flow {
         uses node-flow;
         uses tr:transaction-aware;
     }
-    
+
     notification switch-flow-removed {
         status deprecated;
 
         uses node-flow-removed;
     }
-    
+
     notification node-error-notification {
         status deprecated;
 
@@ -176,7 +176,7 @@ module sal-flow {
         uses node-error-reference;
         uses base-node-error-notification;
     }
-    
+
     notification node-experimenter-error-notification {
         status deprecated;
 
