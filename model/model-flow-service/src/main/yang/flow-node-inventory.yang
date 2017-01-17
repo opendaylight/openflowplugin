@@ -11,6 +11,7 @@ module flow-node-inventory {
     import opendaylight-flow-types {prefix flow;revision-date "2013-10-26";}
     import opendaylight-group-types {prefix group;revision-date "2013-10-18";}
     import opendaylight-meter-types {prefix meter;revision-date "2013-09-18";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Flow Capable Node extensions to the Inventory model";
 
@@ -158,8 +159,7 @@ module flow-node-inventory {
         }
     }
 
-    grouping flow-node {
-        description "Openflow node structure = device";
+    grouping desc {
         leaf manufacturer {
             type string;
         }
@@ -175,7 +175,11 @@ module flow-node-inventory {
         leaf description {
             type string;
         }
+    }
 
+    grouping flow-node {
+        description "Openflow node structure = device";
+        uses desc;
         uses tables;
         uses table:table-features;
         uses group:groups;
@@ -196,7 +200,7 @@ module flow-node-inventory {
 
         container supported-instructions {
             list instruction-type {
-		key "instruction";
+            key "instruction";
                 uses feature;
                 leaf instruction {
                     type string; // FIXME: Add identity
@@ -206,7 +210,7 @@ module flow-node-inventory {
 
         container supported-actions {
             list action-type {
-		key "action";
+            key "action";
                 uses feature;
 
                 leaf action {
@@ -313,5 +317,11 @@ module flow-node-inventory {
         description "Placeholder for timestamp of device status snapshot.
             This is contructed by asynchronous process.";
         uses snapshot-gathering-status-grouping;
+    }
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-desc {
+            uses desc;
+        }
     }
 }

@@ -5,6 +5,7 @@ module opendaylight-port-types {
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     import opendaylight-queue-types {prefix queue-types; revision-date "2013-09-25";}
     import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     revision "2013-09-25" {
         description "Initial revision of Port Inventory model";
@@ -183,5 +184,13 @@ module opendaylight-port-types {
     container port-message {
         uses common-port;
         uses ofproto:ofHeader;
+    }
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-port-desc {
+            list ports {
+                uses flow-capable-port;
+            }
+        }
     }
 }
