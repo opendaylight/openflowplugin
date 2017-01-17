@@ -25,5 +25,6 @@ public class DeserializerInjector {
         ActionDeserializerInjector.injectDeserializers(provider);
         InstructionDeserializerInjector.injectDeserializers(provider);
         MessageDeserializerInjector.injectDeserializers(provider);
+        MultipartDeserializerInjector.injectDeserializers(provider);
     }
 }
