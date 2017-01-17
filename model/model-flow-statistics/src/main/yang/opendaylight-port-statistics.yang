@@ -6,6 +6,7 @@ module opendaylight-port-statistics {
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-statistics-types {prefix stat-types;revision-date "2013-09-25";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflow port statistics structures.";
 
@@ -81,5 +82,11 @@ module opendaylight-port-statistics {
         uses inv:node;
         uses node-connector-statistics-and-port-number-map;
         uses tr:multipart-transaction-aware;
+    }
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-node-connector {
+            uses node-connector-statistics-and-port-number-map;
+        }
     }
 }

@@ -7,6 +7,7 @@ module opendaylight-meter-statistics {
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-meter-types {prefix meter-types; revision-date "2013-09-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflowplugin meter statistics structures.";
 
@@ -121,5 +122,20 @@ module opendaylight-meter-statistics {
         uses inv:node;
         uses meter-types:meter-features-reply;
         uses tr:multipart-transaction-aware;
+    }
+
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-meter {
+            uses meter-types:meter-statistics-reply;
+        }
+
+        case multipart-reply-meter-config {
+            uses meter-types:meter-config-stats-reply;
+        }
+
+        case multipart-reply-meter-features {
+            uses meter-types:meter-features-reply;
+        }
     }
 }
