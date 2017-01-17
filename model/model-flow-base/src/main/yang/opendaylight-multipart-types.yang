@@ -1,0 +1,23 @@
+module opendaylight-multipart-types {
+    namespace "urn:opendaylight:multipart:types";
+    prefix multipart;
+
+    import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
+
+
+    revision "2017-01-12" {
+        description "Initial revision";
+    }
+
+    container multipart-reply {
+        uses ofproto:ofHeader;
+
+        leaf request-more {
+            type boolean;
+            default false;
+        }
+
+        choice multipart-reply-body {
+        }
+    }
+}

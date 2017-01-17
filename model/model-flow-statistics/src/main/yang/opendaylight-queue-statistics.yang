@@ -8,6 +8,7 @@ module opendaylight-queue-statistics {
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-queue-types {prefix queue-types;revision-date "2013-09-25";}
     import opendaylight-statistics-types {prefix stat-types;revision-date "2013-09-25";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflowplugin queue statistics structures.";
 
@@ -106,5 +107,11 @@ module opendaylight-queue-statistics {
         uses inv:node;
         uses queue-id-and-statistics-map;
         uses tr:multipart-transaction-aware;
+    }
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-queue {
+            uses queue-id-and-statistics-map;
+        }
     }
 }

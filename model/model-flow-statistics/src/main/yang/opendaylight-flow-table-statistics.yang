@@ -8,6 +8,7 @@ module opendaylight-flow-table-statistics {
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-table-types {prefix table-types;revision-date "2013-10-26";}
     import opendaylight-statistics-types {prefix stat-types;revision-date "2013-09-25";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflow flow table statistics structures.";
 
@@ -67,5 +68,12 @@ module opendaylight-flow-table-statistics {
         uses inv:node;
         uses flow-table-and-statistics-map;
         uses tr:multipart-transaction-aware;
+    }
+
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-flow-table {
+            uses flow-table-and-statistics-map;
+        }
     }
 }

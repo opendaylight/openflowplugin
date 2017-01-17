@@ -10,6 +10,7 @@ module opendaylight-flow-statistics {
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import flow-capable-transaction {prefix tr;}
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflow statistics polling.";
 
@@ -164,5 +165,16 @@ module opendaylight-flow-statistics {
         uses inv:node;
         uses stat-types:aggregate-flow-statistics;
         uses tr:multipart-transaction-aware;
+    }
+
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-flow {
+            uses flow-and-statistics-map-list;
+        }
+
+        case multipart-reply-aggregate {
+            uses stat-types:aggregate-flow-statistics;
+        }
     }
 }
