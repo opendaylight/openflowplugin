@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.util;
 import java.util.Objects;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
+import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
@@ -64,6 +65,45 @@ public class ActionUtil {
                 .actions.grouping.Action> deserializer = registry.getDeserializer(key);
 
             return ActionExtensionHelper.processAlienAction(deserializer.deserialize(message),
+                    OpenflowVersion.get(version), path);
+        }
+    }
+
+    /**
+     * Deserialize OpenFlow action header, using extension converter if available
+     * TODO: Remove also extension converters
+     *
+     * @param version OpenFlow version
+     * @param message OpenFlow buffered message
+     * @param registry deserializer registry
+     * @param path Action path
+     */
+    public static Action readActionHeader(short version, ByteBuf message, DeserializerRegistry registry,
+            ActionPath path) {
+        int type = message.getUnsignedShort(message.readerIndex());
+        Long expId = null;
+
+        if (type == EncodeConstants.EXPERIMENTER_VALUE) {
+            expId = message.getUnsignedInt(message.readerIndex()
+                    + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        }
+
+        try {
+            final MessageCodeExperimenterKey key = new MessageCodeExperimenterKey(
+                version, type, Action.class, expId);
+
+            final HeaderDeserializer<Action> deserializer = registry.getDeserializer(key);
+
+            return deserializer.deserializeHeader(message);
+        } catch (IllegalStateException e) {
+            final MessageCodeKey key = Objects.nonNull(expId)
+                ? new ExperimenterActionDeserializerKey(version, expId)
+                : new ActionDeserializerKey(version, type, expId);
+
+            final HeaderDeserializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
+                .actions.grouping.Action> deserializer = registry.getDeserializer(key);
+
+            return ActionExtensionHelper.processAlienAction(deserializer.deserializeHeader(message),
                     OpenflowVersion.get(version), path);
         }
     }
