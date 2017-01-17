@@ -7,6 +7,7 @@ module opendaylight-group-statistics {
     import opendaylight-group-types {prefix group-types;revision-date "2013-10-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
     import flow-node-inventory {prefix fni; revision-date "2013-08-19";}
+    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflow group statistics structures.";
 
@@ -130,5 +131,19 @@ module opendaylight-group-statistics {
         uses inv:node;
         uses group-types:group-features-reply;
         uses tr:multipart-transaction-aware;
+    }
+
+    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
+        case multipart-reply-group-stats {
+            uses group-types:group-statistics-reply;
+        }
+
+        case multipart-reply-group-desc {
+            uses group-types:group-desc-stats-reply;
+        }
+
+        case multipart-reply-group-features {
+            uses group-types:group-features-reply;
+        }
     }
 }
