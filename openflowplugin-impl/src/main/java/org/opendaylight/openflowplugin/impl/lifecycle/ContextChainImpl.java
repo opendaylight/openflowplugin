@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -40,8 +41,9 @@ public class ContextChainImpl implements ContextChain {
     private LifecycleService lifecycleService;
     private ConnectionContext primaryConnectionContext;
 
-    public ContextChainImpl() {
+    public ContextChainImpl(final ConnectionContext connectionContext) {
         this.contextChainState = ContextChainState.INITIALIZED;
+        this.primaryConnectionContext = connectionContext;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class ContextChainImpl implements ContextChain {
             return Futures.transform(this.statisticsContext.initialGatherDynamicData(), new Function<Boolean, Void>() {
                 @Nullable
                 @Override
-                public Void apply(@Nullable Boolean aBoolean) {
+                public Void apply(@Nullable Boolean gatheringSuccessful) {
                     contextChainState = ContextChainState.WORKINGMASTER;
                     return null;
                 }
@@ -159,13 +161,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public DeviceContext provideDeviceContext() {
-        return this.deviceContext;
+    public ConnectionContext getPrimaryConnectionContext() {
+        return this.primaryConnectionContext;
     }
 
-    @Override
-    public void sleepTheChain() {
-        this.contextChainState = ContextChainState.SLEEPING;
-        this.stopChain(true);
-    }
 }
