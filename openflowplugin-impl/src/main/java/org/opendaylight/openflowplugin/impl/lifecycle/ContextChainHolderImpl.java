@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -95,7 +96,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.debug("Creating a new chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
         }
 
-        final ContextChain contextChain = new ContextChainImpl();
+        final ContextChain contextChain = new ContextChainImpl(connectionContext);
         final LifecycleService lifecycleService = new LifecycleServiceImpl(this);
         lifecycleService.registerDeviceRemovedHandler(deviceManager);
         lifecycleService.registerDeviceRemovedHandler(rpcManager);
@@ -349,8 +350,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 }
                 if (!ContextChainState.SLEEPING.equals(chain.getContextChainState())) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("There is timer registered for device: {} " +
-                                        "but device is in state: {} Removing from timer.",
+                        LOG.debug("There is timer registered for device: {} "
+                                         + "but device is in state: {} Removing from timer.",
                                 deviceInfo.getLOGValue(),
                                 chain.getContextChainState().getName());
                     }
@@ -375,7 +376,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
     }
 
-    private boolean checkAllManagers() {
+    @VisibleForTesting
+    boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
     }
 
