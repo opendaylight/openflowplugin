@@ -18,14 +18,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LifecycleServiceImplTest {
@@ -38,45 +37,28 @@ public class LifecycleServiceImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private RpcContext rpcContext;
-    @Mock
-    private StatisticsContext statContext;
-    @Mock
-    private ConnectionContext connectionContext;
-    @Mock
-    private DeviceFlowRegistry deviceFlowRegistry;
-    @Mock
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     @Mock
     private MastershipChangeListener mastershipChangeListener;
+    @Mock
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    @Mock
+    private DeviceRemovedHandler deviceRemovedHandler;
 
     private LifecycleService lifecycleService;
 
     @Before
     public void setUp() {
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
-        Mockito.when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
-        Mockito.when(deviceContext.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
-        Mockito.when(deviceFlowRegistry.fill()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        Mockito.when(deviceInfo.getLOGValue()).thenReturn(TEST_NODE);
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
-
-        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean()))
-                .thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean()))
-                .thenReturn(Futures.immediateFuture(null));
-        Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean()))
-                .thenReturn(Futures.immediateFuture(null));
 
         lifecycleService = new LifecycleServiceImpl(mastershipChangeListener);
         lifecycleService.registerService(
                 clusterSingletonServiceProvider,
-                deviceContext,
+                clusterInitializationPhaseHandler,
                 SERVICE_GROUP_IDENTIFIER,
                 deviceInfo);
     }
@@ -84,6 +66,63 @@ public class LifecycleServiceImplTest {
     @Test
     public void getIdentifier() throws Exception {
         Assert.assertEquals(lifecycleService.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
+    }
+
+    @Test
+    public void makeDeviceSlave() throws Exception {
+        Mockito.when(deviceContext.makeDeviceSlave())
+                .thenReturn(Futures.immediateFuture(null));
+        lifecycleService.makeDeviceSlave(deviceContext);
+        Mockito.verify(mastershipChangeListener).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void makeDeviceSlaveFailure() throws Exception {
+        Mockito.when(deviceContext.makeDeviceSlave())
+                .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
+        lifecycleService.makeDeviceSlave(deviceContext);
+        Mockito.verify(mastershipChangeListener).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void instantiateServiceInstance() throws Exception {
+        Mockito.when(clusterInitializationPhaseHandler.onContextInstantiateService(Mockito.any()))
+                .thenReturn(true);
+        lifecycleService.instantiateServiceInstance();
+        Mockito.verify(mastershipChangeListener).onMasterRoleAcquired(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void instantiateServiceInstanceFail() throws Exception {
+        Mockito.when(clusterInitializationPhaseHandler.onContextInstantiateService(Mockito.any()))
+                .thenReturn(false);
+        lifecycleService.instantiateServiceInstance();
+        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastership(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void close() throws Exception {
+        lifecycleService.registerDeviceRemovedHandler(deviceRemovedHandler);
+        lifecycleService.close();
+        Mockito.verify(deviceRemovedHandler).onDeviceRemoved(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void closeTwoTimes() throws Exception {
+        lifecycleService.registerDeviceRemovedHandler(deviceRemovedHandler);
+        lifecycleService.close();
+        lifecycleService.close();
+        Mockito.verify(deviceRemovedHandler, Mockito.times(1))
+                .onDeviceRemoved(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void closeThreeTimes() throws Exception {
+        lifecycleService.registerDeviceRemovedHandler(deviceRemovedHandler);
+        lifecycleService.close();
+        lifecycleService.close();
+        Mockito.verify(deviceRemovedHandler, Mockito.times(1))
+                .onDeviceRemoved(Mockito.any(DeviceInfo.class));
     }
 
 }
