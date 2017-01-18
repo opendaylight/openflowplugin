@@ -33,4 +33,8 @@ public interface StatisticsManager extends OFPManager {
 
     void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
 
+    void setBasicTimerDelay(final long basicTimerDelay);
+
+    void setMaximumTimerDelay(final long maximumTimerDelay);
+
 }

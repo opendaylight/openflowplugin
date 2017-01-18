@@ -182,7 +182,10 @@ public class StatisticsManagerImplTest {
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(), convertorManager);
+        final long basicTimerDelay = 3000L;
+        final long maximumTimerDelay = 900000L;
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(),
+                convertorManager, basicTimerDelay, maximumTimerDelay);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
     }
 

@@ -63,9 +63,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private static final long basicTimerDelay = 3000;
-    private static long currentTimerDelay = basicTimerDelay;
-    private static final long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
+    private static long basicTimerDelay;
+    private static long currentTimerDelay;
+    private static long maximumTimerDelay; //wait time for next statistics
 
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
@@ -82,13 +82,18 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean isStatisticsPollingOn,
                                  final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor) {
+                                 final ConvertorExecutor convertorExecutor,
+                                 final long basicTimerDelay,
+                                 final long maximumTimerDelay) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
 	    this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+        this.basicTimerDelay = basicTimerDelay;
+        this.currentTimerDelay = basicTimerDelay;
+        this.maximumTimerDelay = maximumTimerDelay;
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
@@ -342,5 +347,15 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+    }
+
+    @Override
+    public void setBasicTimerDelay(final long basicTimerDelay) {
+        this.basicTimerDelay = basicTimerDelay;
+    }
+
+    @Override
+    public void setMaximumTimerDelay(final long maximumTimerDelay) {
+        this.maximumTimerDelay = maximumTimerDelay;
     }
 }
