@@ -62,6 +62,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
         openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
+        openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
+        openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
 
         openflowPluginProvider.initialize();
 
@@ -74,7 +76,9 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "ThreadPoolMinThreads:{}, " +
                 "ThreadPoolMaxThreads:{}, " +
                 "ThreadPoolTimeout:{}, " +
-                "NotificationFlowRemovedOff:{}",
+                "NotificationFlowRemovedOff:{}, " +
+                "BasicTimerDelay:{}, "+
+                "MaximumTimerDelay:{} ",
                 providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
@@ -83,7 +87,9 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout(),
-                providerConfig.isEnableFlowRemovedNotification());
+                providerConfig.isEnableFlowRemovedNotification(),
+                providerConfig.getBasicTimerDelay().getValue(),
+                providerConfig.getMaximumTimerDelay().getValue());
 
         return openflowPluginProvider;
     }
