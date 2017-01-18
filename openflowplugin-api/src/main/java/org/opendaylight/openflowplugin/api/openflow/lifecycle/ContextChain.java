@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
 /**
@@ -84,13 +83,8 @@ public interface ContextChain extends AutoCloseable {
     void closePrimaryConnection();
 
     /**
-     * Device context needs to be provided for other contexts.
-     * @return device context
+     * Getter.
+     * @return actual primary connection
      */
-    DeviceContext provideDeviceContext();
-
-    /**
-     * Just make the chain state SLEEP
-     */
-    void sleepTheChain();
+    ConnectionContext getPrimaryConnectionContext();
 }
