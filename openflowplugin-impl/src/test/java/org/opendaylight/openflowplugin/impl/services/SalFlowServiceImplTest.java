@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.services;
 
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
@@ -75,7 +76,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class SalFlowServiceImplTest extends TestCase {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
-    private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final String DUMMY_NODE_ID = "dummyNodeID";
     private static final String DUMMY_FLOW_ID = "dummyFlowID";
     private static final Short DUMMY_TABLE_ID = (short) 0;
@@ -104,7 +104,6 @@ public class SalFlowServiceImplTest extends TestCase {
     private OutboundQueue outboundQueue;
     @Mock
     private Match match;
-    private SalFlowServiceImpl salFlowService;
 
     @Mock
     private DeviceState mockedDeviceState;
@@ -118,40 +117,57 @@ public class SalFlowServiceImplTest extends TestCase {
     @Before
     public void initialization() {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
         when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
 
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueue);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
-
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
-        when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
         when(requestContext.getXid()).thenReturn(new Xid(84L));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
+        when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
+
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
+    }
+
+    private SalFlowServiceImpl mockSalFlowService(final short version) {
+        when(mockedFeatures.getVersion()).thenReturn(version);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
+        when(mockedDeviceInfo.getVersion()).thenReturn(version);
+
+        if (OFConstants.OFP_VERSION_1_3 >= version) {
+            when(mockedDeviceContext.isUseSingleLayerSerialization()).thenReturn(true);
+        }
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
     public void testAddFlow() throws Exception {
-        addFlow(null);
+        addFlow(null, OFConstants.OFP_VERSION_1_0);
+        addFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testAddFlowFailCallback() throws Exception {
+        addFlowFailCallback(OFConstants.OFP_VERSION_1_0);
+    }
+
+    @Test
+    public void testAddFlowFailCallback1() throws Exception {
+        addFlowFailCallback(OFConstants.OFP_VERSION_1_3);
+    }
+
+    private void addFlowFailCallback(short version) throws InterruptedException, ExecutionException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -161,7 +177,7 @@ public class SalFlowServiceImplTest extends TestCase {
                 .when(requestContext).getFuture();
 
         mockingFlowRegistryLookup();
-        final Future<RpcResult<AddFlowOutput>> rpcResultFuture = salFlowService.addFlow(mockedAddFlowInput);
+        final Future<RpcResult<AddFlowOutput>> rpcResultFuture = mockSalFlowService(version).addFlow(mockedAddFlowInput);
 
         assertNotNull(rpcResultFuture);
         final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
@@ -171,6 +187,15 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testRemoveFlowFailCallback() throws Exception {
+        removeFlowFailCallback(OFConstants.OFP_VERSION_1_0);
+    }
+
+    @Test
+    public void testRemoveFlowFailCallback1() throws Exception {
+        removeFlowFailCallback(OFConstants.OFP_VERSION_1_3);
+    }
+
+    private void removeFlowFailCallback(short version) throws InterruptedException, ExecutionException {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .build();
@@ -178,7 +203,7 @@ public class SalFlowServiceImplTest extends TestCase {
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
-        final Future<RpcResult<RemoveFlowOutput>> rpcResultFuture = salFlowService.removeFlow(mockedRemoveFlowInput);
+        final Future<RpcResult<RemoveFlowOutput>> rpcResultFuture = mockSalFlowService(version).removeFlow(mockedRemoveFlowInput);
 
         assertNotNull(rpcResultFuture);
         final RpcResult<?> removeFlowOutputRpcResult = rpcResultFuture.get();
@@ -188,15 +213,16 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testAddFlowWithItemLifecycle() throws Exception {
-        addFlow(mock(ItemLifecycleListener.class));
+        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlow(final ItemLifecycleListener itemLifecycleListener) throws ExecutionException, InterruptedException {
+    private void addFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws ExecutionException, InterruptedException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
-
+        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
         salFlowService.setItemLifecycleListener(itemLifecycleListener);
 
         mockingFlowRegistryLookup();
@@ -208,20 +234,23 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testRemoveFlow() throws Exception {
-        removeFlow(null);
+        removeFlow(null, OFConstants.OFP_VERSION_1_0);
+        removeFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testRemoveFlowWithItemLifecycle() throws Exception {
-        removeFlow(mock(ItemLifecycleListener.class));
+        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+    private void removeFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
 
+        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
         if (itemLifecycleListener != null) {
             salFlowService.setItemLifecycleListener(itemLifecycleListener);
             mockingFlowRegistryLookup();
@@ -237,44 +266,64 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testUpdateFlow() throws Exception {
-        updateFlow(null);
+        updateFlow(null, OFConstants.OFP_VERSION_1_0);
+        updateFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testUpdateFlowWithItemLifecycle() throws Exception {
-        updateFlow(mock(ItemLifecycleListener.class));
+        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void updateFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+    private void updateFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
+        UpdateFlowInput mockedUpdateFlowInput1 = mock(UpdateFlowInput.class);
 
         UpdatedFlow mockedUpdateFlow = new UpdatedFlowBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
 
+        UpdatedFlow mockedUpdateFlow1 = new UpdatedFlowBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .setPriority(Integer.valueOf(1))
+                .build();
+
         when(mockedUpdateFlowInput.getUpdatedFlow()).thenReturn(mockedUpdateFlow);
+        when(mockedUpdateFlowInput1.getUpdatedFlow()).thenReturn(mockedUpdateFlow1);
 
         FlowRef mockedFlowRef = mock(FlowRef.class);
         Mockito.doReturn(TABLE_II.child(Flow.class, new FlowKey(new FlowId(DUMMY_FLOW_ID)))).when(mockedFlowRef).getValue();
         when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
+        when(mockedUpdateFlowInput1.getFlowRef()).thenReturn(mockedFlowRef);
 
         OriginalFlow mockedOriginalFlow = new OriginalFlowBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
 
-        when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
+        OriginalFlow mockedOriginalFlow1 = new OriginalFlowBuilder()
+                .setMatch(match)
+                .setTableId((short)1)
+                .setPriority(Integer.valueOf(2))
+                .build();
 
+        when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
+        when(mockedUpdateFlowInput1.getOriginalFlow()).thenReturn(mockedOriginalFlow1);
+
+        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
         if (itemLifecycleListener != null) {
             salFlowService.setItemLifecycleListener(itemLifecycleListener);
             mockingFlowRegistryLookup();
         }
 
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
+        verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput1));
 
         if (itemLifecycleListener != null) {
-            Mockito.verify(itemLifecycleListener).onUpdated(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
+            Mockito.verify(itemLifecycleListener, times(2)).onUpdated(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
         }
 
     }
