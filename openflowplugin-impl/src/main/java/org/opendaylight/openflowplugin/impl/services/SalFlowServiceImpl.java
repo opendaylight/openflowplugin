@@ -11,11 +11,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -49,7 +51,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +62,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final FlowService<UpdateFlowOutput> flowUpdate;
     private final FlowService<AddFlowOutput> flowAdd;
     private final FlowService<RemoveFlowOutput> flowRemove;
+    private final FlowMessageService<AddFlowOutput> flowAddMessage;
+    private final FlowMessageService<UpdateFlowOutput> flowUpdateMessage;
+    private final FlowMessageService<RemoveFlowOutput> flowRemoveMessage;
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
@@ -66,6 +73,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         flowRemove = new FlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
         flowAdd = new FlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
         flowUpdate = new FlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
+        flowAddMessage = new FlowMessageService<>(requestContextStack, deviceContext, AddFlowOutput.class);
+        flowUpdateMessage = new FlowMessageService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
+        flowRemoveMessage= new FlowMessageService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
     }
 
     @Override
@@ -76,17 +86,32 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
-        final ListenableFuture<RpcResult<AddFlowOutput>> future =
-                flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
-        Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+        final ListenableFuture<RpcResult<AddFlowOutput>> future;
+
+        if (flowAddMessage.isSupported()) {
+            future = flowAddMessage.processInput(input);
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+        } else {
+            future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+
+        }
         return future;
     }
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-        final ListenableFuture<RpcResult<RemoveFlowOutput>> future =
-                flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
-        Futures.addCallback(future, new RemoveFlowCallback(input));
+        final ListenableFuture<RpcResult<RemoveFlowOutput>> future;
+
+        if (flowRemoveMessage.isSupported()) {
+            future = flowRemoveMessage.processInput(input);
+            Futures.addCallback(future, new RemoveFlowCallback(input));
+
+        } else {
+            future = flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
+            Futures.addCallback(future, new RemoveFlowCallback(input));
+        }
+
         return future;
     }
 
@@ -98,22 +123,71 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
         final List<FlowModInputBuilder> ofFlowModInputs;
 
-        if (!FlowCreatorUtil.canModifyFlow(original, updated, flowUpdate.getVersion())) {
-            // We would need to remove original and add updated.
+        ListenableFuture<RpcResult<UpdateFlowOutput>> future;
+        if (flowUpdateMessage.isSupported()) {
 
-            // remove flow
-            final RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
-            final List<FlowModInputBuilder> ofFlowRemoveInput = flowUpdate.toFlowModInputs(removeflow.build());
-            // remove flow should be the first
-            allFlowMods.addAll(ofFlowRemoveInput);
-            final AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
-            ofFlowModInputs = flowUpdate.toFlowModInputs(addFlowInputBuilder.build());
+            if (!FlowCreatorUtil.canModifyFlow(original, updated, flowUpdateMessage.getVersion())) {
+                final SettableFuture<RpcResult<UpdateFlowOutput>> objectSettableFuture = SettableFuture.create();
+
+                final ListenableFuture<List<RpcResult<UpdateFlowOutput>>> listListenableFuture = Futures.successfulAsList(
+                        flowUpdateMessage.processInput(input.getOriginalFlow()),
+                        flowUpdateMessage.processInput(input.getUpdatedFlow()));
+
+                Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
+                    @Override
+                    public void onSuccess(final List<RpcResult<UpdateFlowOutput>> results) {
+                        final ArrayList<RpcError> errors = new ArrayList();
+                        for (RpcResult<UpdateFlowOutput> flowModResult : results) {
+                            if (flowModResult == null) {
+                                errors.add(RpcResultBuilder.newError(
+                                        RpcError.ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
+                                        "unexpected flowMod result (null) occurred"));
+                            } else if (!flowModResult.isSuccessful()) {
+                                errors.addAll(flowModResult.getErrors());
+                            }
+                        }
+
+                        final RpcResultBuilder<UpdateFlowOutput> rpcResultBuilder;
+                        if (errors.isEmpty()) {
+                            rpcResultBuilder = RpcResultBuilder.success();
+                        } else {
+                            rpcResultBuilder = RpcResultBuilder.<UpdateFlowOutput>failed().withRpcErrors(errors);
+                        }
+
+                        objectSettableFuture.set(rpcResultBuilder.build());
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        RpcResultBuilder<UpdateFlowOutput> rpcResultBuilder = RpcResultBuilder.failed();
+                        objectSettableFuture.set(rpcResultBuilder.build());
+                    }
+                });
+
+                future = objectSettableFuture;
+            } else {
+                future = flowUpdateMessage.processInput(input.getUpdatedFlow());
+            }
         } else {
-            ofFlowModInputs = flowUpdate.toFlowModInputs(updated);
+            if (!FlowCreatorUtil.canModifyFlow(original, updated, flowUpdate.getVersion())) {
+                // We would need to remove original and add updated.
+
+                // remove flow
+                final RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
+                final List<FlowModInputBuilder> ofFlowRemoveInput = flowUpdate.toFlowModInputs(removeflow.build());
+                // remove flow should be the first
+                allFlowMods.addAll(ofFlowRemoveInput);
+                final AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
+                ofFlowModInputs = flowUpdate.toFlowModInputs(addFlowInputBuilder.build());
+            } else {
+                ofFlowModInputs = flowUpdate.toFlowModInputs(updated);
+            }
+
+            allFlowMods.addAll(ofFlowModInputs);
+
+            future = flowUpdate.processFlowModInputBuilders(allFlowMods);
         }
 
-        allFlowMods.addAll(ofFlowModInputs);
-        ListenableFuture<RpcResult<UpdateFlowOutput>> future = flowUpdate.processFlowModInputBuilders(allFlowMods);
         Futures.addCallback(future, new UpdateFlowCallback(input));
         return future;
     }
