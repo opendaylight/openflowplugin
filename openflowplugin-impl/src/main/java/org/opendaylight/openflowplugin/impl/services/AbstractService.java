@@ -91,7 +91,7 @@ abstract class AbstractService<I, O> {
 
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
-    public final ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
+    public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
         Preconditions.checkNotNull(input);
 
         final Class<?> requestType;
