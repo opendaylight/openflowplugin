@@ -75,7 +75,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class SalFlowServiceImplTest extends TestCase {
 
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
-    private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final String DUMMY_NODE_ID = "dummyNodeID";
     private static final String DUMMY_FLOW_ID = "dummyFlowID";
     private static final Short DUMMY_TABLE_ID = (short) 0;
@@ -118,28 +117,31 @@ public class SalFlowServiceImplTest extends TestCase {
     @Before
     public void initialization() {
         when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
         when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
 
         when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueue);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
-
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
-        when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
         when(requestContext.getXid()).thenReturn(new Xid(84L));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
+        when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
+
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
+    }
+
+    private void mockVersion(final short version) {
+        when(mockedFeatures.getVersion()).thenReturn(version);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
+        when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salFlowService = new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
@@ -147,11 +149,22 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testAddFlow() throws Exception {
-        addFlow(null);
+        addFlow(null, OFConstants.OFP_VERSION_1_0);
+        addFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testAddFlowFailCallback() throws Exception {
+        addFlowFailCallback(OFConstants.OFP_VERSION_1_0);
+    }
+
+    @Test(expected=ExecutionException.class)
+    public void testAddFlowFailCallback1() throws Exception {
+        addFlowFailCallback(OFConstants.OFP_VERSION_1_3);
+    }
+
+    private void addFlowFailCallback(short version) throws InterruptedException, ExecutionException {
+        mockVersion(version);
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -171,6 +184,16 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testRemoveFlowFailCallback() throws Exception {
+        removeFlowFailCallback(OFConstants.OFP_VERSION_1_0);
+    }
+
+    @Test(expected = ExecutionException.class)
+    public void testRemoveFlowFailCallback1() throws Exception {
+        removeFlowFailCallback(OFConstants.OFP_VERSION_1_3);
+    }
+
+    private void removeFlowFailCallback(short version) throws InterruptedException, ExecutionException {
+        mockVersion(version);
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .build();
@@ -188,10 +211,12 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testAddFlowWithItemLifecycle() throws Exception {
-        addFlow(mock(ItemLifecycleListener.class));
+        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlow(final ItemLifecycleListener itemLifecycleListener) throws ExecutionException, InterruptedException {
+    private void addFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws ExecutionException, InterruptedException {
+        mockVersion(version);
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -208,15 +233,18 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testRemoveFlow() throws Exception {
-        removeFlow(null);
+        removeFlow(null, OFConstants.OFP_VERSION_1_0);
+        removeFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testRemoveFlowWithItemLifecycle() throws Exception {
-        removeFlow(mock(ItemLifecycleListener.class));
+        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+    private void removeFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
+        mockVersion(version);
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -237,15 +265,18 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testUpdateFlow() throws Exception {
-        updateFlow(null);
+        updateFlow(null, OFConstants.OFP_VERSION_1_0);
+        updateFlow(null, OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
     public void testUpdateFlowWithItemLifecycle() throws Exception {
-        updateFlow(mock(ItemLifecycleListener.class));
+        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
+        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
     }
 
-    private void updateFlow(final ItemLifecycleListener itemLifecycleListener) throws Exception {
+    private void updateFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
+        mockVersion(version);
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
 
         UpdatedFlow mockedUpdateFlow = new UpdatedFlowBuilder()
