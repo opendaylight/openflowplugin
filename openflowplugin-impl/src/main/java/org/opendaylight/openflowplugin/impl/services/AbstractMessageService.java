@@ -23,10 +23,12 @@ abstract class AbstractMessageService<R extends DataObject, I extends Builder<? 
     }
 
     /**
-     * Check if this service is supported in current OpenFlowPlugin configuration
-     * @return true if supported
+     * Check if single layer serialization is turned on in OpenFlowPlugin configuration
+     * @return true if supported and single layer serialization turned on
      */
-    public abstract boolean isSupported();
+    public boolean isSupported() {
+        return getDeviceContext().isUseSingleLayerSerialization();
+    }
 
     /**
      * Converts input to {@link I}
